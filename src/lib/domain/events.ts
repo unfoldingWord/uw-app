@@ -1,5 +1,6 @@
 import { fieldValidators, type FieldKind, type FieldTypes } from './fields';
 import { packKinds, packSources, resourceRows } from './pack';
+import { preferenceKeys, preferenceProblem, type PreferenceKey } from './preferences';
 
 export const replayClasses = ['redo', 'follows', 'verbatim'] as const;
 
@@ -11,7 +12,25 @@ type ListSpec = { readonly list: Readonly<Record<string, ScalarSpec>>; readonly 
 
 type FieldSpec = ScalarSpec | ListSpec;
 
-type EventSchema = { readonly replay: ReplayClass; readonly payload: Readonly<Record<string, FieldSpec>> };
+type PayloadRecord = Readonly<Record<string, unknown>>;
+
+type EventSchema = {
+  readonly replay: ReplayClass;
+  readonly payload: Readonly<Record<string, FieldSpec>>;
+  readonly refine?: (payload: PayloadRecord) => string | undefined;
+};
+
+function preferenceRefinement(payload: PayloadRecord): string | undefined {
+  const value = payload.value;
+  return preferenceProblem(payload.key as PreferenceKey, typeof value === 'string' ? value : undefined);
+}
+
+function failureRefinement(payload: PayloadRecord): string | undefined {
+  const context = payload.context as PayloadRecord;
+  return context.type === undefined || isEventType(context.type)
+    ? undefined
+    : 'Failure.context.type is not an event type';
+}
 
 export const tracks = ['foundations', 'training', 'topics'] as const;
 
@@ -100,7 +119,7 @@ export const eventSchemas = {
     replay: 'redo',
     payload: { group: 'id', track: tracks, session: 'count', language: 'language' },
   },
-  StepCompleted: {
+  MovementCompleted: {
     replay: 'redo',
     payload: { group: 'id', track: tracks, session: 'count', movement: movements },
   },
@@ -124,12 +143,16 @@ export const eventSchemas = {
     },
   },
   BookmarkRemoved: { replay: 'redo', payload: { bookmark: 'id' } },
-  PreferenceChanged: { replay: 'redo', payload: { key: 'key', value: 'token?' } },
+  PreferenceChanged: {
+    replay: 'redo',
+    payload: { key: preferenceKeys, value: 'token?' },
+    refine: preferenceRefinement,
+  },
   InvitationShown: { replay: 'verbatim', payload: {} },
   InvitationTapped: { replay: 'verbatim', payload: {} },
   InvitationDismissed: { replay: 'verbatim', payload: {} },
-  ImpactStoryOpened: { replay: 'verbatim', payload: { story: 'id' } },
-  Failure: { replay: 'follows', payload: { code: 'code', context: 'context' } },
+  ImpactStoryOpened: { replay: 'verbatim', payload: { story: 'slug' } },
+  Failure: { replay: 'follows', payload: { code: 'code', context: 'context' }, refine: failureRefinement },
 } as const satisfies Record<string, EventSchema>;
 
 type Schemas = typeof eventSchemas;
@@ -232,7 +255,8 @@ export function payloadProblem(type: EventType, payload: unknown): string | unde
   }
   const badField = recordProblem(specs, payload);
   if (badField === undefined) {
-    return undefined;
+    const schema: EventSchema = eventSchemas[type];
+    return schema.refine?.(payload as PayloadRecord);
   }
   const spec = specs[badField];
   const described = spec !== undefined && isListSpec(spec) ? 'list' : String(spec);
@@ -255,4 +279,26 @@ export function checkEvent(value: unknown): EventCheck {
     return { ok: false, reason: problem };
   }
   return { ok: true, event: { type: record.type, at: record.at, payload: record.payload } as DomainEvent };
+}
+
+function idsIn(specs: Readonly<Record<string, FieldSpec>>, record: PayloadRecord, into: string[]): void {
+  for (const [field, spec] of Object.entries(specs)) {
+    const value = record[field];
+    if ((spec === 'id' || spec === 'id?') && typeof value === 'string') {
+      into.push(value);
+    } else if (isListSpec(spec) && Array.isArray(value)) {
+      for (const item of value) {
+        idsIn(spec.list, item as PayloadRecord, into);
+      }
+    }
+  }
+}
+
+export function idsOf(event: EventInput): readonly string[] {
+  const found: string[] = [];
+  idsIn(eventSchemas[event.type].payload, event.payload as PayloadRecord, found);
+  if (event.type === 'Failure' && event.payload.context.install !== undefined) {
+    found.push(event.payload.context.install);
+  }
+  return found;
 }

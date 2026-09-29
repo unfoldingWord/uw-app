@@ -23,14 +23,14 @@ describe('events (DX-1 nothing identifies the leader)', () => {
       checkEvent({
         type: 'Failure',
         at: 2,
-        payload: { code: 'http.timeout', context: { host: 'git.door43.org', attempt: 2, online: true } },
+        payload: { code: 'http.timeout', context: { step: 'catalog', page: 2, pack: 'language:qaa' } },
       }).ok,
     ).toBe(true);
     expect(
       checkEvent({
         type: 'BookmarkAdded',
         at: 3,
-        payload: { bookmark: 'id-1', target: 'passage', reference: 'JHN 3:16' },
+        payload: { bookmark: 'id-000001', target: 'passage', reference: 'JHN 3:16' },
       }).ok,
     ).toBe(true);
   });
@@ -40,9 +40,9 @@ describe('events (DX-1 nothing identifies the leader)', () => {
       ok: false,
       reason: 'unknown event type LeaderNamed',
     });
-    expect(checkEvent({ type: 'GroupCreated', at: 1, payload: { group: 'id-1', name: 'Grace' } }).ok).toBe(
-      false,
-    );
+    expect(
+      checkEvent({ type: 'GroupCreated', at: 1, payload: { group: 'id-000001', name: 'Grace' } }).ok,
+    ).toBe(false);
     expect(checkEvent({ type: 'GroupCreated', at: 1, payload: {} }).ok).toBe(false);
     expect(checkEvent({ type: 'AppOpened', at: -1, payload: { day: '2026-01-05' } }).ok).toBe(false);
     expect(checkEvent({ type: 'AppOpened', at: 1.5, payload: { day: '2026-01-05' } }).ok).toBe(false);
@@ -85,6 +85,49 @@ describe('events (DX-1 nothing identifies the leader)', () => {
     ).toBe(false);
   });
 
+  it('keeps names out of preferences, failure contexts and ids (DX-1)', () => {
+    const accepted = (value: unknown) => checkEvent(value).ok;
+    expect(accepted({ type: 'PreferenceChanged', at: 1, payload: { key: 'home.name' } })).toBe(true);
+    expect(
+      accepted({ type: 'PreferenceChanged', at: 1, payload: { key: 'home.name', value: 'Jesse' } }),
+    ).toBe(false);
+    expect(
+      accepted({ type: 'PreferenceChanged', at: 1, payload: { key: 'home.theme', value: 'dark' } }),
+    ).toBe(true);
+    expect(
+      accepted({ type: 'PreferenceChanged', at: 1, payload: { key: 'home.theme', value: 'Jesse' } }),
+    ).toBe(false);
+    expect(accepted({ type: 'PreferenceChanged', at: 1, payload: { key: 'home.theme' } })).toBe(false);
+    expect(accepted({ type: 'PreferenceChanged', at: 1, payload: { key: 'jesse.name', value: 'on' } })).toBe(
+      false,
+    );
+    expect(
+      accepted({ type: 'PreferenceChanged', at: 1, payload: { key: 'study.language', value: 'sw' } }),
+    ).toBe(true);
+    for (const context of [
+      { leader: 'Jesse.Griffin' },
+      { step: 'jesse' },
+      { install: 'Jesse-Tuesday-Group' },
+      { type: 'JesseGriffin' },
+      { status: 1.5 },
+      { online: true },
+    ]) {
+      expect(accepted({ type: 'Failure', at: 1, payload: { code: 'unexpected', context } })).toBe(false);
+    }
+    expect(
+      accepted({
+        type: 'Failure',
+        at: 1,
+        payload: { code: 'kernel.observer-failed', context: { observer: 'corpus', type: 'PackInstalled' } },
+      }),
+    ).toBe(true);
+    expect(accepted({ type: 'GroupCreated', at: 1, payload: { group: 'Jesse-Tuesday-Group' } })).toBe(false);
+    expect(accepted({ type: 'GroupCreated', at: 1, payload: { group: 'g-1' } })).toBe(false);
+    expect(
+      accepted({ type: 'GroupCreated', at: 1, payload: { group: '0f8e2a4c-2b1d-4e8f-9a6b-3c5d7e9f1a2b' } }),
+    ).toBe(true);
+  });
+
   it('classifies every event for replay and keeps the architecture names', () => {
     const named = [
       'PackInstallStarted',
@@ -98,7 +141,7 @@ describe('events (DX-1 nothing identifies the leader)', () => {
       'SearchRun',
       'GroupCreated',
       'SessionStarted',
-      'StepCompleted',
+      'MovementCompleted',
       'SessionCompleted',
       'TransferOffered',
       'TransferAccepted',
@@ -148,7 +191,7 @@ describe('events (DX-1 nothing identifies the leader)', () => {
       type: 'PackInstalled',
       at: 1,
       payload: {
-        install: 'id-1',
+        install: 'id-000001',
         pack: 'language:qaa',
         kind: 'language',
         source: 'catalog',

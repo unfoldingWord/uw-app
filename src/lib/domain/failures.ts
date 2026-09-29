@@ -3,6 +3,7 @@ export const failureCodes = [
   'http.timeout',
   'http.status',
   'http.host-refused',
+  'http.cancelled',
   'files.not-found',
   'files.no-space',
   'files.io',
@@ -12,6 +13,8 @@ export const failureCodes = [
   'journal.persist-failed',
   'journal.event-rejected',
   'journal.import-invalid',
+  'kernel.not-owned',
+  'kernel.observer-failed',
   'catalog.invalid-response',
   'catalog.superseded',
   'pack.not-found',
@@ -33,9 +36,56 @@ export const failureCodes = [
 
 export type FailureCode = (typeof failureCodes)[number];
 
-export type FailureContextValue = string | number | boolean;
+export const failureSteps = [
+  'start',
+  'catalog',
+  'install',
+  'peer',
+  'file',
+  'remove',
+  'update',
+  'observe',
+  'index',
+  'ingest',
+  'transfer',
+  'share',
+  'audio',
+] as const;
 
-export type FailureContext = Readonly<Record<string, FailureContextValue>>;
+export type FailureStep = (typeof failureSteps)[number];
+
+export type FailureContext = {
+  readonly step?: FailureStep;
+  readonly cause?: FailureCode;
+  readonly migration?: string;
+  readonly type?: string;
+  readonly observer?: string;
+  readonly pack?: string;
+  readonly language?: string;
+  readonly install?: string;
+  readonly status?: number;
+  readonly page?: number;
+  readonly rows?: number;
+  readonly unpersisted?: number;
+};
+
+export type FailureContextKind =
+  'step' | 'code' | 'migration' | 'eventType' | 'moduleName' | 'pack' | 'language' | 'id' | 'count';
+
+export const failureContextKinds: { readonly [K in keyof Required<FailureContext>]: FailureContextKind } = {
+  step: 'step',
+  cause: 'code',
+  migration: 'migration',
+  type: 'eventType',
+  observer: 'moduleName',
+  pack: 'pack',
+  language: 'language',
+  install: 'id',
+  status: 'count',
+  page: 'count',
+  rows: 'count',
+  unpersisted: 'count',
+};
 
 const codes: ReadonlySet<string> = new Set(failureCodes);
 
