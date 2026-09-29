@@ -3,6 +3,62 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 F3 real Door43 releases: the shapes read in CI run 36618141715
+
+Source of every fact: GitHub Actions run 36618141715 (job 109576350275), whose `CONTRACT_DESCRIBE` output paged
+the whole production `tc-ready` catalog and opened 17 real `sb` archives. This sandbox cannot reach
+git.door43.org (HTTP 403 through the proxy), so nothing below touched real data here; everything ran in Node on
+fixtures and on test burritos copied from the captured shapes.
+
+- Red first, each observed before the fix:
+
+| Test | Red |
+|---|---|
+| `src/lib/burrito/dcs.test.ts` (go-rc2sb v0.5.0 shapes) | 9 of 11 failed: en_ult `invalid` (USFM as `text/plain`), en_tw and mr_tW `expected 'wordLinks' to be 'articles'`, en_obs-sq and en_obs-tn `ignored`, en_obs-twl `expected 'wordLinks' to be 'storyHelps'`, provenance with the commit in `tag`, licence not taken from LICENSE.md, formation flavor still `parascriptural/x-obsMovements` |
+| `sim/corpus-dcs.test.ts` (Corpus over those shapes) | 3 of 3 failed: `expected [ [ 'NEH', 'RUT' ] ] to deeply equal [ [ 'RUT' ] ]` (stub book listed), `expected undefined to be 'God'` (payload/ article ids), story helps missing |
+| `src/lib/corpus/readings.test.ts` (catalog Bible codes) | 4 failed: ar_arst, ar_nav, en_t4t read as literal; "Texto Puente Simple" read as literal |
+| `sim/packs.test.ts` peer swap, after offers began carrying the release | `expected { ok: true ... } to match object { ok: false }`; fixed by carrying the commit in the offer |
+| `DX-3` after file imports lost their tag | the replayed file install became `http.status` for `sb/unrecorded.zip`; fixed by recovering the release from the catalog by commit |
+
+- Mismatches fixed: M1 (USFM `text/plain`, told by `.usfm`), M2 (Words are `x-bcvarticles` from a `tw`
+  repository), M3 (`payload/kt/god.md` is `tw/bible/kt/god`), M4 (relative `./payload/...` TWLinks), M5 to M7
+  (`x-obsnotes`, `x-obsquestions`, `obs-twl` scoped `{OBS: []}`), M8 to M10 (revision is the commit; tag and
+  `released` come from the catalog, the peer offer, or the catalog release matching a file's commit; the
+  generation timestamp is no longer a release date), M11 (statement `mimetype` and `lang` optional; the shown
+  licence adds CC BY-SA 4.0 from LICENSE.md when the statement names none), M15 (tests pinning the captured USFM
+  heads), M16 (formation row renamed to the catalog flavor, still provisional), M17 (audio recorded as release
+  assets, an open question in the proposal, nothing built), M18 (codes pinned), M21 (contract rewritten), M22
+  (fixture `hbo_uhb` retagged v3.0.0 and `en_obs-tf` v4 to match the catalog; the old v2.1.30 and v1 archives are
+  deleted because their tags left the fixture catalog).
+- Not fixed: M12 (the two unseen extra OBS content files; no story body was captured), M13 (TA matched the
+  existing row only by reading; now in the live samples), M19 (the 16 `ts` OBS repositories, unsampled), M20
+  (the non-TSV `peripheral/x-OBSTranslationQuestions`, still ignored), and the `sourceUrlOf` link for a file whose
+  tag is `unrecorded`, which points at `releases/tag/unrecorded`; changing it is a change to `src/lib/domain/`
+  and needs a proposal.
+- USFM (M15): the parser already read every captured head (chunk markers, braces around implied words, nested
+  `\zaln-s`, unprefixed `lemma` and `strong`, `c:H3315`, word joiners, `\cl`, `\mt2`, front matter, a stub book);
+  the new tests passed on their first run and pin that. The stub book is dropped at ingest: a USFM ingredient of
+  64 KB or less with no `\v` is not listed as a book (a bounded read, so the streaming install test still holds).
+- Literal and simplified (M18): pinned from codes, labelled inference because the capture has no titles for
+  these: `avd` (Van Dyck) and `bsb` (Berean Standard) literal; `nav` (New Arabic Version), `arst` (by the `st`
+  suffix, as in `gst` and `ust`) and `t4t` (Translation for Translators) simplified; `tpl` literal from the
+  es-419 burrito's own abbreviation, observed.
+- A title note at `1:0` in obs-tn is kept as frame 0 (the story title).
+- Fixtures rebuilt with `npm run fixtures` (21 burritos, 208 KB): go-rc2sb metadata, `text/plain` USFM with
+  `FRT.usfm` and a stub `NEH.usfm`, original-language `\w` with `lemma` and `strong`, Words and Word Links with a
+  `payload/` tree and relative links, story helps as `OBS.tsv` (new `qaa_obs-twl` with `rc://` links), bare
+  statements on stories, catalog entries with every observed key, pages served with `x-total-count` and `Link`.
+  Scenario counts moved from 11 to 12 resources in `qaa` and 20 to 21 releases for the new fixture.
+- Live check (`npm run contract`): now pages the whole catalog, samples one release per row and form (en_ult,
+  en_ust, hbo_uhb, ugnt, es-419 glt and gst with their readings, en_tn, en_twl, en_tq, en_tw, en_ta, en_obs,
+  sw_obs, en_obs-tn, -sq, -tq, -twl; en_obs-tf reported as a gap), and in CI installs nine real English releases
+  through the kernel on memory adapters and reads TIT 1:1, story 1 and `tw/bible/kt/god`. `CONTRACT_DESCRIBE=1`
+  no longer prints the 322 catalog items; `full` does. Offline here it printed
+  `live: skipped, offline (HTTP 403 ...)`.
+- Not verified: anything against real data (the next CI run is the check); the ingest smoke end to end, which
+  cannot run here; that a catalog `commit_sha` always equals the burrito's `revision` (inference: both come from
+  the tag's commit; catalog installs do not depend on it, peer and file imports do).
+
 ## 2026-09-29 M8 merge of the F2 fixes onto T8, T7b, M7 and the screens (T10 to T12)
 
 Node v22.22.2. Everything below ran in Node through Vitest, the sim, the checks and the Metro bundle;

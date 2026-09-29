@@ -1,6 +1,7 @@
 # Provisional flavors for formation, audio and story images
 
-Status: proposed, awaiting human approval. The code behind it is confined to named constants so that approval,
+Status: proposed, awaiting human approval. Revised 2026-09-29 after GitHub Actions run 36618141715 read the real
+catalog and archives (see "Revision" at the end). The code behind it is confined to named constants so that approval,
 rejection or an upstream pin changes one place.
 
 ## Problem
@@ -26,7 +27,7 @@ carried, and the shape of the catalog the sim serves.
 
    | Row | flavorType | flavor | Ingredients |
    |---|---|---|---|
-   | Theological formation | `parascriptural` | `x-obsMovements` | `ingredients/NN/<section>.md`, one Markdown file per section per story. Required: `key-idea`, `creedal-verse`, `summary`, `observation`, `translation`, `discourse`, `theological`, `journal`. Optional: `drafting`, `checking`, `conclusion`. The file name is the section id, so no parser depends on a localized heading |
+   | Theological formation | `peripheral` | `x-OBSTheologicalFormation` (the catalog's flavor for `en_obs-tf` v4 and `id_obs-tf` v0.1.0; the burrito's is unknown because its `sb` archive returns HTTP 500) | `ingredients/NN/<section>.md`, one Markdown file per section per story. Required: `key-idea`, `creedal-verse`, `summary`, `observation`, `translation`, `discourse`, `theological`, `journal`. Optional: `drafting`, `checking`, `conclusion`. The file name is the section id, so no parser depends on a localized heading |
    | Audio | `scripture` | `audioTranslation` (the Scripture Burrito 1.0 standard flavor) | one `audio/*` file per chapter, `scope` naming the book, e.g. `ingredients/RUT/RUT_001.mp3` |
    | Story images | `peripheral` | `x-obsImages` | `image/*` files under `ingredients/images/`, named by the basename of the CDN URL a frame cites (`obs-en-01-01.jpg`). Language tag `zxx` (no linguistic content) |
 
@@ -34,30 +35,32 @@ carried, and the shape of the catalog the sim serves.
    `ingredients/images/<basename>`, inside its own Open Bible Stories burrito. Corpus resolves a frame's image by
    basename: the language's burrito first, then the Image Pack. The stories row admits these extra ingredients.
 
-3. **Provenance in the metadata.** Scripture Burrito 1.0 fields only, no sidecar and no extension keys:
-   - `identification.primary.dcs["{publisher}/{resource}"] = { revision: <release tag>, timestamp: <released> }`
-   - `identification.upstream.dcs = [{ "{publisher}/{resource}": { revision: <commit sha>, timestamp } }]`, the
-     repository revision the burrito was generated from
+3. **Provenance in the metadata.** Superseded by what `go-rc2sb` v0.5.0 writes (run 36618141715):
+   - `identification.primary.dcs["{owner}/{repo}"] = { revision: <commit sha>, timestamp: <generation time> }`;
+     the key is the repository the RC manifest names and can differ from the catalog's `full_name`
+   - no tag and no `upstream` anywhere; `timestamp` and `meta.dateCreated` are the request time, not the release
    - `idAuthorities.dcs = { id: "https://git.door43.org", name: { en: "Door43 Content Service" } }`
-   - licence: `copyright.shortStatements[0].statement`, `copyright.licenses[0].url`, and `ingredients/LICENSE.md`
+   - licence: `copyright.shortStatements[0].statement` (sometimes naming no licence, sometimes without `mimetype`
+     and `lang`) and `ingredients/LICENSE.md`, which names CC BY-SA 4.0 in every sampled release
    - language: `languages[0].tag`
 
-   `readProvenance(metadata)` in `src/lib/burrito/metadata.ts` reads exactly these. A burrito the app writes for a
-   transfer or a share uses `buildBurrito`, which writes the same fields. Whether `go-rc2sb` writes the tag and the
-   commit in these places is unverified from this environment; the live contract check will show it.
+   `readProvenance(metadata)` in `src/lib/burrito/metadata.ts` reads the commit from `revision` and leaves the tag
+   `unrecorded`. Packs takes publisher, resource, tag and release date from the catalog entry it downloaded, from
+   the peer's offer (which also carries the commit, checked against `revision`), or, for a file, from the catalog
+   release on the phone whose `commit_sha` is the burrito's `revision`. A file the catalog does not list keeps the
+   tag `unrecorded`. `buildBurrito` writes the `go-rc2sb` shape and is used only by fixtures and tests.
 
-4. **Story helps versus book helps.** Both use `x-bcvnotes`, `x-bcvquestions` or `x-bcvarticles`. A burrito whose
-   TSV ingredients carry no book `scope` is Story helps (one TSV, `tn_OBS.tsv` or `sq_OBS.tsv`, references
-   `story:frame`); one whose TSVs name a book is Notes, Word Links or Questions, and each such TSV must name exactly
-   one book. This is the repository's reading of "scoped to stories" and is unconfirmed against a generated
-   `obs-tn` or `obs-sq` archive.
+4. **Story helps versus book helps.** Pinned by run 36618141715 and now in the contract: `obs-tn` is
+   `peripheral/x-obsnotes`, `obs-sq` and `obs-tq` are `peripheral/x-obsquestions`, each one unscoped `OBS.tsv`;
+   `obs-twl` is `parascriptural/x-bcvarticles` with `OBS.tsv` scoped `{OBS: []}`. A `parascriptural` burrito
+   whose TSVs name no book other than `OBS` is Story helps; one whose TSVs name a book is Notes, Word Links or
+   Questions.
 
 5. **The sim's catalog.** `sim/fixtures/catalog.json` is shaped like
    `GET https://git.door43.org/api/v1/catalog/search?stage=prod&topic=tc-ready` (`{ ok, data: [entry] }`, entries
-   with `full_name`, `owner`, `name`, `branch_or_tag_name`, `commit_sha`, `subject`, `language`,
-   `language_title`, `language_direction`, `language_is_gl`, `release`, `repo`, `zipball_url`, `ingredients`,
-   `books`, `stage`, `released`). It is reconstructed from knowledge of the DCS API, because `git.door43.org` is
-   unreachable from the build environment. `sim/fixtures/routes.json` maps each URL the memory Http adapter
+   with every top-level key a real entry has, including `tarbar_url` as DCS spells it, `flavor_type`, `flavor`,
+   `attachment_types` and `repo.catalog`, and `last_updated` beside `data`). It copies entry 2 of the real
+   catalog (run 36618141715). The memory Http adapter serves it in pages of 50 with `x-total-count` and `Link`. `sim/fixtures/routes.json` maps each URL the memory Http adapter
    serves (catalog search, language list, and `https://git.door43.org/{owner}/{repo}/sb/{tag}.zip` per release) to
    a file under `sim/fixtures/`. Formation, audio and images appear in it with subjects `OBS Theological
    Formation`, `Bible Audio` and `OBS Images`, which are provisional in the same way as their flavors.
@@ -80,3 +83,21 @@ carried, and the shape of the catalog the sim serves.
 - **Rule 5**: the exception entry is written in the same commit as the code.
 - No shared root in rule 4 is touched. `src/lib/burrito/` is new, pure and imports only `fflate` and
   `@noble/hashes`.
+
+## Revision after the first real read (2026-09-29, run 36618141715)
+
+- **Formation.** The provisional row now uses the catalog's flavor, `peripheral/x-OBSTheologicalFormation`, and the
+  fixture `en_obs-tf` follows the catalog tag, v4. The `sb` archive for `en_obs-tf` v4 still returns HTTP 500, so
+  the burrito's own flavor and layout remain unknown; the row stays provisional and the file layout above is still
+  the repository's guess.
+- **Audio.** Audio is not in any burrito. DCS publishes it as release assets, one AAC `.m4a` per story
+  (`ahr_obs_v1_NN_128kbps.m4a`, 52 on `OBS-TLF/ahr_obs` v1), flagged by `attachment_types.audio` and `stream`
+  in the catalog entry. The provisional `scripture/audioTranslation` row and its fixture stay as they are, so ST-4
+  and LA-4 keep a scenario, but that row will not be what DCS supplies. **Open question for a human decision:**
+  should an Audio Pack be built from release assets rather than a burrito? That needs (a) a way to carry
+  provenance and the licence for files that have no `metadata.json` (the release's catalog entry, or a burrito the
+  app writes around the downloaded files), (b) an audio row keyed by story rather than by Bible chapter, since
+  `audioEntries` today needs a book scope and would drop OBS audio, and (c) `audio/mp4` in the admitted types.
+  It also reopens ADR 0002 (content enters only as a burrito). Nothing is built until that is decided.
+- **Images.** Unchanged; no image release was sampled.
+
