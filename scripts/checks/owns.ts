@@ -70,3 +70,9 @@ export function ownershipFindings(input: OwnershipInput): string[] {
   }
   return findings;
 }
+
+const copyTableFolders: readonly string[] = ['src/lib/strings'];
+
+export function writerSources(sources: readonly SourceText[]): SourceText[] {
+  return sources.filter((source) => !copyTableFolders.some((folder) => source.path.startsWith(`${folder}/`)));
+}

@@ -7,7 +7,7 @@ import type { Owns } from '@lib/module';
 import { tablesWrittenIn } from '@lib/scope';
 import { migrations } from '@sim/migrations';
 import type { Check } from './check.ts';
-import { ownershipFindings, type OwnsClaim, type SourceText } from './owns.ts';
+import { ownershipFindings, writerSources, type OwnsClaim, type SourceText } from './owns.ts';
 
 const repositoryRoot = join(import.meta.dirname, '..', '..');
 const featuresDirectory = join(repositoryRoot, 'src', 'features');
@@ -88,7 +88,7 @@ const check: Check = {
     const findings = ownershipFindings({
       claims,
       createdTables,
-      sources: sourcesUnder(join(repositoryRoot, 'src')),
+      sources: writerSources(sourcesUnder(join(repositoryRoot, 'src'))),
       tablesWrittenIn,
     });
     if (findings.length > 0) {
