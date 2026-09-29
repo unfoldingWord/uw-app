@@ -93,7 +93,26 @@ describe('strings interface', () => {
     expect(strings.t('state.notDownloaded', 'en', { language: 'Kiswahili' })).toBe(
       'Kiswahili is not on this phone yet.',
     );
-    expect(strings.t('study.nav.reference', 'sw', { book: 'Ruth', chapter: 1 })).toBe('Ruth 1');
+    expect(strings.t('state.notDownloaded', 'sw', { language: 'English' })).toBe(
+      'English bado haiko kwenye simu hii.',
+    );
+  });
+
+  it('uses the shipped Arabic and Russian forms', () => {
+    const strings = createStrings(tables);
+    expect([1, 2, 3, 11, 100].map((count) => strings.plural('languages.resources', count, 'ar'))).toEqual([
+      'مورد واحد',
+      'موردان',
+      '3 موارد',
+      '11 موردًا',
+      '100 مورد',
+    ]);
+    expect([1, 3, 5].map((count) => strings.plural('library.books', count, 'ru'))).toEqual([
+      '1 книга',
+      '3 книги',
+      '5 книг',
+    ]);
+    expect(strings.direction('ar')).toBe('rtl');
   });
 
   it('reports how complete each locale is', () => {
