@@ -10,6 +10,7 @@ export function createPlatformDb(name: string = deviceDatabaseName): Db {
   function database(): Promise<SQLiteDatabase> {
     opened ??= openDatabaseAsync(name).then(async (db) => {
       await db.execAsync('PRAGMA journal_mode = WAL');
+      await db.execAsync('PRAGMA secure_delete = ON');
       return db;
     });
     return opened;

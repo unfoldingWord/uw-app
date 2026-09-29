@@ -3,6 +3,22 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 F2 fixes from review 2: platform adapters
+
+Typecheck and lint only; none of this ran on a phone, and the platform adapters cannot run in Node.
+
+- Audio: a stream URL is resolved through the Http port before the player sees it: a `HEAD` request that
+  follows redirects one hop at a time against the host allowlist (the Http adapter's own rule), and the
+  player is handed the URL it landed on, re-checked against the policy. A refused hop is
+  `http.host-refused`, no connection `http.offline`, a non-2xx answer `audio.unavailable`. Not verified: a
+  host that answers `HEAD` with 405 cannot be streamed this way (the downloaded audio pack still plays),
+  and a host could still redirect the player's own `GET` after a clean `HEAD`; downloading before playing
+  would close that, at the cost of waiting.
+- Files: `list` no longer walks each directory to size it (the port contract now says a directory's
+  `bytes` is 0; `size` still sums one). Start-up garbage collection lists only the directories on the way
+  to a recorded burrito.
+- Db: `PRAGMA secure_delete = ON` after WAL, so a deleted group note is overwritten in the database file.
+
 ## 2026-09-29 F2 fixes from review 2: Corpus memory and full-text search
 
 Node v22.22.2 (SQLite 3.51.2 in `node:sqlite`), in Node through Vitest and the sim. expo-sqlite bundles

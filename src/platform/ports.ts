@@ -19,15 +19,16 @@ export function createPlatformPorts(policy: HostPolicy): Ports {
   const platform = devicePlatform();
   const root = createDeviceRoot();
   const files = createPlatformFiles(root);
+  const http = createPlatformHttp({ policy, files });
   return {
     clock: createPlatformClock(),
     ids: createPlatformIds(),
     files,
     db: createPlatformDb(),
     kv: createPlatformKv(),
-    http: createPlatformHttp({ policy, files }),
+    http,
     transport: createPlatformTransport(platform),
-    audio: createPlatformAudio({ policy, uriOf: root.uriOf }),
+    audio: createPlatformAudio({ policy, http, uriOf: root.uriOf }),
     shareSheet: createPlatformShareSheet({ platform, uriOf: root.uriOf }),
     locale: createPlatformLocale(),
   };
