@@ -161,7 +161,15 @@ describe('journal interface (DX-1)', () => {
 
 describe('kernel composition', () => {
   it('lists its modules in one place, with the tables it owns', () => {
-    expect(Object.keys(kernelModules)).toEqual(['telemetry', 'catalog', 'packs', 'corpus', 'strings']);
+    expect(Object.keys(kernelModules)).toEqual([
+      'telemetry',
+      'catalog',
+      'packs',
+      'corpus',
+      'strings',
+      'transfer',
+      'share',
+    ]);
     expect(coreOwns.tables).toEqual(['schema_migrations', 'journal', 'journal_state', 'journal_baseline']);
   });
 
@@ -183,6 +191,8 @@ describe('kernel composition', () => {
     });
     expect(kernelModules.corpus.owns.directories).toEqual([]);
     expect(kernelModules.corpus.owns.tables).toContain('corpus_burritos');
+    expect(kernelModules.transfer.owns).toEqual({ tables: [], directories: ['transfer'], keys: [] });
+    expect(kernelModules.share.owns).toEqual({ tables: [], directories: ['diagnostics'], keys: [] });
   });
 
   it('runs migrations once, opens the app, and snapshots deterministically', async () => {
@@ -268,6 +278,31 @@ describe('replay (DX-3)', () => {
         { type: 'BookmarkAdded', at: 3, payload: { bookmark: 'a', target: 'story', story: 3 } },
       ]),
     ).toEqual(['b', 'a']);
+  });
+
+  it('plays back only ids a redone command mints again, never one only a verbatim event carries', () => {
+    expect(
+      mintedIds([
+        { type: 'ImportReceived', at: 1, payload: { install: 'install-000001' } },
+        {
+          type: 'TransferFailed',
+          at: 2,
+          payload: { transfer: 'transfer-000002', role: 'receiver', code: 'transfer.peer-lost' },
+        },
+        {
+          type: 'PackInstallStarted',
+          at: 3,
+          payload: {
+            install: 'install-000001',
+            pack: 'language:qab',
+            kind: 'language',
+            source: 'file',
+            language: 'qab',
+            releases: [],
+          },
+        },
+      ]),
+    ).toEqual(['install-000001']);
   });
 
   it('refuses a document that is not a journal', async () => {
