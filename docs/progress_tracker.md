@@ -3,6 +3,60 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 M5 merge of Corpus (T5) onto Catalog, Packs (T4) and F1
+
+Node v22.22.2. Everything below ran in Node through Vitest, the sim and the checks; nothing ran on a phone,
+against expo-sqlite or expo-file-system, and no screen was rendered.
+
+### Merge
+
+`git merge --no-ff t5-corpus` conflicted in five files, each kept from both sides: `src/lib/kernel.ts`
+(telemetry, catalog, packs, corpus), `src/lib/domain/failures.ts` (the pack codes and `corpus.unreadable`),
+`sim/kernel.test.ts` (the registry pin gains corpus; the F1 owns test stays), this file (F1, T4 and T5
+entries), and `scripts/checks/provenance.check.ts` (T5's real check replaces the pending stub). Adapted to
+F1: `DbSession`/`Row` became `DbTransaction`/`DbRow`; five `localeCompare` calls in `src/lib/corpus` became
+`compareText`. `npm install` left `package-lock.json` unchanged (T5 already locked marked and yaml);
+`rm -rf node_modules && npm ci` then installed cleanly.
+
+### The seam
+
+- Corpus `observe`: `PackInstalled` → `ingest({ pack, burritos })`, `PackRemoved` → `drop(pack)`, both
+  returned as promises so the Packs emit resolves only after the corpus shows the change.
+- `RowId` in `src/lib/burrito/flavors.ts` is now `ResourceRow` from `src/lib/domain/pack.ts`, so the event
+  payload is the ingest source with no mapping.
+- `corpus.describe()` and the directory walk in `src/lib/corpus/source.ts` (with its own `packsDirectory`,
+  `packDirectory` and `unrecordedCommit`) are removed. Grepped `describe(`, `describePack`,
+  `packDirectory` and `unrecordedCommit` across `src`, `sim` and `scripts`: the only callers were
+  `sim/corpus-fixtures.ts` and tests.
+- ST-2 to ST-9, `sim/corpus.test.ts` and the provenance check install through `packs.installFromCatalog`
+  (helper `sim/install.ts`) or `packs.install(fromFile)`; removals go through `packs.remove`.
+  `sim/corpus-fixtures.ts` is deleted after a grep found no remaining reference.
+
+### Observed red, then green
+
+| Test | Red | Green |
+|---|---|---|
+| ST-2 after the merge, before the seam | `files.not-found: packs/language/qaa/unfoldingWord/qaa_ult/metadata.json does not exist`: on restart Packs cleans a pack its database never recorded, so content written beside Packs vanished | pass |
+| `corpus follows Packs ... (LA-2, LA-6, LA-7, PRD 8.5)` in `sim/corpus.test.ts` | With the `PackRemoved` reaction removed: `expected [ 'qaa' ] to deeply equal []`, and ST-5 and ST-9 failed. With `PackInstalled` ignored for a pack already ingested: `expected [ 'v1' ] to deeply equal [ 'v2' ]` (update showed the old release) | 12 passed |
+| DX-3 | New assertions: the library device reindexes and opens a passage after its update and removal; the replayed snapshot carries `modules.corpus` with languages qaa and qab and the qaa index, and one notes release | pass |
+
+`npm run verify` exit 0: `Test Files 34 passed`, `Tests 380 passed`; `owns: 6 owners, 16 tables, 10 created
+by migrations, one writer each`; `provenance: 60 corpus values rendered from every pack in the fixture
+catalog, installed through Packs, 164 pieces, each with a CC BY-SA 4.0 licence`; `5 checks, 1 pending, none
+failed`; `sim: 20 scenarios, 20 passed, 0 failed`; `trace: 51 Must requirements, 20 with a scenario, 1 with a
+test only, 30 unproven`; `contract: 20 fixture burritos, 0 failed` (live skipped, offline); `bundle: skipped`.
+
+### Not verified
+
+- A crash between the Packs swap and the `PackInstalled` emit leaves Packs and Corpus disagreeing; Corpus
+  `start` rebuilds from its own tables and does not reconcile against `packs.installed()`.
+- A thrown ingest is caught inside Corpus and recorded as `corpus.unreadable` with the pack; the path is
+  proven only by calling `ingest` directly with an unreadable root, since Packs verifies every burrito first.
+- An update drops a pack's corpus rows and writes the new ones in two transactions (read from
+  `src/lib/corpus/corpus.ts`, not tested for a crash): a crash between them leaves the pack out of the corpus
+  until it is installed again. Async reads wait for a pending ingest; the synchronous `summary()`,
+  `languages()` and snapshot could see the gap, which no test exercises.
+
 ## 2026-09-29 F1 foundation review fixes
 
 Node v22.22.2. Everything below ran in Node through Vitest, the sim, the checks and `expo export`; nothing
