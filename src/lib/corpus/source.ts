@@ -1,13 +1,9 @@
-import { admittedRows, rowFor, type ListedIngredient, type RowId } from '../burrito/flavors';
+import type { ListedIngredient } from '../burrito/flavors';
 import { ingredientsDirectory, metadataPath } from '../burrito/files';
-import { isRecord, readProvenance, type BurritoMetadata, type IngredientEntry } from '../burrito/metadata';
-import type { Provenance } from '../domain/provenance';
+import { isRecord, type BurritoMetadata, type IngredientEntry } from '../burrito/metadata';
+import { unrecordedCommit, type Provenance } from '../domain/provenance';
 import type { Files } from '../ports';
-import type { CorpusBurrito, CorpusSource, Direction } from './types';
-
-export const packsDirectory = 'packs';
-
-export const unrecordedCommit = 'unrecorded';
+import type { CorpusBurrito, Direction } from './types';
 
 export type BurritoReader = {
   readonly root: string;
@@ -97,60 +93,4 @@ export async function openBurrito(files: Files, root: string): Promise<BurritoRe
     pathOf,
     read: (key) => files.readText(pathOf(key)),
   };
-}
-
-export function rowOf(reader: BurritoReader): RowId | undefined {
-  const flavorType = reader.metadata.type.flavorType;
-  return rowFor(admittedRows, flavorType.name, flavorType.flavor.name, reader.ingredients)?.id;
-}
-
-const deepestBurrito = 4;
-
-export function packDirectory(pack: string): string {
-  return `${packsDirectory}/${pack.split(':').join('/')}`;
-}
-
-async function burritoRoots(files: Files, path: string, depth: number): Promise<string[]> {
-  if (await files.exists(`${path}/${metadataPath}`)) {
-    return [path];
-  }
-  if (depth === 0 || !(await files.exists(path))) {
-    return [];
-  }
-  const found: string[] = [];
-  for (const entry of await files.list(path)) {
-    if (entry.kind === 'directory' && !entry.name.startsWith('.')) {
-      found.push(...(await burritoRoots(files, `${path}/${entry.name}`, depth - 1)));
-    }
-  }
-  return found;
-}
-
-function ingredientBytes(metadata: BurritoMetadata): number {
-  return Object.values(metadata.ingredients).reduce(
-    (sum, entry) => sum + (typeof entry.size === 'number' ? entry.size : 0),
-    0,
-  );
-}
-
-export async function describePack(files: Files, pack: string): Promise<CorpusSource> {
-  const burritos: CorpusBurrito[] = [];
-  for (const root of await burritoRoots(files, packDirectory(pack), deepestBurrito)) {
-    const reader = await openBurrito(files, root);
-    const row = reader === undefined ? undefined : rowOf(reader);
-    const read = reader === undefined ? undefined : readProvenance(reader.metadata);
-    if (reader !== undefined && row !== undefined && read !== undefined) {
-      burritos.push({
-        root,
-        row,
-        publisher: read.publisher,
-        resource: read.resource,
-        language: read.language,
-        tag: read.tag,
-        commit: read.commit ?? '',
-        bytes: ingredientBytes(reader.metadata),
-      });
-    }
-  }
-  return { pack, burritos };
 }

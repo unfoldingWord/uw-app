@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { imagePackId, languagePackId } from '@lib/domain/pack';
+import { parseReference } from '@lib/domain/reference';
 import { stableJson } from '@lib/json';
 import { fromFile, fromPeer } from '@lib/packs/source';
 import { fixturePeer } from '../peer';
@@ -49,6 +50,10 @@ export default scenario(
     await library.kernel.catalog.refresh();
     await library.kernel.packs.update(languagePackId('qaa'));
     await library.kernel.packs.remove(imagePackId);
+    await library.kernel.corpus.reindex('qaa');
+    const ruth = parseReference('RUT 1:16');
+    assert.ok(ruth.ok);
+    assert.ok(await library.kernel.corpus.passage(ruth.reference, { language: 'qaa' }));
     await library.restart();
 
     const recorded = library.kernel.snapshot();
@@ -57,6 +62,17 @@ export default scenario(
     assert.ok(rebuilt.ok, rebuilt.ok ? '' : rebuilt.reason);
     assert.deepEqual(rebuilt.divergence, []);
     assert.equal(stableJson(rebuilt.snapshot), stableJson(recorded));
+    const corpus = rebuilt.snapshot.modules.corpus as {
+      languages: Record<string, unknown>;
+      indexes: Record<string, unknown>;
+    };
+    assert.deepEqual(Object.keys(corpus.languages), ['qaa', 'qab'], 'the corpus is part of the snapshot');
+    assert.deepEqual(Object.keys(corpus.indexes), ['qaa']);
+    assert.equal(
+      rebuilt.device.kernel.corpus.summary('qaa').notes?.burritos,
+      1,
+      'the replayed update leaves one release of the notes',
+    );
     assert.deepEqual(
       rebuilt.device.kernel.packs.installed().map((pack) => [pack.pack, pack.source, pack.burritos.length]),
       [

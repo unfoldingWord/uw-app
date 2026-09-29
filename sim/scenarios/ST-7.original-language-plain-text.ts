@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { languagePackId, originalPackId } from '@lib/domain/pack';
 import { parseReference, type Reference } from '@lib/domain/reference';
-import { installFixturePacks } from '../corpus-fixtures';
+import { installFromCatalog } from '../install';
 import { scenario } from '../scenario';
 
 function reference(text: string): Reference {
@@ -18,7 +18,7 @@ export default scenario(
   async (world) => {
     const device = world.device('phone');
     await device.start();
-    await installFixturePacks(device, [languagePackId('qaa')]);
+    await installFromCatalog(device, [languagePackId('qaa')]);
     const corpus = device.kernel.corpus;
     assert.equal(
       corpus.summary('qaa').original,
@@ -27,7 +27,7 @@ export default scenario(
     );
     assert.equal(await corpus.passage(reference('RUT 1:16'), { language: 'hbo' }), undefined);
 
-    await installFixturePacks(device, [originalPackId('hbo'), originalPackId('el-x-koine')]);
+    await installFromCatalog(device, [originalPackId('hbo'), originalPackId('el-x-koine')]);
     const hebrew = await corpus.passage(reference('RUT 1:16'), { language: 'hbo' });
     assert.ok(hebrew);
     assert.equal(hebrew.text.reading, 'original');

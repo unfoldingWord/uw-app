@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { languagePackId } from '@lib/domain/pack';
 import { parseReference, type Reference } from '@lib/domain/reference';
 import type { Passage, Token, WordSpan } from '@lib/corpus/types';
-import { installFixturePacks } from '../corpus-fixtures';
+import { installFromCatalog } from '../install';
 import { scenario } from '../scenario';
 
 function reference(text: string): Reference {
@@ -31,7 +31,7 @@ export default scenario(
   async (world) => {
     const device = world.device('phone');
     await device.start();
-    await installFixturePacks(device, [languagePackId('qaa')]);
+    await installFromCatalog(device, [languagePackId('qaa')]);
     const corpus = device.kernel.corpus;
 
     const ruth = await corpus.passage(reference('RUT 1:16'), { language: 'qaa' });

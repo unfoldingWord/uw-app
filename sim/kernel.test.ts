@@ -181,6 +181,8 @@ describe('kernel composition', () => {
       directories: ['packs'],
       keys: [],
     });
+    expect(kernelModules.corpus.owns.directories).toEqual([]);
+    expect(kernelModules.corpus.owns.tables).toContain('corpus_burritos');
   });
 
   it('runs migrations once, opens the app, and snapshots deterministically', async () => {

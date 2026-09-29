@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { audioPackId, languagePackId } from '@lib/domain/pack';
 import { parseReference, type Reference } from '@lib/domain/reference';
-import { installFixturePacks } from '../corpus-fixtures';
+import { installFromCatalog } from '../install';
 import { scenario } from '../scenario';
 
 function reference(text: string): Reference {
@@ -18,14 +18,14 @@ export default scenario(
   async (world) => {
     const device = world.device('phone');
     await device.start();
-    await installFixturePacks(device, [languagePackId('qaa')]);
+    await installFromCatalog(device, [languagePackId('qaa')]);
     const corpus = device.kernel.corpus;
 
     const silent = await corpus.passage(reference('RUT 1:16'), { language: 'qaa' });
     assert.deepEqual(silent?.audio, [], 'no audio bar before the audio pack is downloaded');
 
-    const audioPack = audioPackId('qaa', 'ult-audio');
-    await installFixturePacks(device, [audioPack]);
+    const audioPack = audioPackId('qaa', 'qaa_ult-audio');
+    await installFromCatalog(device, [audioPack]);
     const ruth = await corpus.passage(reference('RUT 1:16'), { language: 'qaa' });
     assert.equal(ruth?.audio.length, 1);
     const [clip] = ruth?.audio ?? [];

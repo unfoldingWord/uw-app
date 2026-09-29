@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { languagePackId } from '@lib/domain/pack';
-import { installFixturePacks } from '../corpus-fixtures';
+import { installFromCatalog } from '../install';
 import { scenario } from '../scenario';
 
 export default scenario(
@@ -9,7 +9,7 @@ export default scenario(
   async (world) => {
     const device = world.device('phone');
     await device.start();
-    await installFixturePacks(device, [languagePackId('qaa')]);
+    await installFromCatalog(device, [languagePackId('qaa')]);
     const corpus = device.kernel.corpus;
 
     assert.deepEqual(corpus.index('qaa'), { built: false, entries: 0, bytes: 0 });
@@ -72,7 +72,7 @@ export default scenario(
     assert.deepEqual(device.kernel.corpus.index('qaa'), built, 'the index survives a restart');
     assert.equal((await device.kernel.corpus.fullText('famine', 'qaa')).length, famine.length);
 
-    await device.kernel.corpus.drop(languagePackId('qaa'));
+    assert.ok((await device.kernel.packs.remove(languagePackId('qaa'))).ok);
     assert.deepEqual(device.kernel.corpus.index('qaa'), { built: false, entries: 0, bytes: 0 });
     assert.deepEqual(await device.kernel.corpus.fullText('famine', 'qaa'), []);
   },

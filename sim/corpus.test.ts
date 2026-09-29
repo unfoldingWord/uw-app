@@ -1,12 +1,16 @@
-import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { readArchive } from '@lib/burrito/archive';
+import { writeArchive } from '@lib/burrito/archive';
 import { buildBurrito, type BurritoInput } from '@lib/burrito/build';
-import { metadataPath, utf8 } from '@lib/burrito/files';
+import { metadataPath, utf8, type BurritoFiles } from '@lib/burrito/files';
 import { mimeTypes } from '@lib/burrito/flavors';
-import { imagePackId, languagePackId } from '@lib/domain/pack';
+import type { CorpusSource } from '@lib/corpus/types';
+import { imagePackId, languagePackId, type PackId } from '@lib/domain/pack';
 import { parseReference, type Reference } from '@lib/domain/reference';
-import { installFixturePacks, unpackFixturePack, writeBurrito } from './corpus-fixtures';
+import { archiveUrlOf } from '@lib/domain/release';
+import { fromCatalog, fromFile } from '@lib/packs/source';
+import type { InstallOutcome, InstalledPack } from '@lib/packs/types';
+import type { SimDevice } from './device';
+import { installFromCatalog } from './install';
 import { createWorld } from './world';
 
 function reference(text: string): Reference {
@@ -17,11 +21,42 @@ function reference(text: string): Reference {
   return parsed.reference;
 }
 
-async function phone(packs: readonly string[]) {
+async function phone(packs: readonly PackId[]) {
   const device = createWorld().device('phone');
   await device.start();
-  await installFixturePacks(device, packs);
+  await installFromCatalog(device, packs);
   return device;
+}
+
+async function importBurrito(device: SimDevice, root: string, files: BurritoFiles): Promise<InstallOutcome> {
+  const path = `imports/${root}.zip`;
+  await device.adapters.files.mkdir('imports');
+  await device.adapters.files.writeBytes(path, writeArchive(files, { root, mtime: new Date(2026, 8, 1) }));
+  return device.kernel.packs.install(fromFile(path));
+}
+
+function sourceOf(pack: InstalledPack): CorpusSource {
+  return {
+    pack: pack.pack,
+    burritos: pack.burritos.map((burrito) => ({
+      root: burrito.root,
+      row: burrito.row,
+      publisher: burrito.provenance.publisher,
+      resource: burrito.provenance.resource,
+      language: burrito.provenance.language,
+      tag: burrito.provenance.tag,
+      commit: burrito.provenance.commit,
+      bytes: burrito.bytes,
+    })),
+  };
+}
+
+function installedPack(device: SimDevice, pack: PackId): InstalledPack {
+  const found = device.kernel.packs.installed().find((item) => item.pack === pack);
+  if (found === undefined) {
+    throw new Error(`${pack} is not installed`);
+  }
+  return found;
 }
 
 const qaa = languagePackId('qaa');
@@ -97,15 +132,13 @@ describe('corpus stories', () => {
 
   it('prefers unfoldingWord when two publishers carry the stories', async () => {
     const device = await phone([qaa]);
-    const other = languagePackId('qaa-door43');
-    const read = readArchive(
-      new Uint8Array(readFileSync(new URL('./fixtures/sb/Door43-Catalog/qaa_obs/v2.zip', import.meta.url))),
-    );
-    if (!read.ok) {
-      throw new Error(read.message);
+    const other = device.kernel.catalog.all().find((release) => release.publisher === 'Door43-Catalog');
+    expect(other?.resource).toBe('qaa_obs');
+    if (other === undefined) {
+      return;
     }
-    await writeBurrito(device, other, 'Door43-Catalog', read.root, read.files);
-    await device.kernel.corpus.ingest(await device.kernel.corpus.describe(other));
+    const added = await device.kernel.packs.install(fromCatalog([other]), { pack: qaa });
+    expect(added.ok).toBe(true);
     expect(device.kernel.corpus.summary('qaa').stories).toEqual({
       burritos: 2,
       items: 6,
@@ -185,11 +218,8 @@ describe('corpus contents', () => {
 describe('corpus passages beyond the fixture language', () => {
   it('reads a range across chapters, and a passage with no helps installed', async () => {
     const device = await phone([]);
-    const pack = languagePackId('qac');
-    await writeBurrito(
+    const imported = await importBurrito(
       device,
-      pack,
-      'unfoldingWord',
       'qac_ult',
       burrito({
         resource: 'qac_ult',
@@ -205,7 +235,7 @@ describe('corpus passages beyond the fixture language', () => {
         ],
       }),
     );
-    await device.kernel.corpus.ingest(await device.kernel.corpus.describe(pack));
+    expect(imported.ok && imported.pack.pack).toBe(languagePackId('qac'));
     const passage = await device.kernel.corpus.passage(reference('RUT 1:22-2:2'), { language: 'qac' });
     expect(passage?.reference).toBe('RUT 1:22-2:2');
     expect(passage?.text.verses.map((verse) => `${verse.chapter}:${verse.verse}`)).toEqual([
@@ -227,16 +257,16 @@ describe('corpus passages beyond the fixture language', () => {
     expect(contents.texts[0]?.books).toEqual([{ code: 'RUT', chapters: [1, 2, 3, 4] }]);
   });
 
-  it('ignores a flavor outside the contract and an ingredient key that leaves the burrito', async () => {
+  it('never sees a flavor outside the contract, and ignores an ingredient key that leaves the burrito', async () => {
     const device = await phone([]);
-    const pack = languagePackId('qac');
-    await writeBurrito(
+    const odd = await importBurrito(
       device,
-      pack,
-      'unfoldingWord',
       'qac_odd',
       burrito({ resource: 'qac_odd', flavorType: 'peripheral', flavor: 'x-unknown', ingredients: [] }),
     );
+    expect(odd.ok).toBe(false);
+    expect(device.kernel.corpus.languages()).toEqual([]);
+
     const text = burrito({
       resource: 'qac_ult',
       flavorType: 'scripture',
@@ -250,18 +280,30 @@ describe('corpus passages beyond the fixture language', () => {
         },
       ],
     });
-    const metadata = JSON.parse(new TextDecoder().decode(text.get(metadataPath))) as {
+    expect((await importBurrito(device, 'qac_ult', text)).ok).toBe(true);
+    const pack = installedPack(device, languagePackId('qac'));
+    const [installed] = pack.burritos;
+    expect(installed?.row).toBe('text');
+    if (installed === undefined) {
+      return;
+    }
+    const metadata = JSON.parse(
+      await device.adapters.files.readText(`${installed.root}/${metadataPath}`),
+    ) as {
       ingredients: Record<string, { scope?: Record<string, string[]> }>;
     };
     const listed = metadata.ingredients['ingredients/08-RUT.usfm'];
     metadata.ingredients['ingredients/../../../secret/07-JDG.usfm'] = { ...listed, scope: { JDG: ['1'] } };
-    const tampered = new Map(text);
-    tampered.set(metadataPath, utf8(JSON.stringify(metadata)));
-    await writeBurrito(device, pack, 'unfoldingWord', 'qac_ult', tampered);
+    await device.adapters.files.writeText(`${installed.root}/${metadataPath}`, JSON.stringify(metadata));
+    await device.adapters.files.mkdir('packs/language/qac/secret');
+    await device.adapters.files.writeText(
+      'packs/language/qac/secret/07-JDG.usfm',
+      String.raw`\id JDG
+\c 1
+\v 1 Outside.`,
+    );
 
-    const source = await device.kernel.corpus.describe(pack);
-    expect(source.burritos.map((item) => [item.row, item.resource])).toEqual([['text', 'qac_ult']]);
-    await device.kernel.corpus.ingest(source);
+    await device.kernel.corpus.ingest(sourceOf(pack));
     expect(device.kernel.corpus.summary('qac')).toEqual({
       literal: { burritos: 1, items: 1, publishers: ['unfoldingWord'] },
     });
@@ -275,7 +317,7 @@ describe('corpus passages beyond the fixture language', () => {
       'packs/language/qad/unfoldingWord/qad_ult/metadata.json',
       'not json',
     );
-    const [good] = (await device.kernel.corpus.describe(qaa)).burritos;
+    const [good] = sourceOf(installedPack(device, qaa)).burritos;
     expect(good).toBeDefined();
     if (good === undefined) {
       return;
@@ -294,7 +336,7 @@ describe('corpus passages beyond the fixture language', () => {
 describe('corpus packs and replay', () => {
   it('forgets a dropped pack in queries, titles and the snapshot, and ingests again idempotently', async () => {
     const device = await phone([qaa]);
-    await installFixturePacks(device, [qaa]);
+    await device.kernel.corpus.ingest(sourceOf(installedPack(device, qaa)));
     expect(device.kernel.corpus.summary('qaa').words).toEqual({
       burritos: 1,
       items: 6,
@@ -319,9 +361,88 @@ describe('corpus packs and replay', () => {
     }
     const second = createWorld().device('replayed');
     await second.start();
-    await unpackFixturePack(second, qaa);
-    await second.kernel.corpus.ingest(await second.kernel.corpus.describe(qaa));
+    await installFromCatalog(second, [qaa]);
     expect(await second.kernel.redo(started)).toBe('redone');
     expect(second.kernel.corpus.index('qaa')).toEqual(device.kernel.corpus.index('qaa'));
+  });
+});
+
+async function notesReleases(device: SimDevice): Promise<string[]> {
+  const rows = await device.adapters.db.all(
+    "SELECT provenance FROM corpus_burritos WHERE provenance LIKE '%qaa_tn%' ORDER BY root",
+  );
+  return rows.map((row) => {
+    const provenance = JSON.parse(String(row.provenance)) as { resource: string; tag: string };
+    return `${provenance.resource}@${provenance.tag}`;
+  });
+}
+
+describe('corpus follows Packs through PackInstalled and PackRemoved (LA-2, LA-6, LA-7, PRD 8.5)', () => {
+  it('reads what Packs installs, only the newest release after an update, nothing after a removal, and rebuilds from its own tables', async () => {
+    const world = createWorld();
+    const device = world.device('phone');
+    await device.start();
+    const ruth = reference('RUT 1:16');
+
+    await installFromCatalog(device, [qaa]);
+    const installed = await device.kernel.corpus.passage(ruth, { language: 'qaa' });
+    expect(installed?.text.provenance.resource).toBe('qaa_ult');
+    expect(installed?.notes.map((note) => note.provenance.tag)).toEqual(['v1']);
+    expect(await notesReleases(device)).toEqual(['qaa_tn@v1']);
+
+    world.fixtures.publish('unfoldingWord', 'qaa_tn', 'v2');
+    await device.kernel.catalog.refresh();
+    const updated = await device.kernel.packs.update(qaa);
+    expect(updated.ok).toBe(true);
+    const after = await device.kernel.corpus.passage(ruth, { language: 'qaa' });
+    expect(after?.notes.map((note) => note.provenance.tag)).toEqual(['v2']);
+    expect(await notesReleases(device)).toEqual(['qaa_tn@v2']);
+    expect(device.kernel.corpus.summary('qaa').notes).toEqual({
+      burritos: 1,
+      items: expect.any(Number) as number,
+      publishers: ['unfoldingWord'],
+    });
+
+    const before = device.kernel.corpus.summary('qaa');
+    const snapshot = device.kernel.snapshot().modules.corpus;
+    const lastSeq = device.kernel.journal.stats().lastSeq;
+    await device.restart();
+    expect(
+      device.kernel.journal
+        .read(lastSeq)
+        .map((entry) => entry.type)
+        .filter((type) => type !== 'AppOpened'),
+    ).toEqual([]);
+    expect(device.kernel.corpus.summary('qaa')).toEqual(before);
+    expect(device.kernel.snapshot().modules.corpus).toEqual(snapshot);
+    const restarted = await device.kernel.corpus.passage(ruth, { language: 'qaa' });
+    expect(restarted?.notes).toEqual(after?.notes);
+
+    expect((await device.kernel.packs.remove(qaa)).ok).toBe(true);
+    expect(device.kernel.corpus.languages()).toEqual([]);
+    expect(await device.kernel.corpus.passage(ruth, { language: 'qaa' })).toBeUndefined();
+    expect(await device.adapters.db.all('SELECT root FROM corpus_burritos')).toEqual([]);
+    await device.restart();
+    expect(device.kernel.corpus.languages()).toEqual([]);
+  });
+
+  it('keeps the installed release whole when an update fails', async () => {
+    const world = createWorld();
+    const device = world.device('phone');
+    await device.start();
+    await installFromCatalog(device, [qaa]);
+    world.fixtures.publish('unfoldingWord', 'qaa_tn', 'v2');
+    await device.kernel.catalog.refresh();
+    const newer = device.kernel.catalog.all().find((release) => release.resource === 'qaa_tn');
+    expect(newer?.tag).toBe('v2');
+    if (newer === undefined) {
+      return;
+    }
+    device.adapters.http.script(archiveUrlOf(newer), 'timeout');
+    const failed = await device.kernel.packs.update(qaa);
+    expect(!failed.ok && failed.code).toBe('http.timeout');
+    const passage = await device.kernel.corpus.passage(reference('RUT 1:16'), { language: 'qaa' });
+    expect(passage?.notes.map((note) => note.provenance.tag)).toEqual(['v1']);
+    expect(await notesReleases(device)).toEqual(['qaa_tn@v1']);
   });
 });

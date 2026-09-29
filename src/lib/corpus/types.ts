@@ -1,4 +1,4 @@
-import type { RowId } from '../burrito/flavors';
+import type { PackId, ResourceRow } from '../domain/pack';
 import type { Provenance } from '../domain/provenance';
 
 export type Sourced = { readonly provenance: Provenance };
@@ -26,7 +26,7 @@ export type CorpusKind =
 
 export type CorpusBurrito = {
   readonly root: string;
-  readonly row: RowId;
+  readonly row: ResourceRow;
   readonly publisher: string;
   readonly resource: string;
   readonly language: string;
@@ -36,7 +36,7 @@ export type CorpusBurrito = {
 };
 
 export type CorpusSource = {
-  readonly pack: string;
+  readonly pack: PackId;
   readonly burritos: readonly CorpusBurrito[];
 };
 

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import type { Block, Inline, LinkTarget } from '@lib/corpus/types';
 import { languagePackId } from '@lib/domain/pack';
 import { parseReference } from '@lib/domain/reference';
-import { installFixturePacks } from '../corpus-fixtures';
+import { installFromCatalog } from '../install';
 import { scenario } from '../scenario';
 
 type FoundLink = { text: string; target: LinkTarget | undefined };
@@ -40,7 +40,7 @@ export default scenario(
   async (world) => {
     const device = world.device('phone');
     await device.start();
-    await installFixturePacks(device, [languagePackId('qaa')]);
+    await installFromCatalog(device, [languagePackId('qaa')]);
     const corpus = device.kernel.corpus;
 
     const love = await corpus.article('tw/bible/kt/love', 'qaa');

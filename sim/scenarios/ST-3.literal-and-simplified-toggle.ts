@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
+import { writeArchive } from '@lib/burrito/archive';
 import { buildBurrito } from '@lib/burrito/build';
 import { utf8 } from '@lib/burrito/files';
 import { mimeTypes } from '@lib/burrito/flavors';
 import { languagePackId, originalPackId } from '@lib/domain/pack';
 import { parseReference } from '@lib/domain/reference';
-import { installFixturePacks, writeBurrito } from '../corpus-fixtures';
+import { fromFile } from '@lib/packs/source';
+import { installFromCatalog } from '../install';
 import { scenario } from '../scenario';
 
 export default scenario(
@@ -13,7 +15,7 @@ export default scenario(
   async (world) => {
     const device = world.device('phone');
     await device.start();
-    await installFixturePacks(device, [languagePackId('qaa'), originalPackId('hbo')]);
+    await installFromCatalog(device, [languagePackId('qaa'), originalPackId('hbo')]);
     const corpus = device.kernel.corpus;
     const parsed = parseReference('Ruth 1:16');
     assert.ok(parsed.ok);
@@ -38,39 +40,39 @@ export default scenario(
     assert.equal(hebrew?.text.reading, 'original');
     assert.deepEqual(hebrew?.availableTexts, [], 'no toggle where neither reading exists');
 
-    const literalOnly = languagePackId('qac');
-    await writeBurrito(
-      device,
-      literalOnly,
-      'unfoldingWord',
-      'qac_ult',
-      buildBurrito({
-        publisher: 'unfoldingWord',
-        resource: 'qac_ult',
-        tag: 'v1',
-        commit: 'c0ffee',
-        released: '2026-09-01T00:00:00Z',
-        dateCreated: '2026-09-01T00:00:00Z',
-        generator: { softwareName: 'ST-3', softwareVersion: '1' },
-        language: { tag: 'qac', name: { en: 'Fixture language C' } },
-        name: { en: 'Literal text only' },
-        abbreviation: { en: 'ult' },
-        flavorType: 'scripture',
-        flavor: 'textTranslation',
-        licence: { statement: 'Released under CC BY-SA 4.0', text: 'CC BY-SA 4.0' },
-        ingredients: [
-          {
-            path: '08-RUT.usfm',
-            bytes: utf8(String.raw`\id RUT
+    const literalOnly = buildBurrito({
+      publisher: 'unfoldingWord',
+      resource: 'qac_ult',
+      tag: 'v1',
+      commit: 'c0ffee',
+      released: '2026-09-01T00:00:00Z',
+      dateCreated: '2026-09-01T00:00:00Z',
+      generator: { softwareName: 'ST-3', softwareVersion: '1' },
+      language: { tag: 'qac', name: { en: 'Fixture language C' } },
+      name: { en: 'Literal text only' },
+      abbreviation: { en: 'ult' },
+      flavorType: 'scripture',
+      flavor: 'textTranslation',
+      licence: { statement: 'Released under CC BY-SA 4.0', text: 'CC BY-SA 4.0' },
+      ingredients: [
+        {
+          path: '08-RUT.usfm',
+          bytes: utf8(String.raw`\id RUT
 \c 1
 \v 16 Ruth answered.`),
-            mimeType: mimeTypes.usfm,
-            scope: { RUT: ['1'] },
-          },
-        ],
-      }),
+          mimeType: mimeTypes.usfm,
+          scope: { RUT: ['1'] },
+        },
+      ],
+    });
+    await device.adapters.files.mkdir('imports');
+    await device.adapters.files.writeBytes(
+      'imports/qac_ult.zip',
+      writeArchive(literalOnly, { root: 'qac_ult', mtime: new Date(2026, 8, 1) }),
     );
-    await corpus.ingest(await corpus.describe(literalOnly));
+    const imported = await device.kernel.packs.install(fromFile('imports/qac_ult.zip'));
+    assert.ok(imported.ok, imported.ok ? '' : imported.code);
+    assert.equal(imported.pack.pack, languagePackId('qac'));
     const single = await corpus.passage(parsed.reference, { language: 'qac' });
     assert.equal(single?.text.reading, 'literal');
     assert.equal(single?.text.verses[0]?.text, 'Ruth answered.');

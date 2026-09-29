@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { audioPackId, languagePackId } from '@lib/domain/pack';
-import { installFixturePacks } from '../corpus-fixtures';
+import { installFromCatalog } from '../install';
 import { scenario } from '../scenario';
 
 const unfoldingWord = ['unfoldingWord'];
@@ -14,10 +14,10 @@ export default scenario(
     const corpus = device.kernel.corpus;
     assert.deepEqual(corpus.summary('qaa'), {}, 'nothing is counted before a pack is installed');
 
-    await installFixturePacks(device, [
+    await installFromCatalog(device, [
       languagePackId('qaa'),
       languagePackId('qab'),
-      audioPackId('qaa', 'ult-audio'),
+      audioPackId('qaa', 'qaa_ult-audio'),
     ]);
 
     const count = (items: number) => ({ burritos: 1, items, publishers: unfoldingWord });
@@ -48,7 +48,7 @@ export default scenario(
       'the snapshot carries the corpus summary',
     );
 
-    await corpus.drop(languagePackId('qab'));
+    assert.ok((await device.kernel.packs.remove(languagePackId('qab'))).ok);
     assert.deepEqual(corpus.summary('qab'), {});
   },
 );

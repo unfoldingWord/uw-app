@@ -11,7 +11,7 @@ import { academyOrder, audioClips, movementStories, stories } from './loaders';
 import { assemblePassage } from './passage';
 import { assembleArticle, assembleMovements, assembleStory } from './reading';
 import { canonical, referenceQuery, titleHits } from './search';
-import { describePack, openBurrito } from './source';
+import { openBurrito } from './source';
 import {
   clearIndex,
   corpusTables,
@@ -39,7 +39,6 @@ import type {
 } from './types';
 
 export type CorpusApi = {
-  describe(pack: string): Promise<CorpusSource>;
   ingest(source: CorpusSource): Promise<void>;
   drop(pack: string): Promise<void>;
   languages(): readonly string[];
@@ -240,7 +239,6 @@ export const corpusModule = defineModule<CorpusApi>({
       });
 
     const api: CorpusApi = {
-      describe: (pack) => describePack(files, pack),
       ingest,
       drop: (pack) => serial(() => dropPack(pack)),
       languages: () => contentLanguages(library),
@@ -322,6 +320,15 @@ export const corpusModule = defineModule<CorpusApi>({
         for (const row of await loadIndexes(db)) {
           library.setIndex(row);
         }
+      },
+      observe(entry) {
+        if (entry.type === 'PackInstalled') {
+          return ingest({ pack: entry.payload.pack, burritos: entry.payload.burritos });
+        }
+        if (entry.type === 'PackRemoved') {
+          return serial(() => dropPack(entry.payload.pack));
+        }
+        return undefined;
       },
       snapshot(): JsonValue {
         const languages = Object.fromEntries(

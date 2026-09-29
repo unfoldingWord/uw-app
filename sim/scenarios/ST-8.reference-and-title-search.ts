@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { languagePackId } from '@lib/domain/pack';
-import { installFixturePacks } from '../corpus-fixtures';
+import { installFromCatalog } from '../install';
 import { scenario } from '../scenario';
 
 export default scenario(
@@ -9,7 +9,7 @@ export default scenario(
   async (world) => {
     const device = world.device('phone');
     await device.start();
-    await installFixturePacks(device, [languagePackId('qaa')]);
+    await installFromCatalog(device, [languagePackId('qaa')]);
     const corpus = device.kernel.corpus;
 
     const byName = await corpus.search('Ruth 1:16', 'qaa');

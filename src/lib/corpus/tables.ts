@@ -1,4 +1,4 @@
-import type { RowId } from '../burrito/flavors';
+import { resourceRows, type PackId, type ResourceRow } from '../domain/pack';
 import { isProvenance, type Provenance } from '../domain/provenance';
 import type { Db, DbTransaction, DbRow } from '../ports';
 import type { CorpusKind, Direction, IndexStatus, TitleKind } from './types';
@@ -15,8 +15,8 @@ export const corpusTables: readonly string[] = [
 
 export type Entry = {
   readonly root: string;
-  readonly pack: string;
-  readonly rowId: RowId;
+  readonly pack: PackId;
+  readonly rowId: ResourceRow;
   readonly kind: CorpusKind;
   readonly language: string;
   readonly direction: Direction;
@@ -57,13 +57,14 @@ function parsed(json: string): unknown {
 function entryOf(row: DbRow): Entry | undefined {
   const provenance = parsed(text(row, 'provenance'));
   const books = parsed(text(row, 'books'));
-  if (!isProvenance(provenance) || !Array.isArray(books)) {
+  const rowId = resourceRows.find((candidate) => candidate === text(row, 'row'));
+  if (!isProvenance(provenance) || !Array.isArray(books) || rowId === undefined) {
     return undefined;
   }
   return {
     root: text(row, 'root'),
     pack: text(row, 'pack'),
-    rowId: text(row, 'row') as RowId,
+    rowId,
     kind: text(row, 'kind') as CorpusKind,
     language: text(row, 'language'),
     direction: text(row, 'direction') === 'rtl' ? 'rtl' : 'ltr',

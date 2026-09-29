@@ -1,7 +1,7 @@
 import { isProvenance } from '@lib/domain/provenance';
 import { parseReference } from '@lib/domain/reference';
-import { fixturePacks, installFixturePacks } from '@sim/corpus-fixtures';
 import type { SimDevice } from '@sim/device';
+import { catalogPacks, installFromCatalog } from '@sim/install';
 import { createWorld } from '@sim/world';
 import type { Check, CheckOutcome } from './check.ts';
 
@@ -113,7 +113,8 @@ async function render(device: SimDevice): Promise<Rendered[]> {
 export async function provenanceFindings(): Promise<{ findings: string[]; values: number; sourced: number }> {
   const device = createWorld().device('provenance');
   await device.start();
-  await installFixturePacks(device, Object.keys(fixturePacks));
+  await device.kernel.catalog.refresh();
+  await installFromCatalog(device, catalogPacks(device));
   const findings: string[] = [];
   let sourced = 0;
   const rendered = await render(device);
@@ -147,7 +148,7 @@ const check: Check = {
     return findings.length === 0
       ? {
           status: 'pass',
-          summary: `${values} corpus values rendered from every fixture pack, ${sourced} pieces, each with a CC BY-SA 4.0 licence`,
+          summary: `${values} corpus values rendered from every pack in the fixture catalog, installed through Packs, ${sourced} pieces, each with a CC BY-SA 4.0 licence`,
         }
       : { status: 'fail', findings };
   },

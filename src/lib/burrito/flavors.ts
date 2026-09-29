@@ -1,16 +1,7 @@
+import type { ResourceRow } from '../domain/pack';
 import type { IngredientEntry } from './metadata';
 
-export type RowId =
-  | 'text'
-  | 'notes'
-  | 'wordLinks'
-  | 'questions'
-  | 'articles'
-  | 'stories'
-  | 'storyHelps'
-  | 'formation'
-  | 'audio'
-  | 'images';
+export type RowId = ResourceRow;
 
 type RowStatus = 'pinned' | 'provisional';
 
