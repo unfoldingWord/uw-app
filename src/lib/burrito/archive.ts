@@ -61,7 +61,7 @@ export function mayHoldBurrito(path: string): boolean {
   );
 }
 
-function joined(parts: readonly Uint8Array[]): Uint8Array {
+export function joined(parts: readonly Uint8Array[]): Uint8Array {
   const total = parts.reduce((sum, part) => sum + part.byteLength, 0);
   const bytes = new Uint8Array(total);
   let offset = 0;

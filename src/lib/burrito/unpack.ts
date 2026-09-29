@@ -2,7 +2,14 @@ import { md5 } from '@noble/hashes/legacy.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { Unzip, UnzipInflate } from 'fflate';
 import type { Files } from '../ports';
-import { defaultArchiveLimits, isUnsafePath, mayHoldBurrito, rootOf, type ArchiveLimits } from './archive';
+import {
+  defaultArchiveLimits,
+  isUnsafePath,
+  joined,
+  mayHoldBurrito,
+  rootOf,
+  type ArchiveLimits,
+} from './archive';
 import { fromUtf8, metadataPath } from './files';
 import { isLicenceFile, type BurritoFacts, type IngredientFact } from './validate';
 
@@ -33,17 +40,6 @@ function kept(path: string): boolean {
 function parentOf(path: string): string {
   const index = path.lastIndexOf('/');
   return index === -1 ? '' : path.slice(0, index);
-}
-
-function joined(parts: readonly Uint8Array[]): Uint8Array {
-  const total = parts.reduce((sum, part) => sum + part.byteLength, 0);
-  const bytes = new Uint8Array(total);
-  let offset = 0;
-  for (const part of parts) {
-    bytes.set(part, offset);
-    offset += part.byteLength;
-  }
-  return bytes;
 }
 
 export type UnpackOptions = { readonly into?: string; readonly limits?: ArchiveLimits };

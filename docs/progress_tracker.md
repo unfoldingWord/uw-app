@@ -3,6 +3,21 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 F2 fixes from review 2: what was fixed elsewhere, skipped or only considered
+
+- Skipped, left to the release-wiring task as asked: finding 12 (`app.config` permissions and backups:
+  expo-audio's microphone and foreground-service defaults, iCloud and Android backup of `packs/` and
+  `uw.db`) and finding 13 (a failed boot leaves a blank screen in `app/_layout.tsx`).
+- Considered, not changed: coarser timestamps for the reading trail in an exported journal. Replay (DX-3)
+  rebuilds a device to the same snapshot from the recorded `at` of every event, so coarsening only the
+  export breaks that equality, and coarsening at record time changes every module's time facts. The
+  journal leaves the device only when a leader shares it (DX-2), and no event carries typed text. A
+  proposal is the place to trade this off; `PRAGMA secure_delete` for notes is done.
+- Duplication: the unfoldingWord-first order, `isRecord` in Catalog, the reading of a corpus kind and the
+  byte joining in `src/lib/burrito` each have one home now. `isRecord` in `src/lib/telemetry/folds.ts` and
+  `joined` in `src/platform/http.ts` remain: Telemetry is being changed on the Transfer branch, and the
+  platform layer may not import lib values.
+
 ## 2026-09-29 F2 fixes from review 2: platform adapters
 
 Typecheck and lint only; none of this ran on a phone, and the platform adapters cannot run in Node.
