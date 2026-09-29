@@ -1,4 +1,5 @@
 import Stack from 'expo-router/stack';
+import { hide, preventAutoHideAsync } from 'expo-splash-screen';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -7,38 +8,46 @@ import { createOnboardingService } from '@features/onboarding/service';
 import { createSettingsService, type Appearance } from '@features/settings/service';
 import { createKernel, hostOf, isAllowedUrl, type Kernel } from '@lib/kernel';
 import { reducedBlurByDefault } from '@platform/display';
+import { createPlatformLocale } from '@platform/locale';
 import { discoverMigrations } from '@platform/migrations';
 import { createPlatformPorts } from '@platform/ports';
 import { useThemeFonts } from '@shared/fonts';
-import { KernelProvider, serviceOf } from '@shared/kernel';
+import { createBoot, KernelProvider, serviceOf, type BootState } from '@shared/kernel';
 import { ThemeProvider, type Scheme } from '@shared/theme';
+import { BootFailure } from '@shared/ui';
 
-let booting: Promise<Kernel> | undefined;
+void preventAutoHideAsync().catch(() => false);
 
-function bootKernel(): Promise<Kernel> {
-  booting ??= (async () => {
-    const ports = createPlatformPorts({ permits: (url) => isAllowedUrl(url), hostOf });
-    const kernel = createKernel(ports, { migrations: discoverMigrations() });
-    await kernel.start();
-    return kernel;
-  })();
-  return booting;
+async function openKernel(): Promise<Kernel> {
+  const ports = createPlatformPorts({ permits: (url) => isAllowedUrl(url), hostOf });
+  const kernel = createKernel(ports, { migrations: discoverMigrations() });
+  await kernel.start();
+  return kernel;
 }
 
-function useBootedKernel(): Kernel | undefined {
-  const [kernel, setKernel] = useState<Kernel | undefined>(undefined);
+const boot = createBoot(openKernel);
+
+function useBoot(): BootState<Kernel> {
+  const [state, setState] = useState<BootState<Kernel>>(boot.state);
   useEffect(() => {
-    let mounted = true;
-    void bootKernel().then((booted) => {
-      if (mounted) {
-        setKernel(booted);
-      }
-    });
-    return () => {
-      mounted = false;
-    };
+    const stop = boot.subscribe(setState);
+    setState(boot.state());
+    void boot.start();
+    return stop;
   }, []);
-  return kernel;
+  return state;
+}
+
+function deviceLocaleTags(): string[] {
+  try {
+    return [createPlatformLocale().current().tag];
+  } catch {
+    return [];
+  }
+}
+
+function retryBoot(): Promise<BootState<Kernel>> {
+  return boot.retry();
 }
 
 function useAppearance(kernel: Kernel | undefined): Appearance {
@@ -101,12 +110,27 @@ function AppShell({ appearance, children }: { appearance: Appearance; children?:
 }
 
 export default function RootLayout() {
-  const kernel = useBootedKernel();
+  const state = useBoot();
+  const kernel = state.status === 'ready' ? state.booted : undefined;
   const appearance = useAppearance(kernel);
   const needed = useOnboardingNeeded(kernel);
   const fonts = useThemeFonts();
-  if (kernel === undefined || (!fonts.loaded && fonts.error === null)) {
+  const firstBoot = state.status === 'booting' && state.attempt <= 1;
+  const settled = !firstBoot && (fonts.loaded || fonts.error !== null);
+  useEffect(() => {
+    if (settled) {
+      hide();
+    }
+  }, [settled]);
+  if (!settled) {
     return null;
+  }
+  if (kernel === undefined) {
+    return (
+      <AppShell appearance={appearance}>
+        <BootFailure localeTags={deviceLocaleTags()} onRetry={retryBoot} />
+      </AppShell>
+    );
   }
   return (
     <KernelProvider kernel={kernel}>

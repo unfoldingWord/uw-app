@@ -483,4 +483,5 @@ export const nl: LocaleTable = {
   'search.fullText.inSettings': 'Zet het aan in Instellingen. De index blijft op deze telefoon.',
   'study.frame.picture': 'Afbeelding bij beeld {number}',
   'transfer.app.ready': 'De app staat nu op deze telefoon ({size}) en is klaar om te installeren.',
+  'failure.boot': 'De app kon zich niet klaarmaken op deze telefoon. Probeer het zo meteen opnieuw.',
 };

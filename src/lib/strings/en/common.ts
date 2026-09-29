@@ -39,4 +39,5 @@ export const common = {
   'state.nothingPublished': 'Nothing is published in {language} yet.',
   'state.checking': 'Checking for updates',
   'state.upToDate': 'Everything on this phone is up to date.',
+  'failure.boot': 'The app could not get ready on this phone. Try again in a moment.',
 } as const;

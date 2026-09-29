@@ -469,4 +469,5 @@ export const ur: LocaleTable = {
   'search.fullText.inSettings': 'اسے ترتیبات میں آن کریں۔ فہرست اسی فون پر رہتی ہے۔',
   'study.frame.picture': 'منظر {number} کی تصویر',
   'transfer.app.ready': 'ایپ اس فون پر آ گئی ہے ({size}) اور انسٹال کے لیے تیار ہے۔',
+  'failure.boot': 'ایپ اس فون پر تیار نہیں ہو سکی۔ تھوڑی دیر بعد دوبارہ کوشش کریں۔',
 };

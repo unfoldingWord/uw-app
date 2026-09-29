@@ -467,4 +467,5 @@ export const bn: LocaleTable = {
   'search.fullText.inSettings': 'সেটিংসে এটি চালু করুন। সূচিটি এই ফোনেই থাকে।',
   'study.frame.picture': 'দৃশ্য {number}-এর ছবি',
   'transfer.app.ready': 'অ্যাপটি এই ফোনে এসেছে ({size}) এবং ইনস্টলের জন্য প্রস্তুত।',
+  'failure.boot': 'অ্যাপটি এই ফোনে প্রস্তুত হতে পারেনি। একটু পরে আবার চেষ্টা করুন।',
 };

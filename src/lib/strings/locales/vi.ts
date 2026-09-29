@@ -446,4 +446,5 @@ export const vi: LocaleTable = {
   'search.fullText.inSettings': 'Bật trong Cài đặt. Chỉ mục nằm trên điện thoại này.',
   'study.frame.picture': 'Hình cho khung {number}',
   'transfer.app.ready': 'Ứng dụng đã đến điện thoại này ({size}) và sẵn sàng để cài đặt.',
+  'failure.boot': 'Ứng dụng chưa thể chuẩn bị trên điện thoại này. Hãy thử lại sau giây lát.',
 };

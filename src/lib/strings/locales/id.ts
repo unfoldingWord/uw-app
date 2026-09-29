@@ -455,4 +455,5 @@ export const id: LocaleTable = {
   'search.fullText.inSettings': 'Aktifkan di Pengaturan. Indeksnya tetap di ponsel ini.',
   'study.frame.picture': 'Gambar untuk bingkai {number}',
   'transfer.app.ready': 'Aplikasi sudah sampai di ponsel ini ({size}) dan siap dipasang.',
+  'failure.boot': 'Aplikasi belum bisa bersiap di ponsel ini. Coba lagi sebentar lagi.',
 };

@@ -433,4 +433,5 @@ export const zhHans: LocaleTable = {
   'search.fullText.inSettings': '在设置中开启。索引保存在这部手机上。',
   'study.frame.picture': '第 {number} 幅的插图',
   'transfer.app.ready': '应用已到达这部手机（{size}），可以安装了。',
+  'failure.boot': '应用未能在这部手机上准备好。请稍后再试。',
 };

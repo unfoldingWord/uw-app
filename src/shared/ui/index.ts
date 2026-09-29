@@ -29,3 +29,5 @@ export { ThemedText, toneColor } from './ThemedText';
 export type { TextFamily, TextTone, ThemedTextProps } from './ThemedText';
 export { useAsyncValue, useChanges } from './useAsyncValue';
 export type { AsyncValue, AsyncValueOptions } from './useAsyncValue';
+export { BootFailure } from './BootFailure';
+export type { BootFailureProps } from './BootFailure';

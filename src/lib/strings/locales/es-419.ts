@@ -491,4 +491,5 @@ export const es419: LocaleTable = {
   'search.fullText.inSettings': 'Actívalo en Ajustes. El índice se queda en este teléfono.',
   'study.frame.picture': 'Imagen del cuadro {number}',
   'transfer.app.ready': 'La aplicación llegó a este teléfono ({size}) y está lista para instalar.',
+  'failure.boot': 'La aplicación no pudo prepararse en este teléfono. Intenta de nuevo en un momento.',
 };
