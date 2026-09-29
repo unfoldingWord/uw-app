@@ -126,7 +126,7 @@ Every kind of work has one template. Copy the template, fill the blanks, stop.
 - New port: `ports.ts`, then both adapters in the same PR, never one.
 - New content flavor: a row in `docs/content-contract.md`, a fixture burrito, then Corpus.
 - New event: the union in `lib/domain/events.ts`; the folds that should count it.
-- New string: `src/lib/strings.ts`; every locale file gets the key.
+- New string: the English table by area in `src/lib/strings/en/`; every locale file in `src/lib/strings/locales/` gets the key.
 - New word: `CONTEXT.md` first.
 
 If the work does not fit a template, that is a proposal (section 8), not an
