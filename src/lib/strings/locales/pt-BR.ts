@@ -491,4 +491,8 @@ export const ptBR: LocaleTable = {
   'study.frame.picture': 'Imagem do quadro {number}',
   'transfer.app.ready': 'O aplicativo chegou a este celular ({size}) e está pronto para instalar.',
   'failure.boot': 'O aplicativo não conseguiu se preparar neste celular. Tente de novo daqui a pouco.',
+  'study.audio.back': 'Voltar 10 segundos',
+  'study.audio.forward': 'Avançar 10 segundos',
+  'study.audio.loading': 'Preparando o áudio',
+  'session.audio.time': '{position} / {duration}',
 };

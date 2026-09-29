@@ -470,4 +470,8 @@ export const fa: LocaleTable = {
   'study.frame.picture': 'تصویر صحنهٔ {number}',
   'transfer.app.ready': 'برنامه به این گوشی رسید ({size}) و آمادهٔ نصب است.',
   'failure.boot': 'برنامه نتوانست روی این گوشی آماده شود. کمی بعد دوباره امتحان کنید.',
+  'study.audio.back': '10 ثانیه به عقب',
+  'study.audio.forward': '10 ثانیه به جلو',
+  'study.audio.loading': 'صدا در حال آماده شدن است',
+  'session.audio.time': '{position} / {duration}',
 };

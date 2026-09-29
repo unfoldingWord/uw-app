@@ -470,4 +470,8 @@ export const ur: LocaleTable = {
   'study.frame.picture': 'منظر {number} کی تصویر',
   'transfer.app.ready': 'ایپ اس فون پر آ گئی ہے ({size}) اور انسٹال کے لیے تیار ہے۔',
   'failure.boot': 'ایپ اس فون پر تیار نہیں ہو سکی۔ تھوڑی دیر بعد دوبارہ کوشش کریں۔',
+  'study.audio.back': '10 سیکنڈ پیچھے',
+  'study.audio.forward': '10 سیکنڈ آگے',
+  'study.audio.loading': 'آڈیو تیار ہو رہا ہے',
+  'session.audio.time': '{position} / {duration}',
 };

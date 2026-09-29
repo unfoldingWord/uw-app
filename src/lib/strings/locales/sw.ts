@@ -474,4 +474,8 @@ export const sw: LocaleTable = {
   'study.frame.picture': 'Mchoro wa picha ya {number}',
   'transfer.app.ready': 'Programu imefika kwenye simu hii ({size}) na iko tayari kusakinishwa.',
   'failure.boot': 'Programu haikuweza kujiandaa kwenye simu hii. Jaribu tena baada ya muda mfupi.',
+  'study.audio.back': 'Rudi nyuma sekunde 10',
+  'study.audio.forward': 'Songa mbele sekunde 10',
+  'study.audio.loading': 'Sauti inaandaliwa',
+  'session.audio.time': '{position} / {duration}',
 };

@@ -471,4 +471,8 @@ export const hi: LocaleTable = {
   'study.frame.picture': 'दृश्य {number} का चित्र',
   'transfer.app.ready': 'ऐप इस फ़ोन पर आ गया है ({size}) और इंस्टॉल के लिए तैयार है।',
   'failure.boot': 'ऐप इस फ़ोन पर तैयार नहीं हो सका। थोड़ी देर बाद फिर से कोशिश करें।',
+  'study.audio.back': '10 सेकंड पीछे',
+  'study.audio.forward': '10 सेकंड आगे',
+  'study.audio.loading': 'ऑडियो तैयार हो रहा है',
+  'session.audio.time': '{position} / {duration}',
 };

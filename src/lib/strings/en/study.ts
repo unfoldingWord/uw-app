@@ -32,6 +32,9 @@ export const study = {
   'study.audio.download': 'Download audio for offline',
   'study.audio.downloading': 'Downloading audio',
   'study.audio.offline': 'Audio streams when you are online. Download it to listen offline.',
+  'study.audio.back': 'Back 10 seconds',
+  'study.audio.forward': 'Ahead 10 seconds',
+  'study.audio.loading': 'Getting the audio ready',
   'library.open': 'Library',
   'library.title': 'Library',
   'library.overline': {

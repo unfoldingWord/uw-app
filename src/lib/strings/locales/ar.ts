@@ -537,4 +537,8 @@ export const ar: LocaleTable = {
   'study.frame.picture': 'صورة المشهد {number}',
   'transfer.app.ready': 'وصل التطبيق إلى هذا الهاتف ({size}) وهو جاهز للتثبيت.',
   'failure.boot': 'لم يتمكن التطبيق من الاستعداد على هذا الهاتف. حاول مرة أخرى بعد قليل.',
+  'study.audio.back': 'رجوع 10 ثوانٍ',
+  'study.audio.forward': 'تقدّم 10 ثوانٍ',
+  'study.audio.loading': 'جارٍ تجهيز الصوت',
+  'session.audio.time': '{position} / {duration}',
 };

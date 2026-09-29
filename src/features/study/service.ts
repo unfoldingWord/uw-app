@@ -14,6 +14,8 @@ import { imagePackId, languagePackId, type PackId } from '@lib/domain/pack';
 import { formatReference, parseReference } from '@lib/domain/reference';
 import type { Kernel } from '@lib/kernel';
 import type { InstallOutcome } from '@lib/packs/types';
+import { clipControls, clockTime, type ClipControls } from '@lib/player/controls';
+import type { PlayerStatus } from '@lib/player/player';
 import { libraryCards, type LibraryCard } from './library';
 import { studyWords, type StudyWords } from './strings';
 
@@ -33,6 +35,9 @@ export type {
   WordSpan,
 } from '@lib/corpus/types';
 export type { LibraryCard } from './library';
+export type { ClipControls } from '@lib/player/controls';
+export type { PlayerStatus } from '@lib/player/player';
+export { skipMs } from '@lib/player/controls';
 
 export type BookEntry = {
   readonly code: string;
@@ -122,6 +127,8 @@ export type StudyService = {
   save(target: BookmarkTarget): Promise<Bookmark | undefined>;
   unsave(id: string): Promise<boolean>;
   picture(frame: Frame): string | undefined;
+  listen(clip: Pick<AudioClip, 'path'>): ClipControls;
+  audioTime(status: PlayerStatus): string;
 };
 
 function autonymOf(kernel: Kernel, language: string): string {
@@ -355,5 +362,11 @@ export function createStudyService(kernel: Kernel): StudyService {
     save: (target) => bookmarks.add(target),
     unsave: (id) => bookmarks.remove(id),
     picture: (frame) => (frame.image === undefined ? undefined : kernel.media.uriOf(frame.image.path)),
+    listen: (clip) => clipControls(kernel.player, { kind: 'file', path: clip.path }),
+    audioTime: (status) =>
+      words().t('study.audio.time', {
+        position: clockTime('positionMs' in status ? status.positionMs : 0),
+        duration: clockTime('durationMs' in status ? status.durationMs : 0),
+      }),
   };
 }

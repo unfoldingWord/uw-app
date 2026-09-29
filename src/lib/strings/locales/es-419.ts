@@ -492,4 +492,8 @@ export const es419: LocaleTable = {
   'study.frame.picture': 'Imagen del cuadro {number}',
   'transfer.app.ready': 'La aplicación llegó a este teléfono ({size}) y está lista para instalar.',
   'failure.boot': 'La aplicación no pudo prepararse en este teléfono. Intenta de nuevo en un momento.',
+  'study.audio.back': 'Retroceder 10 segundos',
+  'study.audio.forward': 'Avanzar 10 segundos',
+  'study.audio.loading': 'Preparando el audio',
+  'session.audio.time': '{position} / {duration}',
 };

@@ -447,4 +447,8 @@ export const vi: LocaleTable = {
   'study.frame.picture': 'Hình cho khung {number}',
   'transfer.app.ready': 'Ứng dụng đã đến điện thoại này ({size}) và sẵn sàng để cài đặt.',
   'failure.boot': 'Ứng dụng chưa thể chuẩn bị trên điện thoại này. Hãy thử lại sau giây lát.',
+  'study.audio.back': 'Lùi 10 giây',
+  'study.audio.forward': 'Tới 10 giây',
+  'study.audio.loading': 'Đang chuẩn bị âm thanh',
+  'session.audio.time': '{position} / {duration}',
 };

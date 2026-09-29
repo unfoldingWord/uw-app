@@ -464,4 +464,8 @@ export const my: LocaleTable = {
   'study.frame.picture': 'ပုံ {number} ၏ ရုပ်ပုံ',
   'transfer.app.ready': 'အက်ပ်သည် ဤဖုန်းသို့ ရောက်ရှိပြီး ({size}) ထည့်သွင်းရန် အသင့်ဖြစ်ပါသည်။',
   'failure.boot': 'အက်ပ်သည် ဤဖုန်းပေါ်တွင် အသင့်မဖြစ်နိုင်ခဲ့ပါ။ ခဏနေမှ ထပ်စမ်းကြည့်ပါ။',
+  'study.audio.back': '10 စက္ကန့် နောက်ပြန်',
+  'study.audio.forward': '10 စက္ကန့် ရှေ့သို့',
+  'study.audio.loading': 'အသံကို ပြင်ဆင်နေသည်',
+  'session.audio.time': '{position} / {duration}',
 };

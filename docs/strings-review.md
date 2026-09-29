@@ -102,3 +102,14 @@ Dates are formatted by the screen layer with the platform's date formatting, and
 ## Added with the release wiring (T13)
 
 - `failure.boot`: the one line shown when the app could not start its library on the phone (the database or the files would not open), above Try again (`common.retry`). The kernel has not started, so the line is chosen from the phone's own language, not the app setting. Drafted by an AI agent in fifteen locales; it must stay calm and must not suggest anything was lost.
+
+## Added with the audio player (G2)
+
+- `study.audio.back` and `study.audio.forward`: the two pills under the audio bar that move ten seconds back
+  and ahead. Each is the pill's visible text and its accessible name, so it spells out "seconds". The digits
+  are ASCII in every locale, including `ar`, `fa`, `ur`, `bn`, `hi` and `my`; a reviewer may prefer the
+  locale's own digits.
+- `study.audio.loading`: the caption while a clip is being opened. It must not suggest a download.
+- `session.audio.time`: the elapsed and total time under "Play and discuss" when a story has audio, the same
+  shape as `study.audio.time`. The times are written `m:ss` with ASCII digits.
+- Drafted by an AI agent in fifteen locales; none reviewed.

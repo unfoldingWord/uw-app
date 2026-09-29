@@ -434,4 +434,8 @@ export const zhHans: LocaleTable = {
   'study.frame.picture': '第 {number} 幅的插图',
   'transfer.app.ready': '应用已到达这部手机（{size}），可以安装了。',
   'failure.boot': '应用未能在这部手机上准备好。请稍后再试。',
+  'study.audio.back': '后退 10 秒',
+  'study.audio.forward': '前进 10 秒',
+  'study.audio.loading': '正在准备音频',
+  'session.audio.time': '{position} / {duration}',
 };

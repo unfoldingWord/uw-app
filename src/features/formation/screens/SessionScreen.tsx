@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { sessionMovements } from '@lib/domain/events';
 import { failureCodeOf, type FailureCode } from '@lib/domain/failures';
@@ -12,6 +12,7 @@ import {
   type FormationService,
   type FoundationsSession,
   type Group,
+  type PlayerStatus,
   type Session,
   type SessionMovementId,
   type Track,
@@ -29,6 +30,8 @@ import { useLoad } from './parts/useLoad';
 import { sectionTitle, sessionHref, storyShareHref } from './parts/wording';
 
 const frameDwellMs = 6000;
+
+const audioTickMs = 500;
 
 const sessionMovementIds: readonly SessionMovementId[] = sessionMovements;
 
@@ -225,6 +228,36 @@ function Foundations({
   const formation = shownFormation(session);
   const done = doneMovements(group, session.number);
   const finished = group !== undefined && done.size === sessionMovementIds.length;
+  const audio = session.play.audio;
+  const latestAudio = useRef(audio);
+  latestAudio.current = audio;
+  const audioPath = audio.state === 'available' ? audio.clip.path : undefined;
+  const storyAudio = useMemo(
+    () => (audioPath === undefined ? undefined : service.listen(latestAudio.current)),
+    [service, audioPath],
+  );
+  const [audioStatus, setAudioStatus] = useState<PlayerStatus>({ state: 'idle' });
+  const audioPlaying = audioStatus.state === 'playing';
+
+  useEffect(() => {
+    if (storyAudio === undefined) {
+      return undefined;
+    }
+    setAudioStatus(storyAudio.status());
+    const unsubscribe = storyAudio.subscribe(setAudioStatus);
+    return () => {
+      unsubscribe();
+      void storyAudio.stop();
+    };
+  }, [storyAudio]);
+
+  useEffect(() => {
+    if (storyAudio === undefined || !audioPlaying) {
+      return undefined;
+    }
+    const tick = setInterval(() => setAudioStatus(storyAudio.status()), audioTickMs);
+    return () => clearInterval(tick);
+  }, [storyAudio, audioPlaying]);
 
   useEffect(() => {
     if (!playing) {
@@ -245,9 +278,15 @@ function Foundations({
   const play = async () => {
     if (playing) {
       setPlaying(false);
+      if (storyAudio !== undefined && audioPlaying) {
+        setAudioStatus(await storyAudio.toggle());
+      }
       return;
     }
     setPlaying(true);
+    if (storyAudio !== undefined && !audioPlaying) {
+      setAudioStatus(await storyAudio.toggle());
+    }
     const passed =
       group !== undefined &&
       group.position.track === 'foundations' &&
@@ -336,6 +375,18 @@ function Foundations({
       >
         <Icon name="chevronRight" />
       </GlassIconButton>
+      {storyAudio === undefined || audioStatus.state === 'idle' ? null : (
+        <Line
+          role="caption"
+          tone={audioStatus.state === 'failed' ? 'body' : 'dim'}
+          live={audioStatus.state === 'failed'}
+          style={styles.footerLine}
+        >
+          {audioStatus.state === 'failed'
+            ? words.t(`failure.${audioStatus.code}`)
+            : service.audioTime(audioStatus)}
+        </Line>
+      )}
     </View>
   );
 
@@ -563,6 +614,7 @@ function Training({
 }
 
 const styles = StyleSheet.create({
-  footer: { flexDirection: 'row', alignItems: 'center' },
+  footer: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' },
+  footerLine: { width: '100%', textAlign: 'center' },
   grow: { flex: 1 },
 });

@@ -508,4 +508,8 @@ export const fr: LocaleTable = {
   'transfer.app.ready':
     'L’application est arrivée sur ce téléphone ({size}) et elle est prête à être installée.',
   'failure.boot': 'L’application n’a pas pu se préparer sur ce téléphone. Réessayez dans un instant.',
+  'study.audio.back': 'Reculer de 10 secondes',
+  'study.audio.forward': 'Avancer de 10 secondes',
+  'study.audio.loading': 'Préparation de l’audio',
+  'session.audio.time': '{position} / {duration}',
 };

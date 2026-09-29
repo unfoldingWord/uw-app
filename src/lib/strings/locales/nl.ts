@@ -484,4 +484,8 @@ export const nl: LocaleTable = {
   'study.frame.picture': 'Afbeelding bij beeld {number}',
   'transfer.app.ready': 'De app staat nu op deze telefoon ({size}) en is klaar om te installeren.',
   'failure.boot': 'De app kon zich niet klaarmaken op deze telefoon. Probeer het zo meteen opnieuw.',
+  'study.audio.back': '10 seconden terug',
+  'study.audio.forward': '10 seconden vooruit',
+  'study.audio.loading': 'De audio wordt klaargezet',
+  'session.audio.time': '{position} / {duration}',
 };

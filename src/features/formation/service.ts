@@ -6,10 +6,13 @@ import type {
   Progress,
   Session,
   Track,
+  StoryAudio,
   TrackSummary,
 } from '@lib/formation/types';
 import type { FailureCode } from '@lib/domain/failures';
 import type { Kernel } from '@lib/kernel';
+import { clipControls, clockTime, type ClipControls } from '@lib/player/controls';
+import type { PlayerStatus } from '@lib/player/player';
 import { formationWords, type FormationWords } from './strings';
 
 export type { Block, Frame, Inline, MovementSection } from '@lib/corpus/types';
@@ -28,6 +31,9 @@ export type {
   TrainingSession,
 } from '@lib/formation/types';
 export type { FormationWords } from './strings';
+export type { ClipControls } from '@lib/player/controls';
+export type { PlayerStatus } from '@lib/player/player';
+export type { StoryAudio } from '@lib/formation/types';
 
 export type DownloadOutcome = { readonly ok: true } | { readonly ok: false; readonly code: FailureCode };
 
@@ -55,6 +61,8 @@ export type FormationService = {
   languageName(language: string): string;
   download(pack: string): Promise<DownloadOutcome>;
   picture(frame: Frame): string | undefined;
+  listen(audio: StoryAudio): ClipControls | undefined;
+  audioTime(status: PlayerStatus): string;
 };
 
 export function createFormationService(kernel: Kernel): FormationService {
@@ -98,5 +106,14 @@ export function createFormationService(kernel: Kernel): FormationService {
       return outcome.ok ? { ok: true } : { ok: false, code: outcome.code };
     },
     picture: (frame) => (frame.image === undefined ? undefined : kernel.media.uriOf(frame.image.path)),
+    listen: (audio) =>
+      audio.state === 'available'
+        ? clipControls(kernel.player, { kind: 'file', path: audio.clip.path })
+        : undefined,
+    audioTime: (status) =>
+      formationWords(kernel).t('session.audio.time', {
+        position: clockTime('positionMs' in status ? status.positionMs : 0),
+        duration: clockTime('durationMs' in status ? status.durationMs : 0),
+      }),
   };
 }

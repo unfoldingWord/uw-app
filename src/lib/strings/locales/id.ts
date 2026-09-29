@@ -456,4 +456,8 @@ export const id: LocaleTable = {
   'study.frame.picture': 'Gambar untuk bingkai {number}',
   'transfer.app.ready': 'Aplikasi sudah sampai di ponsel ini ({size}) dan siap dipasang.',
   'failure.boot': 'Aplikasi belum bisa bersiap di ponsel ini. Coba lagi sebentar lagi.',
+  'study.audio.back': 'Mundur 10 detik',
+  'study.audio.forward': 'Maju 10 detik',
+  'study.audio.loading': 'Menyiapkan audio',
+  'session.audio.time': '{position} / {duration}',
 };

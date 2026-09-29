@@ -468,4 +468,8 @@ export const bn: LocaleTable = {
   'study.frame.picture': 'দৃশ্য {number}-এর ছবি',
   'transfer.app.ready': 'অ্যাপটি এই ফোনে এসেছে ({size}) এবং ইনস্টলের জন্য প্রস্তুত।',
   'failure.boot': 'অ্যাপটি এই ফোনে প্রস্তুত হতে পারেনি। একটু পরে আবার চেষ্টা করুন।',
+  'study.audio.back': '10 সেকেন্ড পিছনে',
+  'study.audio.forward': '10 সেকেন্ড সামনে',
+  'study.audio.loading': 'অডিও তৈরি হচ্ছে',
+  'session.audio.time': '{position} / {duration}',
 };

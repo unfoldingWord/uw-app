@@ -521,4 +521,8 @@ export const ru: LocaleTable = {
   'study.frame.picture': 'Иллюстрация к кадру {number}',
   'transfer.app.ready': 'Приложение пришло на этот телефон ({size}) и готово к установке.',
   'failure.boot': 'Приложению не удалось подготовиться на этом телефоне. Попробуйте ещё раз чуть позже.',
+  'study.audio.back': 'Назад на 10 секунд',
+  'study.audio.forward': 'Вперёд на 10 секунд',
+  'study.audio.loading': 'Аудио готовится',
+  'session.audio.time': '{position} / {duration}',
 };

@@ -41,6 +41,7 @@ export const formation = {
   'session.frame.next': 'Next frame',
   'session.play': 'Play and discuss',
   'session.pause': 'Pause',
+  'session.audio.time': '{position} / {duration}',
   'session.talk': 'Talk about it',
   'session.talk.source': 'Talk about it · {language}',
   'session.talk.studyQuestions': 'Talk about it · study questions',
