@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import { useTheme } from '@shared/theme';
+import { backgroundImage, useTheme } from '@shared/theme';
 import { prototypeValues } from '@shared/ui';
 
 export type StoryWellProps = { image?: string; label?: string; children?: ReactNode };
@@ -31,16 +31,13 @@ export function StoryWell({ image, label, children }: StoryWellProps) {
           />
           <View
             pointerEvents="none"
-            style={[
-              StyleSheet.absoluteFill,
-              { experimental_backgroundImage: prototypeValues.imageProtection },
-            ]}
+            style={[StyleSheet.absoluteFill, backgroundImage(prototypeValues.imageProtection)]}
           />
         </>
       )}
       <View
         pointerEvents="none"
-        style={[StyleSheet.absoluteFill, { experimental_backgroundImage: theme.gradient.refraction }]}
+        style={[StyleSheet.absoluteFill, backgroundImage(theme.gradient.refraction)]}
       />
       <View style={{ gap: theme.space.sp2 }}>{children}</View>
     </View>

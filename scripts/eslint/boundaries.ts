@@ -232,8 +232,20 @@ export const layers: Layer[] = [
     ],
   },
   {
+    name: 'platform web harness',
+    files: ['src/platform/ports.web.ts'],
+    patterns: [
+      {
+        regex: '^(?!@sim/web/ports$)',
+        message:
+          'src/platform/ports.web.ts only re-exports the QA render harness from @sim/web/ports (docs/exceptions.md).',
+      },
+    ],
+  },
+  {
     name: 'platform',
     files: ['src/platform/**'],
+    ignores: ['src/platform/ports.web.ts'],
     patterns: [
       designSystemAssets,
       {

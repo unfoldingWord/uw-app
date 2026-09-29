@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Animated, StyleSheet, View, type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
-import { useTheme, type Theme } from '@shared/theme';
+import { backgroundImage, useTheme, type Theme } from '@shared/theme';
 import { ContentColor } from './context';
 import { GlassBlur } from './GlassBlur';
 import { useKeyframeLoop } from './motion';
@@ -131,9 +131,7 @@ export function GlassSurface({
             style={[
               StyleSheet.absoluteFill,
               {
-                experimental_backgroundImage: night
-                  ? theme.gradient.refractionNight
-                  : theme.gradient.refraction,
+                ...backgroundImage(night ? theme.gradient.refractionNight : theme.gradient.refraction),
                 opacity: night ? 1 : referenceValues.glassSurface.refractionOpacity,
               },
             ]}

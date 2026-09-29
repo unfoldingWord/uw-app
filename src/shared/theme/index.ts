@@ -1,3 +1,4 @@
+export { backgroundImage } from './backgroundImage';
 export { createTheme, withScript } from './createTheme';
 export type { Blur, Scheme, Shadow, TextRole, TextStyleTokens, Theme, ThemeOptions } from './createTheme';
 export type { Border, CubicBezier, LegacyShadow, ShadowLayer } from './convert';

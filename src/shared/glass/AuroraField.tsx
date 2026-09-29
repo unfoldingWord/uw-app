@@ -8,7 +8,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
-import { useTheme } from '@shared/theme';
+import { backgroundImage, useTheme } from '@shared/theme';
 import { BlurTarget } from './context';
 import { useKeyframeLoop } from './motion';
 import { referenceValues } from './referenceValues';
@@ -54,7 +54,7 @@ export function AuroraField({ intensity = 1, drift = true, style, children }: Au
             bottom: inset,
             start: inset,
             end: inset,
-            experimental_backgroundImage: theme.gradient.auroraField,
+            ...backgroundImage(theme.gradient.auroraField),
             opacity: intensity,
             transform: [
               { translateX: moving.value('translateXPercent', size.width / 100) },

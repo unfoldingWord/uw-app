@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Image, Linking, StyleSheet, View } from 'react-native';
 import { GlassButton } from '@shared/glass';
 import { useService } from '@shared/kernel';
-import { useTheme } from '@shared/theme';
+import { backgroundImage, useTheme } from '@shared/theme';
 import { Card, prototypeValues, ThemedText, type TextTone } from '@shared/ui';
 import { createHomeService } from '../service';
 
@@ -46,7 +46,7 @@ export function InvitationCard() {
             padding: theme.space.sp8,
             borderRadius: theme.radius.rLg,
             backgroundColor: theme.color.surfaceNight,
-            experimental_backgroundImage: prototypeValues.storyWell,
+            ...backgroundImage(prototypeValues.storyWell),
           },
         ]}
       >
@@ -62,10 +62,7 @@ export function InvitationCard() {
             />
             <View
               pointerEvents="none"
-              style={[
-                StyleSheet.absoluteFill,
-                { experimental_backgroundImage: prototypeValues.imageProtection },
-              ]}
+              style={[StyleSheet.absoluteFill, backgroundImage(prototypeValues.imageProtection)]}
             />
           </>
         )}

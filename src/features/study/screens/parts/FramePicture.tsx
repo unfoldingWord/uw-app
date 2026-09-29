@@ -1,5 +1,5 @@
 import { Image, StyleSheet, View } from 'react-native';
-import { useTheme } from '@shared/theme';
+import { backgroundImage, useTheme } from '@shared/theme';
 
 export type FramePictureProps = { uri: string | undefined; label: string };
 
@@ -24,7 +24,7 @@ export function FramePicture({ uri, label }: FramePictureProps) {
       )}
       <View
         pointerEvents="none"
-        style={[StyleSheet.absoluteFill, { experimental_backgroundImage: theme.gradient.refraction }]}
+        style={[StyleSheet.absoluteFill, backgroundImage(theme.gradient.refraction)]}
       />
     </View>
   );
