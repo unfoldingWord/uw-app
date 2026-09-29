@@ -2,6 +2,7 @@ import type { Bookmark, BookmarkTarget } from '@lib/bookmarks/bookmarks';
 import type {
   Article,
   AudioClip,
+  Frame,
   FullTextHit,
   Passage,
   SearchResults,
@@ -120,6 +121,7 @@ export type StudyService = {
   saved(target: BookmarkTarget): Bookmark | undefined;
   save(target: BookmarkTarget): Promise<Bookmark | undefined>;
   unsave(id: string): Promise<boolean>;
+  picture(frame: Frame): string | undefined;
 };
 
 function autonymOf(kernel: Kernel, language: string): string {
@@ -352,5 +354,6 @@ export function createStudyService(kernel: Kernel): StudyService {
     saved: (target) => bookmarks.find(target),
     save: (target) => bookmarks.add(target),
     unsave: (id) => bookmarks.remove(id),
+    picture: (frame) => (frame.image === undefined ? undefined : kernel.media.uriOf(frame.image.path)),
   };
 }

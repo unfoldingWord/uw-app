@@ -444,4 +444,6 @@ export const vi: LocaleTable = {
   'library.download': 'Tải {resource}',
   'library.onPhone': 'Trên điện thoại này',
   'search.fullText.inSettings': 'Bật trong Cài đặt. Chỉ mục nằm trên điện thoại này.',
+  'study.frame.picture': 'Hình cho khung {number}',
+  'transfer.app.ready': 'Ứng dụng đã đến điện thoại này ({size}) và sẵn sàng để cài đặt.',
 };

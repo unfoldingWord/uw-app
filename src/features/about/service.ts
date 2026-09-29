@@ -73,6 +73,7 @@ export type ImpactStoryView = {
   readonly overline: string;
   readonly readMore: string;
   readonly securityNote: string;
+  readonly image: string | undefined;
 };
 
 export type AboutService = {
@@ -86,7 +87,17 @@ export type AboutService = {
 
 const unfoldingWord = 'unfoldingWord';
 
-function storyView(words: AboutWords, story: ImpactStory | undefined): ImpactStoryView | undefined {
+function imageOf(kernel: Kernel, story: ImpactStory): string | undefined {
+  return story.image !== undefined && 'path' in story.image
+    ? kernel.media.uriOf(story.image.path)
+    : undefined;
+}
+
+function storyView(
+  kernel: Kernel,
+  words: AboutWords,
+  story: ImpactStory | undefined,
+): ImpactStoryView | undefined {
   if (story === undefined) {
     return undefined;
   }
@@ -98,6 +109,7 @@ function storyView(words: AboutWords, story: ImpactStory | undefined): ImpactSto
     overline: words.t('invitation.overline'),
     readMore: words.t('invitation.readMore'),
     securityNote: story.securityNote ?? words.t('impact.securityNote'),
+    image: imageOf(kernel, story),
   };
 }
 
@@ -148,8 +160,8 @@ export function createAboutService(kernel: Kernel): AboutService {
 
   return {
     words,
-    story: (slug) => storyView(words(), kernel.partners.story(slug)),
-    openStory: async (slug) => storyView(words(), await kernel.partners.open(slug)),
+    story: (slug) => storyView(kernel, words(), kernel.partners.story(slug)),
+    openStory: async (slug) => storyView(kernel, words(), await kernel.partners.open(slug)),
     links: () => linksOf(words()),
     summary() {
       const current = words();

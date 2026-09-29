@@ -518,4 +518,6 @@ export const ru: LocaleTable = {
   'library.download': 'Скачать: {resource}',
   'library.onPhone': 'На этом телефоне',
   'search.fullText.inSettings': 'Включите это в настройках. Указатель остаётся на этом телефоне.',
+  'study.frame.picture': 'Иллюстрация к кадру {number}',
+  'transfer.app.ready': 'Приложение пришло на этот телефон ({size}) и готово к установке.',
 };

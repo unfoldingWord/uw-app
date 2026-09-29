@@ -10,13 +10,15 @@ export type FrameCardProps = {
   title: string;
   frames: readonly Frame[];
   index: number;
+  pictureOf: (frame: Frame) => string | undefined;
 };
 
-export function FrameCard({ words, title, frames, index }: FrameCardProps) {
+export function FrameCard({ words, title, frames, index, pictureOf }: FrameCardProps) {
   const theme = useTheme();
   const frame = frames[index];
   const number = frame?.number ?? index + 1;
   const position = words.t('session.frame', { number: index + 1, total: frames.length });
+  const picture = frame === undefined ? undefined : pictureOf(frame);
   return (
     <GlassSurface
       level={2}
@@ -24,7 +26,11 @@ export function FrameCard({ words, title, frames, index }: FrameCardProps) {
       shadow="card"
       style={{ padding: theme.space.sp5, gap: theme.space.sp4 }}
     >
-      <PictureWell tall label={words.t('session.frame.picture', { number })}>
+      <PictureWell
+        tall
+        label={words.t('session.frame.picture', { number })}
+        {...(picture === undefined ? {} : { uri: picture })}
+      >
         <Line role="overline" tone="onImage">
           {position}
         </Line>

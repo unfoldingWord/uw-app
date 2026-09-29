@@ -9,6 +9,7 @@ export const prototypeValues = {
   dot: 8,
   badgeDot: 6,
   logo: { height: 26, aspect: 4221 / 740 },
+  imageProtection: 'linear-gradient(180deg,rgba(10,22,40,0) 30%,rgba(10,22,40,.92) 100%)',
   storyWell:
     'linear-gradient(180deg,rgba(10,22,40,0) 30%,rgba(10,22,40,.92) 100%), linear-gradient(160deg,#5A3B1E 0%,#E59D33 100%)',
   brandHeadingWeight: 900,

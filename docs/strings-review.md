@@ -93,3 +93,8 @@ Dates are formatted by the screen layer with the platform's date formatting, and
   the noun then takes "de" ("1 000 000 de ressources"); with the rule table above, `many` is chosen only for
   those counts, and every other count uses `other`. A native reviewer should confirm the phrasing, but none
   of these forms reads as clearly wrong, so none was changed.
+
+## Added with the transfer, share and diagnostics screens (U1)
+
+- `study.frame.picture`: the accessible name of a story picture in the Study reader. Each locale copies its own `session.frame.picture`, so the two readers name a picture the same way; review them together.
+- `transfer.app.ready`: shown on the receiving phone when the app itself arrived, with its size. Drafted by an AI agent in fifteen locales. It must not promise that the phone installs the app on its own: handing the file to the system installer is not built yet.

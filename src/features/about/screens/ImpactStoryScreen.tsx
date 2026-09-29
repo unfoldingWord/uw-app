@@ -55,7 +55,7 @@ export default function ImpactStoryScreen() {
         shadow="card"
         style={{ padding: theme.space.sp5, gap: theme.space.sp6 }}
       >
-        <StoryWell>
+        <StoryWell {...(story.image === undefined ? {} : { image: story.image, label: story.title })}>
           <Line role="overline" tone="onImage" brand>
             {story.overline}
           </Line>

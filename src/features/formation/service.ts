@@ -1,3 +1,4 @@
+import type { Frame } from '@lib/corpus/types';
 import type {
   Group,
   NextSession,
@@ -53,6 +54,7 @@ export type FormationService = {
   saveNote(group: string, track: Track, session: number, text: string): Promise<boolean>;
   languageName(language: string): string;
   download(pack: string): Promise<DownloadOutcome>;
+  picture(frame: Frame): string | undefined;
 };
 
 export function createFormationService(kernel: Kernel): FormationService {
@@ -95,5 +97,6 @@ export function createFormationService(kernel: Kernel): FormationService {
       const outcome = await kernel.packs.installFromCatalog(pack);
       return outcome.ok ? { ok: true } : { ok: false, code: outcome.code };
     },
+    picture: (frame) => (frame.image === undefined ? undefined : kernel.media.uriOf(frame.image.path)),
   };
 }

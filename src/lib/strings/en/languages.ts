@@ -76,4 +76,5 @@ export const languages = {
   'share.noAudio': 'There is no audio for this one yet.',
   'share.payload.attribution': '{resource} by {publisher}, {version}, {licence}.',
   'share.payload.link': 'Get the app: {link}',
+  'transfer.app.ready': 'The app arrived on this phone ({size}) and is ready to install.',
 } as const;

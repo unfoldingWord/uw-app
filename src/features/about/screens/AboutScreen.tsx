@@ -126,7 +126,7 @@ function StoryCard({ story, open, onOpen }: { story: ImpactStoryView; open: stri
       shadow="card"
       style={{ padding: theme.space.sp5, gap: theme.space.sp4 }}
     >
-      <StoryWell>
+      <StoryWell {...(story.image === undefined ? {} : { image: story.image, label: story.title })}>
         <Line role="overline" tone="onImage" brand>
           {story.overline}
         </Line>
