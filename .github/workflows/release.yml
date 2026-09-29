@@ -1,0 +1,42 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  android-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run verify
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - name: Build the signed Android package on EAS
+        run: eas build --platform android --profile preview --non-interactive --wait --json > build.json
+      - name: Download the package
+        run: |
+          url="$(jq -r '.[0].artifacts.buildUrl' build.json)"
+          test -n "$url" && test "$url" != "null"
+          curl --fail --location --silent --show-error "$url" --output "unfoldingWord-${GITHUB_REF_NAME}.apk"
+      - name: Attach the package to the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1 || gh release create "$GITHUB_REF_NAME" --draft --title "$GITHUB_REF_NAME" --notes "Signed Android package for sideloading."
+          gh release upload "$GITHUB_REF_NAME" "unfoldingWord-${GITHUB_REF_NAME}.apk" --clobber

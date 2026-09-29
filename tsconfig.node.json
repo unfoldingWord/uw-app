@@ -28,6 +28,7 @@
     "src/lib/**/*.test.ts",
     "eslint.config.ts",
     "vitest.config.ts",
-    "knip.config.ts"
+    "knip.config.ts",
+    "app.config.ts"
   ]
 }
