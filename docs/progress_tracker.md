@@ -3,6 +3,24 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 M6 merge of Strings (T7a) onto Catalog, Packs, Corpus and F1
+
+Node v22.22.2. Everything below ran in Node through Vitest, the sim and the checks; nothing ran on a phone
+and no screen was rendered.
+
+- `git merge --no-ff t7a-strings` conflicted in this file, `scripts/checks/strings.check.ts` (T7a's check
+  replaces the pending stub) and `src/lib/kernel.ts` (both sides kept; the registry pin in
+  `sim/kernel.test.ts` and the kernel row in `docs/exceptions.md` gain strings).
+- Red after the merge: typecheck, because `failure.*` in `src/lib/strings/en/failures.ts` lacked the four
+  codes added on main (`http.cancelled`, `kernel.not-owned`, `kernel.observer-failed`, `corpus.unreadable`).
+  Worded in English and the fifteen other locales; listed in `docs/strings-review.md`.
+- Red next: the owns check read `update its records` and `Update when you are ready` as SQL writes to tables
+  `its` and `when`. Both English strings reworded; the check is unchanged.
+- `npm run verify` green: 36 test files, 401 tests; 5 checks pass (strings: 406 keys in 16 locales, each
+  complete); sim 20 of 20; trace reports 30 Must requirements unproven (reporting only); contract 20
+  fixture burritos, live skipped offline; bundle skipped, no `app/_layout.tsx` yet.
+- Not verified: the new translations by a native speaker; any screen showing them.
+
 ## 2026-09-29 M5 merge of Corpus (T5) onto Catalog, Packs (T4) and F1
 
 Node v22.22.2. Everything below ran in Node through Vitest, the sim and the checks; nothing ran on a phone,
