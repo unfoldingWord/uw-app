@@ -3,6 +3,44 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 M8 merge of the F2 fixes onto T8, T7b, M7 and the screens (T10 to T12)
+
+Node v22.22.2. Everything below ran in Node through Vitest, the sim, the checks and the Metro bundle;
+nothing ran on a phone and no screen was rendered.
+
+- `git merge --no-ff f2-fixes` (F2 based on `de96dd2`) conflicted only in this file: both sides kept,
+  main's entries above F2's.
+- Red after the merge, fixed in the merge commit: typecheck, `src/lib/catalog/resourceTypes.ts` imported
+  `resourceCode` and `simplifiedTextCodes` from `corpus/layout`, which F2 moved; it now asks
+  `readingOfText` in `src/lib/corpus/readings.ts`, so the catalog and Corpus name a text reading the same
+  way. `src/lib/share/payload.test.ts` lacked the new `PassageText.titles`. SH-3 failed on
+  `packs/language/qab/id-000002/` against `id-000001/`: its last assertion compared whole paths, which now
+  hold an install id; SH-3 now compares the files under each burrito's `root`.
+- Transfer: the receiving peer session answers `{ ok: true, path }` with the staging file under
+  `transfer/incoming/` instead of the archive's bytes. New test in `sim/transfer.test.ts`, observed red on
+  the old receiver: `AssertionError: expected false to be true`.
+- Settings: `fullText()` reads `corpus.indexWanted` (on when every installed language wants the index),
+  and `setFullText(false)` calls `corpus.dropIndex`. The `settings.fullText` preference key is removed
+  from `src/lib/domain/preferences.ts` so the wish has one writer (Corpus); CONTEXT.md's Preference entry
+  says so. SE-1 extended (the wish survives a restart, off drops the index with `IndexDropped`), observed
+  red first: `turning it off drops the index and gives the space back`, `true !== false`.
+- The Hermes plural rules polyfill (`src/platform/intl.ts`, its import in `app/_layout.tsx`,
+  `tests/intl-polyfill.test.ts` and the three `@formatjs` packages) is removed. Grepped `app`, `src`,
+  `sim`, `scripts` and `tests` for `PluralRules` and `@platform/intl`: only `scripts/checks/plural.test.ts`
+  uses `Intl.PluralRules`, in Node, as the reference. `docs/dependencies.md` records the removal.
+- Study: a chapter's title (`PassageText.titles`) shows above its first verse in `VerseList`.
+- `npm install`, then `rm -rf node_modules && npm ci`, then `npm run verify` green: 52 test files, 583
+  tests; 5 checks pass (owns: 13 owners, 27 tables; strings: 423 keys in 16 locales); sim 52 of 52; trace
+  51 Must requirements, 50 with a scenario, 1 (SE-2) by a test on the documented list, 0 unproven,
+  enforced; contract 20 fixture burritos, live skipped offline; bundle android and ios pass.
+- Not verified: the chapter title row rendered anywhere; `Intl.NumberFormat` and `Intl.DateTimeFormat` on
+  Hermes without the removed polyfills (inference: Hermes ships both, and the removed `intl-locale` was
+  only for the plural rules matcher); a transfer received into a real file system. The `study` flag on
+  notes and questions is not shown on the Study screen: telling a study note from a translation note would
+  need a new string in 16 locales, left for the polish task. A journal recorded before this merge that
+  holds `PreferenceChanged` for `settings.fullText` no longer validates (inference; no such journal has
+  left a device).
+
 ## 2026-09-29 M7b Transfer, Share and diagnostics services, DX-4 and trace enforced
 
 Node v22.22.2. Everything below ran in Node through Vitest, the sim and the checks; nothing ran on a phone,
