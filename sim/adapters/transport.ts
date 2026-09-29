@@ -6,9 +6,13 @@ export type MemoryTransport = Transport & {
   expireWaits(): void;
 };
 
+export type TransportTap = (chunk: Uint8Array) => void;
+
 export type TransportBus = {
   transport(options: { platform: DevicePlatform; appPackage?: AppPackage }): MemoryTransport;
   cut(): void;
+  cutAfter(bytes: number): void;
+  tap(listener: TransportTap): () => void;
   delivered(): number;
 };
 
@@ -41,8 +45,17 @@ export function createTransportBus(options: { maxChunkBytes?: number } = {}): Tr
   const maxChunkBytes = options.maxChunkBytes ?? defaultMaxChunkBytes;
   const listings = new Map<string, Listing>();
   const channels = new Set<Channel>();
+  const taps = new Set<TransportTap>();
   let peerCount = 0;
   let deliveredBytes = 0;
+  let cutAt: number | undefined;
+
+  function cut(): void {
+    for (const side of channels) {
+      side.closed = true;
+      wake(side);
+    }
+  }
 
   function link(peer: Peer, outgoing: Channel, incoming: Channel): TransportLink {
     return {
@@ -54,7 +67,15 @@ export function createTransportBus(options: { maxChunkBytes?: number } = {}): Tr
         if (chunk.byteLength > maxChunkBytes) {
           throw portError('transfer.unsupported', `chunk of ${chunk.byteLength} bytes is over the limit`);
         }
+        if (cutAt !== undefined && deliveredBytes + chunk.byteLength > cutAt) {
+          cutAt = undefined;
+          cut();
+          throw portError('transfer.peer-lost', 'the link was lost');
+        }
         deliveredBytes += chunk.byteLength;
+        for (const listener of taps) {
+          listener(chunk.slice());
+        }
         const waiter = outgoing.waiters.shift();
         if (waiter === undefined) {
           outgoing.inbox.push(chunk.slice());
@@ -156,11 +177,15 @@ export function createTransportBus(options: { maxChunkBytes?: number } = {}): Tr
 
   return {
     transport,
-    cut: () => {
-      for (const side of channels) {
-        side.closed = true;
-        wake(side);
-      }
+    cut,
+    cutAfter: (bytes) => {
+      cutAt = deliveredBytes + bytes;
+    },
+    tap: (listener) => {
+      taps.add(listener);
+      return () => {
+        taps.delete(listener);
+      };
     },
     delivered: () => deliveredBytes,
   };

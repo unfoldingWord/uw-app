@@ -1,5 +1,5 @@
 import type { DeviceSnapshot, RedoOutcome } from '@lib/compose';
-import { idsOf, inputOf, type DomainEvent } from '@lib/domain/events';
+import { idsOf, inputOf, replayClassOf, type DomainEvent } from '@lib/domain/events';
 import type { JournalEntry } from '@lib/journal/entry';
 import { parseJournalExport } from '@lib/journal/export';
 import { stableJson } from '@lib/json';
@@ -24,10 +24,20 @@ export type ReplayResult =
 const shownDivergences = 10;
 
 export function mintedIds(events: readonly DomainEvent[]): readonly string[] {
+  const redone = new Set<string>();
+  for (const event of events) {
+    if (replayClassOf(event.type) !== 'verbatim') {
+      for (const id of idsOf(inputOf(event))) {
+        redone.add(id);
+      }
+    }
+  }
   const seen = new Set<string>();
   for (const event of events) {
     for (const id of idsOf(inputOf(event))) {
-      seen.add(id);
+      if (redone.has(id)) {
+        seen.add(id);
+      }
     }
   }
   return [...seen];
