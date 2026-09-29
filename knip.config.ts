@@ -8,8 +8,15 @@ const dependenciesAwaitingFirstImport = [
   'react-native-screens',
 ];
 
+const sharedPrimitivesAwaitingScreens = ['src/shared/theme/index.ts'];
+
 const config: KnipConfig = {
-  entry: ['scripts/*.ts', 'scripts/*/cli.ts', 'scripts/checks/*.check.ts'],
+  entry: [
+    'scripts/*.ts',
+    'scripts/*/cli.ts',
+    'scripts/checks/*.check.ts',
+    ...sharedPrimitivesAwaitingScreens,
+  ],
   ignore: ['design-system/**'],
   ignoreDependencies: dependenciesAwaitingFirstImport,
 };
