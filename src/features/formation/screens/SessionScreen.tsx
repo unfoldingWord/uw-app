@@ -26,7 +26,7 @@ import { MovementsCard } from './parts/MovementsCard';
 import { NotesCard } from './parts/NotesCard';
 import { Screen } from './parts/Screen';
 import { useLoad } from './parts/useLoad';
-import { sectionTitle, sessionHref } from './parts/wording';
+import { sectionTitle, sessionHref, storyShareHref } from './parts/wording';
 
 export const frameDwellMs = 6000;
 
@@ -142,6 +142,7 @@ export default function SessionScreen() {
       onChanged={loaded.reload}
       onNext={() => router.replace(sessionHref(track, number + 1))}
       onGroups={() => router.push('/formation/groups')}
+      onShare={() => router.push(storyShareHref(session.story.number))}
     />
   ) : (
     <Training
@@ -207,7 +208,8 @@ function Foundations({
   onChanged,
   onNext,
   onGroups,
-}: SharedProps & { session: FoundationsSession; alongside: boolean }) {
+  onShare,
+}: SharedProps & { session: FoundationsSession; alongside: boolean; onShare: () => void }) {
   const theme = useTheme();
   const words = service.words();
   const frames = session.play.frames;
@@ -348,6 +350,11 @@ function Foundations({
       back={onBack}
       centred
       footer={footer}
+      trailing={
+        <GlassIconButton label={words.t('common.share')} onPress={onShare}>
+          <Icon name="navigation" />
+        </GlassIconButton>
+      }
     >
       {session.movements.state === 'not-in-language' ? (
         <FallbackCard
@@ -379,6 +386,7 @@ function Foundations({
           title={session.story.title}
           frames={frames}
           index={Math.min(frame, frames.length - 1)}
+          pictureOf={service.picture}
         />
       )}
       {session.outline.includes('study-questions') && session.story.questions.length > 0 ? (
