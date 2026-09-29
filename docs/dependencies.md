@@ -32,6 +32,9 @@ list. Versions live in `package.json`; the lock file is committed.
 | expo-audio | ~57.0.5 | A hand-written player; the Audio adapter streams an allowlisted URL or plays a downloaded file |
 | expo-sharing | ~57.0.22 | A hand-written Android share intent for files; the ShareSheet adapter shares an audio file on Android (text and iOS files go through React Native's `Share`) |
 | expo-localization | ~57.0.2 | Reading the device locale by hand; the Locale adapter's tag, region, time zone and direction |
+| @formatjs/intl-pluralrules | ^6.3.15 | A hand-written plural rule table for the sixteen locales; Hermes ships no `Intl.PluralRules` (inference, not yet checked on a phone), and Strings selects plural forms with it. Loaded from `src/platform/intl.ts`, first in `app/_layout.tsx`, with CLDR data for en, es, fr, hi, ru, ar, zh, sw, pt, id, vi, bn, ur, fa, my and nl. It installs only when the runtime lacks a working `Intl.PluralRules`. MIT, typed, pure JavaScript |
+| @formatjs/intl-locale | ^5.3.12 | A hand-written `Intl.Locale`, which the plural rules polyfill's locale matcher calls and Hermes may lack (inference). Installs only when missing. MIT, typed, pure JavaScript |
+| @formatjs/intl-getcanonicallocales | ^3.2.12 | A hand-written `Intl.getCanonicalLocales`, required by the two polyfills above. Installs only when missing. MIT, typed, pure JavaScript |
 
 ## Development
 

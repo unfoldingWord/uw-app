@@ -57,6 +57,7 @@ describe('import boundaries (AGENTS.md rule 2)', () => {
     ['app/_layout.tsx', "import { File } from 'expo-file-system';\n"],
     ['app/_layout.tsx', "import type { Ports } from '@lib/ports';\n"],
     ['app/_layout.tsx', "import { allowedHosts } from '@lib/network-extra';\n"],
+    ['app/_layout.tsx', "import { isAllowedUrl } from '@lib/network';\n"],
     ['app/_layout.tsx', "import { bookmarks } from '@features/home/store';\n"],
   ])('%s refuses %s', async (file, code) => {
     expect(await ruleIds(file, code)).toContain(restricted);
@@ -96,7 +97,8 @@ describe('import boundaries (AGENTS.md rule 2)', () => {
     ['app/(tabs)/_layout.tsx', "import { Tabs } from 'expo-router';\n"],
     ['app/_layout.tsx', "import { createKernel } from '@lib/kernel';\n"],
     ['app/_layout.tsx', "import { platformPorts } from '@platform/ports';\n"],
-    ['app/_layout.tsx', "import { isAllowedUrl } from '@lib/network';\n"],
+    ['app/_layout.tsx', "import { isAllowedUrl } from '@lib/kernel';\n"],
+    ['app/_layout.tsx', "import { createSettingsService } from '@features/settings/service';\n"],
     ['app/_layout.tsx', "import { GlassSurface } from '@shared/glass';\n"],
     ['src/platform/files.ts', "import { File } from 'expo-file-system';\n"],
     ['src/lib/burrito/files.ts', "import { md5 } from '@noble/hashes/legacy.js';\n"],
