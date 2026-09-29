@@ -78,7 +78,7 @@ Every module returns events; the kernel appends them to the journal. Modules nev
 ```
 PackInstallStarted   PackInstalled   PackFailed   PackRemoved   CatalogRefreshed
 PassageOpened   ArticleOpened   StoryOpened   SearchRun
-GroupCreated   SessionStarted   StepCompleted   SessionCompleted
+GroupCreated   SessionStarted   MovementCompleted   SessionCompleted
 TransferOffered   TransferAccepted   TransferProgressed   TransferCompleted   TransferFailed
 ShareSent   ImportReceived   InvitationShown   InvitationTapped
 Failure(code, context)
