@@ -1,0 +1,48 @@
+{
+  "name": "uw-app",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "main": "expo-router/entry",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "sim": "tsx sim/cli.ts run",
+    "replay": "tsx sim/cli.ts replay",
+    "trace": "tsx scripts/trace/cli.ts",
+    "contract": "tsx scripts/contract.ts",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "npm run lint && npm run format:check",
+    "typecheck": "tsx scripts/typecheck.ts",
+    "test": "vitest run",
+    "knip": "knip",
+    "checks": "tsx scripts/checks/cli.ts",
+    "verify": "npm run check && npm run typecheck && npm run test && npm run knip && npm run checks && npm run sim -- all && npm run trace && npm run contract"
+  },
+  "dependencies": {
+    "expo": "~57.0.26",
+    "expo-constants": "~57.0.20",
+    "expo-linking": "~57.0.11",
+    "expo-router": "~57.0.24",
+    "react": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "~4.26.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.20.4",
+    "@types/react": "~19.2.2",
+    "eslint": "^10.11.0",
+    "knip": "^6.38.0",
+    "prettier": "^3.9.9",
+    "tsx": "^4.23.15",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.0",
+    "vitest": "^5.0.2"
+  }
+}
