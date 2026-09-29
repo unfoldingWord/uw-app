@@ -1,8 +1,10 @@
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { GlassButton, GlassSurface } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
+import { useAsyncValue } from '@shared/ui';
 import { createAboutService, type ImpactStoryView } from '../service';
 import { Card, SectionTitle } from './parts/Card';
 import { Line } from './parts/Line';
@@ -14,6 +16,9 @@ export default function AboutScreen() {
   const service = useService(createAboutService);
   const router = useRouter();
   const theme = useTheme();
+  const [focus, setFocus] = useState(0);
+  useFocusEffect(useCallback(() => setFocus((current) => current + 1), []));
+  useAsyncValue(() => service.refreshStories(), [focus]);
   const words = service.words();
   const summary = service.summary();
   const opensBrowser = words.t('common.opensBrowser');

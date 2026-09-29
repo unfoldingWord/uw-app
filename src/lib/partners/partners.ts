@@ -42,6 +42,7 @@ export type PartnersApi = {
   story(slug: string): ImpactStory | undefined;
   open(slug: string): Promise<ImpactStory | undefined>;
   refresh(): Promise<StoriesRefreshOutcome>;
+  refreshIfDue(): Promise<StoriesRefreshOutcome | undefined>;
   give: string;
 };
 
@@ -252,6 +253,23 @@ export const partnersModule = defineModule<PartnersApi>({
 
     const story = (slug: string): ImpactStory | undefined => stories().find((item) => item.slug === slug);
 
+    const refreshedSinceOpen = (): boolean => {
+      const events = context.events();
+      for (let index = events.length - 1; index >= 0; index -= 1) {
+        const type = events[index]?.type;
+        if (type === 'ImpactStoriesRefreshStarted') {
+          return true;
+        }
+        if (type === 'AppOpened') {
+          return false;
+        }
+      }
+      return false;
+    };
+
+    const refreshIfDue = async (): Promise<StoriesRefreshOutcome | undefined> =>
+      refreshedSinceOpen() || !(await http.online()) ? undefined : refresh();
+
     const api: PartnersApi = {
       inUnitedStates: () => inUnitedStates(locale.current()),
       daysOfUse,
@@ -278,6 +296,7 @@ export const partnersModule = defineModule<PartnersApi>({
         return found;
       },
       refresh,
+      refreshIfDue,
       give: giveUrl,
     };
 

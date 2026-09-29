@@ -18,7 +18,7 @@ export default scenario(
     assert.ok((await (await services.onboarding.choose('qaa', { name: 'Jesse' })).done).ok);
     assert.ok((await services.languages.downloadImages()).ok);
     await services.study.open();
-    await services.partners.refresh();
+    await services.home.refreshStories();
     services.home.invitation(localTime(phone).at);
 
     const surfaces = Object.entries(services).flatMap(([feature, service]) =>

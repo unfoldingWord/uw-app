@@ -15,6 +15,16 @@ Everything below ran in Node (the sim, Vitest and the checks); nothing ran on a 
 - HO-4, red first: the extended `HO-4` scenario failed (the card had no `href`). The Continue formation card
   opens `/formation/session/<track>/<number>` for the active group's next session; with no group it still
   opens the Formation tab.
+- PA-6, red first: the rewritten `PA-6` scenario failed (`refreshStories is not a function`). The Home and
+  About services gain `refreshStories()`, which both screens call on focus; it reaches the partners kernel
+  module's new `refreshIfDue()`, which fetches the feed only when the Http port is online and only once per
+  open of the app (it looks back in the journal for an `ImpactStoriesRefreshStarted` since the last
+  `AppOpened`), so switching tabs does not refetch or fill the journal. Offline it journals nothing. The
+  scenario now goes through Home and About only. `src/features/partners/` (service and strings) had no caller
+  outside the sim once Home and About carried the refresh: `grep -rn "features/partners|createPartnersService|
+  partnersWords"` over the repository (excluding `node_modules` and agent worktrees) found only
+  `sim/services.ts`, so the folder is deleted and PA-2 and ON-4 read the kernel's `partners` module or Home
+  instead. The shipped story's copy is unchanged; it still waits on comms (`docs/impact-stories.md`).
 
 ## 2026-09-29 I1 import a burrito file on the phone (SH-3)
 

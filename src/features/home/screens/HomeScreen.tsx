@@ -47,6 +47,7 @@ export default function HomeScreen() {
     [changes, focus],
   );
   const checked = useAsyncValue(() => home.checkForUpdates(), []);
+  useAsyncValue(() => home.refreshStories(), [focus]);
   const updates = useAsyncValue(
     () => home.whatsNew(),
     [changes, focus, download.value?.state, checked.value],

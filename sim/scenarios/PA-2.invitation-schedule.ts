@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import type { DeviceLocale } from '@lib/ports';
 import type { World } from '../world';
 import { scenario } from '../scenario';
-import { servicesOf } from '../services';
 
 const day = 24 * 60 * 60 * 1000;
 
@@ -26,7 +25,7 @@ export default scenario(
       { tag: 'sw-KE', region: 'KE', timeZone: 'Africa/Nairobi' },
       7,
     );
-    assert.deepEqual(servicesOf(kenya).partners.invitation(world.clock.now()), {
+    assert.deepEqual(kenya.kernel.partners.invitation(world.clock.now()), {
       state: 'not-due',
       reason: 'region',
     });
@@ -38,7 +37,7 @@ export default scenario(
       5,
     );
     assert.equal(
-      servicesOf(byZone).partners.invitation(world.clock.now()).state,
+      byZone.kernel.partners.invitation(world.clock.now()).state,
       'due',
       'a US time zone is enough',
     );
@@ -47,7 +46,7 @@ export default scenario(
     await phone.start();
     await phone.restart();
     await phone.restart();
-    const partners = () => servicesOf(phone).partners;
+    const partners = () => phone.kernel.partners;
     assert.equal(partners().daysOfUse(), 1, 'three opens on one day are one day of use');
     for (let opened = 2; opened <= 4; opened += 1) {
       world.clock.advanceDays(1);

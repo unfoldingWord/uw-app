@@ -1,6 +1,7 @@
 import { resourceTypeOf, resourceTypes, type ResourceType } from '@lib/catalog/resourceTypes';
 import type { CatalogRelease } from '@lib/catalog/types';
 import type { Kernel } from '@lib/kernel';
+import type { StoriesRefreshOutcome } from '@lib/partners/partners';
 import type { ImpactStory } from '@lib/partners/stories';
 import { aboutWords, type AboutWords } from './strings';
 
@@ -83,6 +84,7 @@ export type AboutService = {
   licence(): LicenceView;
   story(slug: string): ImpactStoryView | undefined;
   openStory(slug: string): Promise<ImpactStoryView | undefined>;
+  refreshStories(): Promise<StoriesRefreshOutcome | undefined>;
 };
 
 const unfoldingWord = 'unfoldingWord';
@@ -163,6 +165,7 @@ export function createAboutService(kernel: Kernel): AboutService {
     story: (slug) => storyView(kernel, words(), kernel.partners.story(slug)),
     openStory: async (slug) => storyView(kernel, words(), await kernel.partners.open(slug)),
     links: () => linksOf(words()),
+    refreshStories: () => kernel.partners.refreshIfDue(),
     summary() {
       const current = words();
       const releases = kernel.catalog.all();

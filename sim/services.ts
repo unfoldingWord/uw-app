@@ -4,7 +4,6 @@ import { createFormationService } from '@features/formation/service';
 import { createHomeService } from '@features/home/service';
 import { createLanguagesService } from '@features/languages/service';
 import { createOnboardingService } from '@features/onboarding/service';
-import { createPartnersService } from '@features/partners/service';
 import { createSettingsService } from '@features/settings/service';
 import { createShareService } from '@features/share/service';
 import { createStudyService } from '@features/study/service';
@@ -20,7 +19,6 @@ export function servicesOf(device: SimDevice) {
     home: createHomeService(kernel),
     languages: createLanguagesService(kernel),
     onboarding: createOnboardingService(kernel),
-    partners: createPartnersService(kernel),
     settings: createSettingsService(kernel),
     share: createShareService(kernel),
     study: createStudyService(kernel),

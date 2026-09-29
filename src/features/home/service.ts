@@ -4,7 +4,7 @@ import { languagePackId, type PackId } from '@lib/domain/pack';
 import type { Position } from '@lib/formation/types';
 import type { Kernel } from '@lib/kernel';
 import type { InstallOutcome, InstallProgress, PackUpdate } from '@lib/packs/types';
-import type { Invitation } from '@lib/partners/partners';
+import type { Invitation, StoriesRefreshOutcome } from '@lib/partners/partners';
 import type { ImpactStory } from '@lib/partners/stories';
 import { homeWords, type HomeWords } from './strings';
 
@@ -112,6 +112,7 @@ export type HomeService = {
   tapInvitation(): Promise<void>;
   dismissInvitation(): Promise<void>;
   checkForUpdates(): Promise<RefreshOutcome>;
+  refreshStories(): Promise<StoriesRefreshOutcome | undefined>;
   whatsNew(): Promise<readonly WhatsNewItem[]>;
   update(pack: PackId): Promise<InstallOutcome>;
   onChange(listener: () => void): () => void;
@@ -306,6 +307,7 @@ export function createHomeService(kernel: Kernel): HomeService {
     tapInvitation: () => kernel.partners.tap(),
     dismissInvitation: () => kernel.partners.dismiss(),
     checkForUpdates: () => kernel.catalog.refresh(),
+    refreshStories: () => kernel.partners.refreshIfDue(),
     async whatsNew() {
       const current = words();
       const updates = await kernel.packs.updates();
