@@ -49,7 +49,11 @@ export function Row({ title, detail, leading, trailing, below, selected, hint, o
         shadow="rest"
         style={[
           styles.row,
-          { gap: theme.space.sp7, padding: theme.space.sp7 },
+          {
+            gap: theme.space.sp7,
+            paddingVertical: theme.space.sp7,
+            paddingHorizontal: theme.space.gutterCard,
+          },
           focused ? { boxShadow: theme.shadow.glowFocus.css } : null,
         ]}
       >

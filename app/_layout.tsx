@@ -52,18 +52,14 @@ function retryBoot(): Promise<BootState<Kernel>> {
 }
 
 function useAppearance(kernel: Kernel | undefined): Appearance {
-  const [appearance, setAppearance] = useState<Appearance>(() =>
-    kernel === undefined ? {} : serviceOf(kernel, createSettingsService).appearance(),
-  );
+  const [, setVersion] = useState(0);
   useEffect(() => {
     if (kernel === undefined) {
       return undefined;
     }
-    const settings = serviceOf(kernel, createSettingsService);
-    setAppearance(settings.appearance());
-    return settings.onAppearance(setAppearance);
+    return serviceOf(kernel, createSettingsService).onAppearance(() => setVersion((current) => current + 1));
   }, [kernel]);
-  return appearance;
+  return kernel === undefined ? {} : serviceOf(kernel, createSettingsService).appearance();
 }
 
 function useResume(kernel: Kernel | undefined): void {
@@ -101,17 +97,14 @@ function useLayoutDirection(kernel: Kernel | undefined): void {
 }
 
 function useOnboardingNeeded(kernel: Kernel | undefined): boolean {
-  const read = () => (kernel === undefined ? true : serviceOf(kernel, createOnboardingService).needed());
-  const [needed, setNeeded] = useState<boolean>(read);
+  const [, setVersion] = useState(0);
   useEffect(() => {
     if (kernel === undefined) {
       return undefined;
     }
-    const onboarding = serviceOf(kernel, createOnboardingService);
-    setNeeded(onboarding.needed());
-    return serviceOf(kernel, createHomeService).onChange(() => setNeeded(onboarding.needed()));
+    return serviceOf(kernel, createHomeService).onChange(() => setVersion((current) => current + 1));
   }, [kernel]);
-  return needed;
+  return kernel === undefined ? true : serviceOf(kernel, createOnboardingService).needed();
 }
 
 function Routes({ needed }: { needed: boolean }) {

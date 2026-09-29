@@ -26,6 +26,7 @@ export default defineConfig(
       'web-build/**',
       '.claude/**',
       'coverage/**',
+      'shots/**',
       'ios/**',
       'android/**',
       'expo-env.d.ts',
@@ -67,6 +68,14 @@ export default defineConfig(
       '@typescript-eslint/no-restricted-imports': ['error', { patterns: layer.patterns }],
     },
   })),
+  {
+    name: 'uw/shots-page-scripts',
+    files: ['scripts/shots/page-*.js'],
+    languageOptions: {
+      sourceType: 'script',
+      globals: { document: 'readonly', window: 'readonly', getComputedStyle: 'readonly' },
+    },
+  },
   {
     name: 'uw/static-imports',
     files: applicationSources,

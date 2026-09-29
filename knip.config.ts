@@ -9,6 +9,7 @@ const config: KnipConfig = {
     'scripts/*.ts',
     'scripts/*/cli.ts',
     'scripts/checks/*.check.ts',
+    'scripts/shots/page-*.js',
     'sim/scenarios/*.ts',
     'migrations/*.ts',
     'src/features/*/migrations/*.ts',

@@ -103,6 +103,7 @@ function MovementChip({ label, active, done, onPress }: MovementChipProps) {
       accessibilityRole="tab"
       accessibilityLabel={label}
       accessibilityState={{ selected: active, checked: done }}
+      hitSlop={{ top: theme.space.sp4, bottom: theme.space.sp4 }}
       onPress={onPress}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}

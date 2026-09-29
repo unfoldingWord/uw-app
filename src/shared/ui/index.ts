@@ -21,7 +21,7 @@ export { SectionTitle } from './SectionTitle';
 export type { SectionTitleProps } from './SectionTitle';
 export { Sheet } from './Sheet';
 export type { SheetProps } from './Sheet';
-export { TabBar } from './TabBar';
+export { TabBar, useTabBarClearance } from './TabBar';
 export type { TabBarProps, TabItem } from './TabBar';
 export { Tappable } from './Tappable';
 export type { TappableProps, TapTarget } from './Tappable';

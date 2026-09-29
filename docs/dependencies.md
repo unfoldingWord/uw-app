@@ -50,6 +50,11 @@ list. Versions live in `package.json`; the lock file is committed.
 | vitest | ^5.0.2 | Jest; runs tests and scenarios in plain Node with ES modules and TypeScript |
 | knip | ^6.38.0 | Hand audits for unused files, exports, types and dependencies |
 | tsx | ^4.23.15 | A compile step before running `sim/` and `scripts/` in Node; resolves the tsconfig path aliases |
+| react-native-web | ^0.21.3 | A hand-written DOM renderer for the QA render harness (`npm run shots`); dev only, never in the iOS or Android bundle (the bundle check refuses it) |
+| @expo/metro-runtime | ~57.0.16 | Nothing; what `expo export --platform web` needs for the QA render harness, the version SDK 57 names |
+| sql.js | ^1.14.2 | A hand-written SQL engine for the memory Db adapter in the browser; the QA render harness loads the WebAssembly build in place of `node:sqlite` (MIT, no network). It has no FTS5, so the full-text index cannot be opened in the harness |
+| @types/sql.js | ^1.4.11 | Hand-written declarations for sql.js |
+| playwright-core | 1.56.1 | Screenshots by hand; drives the Chromium already installed at `/opt/pw-browsers` (pinned to the build that browser ships with) for `npm run shots`. Apache-2.0, downloads nothing on its own |
 
 ## Evaluated and not taken
 

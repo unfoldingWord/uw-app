@@ -3,6 +3,71 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 U2 Render harness and visual QA in Chromium
+
+Node v22.22.2, Chromium 141 (Playwright build 1194 at `/opt/pw-browsers`) through playwright-core 1.56.1.
+Every screen was rendered, in a browser through React Native Web, not on a phone or a simulator.
+
+- `npm run shots` (not part of `npm run verify`): the sim writes five device images from the fixture world
+  (`fresh`, `fresh-rtl`, `home`, `reduced-blur`, `rtl`: qaa installed with the image and audio packs, name Grace,
+  the Tuesday group started, three saved items, RUT 1:16 last read; reduced blur on; app locale ar), `expo export
+  --platform web` builds the app with `src/platform/ports.web.ts` (the memory adapters over sql.js, restored from
+  the image), a static server serves both, and Playwright shoots 23 routes and states at 360x800 in light, dark
+  (colour scheme emulation), reduced blur and RTL (`dir=rtl`, device locale ar): 92 PNGs plus `shots/index.html`,
+  one contact sheet PNG per mode and `shots/report.json` (unnamed controls, controls under 44 px, horizontal
+  overflow, console errors). The optional workflow `.github/workflows/shots.yml` uploads them.
+- `npm run bundle` now exports with source maps and fails when the Android or iOS bundle holds a module from
+  `sim/`, `scripts/`, sql.js or react-native-web. Red with a throwaway `src/platform/ports.native.ts` importing
+  `@sim/adapters/ids`: `bundle android: FAIL, the native bundle holds 1 QA harness modules: sim/adapters/ids.ts`
+  (same on iOS); green: Android 1895 and iOS 1762 modules, none from those roots.
+
+### Found by looking, and fixed
+
+| Screen | Before | After |
+|---|---|---|
+| Every deep link (`/study`, `/diagnostics`) | redirected to Home: the root layout's first render after boot read `needed = true` from stale state, so `Stack.Protected` bounced the URL (a launch-time flash of the onboarding guard on a phone is an inference) | the root layout reads onboarding and appearance from the kernel on each render and subscribes for changes |
+| Aurora field, story and session wells, protection gradients, refraction | blank on web (`experimental_backgroundImage` is unknown to React Native Web) | `backgroundImage()` in `src/shared/theme` (the web file maps to CSS); native unchanged |
+| Home, Continue formation tile | grey night glass | Ocean to Inspire gradient from the prototype (`prototypeValues.sessionTile`) |
+| Every GlassInput (onboarding name, language search, settings name) | placeholder, text and search icon blurred by the glass layer (web paint order); the 19 px text field was the only tappable part of a 58 px pill | field and icons above the blur; the field fills the pill height; the browser focus rectangle is off (the pill keeps its focus glow) |
+| Study passage | audio bar and the bottom of the helps panel under the tab bar; the chosen verse (RUT 1:16) off screen under the helps panel; helps chips wrapped to two lines at 360 px | `useTabBarClearance()` reserves the tab bar; `scrollToIndex` retries after measuring (three times at most); compact choices scroll sideways on one line |
+| Article in RTL | list bullets on the right of left-to-right text | the article body takes the direction of its own script (`directionOf`) |
+| Settings | App language row inset 14 px, the cards beside it 18 px | 18 px |
+| Chips and choice pills (helps tabs, movement tabs, theme choice) | 30 to 36 px tall with no hit slop | vertical hit slop to 44 px or more |
+
+`npm run shots` after the fixes: 92 shots, 0 console errors, 0 unnamed controls, 0 horizontal overflow. 305
+controls are visually under 44 px (most are 30 px `sm` buttons and chips that already carry hit slop); React
+Native Web ignores `hitSlop`, so the browser cannot measure what a finger gets on a phone.
+
+### Differs from native (web artefacts, not fixed)
+
+- Blur is CSS `backdrop-filter`, not UIVisualEffectView or the Android blur target; shadows are CSS box shadows.
+- `I18nManager.isRTL` does not exist on React Native Web, so directional icons (back and forward chevrons,
+  send) do not mirror in the RTL shots; on a phone with an RTL locale they do.
+- Fonts load through `FontFace`; dynamic type at the platform maximum has no browser equivalent and was not tried.
+- sql.js has no FTS5, so the full-text index cannot be opened in the harness (it is off in every image).
+- Fixture pictures are 150-byte grey JPEGs, so wells show grey; real OBS pictures were not rendered.
+
+### Remaining, not fixed (need a service, string or kernel change)
+
+- Home shows book codes: Continue reading and saved passages say `RUT 1:16`, the audio bar `RUT 1 · audio`;
+  a saved Words article shows its id segment (`god`). The services return codes and ids; a label needs a service
+  change and HO-3 and HO-6 updates.
+- Continue formation has no `Next: <movement>` line (`home.formation.next` exists, unused) and a chevron where the
+  prototype has play.
+- Play audio on Study is always disabled when the audio is on the phone (playback is not wired to the screen).
+- The Study chapter pill uses two round icon buttons; the prototype has bare chevrons.
+- The session screen puts Key idea above the frame card; the prototype shows the frame first.
+- Screens read `Date.now()` for the greeting and the invitation instead of the kernel clock; the harness pins the
+  browser clock to 08:20 UTC to match.
+- RTL layout on a phone follows the device locale, not the app language: Arabic chosen in Settings on an English
+  phone keeps a left-to-right layout (`supportsRTL` in app.config and a reload belong to T13).
+
+### Not verified
+
+- Nothing ran on a phone: native blur, shadows, the Android BlurTarget, fonts, haptics, dynamic type, VoiceOver and
+  TalkBack are unverified. The accessibility audit read DOM roles and names, not the native tree.
+- The hit slop additions and the input height change were not touched with a finger.
+- `.github/workflows/shots.yml` was written, not run.
 ## 2026-09-29 G2 audio playback: the player kernel module, the audio bar and story audio (ST-4, FO-3)
 
 - Red first: `npm run sim -- ST-4` failed with `services.study.listen is not a function` once the scenario

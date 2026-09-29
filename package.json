@@ -24,7 +24,8 @@
     "verify": "npm run check && npm run typecheck && npm run test && npm run knip && npm run checks && npm run sim -- all && npm run trace && npm run contract && npm run bundle",
     "fixtures": "tsx sim/fixtures/build.ts",
     "bundle": "tsx scripts/bundle.ts",
-    "icons": "tsx scripts/icons/cli.ts"
+    "icons": "tsx scripts/icons/cli.ts",
+    "shots": "tsx scripts/shots/cli.ts"
   },
   "dependencies": {
     "@noble/hashes": "^2.4.0",
@@ -58,11 +59,16 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@expo/metro-runtime": "~57.0.16",
     "@types/node": "^22.20.4",
     "@types/react": "~19.2.2",
+    "@types/sql.js": "^1.4.11",
     "eslint": "^10.11.0",
     "knip": "^6.38.0",
+    "playwright-core": "1.56.1",
     "prettier": "^3.9.9",
+    "react-native-web": "^0.21.3",
+    "sql.js": "^1.14.2",
     "tsx": "^4.23.15",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.71.0",
