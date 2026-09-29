@@ -2,7 +2,7 @@ import ts from 'typescript';
 
 export type LiteralFinding = { file: string; line: number; text: string };
 
-export type ScanRules = { prose: boolean };
+export type ScanRules = { prose: boolean; names?: ReadonlySet<string> };
 
 const copyProps: ReadonlySet<string> = new Set([
   'accessibilityLabel',
@@ -75,7 +75,7 @@ export function scanSource(file: string, source: string, rules: ScanRules): Lite
   const findings: LiteralFinding[] = [];
 
   function flag(node: ts.Node, text: string): void {
-    if (flagged.has(node) || !letter.test(text)) {
+    if (flagged.has(node) || !letter.test(text) || rules.names?.has(text) === true) {
       return;
     }
     flagged.add(node);

@@ -55,13 +55,22 @@ function englishKeyOf(text: string): string | undefined {
   return textsOf(tables.en).find((entry) => entry.text === text)?.key;
 }
 
+const tableNames: ReadonlySet<string> = new Set([
+  ...Object.keys(tables.en),
+  ...failureCodes,
+  ...failureCodes.map((code) => `failure.${code}`),
+]);
+
 function literalFindings(): { findings: string[]; files: number } {
   const findings: string[] = [];
   let files = 0;
   for (const root of scannedRoots) {
     for (const path of filesUnder(root.directory)) {
       files += 1;
-      const found = scanSource(path, readFileSync(join(repositoryRoot, path), 'utf8'), root.rules(path));
+      const found = scanSource(path, readFileSync(join(repositoryRoot, path), 'utf8'), {
+        ...root.rules(path),
+        names: tableNames,
+      });
       for (const finding of found) {
         const key = englishKeyOf(finding.text);
         const advice = key === undefined ? 'add it to src/lib/strings' : `use ${key}`;

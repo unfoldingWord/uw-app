@@ -12,7 +12,8 @@
       "@shared/*": ["./src/shared/*"],
       "@platform/*": ["./src/platform/*"],
       "@sim/*": ["./sim/*"],
-      "@design-system/assets/fonts/*": ["./design-system/assets/fonts/*"]
+      "@design-system/assets/fonts/*": ["./design-system/assets/fonts/*"],
+      "@design-system/assets/logo/*": ["./design-system/assets/logo/*"]
     }
   },
   "include": ["app/**/*.ts", "app/**/*.tsx", "src/**/*.ts", "src/**/*.tsx", "expo-env.d.ts"],
