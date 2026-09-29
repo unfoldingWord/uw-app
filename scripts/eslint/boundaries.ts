@@ -170,7 +170,7 @@ export const layers: Layer[] = [
   {
     name: 'shared',
     files: ['src/shared/**'],
-    ignores: ['src/shared/glass/**', 'src/shared/fonts/**'],
+    ignores: ['src/shared/glass/**', 'src/shared/fonts/**', 'src/shared/ui/Logo.tsx'],
     patterns: [
       {
         regex: '^@features(/|$)',
@@ -179,6 +179,26 @@ export const layers: Layer[] = [
       platformFromApplication,
       renderingApis,
       ...applicationBase,
+    ],
+  },
+  {
+    name: 'shared logo',
+    files: ['src/shared/ui/Logo.tsx'],
+    patterns: [
+      {
+        regex: '^@features(/|$)',
+        message: 'src/shared never imports from src/features (AGENTS.md rule 2).',
+      },
+      platformFromApplication,
+      renderingApis,
+      {
+        regex: '^@design-system/(?!assets/logo/logo-horizontal-(color|reversed)\\.png$)',
+        message:
+          'src/shared/ui/Logo.tsx imports only the two horizontal lockups from design-system/ (AGENTS.md section 3, docs/exceptions.md).',
+      },
+      simFromApplication,
+      deviceApis,
+      reactNativeDeviceApis,
     ],
   },
   {

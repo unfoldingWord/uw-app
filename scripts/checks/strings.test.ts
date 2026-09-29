@@ -109,6 +109,22 @@ describe('literal copy scan', () => {
     ]);
   });
 
+  it('reads a string key or a failure code as a name, not as copy', () => {
+    const keyed = [
+      "const back = words.t('common.back');",
+      "const offline = code === 'http.offline';",
+      '<GlassButton accessibilityLabel={words.t(\'common.close\')} title="Read now" />',
+    ].join('\n');
+    const names = new Set(['common.back', 'common.close', 'http.offline']);
+    expect(scanSource('Keyed.tsx', keyed, { prose: true, names }).map((finding) => finding.text)).toEqual([
+      'Read now',
+    ]);
+    expect(scanSource('Keyed.tsx', keyed, { prose: true }).map((finding) => finding.text)).toEqual([
+      'http.offline',
+      'Read now',
+    ]);
+  });
+
   it('leaves prose outside JSX alone where only JSX is scanned, and ignores module names and ids', () => {
     expect(scanSource('Shared.tsx', screen, { prose: false }).map((finding) => finding.text)).toEqual([
       'Read now',

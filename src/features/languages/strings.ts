@@ -2,7 +2,7 @@ import type { Kernel } from '@lib/kernel';
 import type { Words } from '@lib/strings/strings';
 import type { PluralKey, StringKey } from '@lib/strings/table';
 
-type Area = 'languages' | 'storage' | 'resource' | 'common' | 'state' | 'failure';
+type Area = 'languages' | 'storage' | 'resource' | 'transfer' | 'common' | 'state' | 'failure';
 
 type AreaKey<K extends string> = Extract<K, `${Area}.${string}`>;
 

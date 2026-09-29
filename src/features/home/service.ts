@@ -1,4 +1,5 @@
 import type { Bookmark } from '@lib/bookmarks/bookmarks';
+import type { RefreshOutcome } from '@lib/catalog/catalog';
 import { languagePackId, type PackId } from '@lib/domain/pack';
 import type { Position } from '@lib/formation/types';
 import type { Kernel } from '@lib/kernel';
@@ -101,6 +102,7 @@ export type HomeService = {
   invitationShown(at: number): Promise<void>;
   tapInvitation(): Promise<void>;
   dismissInvitation(): Promise<void>;
+  checkForUpdates(): Promise<RefreshOutcome>;
   whatsNew(): Promise<readonly WhatsNewItem[]>;
   update(pack: PackId): Promise<InstallOutcome>;
   onChange(listener: () => void): () => void;
@@ -269,6 +271,7 @@ export function createHomeService(kernel: Kernel): HomeService {
     invitationShown: (at) => kernel.partners.shown(at),
     tapInvitation: () => kernel.partners.tap(),
     dismissInvitation: () => kernel.partners.dismiss(),
+    checkForUpdates: () => kernel.catalog.refresh(),
     async whatsNew() {
       const current = words();
       const updates = await kernel.packs.updates();
