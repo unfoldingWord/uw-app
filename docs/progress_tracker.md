@@ -3,6 +3,40 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 M7b Transfer, Share and diagnostics services, DX-4 and trace enforced
+
+Node v22.22.2. Everything below ran in Node through Vitest, the sim and the checks; nothing ran on a phone,
+no radio was used, and no screen exists for these services yet.
+
+- Added `src/features/transfer`, `src/features/share` and `src/features/diagnostics` on the T8 pattern
+  (`createXService(kernel)`, words from the feature's `strings.ts`). The receiving side of Transfer is one
+  `kernel.packs.install(fromPeer(session))` inside `accept`. Share reads the passage or story through Corpus in
+  the content language and hands it to `kernel.share` with the app language. Diagnostics shares
+  `kernel.journal.export()` and `kernel.snapshot()` through `kernel.share.journal`. Settings gains a
+  `diagnostics` entry.
+- New strings `transfer.code`, `transfer.code.hint`, `transfer.nothing`, drafted in all 16 locales and listed
+  in `docs/strings-review.md`.
+- Feature-service coverage added to SH-1, SH-2, SH-4 and DX-2 (sim helper `transferThroughServices` in
+  `sim/transfer.ts`). Observed red with throwaway edits, each reverted:
+
+| Throwaway edit | Red |
+|---|---|
+| Transfer service installs from a peer session that offers nothing | `FAIL SH-1 ... the result is ready to read` |
+| Share service passes `locale: 'en'` for a passage | `FAIL SH-4 ... the app language is used` |
+| Diagnostics view body reads `settings.diagnostics.about` | `FAIL DX-2 ... Expected values to be strictly deep-equal` |
+| `sim/scenarios/SH-5...ts` moved out of the directory | `npm run trace`: `FAIL no scenario (DX-4): SH-5`, exit 1; `FAIL DX-4 ... every Must requirement has a scenario` |
+
+- The trace functions moved from `scripts/trace/trace.ts` to `sim/trace.ts` (with `traceRepository`) so the
+  DX-4 scenario can run them; the sim may not import `scripts/`. `npm run trace` now passes `--enforce`.
+  SE-2 is accepted on its type-level test through `testProvenRequirements`, recorded in `docs/exceptions.md`.
+- `npm run verify` green: 48 test files, 482 tests; 5 checks pass (strings: 417 keys in 16 locales); sim 52 of
+  52; trace: 51 Must requirements, 50 with a scenario, 1 (SE-2) proven by a test on the documented list,
+  0 unproven, enforced; contract 20 fixture burritos, live skipped offline; bundle android and ios pass.
+- Not verified: any screen over these services; a real radio; installing a received app package on
+  Android (the service reports the file ready to install and stops there); dynamic type and contrast for
+  SE-2; the new translations by a native speaker. `sizeIn` is now copied in four feature `strings.ts` files
+  because features may not import each other and `src/shared/` needs a proposal.
+
 ## 2026-09-29 M7 merge of Transfer and Share (T7b) onto Formation, the platform adapters and T8
 
 Node v22.22.2. Everything below ran in Node through Vitest, the sim and the checks; nothing ran on a phone
