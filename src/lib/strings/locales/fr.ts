@@ -404,12 +404,10 @@ export const fr: LocaleTable = {
   'privacy.title': 'Confidentialité',
   'privacy.summary': 'Rien ne quitte ce téléphone sans que vous ayez choisi de l’envoyer.',
   'privacy.counts':
-    'Quand vous êtes en ligne, l’application n’envoie que ces comptes, sous forme de nombres, sans identifiant.',
+    'L’application compte seulement ces nombres, sur ce téléphone, et n’enverra qu’eux, par lots, quand l’envoi sera activé dans une version ultérieure.',
   'privacy.count.appOpens': 'Combien de fois l’application a été ouverte',
   'privacy.count.languagePackDownloads': 'Combien de packs de langue ont été téléchargés, par langue',
   'privacy.count.transfersCompleted': 'Combien de transferts ont abouti',
-  'privacy.count.transfersByPlatformPair':
-    'Combien de transferts ont abouti, selon le type de chaque téléphone',
   'privacy.count.sharesSent': 'Combien de partages ont été envoyés',
   'privacy.count.formationSessionsStarted': 'Combien de séances de formation ont commencé, par langue',
   'privacy.count.invitationTaps': 'Combien de fois l’invitation au partenariat a été touchée',

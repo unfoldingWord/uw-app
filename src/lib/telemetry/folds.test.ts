@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import type { DomainEvent } from '../domain/events';
-import { emptyTelemetry, foldDaysOfUse, foldTelemetry, telemetryStep } from './folds';
+import {
+  emptyTelemetry,
+  foldDaysOfUse,
+  foldTelemetry,
+  leavingCounts,
+  leavingFolds,
+  telemetryStep,
+} from './folds';
 
 const events: DomainEvent[] = [
   { type: 'AppOpened', at: 1, payload: { day: '2026-01-05' } },
@@ -97,7 +104,7 @@ const events: DomainEvent[] = [
 ];
 
 describe('telemetry folds (PRD section 9)', () => {
-  it('counts exactly the section 9 list and nothing else', () => {
+  it('counts the section 9 list, and the platform pair split of transfers for PRD 14', () => {
     expect(Object.keys(emptyTelemetry).sort()).toEqual([
       'appOpens',
       'formationSessionsStarted',
@@ -118,6 +125,22 @@ describe('telemetry folds (PRD section 9)', () => {
       invitationTaps: 1,
       impactStoryOpens: 1,
     });
+  });
+
+  it('lets only the section 9 fold list leave, and keeps the platform pair split on the phone', () => {
+    expect([...leavingFolds]).toEqual([
+      'appOpens',
+      'languagePackDownloads',
+      'transfersCompleted',
+      'sharesSent',
+      'formationSessionsStarted',
+      'invitationTaps',
+      'impactStoryOpens',
+    ]);
+    const leaving = leavingCounts(foldTelemetry(events));
+    expect(Object.keys(leaving)).toEqual([...leavingFolds]);
+    expect('transfersByPlatformPair' in leaving).toBe(false);
+    expect(leaving.transfersCompleted).toBe(1);
   });
 
   it('is a pure fold: the empty journal counts nothing and a step never mutates', () => {

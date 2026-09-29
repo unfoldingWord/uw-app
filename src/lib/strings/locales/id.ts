@@ -358,11 +358,10 @@ export const id: LocaleTable = {
   'privacy.title': 'Privasi',
   'privacy.summary': 'Tidak ada yang keluar dari ponsel ini kecuali yang Anda pilih untuk dikirim.',
   'privacy.counts':
-    'Saat Anda daring, aplikasi hanya mengirim hitungan berikut, sebagai angka, tanpa tanda pengenal.',
+    'Aplikasi hanya menghitung angka-angka ini, di ponsel ini, dan hanya akan mengirim angka ini, secara berkelompok, setelah pengiriman diaktifkan di rilis berikutnya.',
   'privacy.count.appOpens': 'Berapa kali aplikasi dibuka',
   'privacy.count.languagePackDownloads': 'Berapa paket bahasa yang diunduh, per bahasa',
   'privacy.count.transfersCompleted': 'Berapa pengiriman yang selesai',
-  'privacy.count.transfersByPlatformPair': 'Berapa pengiriman yang selesai, menurut jenis kedua ponsel',
   'privacy.count.sharesSent': 'Berapa kali sesuatu dibagikan',
   'privacy.count.formationSessionsStarted': 'Berapa pertemuan pembinaan yang dimulai, per bahasa',
   'privacy.count.invitationTaps': 'Berapa kali undangan bermitra diketuk',

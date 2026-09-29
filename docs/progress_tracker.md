@@ -25,6 +25,14 @@ Everything below ran in Node (the sim, Vitest and the checks); nothing ran on a 
   partnersWords"` over the repository (excluding `node_modules` and agent worktrees) found only
   `sim/services.ts`, so the folder is deleted and PA-2 and ON-4 read the kernel's `partners` module or Home
   instead. The shipped story's copy is unchanged; it still waits on comms (`docs/impact-stories.md`).
+- PRD 9 and 12, red first: the extended `SE-1` scenario failed (`phone.kernel.telemetry.leaving is not a
+  function`). `leavingFolds` and `leavingCounts` in `src/lib/telemetry/folds.ts` name what may leave the
+  device: the PRD 9 list exactly. The telemetry module gains `leaving()`; the privacy screen lists
+  `leavingFolds`, so it can no longer drift from what would be sent. `transfersByPlatformPair` stays a fold
+  on the phone (PRD 14, SH-1) but is not in either; the decision and a note for Product are in
+  `docs/release-checklist.md`. `privacy.counts` now says the app counts these numbers on the phone and will
+  send only them, in batches, once sending is turned on in a later release, in English and fifteen locales
+  (AI-drafted, `docs/strings-review.md`); `privacy.count.transfersByPlatformPair` is removed everywhere.
 
 ## 2026-09-29 I1 import a burrito file on the phone (SH-3)
 

@@ -376,11 +376,10 @@ export const fa: LocaleTable = {
   'privacy.title': 'حریم خصوصی',
   'privacy.summary': 'هیچ چیز بدون انتخاب شما از این گوشی بیرون نمی‌رود.',
   'privacy.counts':
-    'وقتی آنلاین هستید، برنامه فقط این شمارش‌ها را می‌فرستد، فقط به صورت عدد و بدون هیچ شناسه‌ای.',
+    'برنامه فقط این عددها را، روی همین گوشی، می‌شمارد و وقتی فرستادن در نسخه‌ای بعدی روشن شود، فقط همین‌ها را، به صورت دسته‌ای، می‌فرستد.',
   'privacy.count.appOpens': 'چند بار برنامه باز شد',
   'privacy.count.languagePackDownloads': 'چند بستهٔ زبان بارگیری شد، برای هر زبان',
   'privacy.count.transfersCompleted': 'چند فرستادن کامل شد',
-  'privacy.count.transfersByPlatformPair': 'چند فرستادن کامل شد، بر اساس نوع دو گوشی',
   'privacy.count.sharesSent': 'چند بار چیزی هم‌رسانی شد',
   'privacy.count.formationSessionsStarted': 'چند جلسهٔ شاگردسازی آغاز شد، برای هر زبان',
   'privacy.count.invitationTaps': 'چند بار روی دعوت به شراکت زده شد',

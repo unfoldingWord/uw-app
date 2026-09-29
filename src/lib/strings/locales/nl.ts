@@ -383,12 +383,10 @@ export const nl: LocaleTable = {
   'privacy.title': 'Privacy',
   'privacy.summary': 'Niets verlaat deze telefoon als je er niet zelf voor kiest het te sturen.',
   'privacy.counts':
-    'Als je online bent, stuurt de app alleen deze tellingen, als getallen, zonder kenmerken.',
+    'De app telt alleen deze getallen, op deze telefoon, en stuurt alleen deze, in groepen, zodra versturen in een latere versie wordt aangezet.',
   'privacy.count.appOpens': 'Hoe vaak de app is geopend',
   'privacy.count.languagePackDownloads': 'Hoeveel taalpakketten zijn gedownload, per taal',
   'privacy.count.transfersCompleted': 'Hoeveel keer overzetten is gelukt',
-  'privacy.count.transfersByPlatformPair':
-    'Hoeveel keer overzetten is gelukt, per soort van de twee telefoons',
   'privacy.count.sharesSent': 'Hoe vaak er iets is gedeeld',
   'privacy.count.formationSessionsStarted': 'Hoeveel vormingsbijeenkomsten zijn begonnen, per taal',
   'privacy.count.invitationTaps': 'Hoe vaak op de uitnodiging om partner te worden is getikt',

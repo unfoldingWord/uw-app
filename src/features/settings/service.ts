@@ -3,7 +3,7 @@ import type { PackKind } from '@lib/domain/pack';
 import type { Kernel } from '@lib/kernel';
 import type { RemoveOutcome } from '@lib/packs/types';
 import { localeNames, type Direction, type Locale } from '@lib/strings/locales';
-import type { Telemetry } from '@lib/telemetry/folds';
+import { leavingFolds, type LeavingFold } from '@lib/telemetry/folds';
 import { settingsWords, type SettingsWords } from './strings';
 
 export type ThemeChoice = 'system' | 'light' | 'dark';
@@ -45,7 +45,7 @@ export type StorageView = {
   readonly low: boolean;
 };
 
-export type PrivacyCount = { readonly fold: keyof Telemetry; readonly label: string };
+export type PrivacyCount = { readonly fold: LeavingFold; readonly label: string };
 
 export type PrivacyView = {
   readonly title: string;
@@ -92,17 +92,6 @@ export type SettingsService = {
 };
 
 const lowSpaceBytes = 200 * 1000 * 1000;
-
-const privacyFolds: readonly (keyof Telemetry)[] = [
-  'appOpens',
-  'languagePackDownloads',
-  'transfersCompleted',
-  'transfersByPlatformPair',
-  'sharesSent',
-  'formationSessionsStarted',
-  'invitationTaps',
-  'impactStoryOpens',
-];
 
 function autonymOf(kernel: Kernel, language: string | undefined): string {
   if (language === undefined) {
@@ -239,7 +228,7 @@ export function createSettingsService(kernel: Kernel): SettingsService {
         title: current.t('privacy.title'),
         summary: current.t('privacy.summary'),
         intro: current.t('privacy.counts'),
-        counts: privacyFolds.map((fold) => ({ fold, label: current.t(`privacy.count.${fold}`) })),
+        counts: leavingFolds.map((fold) => ({ fold, label: current.t(`privacy.count.${fold}`) })),
         notes: [current.t('privacy.dropped'), current.t('privacy.never'), current.t('privacy.local')],
       };
     },

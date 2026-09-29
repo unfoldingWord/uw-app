@@ -448,11 +448,11 @@ export const ar: LocaleTable = {
   'licence.row': '{resource} · {publisher} · {version}',
   'privacy.title': 'الخصوصية',
   'privacy.summary': 'لا يغادر هذا الهاتف شيء لم تختر أن ترسله.',
-  'privacy.counts': 'عندما تكون متصلًا، يرسل التطبيق هذه الأعداد فقط، أرقامًا بلا أي معرِّفات.',
+  'privacy.counts':
+    'يعدّ التطبيق هذه الأرقام فقط، على هذا الهاتف، ولن يرسل سواها، على دفعات، عندما يُفعَّل الإرسال في إصدار لاحق.',
   'privacy.count.appOpens': 'عدد مرات فتح التطبيق',
   'privacy.count.languagePackDownloads': 'عدد حزم اللغات المنزَّلة، لكل لغة',
   'privacy.count.transfersCompleted': 'عدد عمليات الإرسال المكتملة',
-  'privacy.count.transfersByPlatformPair': 'عدد عمليات الإرسال المكتملة، حسب نوعي الهاتفين',
   'privacy.count.sharesSent': 'عدد المشاركات المرسلة',
   'privacy.count.formationSessionsStarted': 'عدد لقاءات التكوين التي بدأت، لكل لغة',
   'privacy.count.invitationTaps': 'عدد مرات لمس دعوة الشراكة',

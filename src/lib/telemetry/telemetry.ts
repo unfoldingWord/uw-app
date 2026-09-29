@@ -1,8 +1,17 @@
 import { defineModule, ownsNothing } from '../module';
-import { baselineOf, emptyBaseline, foldFrom, stepBaseline, type Telemetry } from './folds';
+import {
+  baselineOf,
+  emptyBaseline,
+  foldFrom,
+  leavingCounts,
+  stepBaseline,
+  type LeavingCounts,
+  type Telemetry,
+} from './folds';
 
 export type TelemetryApi = {
   counts(): Telemetry;
+  leaving(): LeavingCounts;
   daysOfUse(): readonly string[];
 };
 
@@ -17,6 +26,7 @@ export const telemetryModule = defineModule<TelemetryApi>({
     const current = () => foldFrom(baselineOf(context.baseline()), context.events());
     const api: TelemetryApi = {
       counts: () => current().counts,
+      leaving: () => leavingCounts(current().counts),
       daysOfUse: () => current().days,
     };
     return {

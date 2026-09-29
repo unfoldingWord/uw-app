@@ -75,9 +75,32 @@ export default scenario(
 
     assert.deepEqual(
       settings.privacy().counts.map((count) => count.fold),
-      Object.keys(emptyTelemetry),
+      Object.keys(phone.kernel.telemetry.leaving()),
       'the privacy screen lists exactly the folds that leave the device',
     );
+    assert.deepEqual(
+      Object.keys(phone.kernel.telemetry.leaving()),
+      [
+        'appOpens',
+        'languagePackDownloads',
+        'transfersCompleted',
+        'sharesSent',
+        'formationSessionsStarted',
+        'invitationTaps',
+        'impactStoryOpens',
+      ],
+      'what would leave is the PRD section 9 fold list and nothing else',
+    );
+    assert.ok(
+      'transfersByPlatformPair' in emptyTelemetry,
+      'the platform pair split stays a count on the phone',
+    );
+    assert.equal(
+      phone.kernel.strings.words('en').t('privacy.counts'),
+      'The app counts only these numbers, on this phone, and will send only them, in batches, once sending is turned on in a later release.',
+      'the privacy screen says nothing is sent today',
+    );
+    assert.equal(settings.privacy().intro, phone.kernel.strings.words(settings.locale()).t('privacy.counts'));
     assert.deepEqual(
       (await settings.entries()).map((entry) => entry.id),
       [

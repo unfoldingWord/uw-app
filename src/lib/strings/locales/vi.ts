@@ -355,11 +355,11 @@ export const vi: LocaleTable = {
   'licence.row': '{resource} · {publisher} · {version}',
   'privacy.title': 'Quyền riêng tư',
   'privacy.summary': 'Không có gì rời khỏi điện thoại này nếu bạn không chọn gửi.',
-  'privacy.counts': 'Khi bạn có mạng, ứng dụng chỉ gửi các con số đếm sau, không kèm thông tin nhận dạng.',
+  'privacy.counts':
+    'Ứng dụng chỉ đếm những con số này, trên điện thoại này, và sẽ chỉ gửi chúng, theo từng đợt, khi tính năng gửi được bật trong một bản phát hành sau.',
   'privacy.count.appOpens': 'Số lần ứng dụng được mở',
   'privacy.count.languagePackDownloads': 'Số gói ngôn ngữ đã tải, theo từng ngôn ngữ',
   'privacy.count.transfersCompleted': 'Số lần chuyển đã hoàn tất',
-  'privacy.count.transfersByPlatformPair': 'Số lần chuyển đã hoàn tất, theo loại của hai điện thoại',
   'privacy.count.sharesSent': 'Số lần chia sẻ đã gửi',
   'privacy.count.formationSessionsStarted': 'Số buổi đào tạo đã bắt đầu, theo từng ngôn ngữ',
   'privacy.count.invitationTaps': 'Số lần lời mời đồng hành được chạm',

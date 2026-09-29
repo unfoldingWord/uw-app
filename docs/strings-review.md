@@ -32,8 +32,8 @@ Change a value in place; set it to `null` to fall back to English for that key w
   keys describe an inner fault in plain words; check they do not read as blame or as a warning.
   `failure.transfer.cancelled` was drafted later still, with Transfer: it is shown on both phones when either
   one stops a transfer, so it must not read as the other person's fault.
-  `privacy.count.transfersByPlatformPair` was drafted at the Transfer merge: it names the kind of phone
-  (iPhone or Android) at each end, and must not read as naming a person or a device.
+  `privacy.count.transfersByPlatformPair` was removed in G1: the platform pair split is not on the PRD
+  section 9 fold list, so it never leaves the phone and the privacy screen no longer lists it.
 - **Drafted in T8.** Six keys were added with the feature services and drafted in every locale at once:
   `failure.partners.invalid-feed`, `settings.reducedBlur`, `settings.reducedBlur.about`,
   `impact.securityNote`, `resource.wordLinks` and `resource.wordLinks.about`. `impact.securityNote` is a
@@ -113,3 +113,14 @@ Dates are formatted by the screen layer with the platform's date formatting, and
   chosen for "archive" (`.zip`) is the one phones in that language use. The Arabic draft puts a right-to-left
   mark before `(.zip)` so the parentheses sit on the right side. `languages.import.opened` must read as a
   question the leader can decline, not a warning.
+
+## Changed with the scope gaps (G1)
+
+- `privacy.counts` was "When you are online, the app sends only these counts, as numbers, with no
+  identifiers." Nothing is sent today (no endpoint is chosen), so it now reads "The app counts only these
+  numbers, on this phone, and will send only them, in batches, once sending is turned on in a later
+  release." Redrafted by an AI agent in fifteen locales. It must read as calm and factual, not as a promise
+  of a date; check "in batches" is the plain word for sending several numbers together, not a technical term.
+  `privacy.dropped` ("If the counts cannot be sent, they are dropped") is unchanged and still true of the
+  later release.
+- `privacy.count.transfersByPlatformPair` is removed from English and every locale (see Privacy above).

@@ -378,11 +378,10 @@ export const ur: LocaleTable = {
   'privacy.title': 'رازداری',
   'privacy.summary': 'اس فون سے کچھ بھی باہر نہیں جاتا جسے آپ نے بھیجنا نہیں چنا۔',
   'privacy.counts':
-    'جب آپ آن لائن ہوں، ایپ صرف یہ گنتیاں بھیجتی ہے، صرف اعداد کی صورت میں، بغیر کسی شناخت کے۔',
+    'ایپ صرف یہ اعداد گنتی ہے، اسی فون پر، اور کسی بعد کے ورژن میں بھیجنا شروع ہونے پر صرف یہی، گروہوں میں، بھیجے گی۔',
   'privacy.count.appOpens': 'ایپ کتنی بار کھولی گئی',
   'privacy.count.languagePackDownloads': 'زبان کے کتنے پیک ڈاؤن لوڈ ہوئے، ہر زبان کے لحاظ سے',
   'privacy.count.transfersCompleted': 'کتنی منتقلیاں مکمل ہوئیں',
-  'privacy.count.transfersByPlatformPair': 'کتنی منتقلیاں مکمل ہوئیں، دونوں فون کی قسم کے لحاظ سے',
   'privacy.count.sharesSent': 'کتنی بار کچھ شیئر کیا گیا',
   'privacy.count.formationSessionsStarted': 'شاگردی کی کتنی نشستیں شروع ہوئیں، ہر زبان کے لحاظ سے',
   'privacy.count.invitationTaps': 'شراکت کی دعوت کو کتنی بار چھوا گیا',

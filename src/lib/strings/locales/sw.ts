@@ -378,11 +378,11 @@ export const sw: LocaleTable = {
   'licence.row': '{resource} · {publisher} · {version}',
   'privacy.title': 'Faragha',
   'privacy.summary': 'Hakuna kinachotoka kwenye simu hii ambacho hukuchagua kutuma.',
-  'privacy.counts': 'Ukiwa mtandaoni, programu inatuma hesabu hizi tu, kama namba, bila vitambulisho.',
+  'privacy.counts':
+    'Programu inahesabu namba hizi tu, kwenye simu hii, na itatuma hizi tu, kwa makundi, utumaji utakapowashwa katika toleo lijalo.',
   'privacy.count.appOpens': 'Mara ngapi programu imefunguliwa',
   'privacy.count.languagePackDownloads': 'Vifurushi vingapi vya lugha vimepakuliwa, kwa kila lugha',
   'privacy.count.transfersCompleted': 'Utumaji mingapi umekamilika',
-  'privacy.count.transfersByPlatformPair': 'Utumaji mingapi umekamilika, kwa aina ya simu hizo mbili',
   'privacy.count.sharesSent': 'Mara ngapi kitu kimeshirikiwa',
   'privacy.count.formationSessionsStarted': 'Vipindi vingapi vya malezi vimeanza, kwa kila lugha',
   'privacy.count.invitationTaps': 'Mara ngapi mwaliko wa ushirika umeguswa',

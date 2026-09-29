@@ -376,11 +376,10 @@ export const bn: LocaleTable = {
   'privacy.title': 'গোপনীয়তা',
   'privacy.summary': 'আপনি পাঠাতে না চাইলে এই ফোন থেকে কিছুই বাইরে যায় না।',
   'privacy.counts':
-    'আপনি অনলাইনে থাকলে অ্যাপটি শুধু এই গণনাগুলো পাঠায়, সংখ্যা হিসেবে, কোনো শনাক্তকারী ছাড়া।',
+    'অ্যাপটি শুধু এই সংখ্যাগুলো গোনে, এই ফোনেই, এবং পরের কোনো সংস্করণে পাঠানো চালু হলে শুধু এগুলোই, একসাথে কয়েকটি করে, পাঠাবে।',
   'privacy.count.appOpens': 'অ্যাপটি কতবার খোলা হয়েছে',
   'privacy.count.languagePackDownloads': 'কতগুলো ভাষা প্যাক ডাউনলোড হয়েছে, ভাষা অনুযায়ী',
   'privacy.count.transfersCompleted': 'কতগুলো পাঠানো সম্পন্ন হয়েছে',
-  'privacy.count.transfersByPlatformPair': 'কতগুলো পাঠানো সম্পন্ন হয়েছে, দুই ফোনের ধরন অনুযায়ী',
   'privacy.count.sharesSent': 'কতবার কিছু শেয়ার করা হয়েছে',
   'privacy.count.formationSessionsStarted': 'শিষ্যত্বের কতগুলো সভা শুরু হয়েছে, ভাষা অনুযায়ী',
   'privacy.count.invitationTaps': 'অংশীদার হওয়ার আমন্ত্রণে কতবার ট্যাপ করা হয়েছে',

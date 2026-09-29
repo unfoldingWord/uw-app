@@ -28,6 +28,32 @@ export const emptyTelemetry: Telemetry = Object.freeze({
   impactStoryOpens: 0,
 });
 
+export const leavingFolds = [
+  'appOpens',
+  'languagePackDownloads',
+  'transfersCompleted',
+  'sharesSent',
+  'formationSessionsStarted',
+  'invitationTaps',
+  'impactStoryOpens',
+] as const satisfies readonly (keyof Telemetry)[];
+
+export type LeavingFold = (typeof leavingFolds)[number];
+
+export type LeavingCounts = Pick<Telemetry, LeavingFold>;
+
+export function leavingCounts(counts: Telemetry): LeavingCounts {
+  return {
+    appOpens: counts.appOpens,
+    languagePackDownloads: counts.languagePackDownloads,
+    transfersCompleted: counts.transfersCompleted,
+    sharesSent: counts.sharesSent,
+    formationSessionsStarted: counts.formationSessionsStarted,
+    invitationTaps: counts.invitationTaps,
+    impactStoryOpens: counts.impactStoryOpens,
+  };
+}
+
 function bump(counts: PerLanguage, language: string): PerLanguage {
   return { ...counts, [language]: (counts[language] ?? 0) + 1 };
 }

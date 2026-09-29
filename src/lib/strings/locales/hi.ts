@@ -378,11 +378,10 @@ export const hi: LocaleTable = {
   'privacy.title': 'गोपनीयता',
   'privacy.summary': 'इस फ़ोन से कुछ भी बाहर नहीं जाता जिसे आपने भेजना नहीं चुना।',
   'privacy.counts':
-    'जब आप ऑनलाइन होते हैं, ऐप केवल ये गिनतियाँ भेजता है, केवल संख्याओं के रूप में, बिना किसी पहचान के।',
+    'ऐप केवल ये संख्याएँ गिनता है, इसी फ़ोन पर, और किसी बाद के संस्करण में भेजना चालू होने पर केवल इन्हीं को, समूहों में, भेजेगा।',
   'privacy.count.appOpens': 'ऐप कितनी बार खोला गया',
   'privacy.count.languagePackDownloads': 'कितने भाषा पैक डाउनलोड हुए, हर भाषा के अनुसार',
   'privacy.count.transfersCompleted': 'कितने स्थानांतरण पूरे हुए',
-  'privacy.count.transfersByPlatformPair': 'कितने स्थानांतरण पूरे हुए, दोनों फ़ोन के प्रकार के अनुसार',
   'privacy.count.sharesSent': 'कितनी बार कुछ साझा किया गया',
   'privacy.count.formationSessionsStarted': 'शिष्यता के कितने सत्र शुरू हुए, हर भाषा के अनुसार',
   'privacy.count.invitationTaps': 'साझेदारी के निमंत्रण को कितनी बार छुआ गया',
