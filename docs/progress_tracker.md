@@ -3,6 +3,88 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 T8 Feature services, preference owners and the partner invitation
+
+Node v22.22.2. Everything below ran in Node through Vitest, the sim, the checks and the Metro bundle; nothing
+ran on a phone and no screen exists yet (T10 to T12).
+
+### Observed red, then green
+
+| Test | Red | Green |
+|---|---|---|
+| ON-1, ON-2 (onboarding), ON-3, ON-4, HO-1 to HO-7, ST-1, ST-5 (library cards), ST-10, PA-1, PA-2, PA-3, PA-4, PA-6, SE-1, written before any feature service | each `Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@features/about' imported from sim/services.ts` | `sim: 46 scenarios, 46 passed, 0 failed` |
+| PA-2 with `invitationFirstDay = 4` (throwaway) | `FAIL PA-2 ... Expected values to be strictly deep-equal` | pass |
+| PA-2 with a 30-day quiet period (throwaway) | `FAIL PA-2 ... Expected values to be strictly deep-equal` | pass |
+| ON-3 with `home.name` in the preferences snapshot (throwaway) | `FAIL ON-3 ... the name is in no journal, snapshot or request` | pass |
+| HO-2 ignoring the UTC offset (throwaway) | `FAIL HO-2 ... the hour and the date are local, not UTC` | pass |
+| ST-10 without the `BookmarkRemoved` redo handler (throwaway) | `FAIL ST-10 ... Expected values to be strictly deep-equal` | pass |
+| SE-2 type test (`src/shared/glass/names.test.ts`) with `GlassIconButton.label` optional (throwaway) | `names.test.ts(8,7): error TS2322: Type 'false' is not assignable to type 'true'.` | typecheck pass |
+| `tests/intl-polyfill.test.ts` without the Arabic plural data (throwaway) | `AssertionError: expected { en: [ 'other', 'one', ... ] } to deeply equal ...` | 1 passed |
+| `the invitation rule ... stays quiet for ninety days` (my own test setup was wrong: shown after the dismissal) | `expected { state: 'due', ... } to match object { shown: false }` | 3 passed |
+| `app/_layout.tsx` importing `@lib/network`, added to the refused list after the allowance was removed | refused (`no-restricted-imports`) | `Tests 120 passed` in `boundaries.test.ts` |
+
+The ST-5, HO and PA scenarios passed at their first run once the services existed; the throwaways above show
+they fail without the behaviour they name.
+
+### Decisions
+
+- **Preference-shaped owners are kernel modules** (`preferences`, `bookmarks`, `partners`), not feature
+  stores: a feature service sees only the kernel, so a `store.ts` has no port and cannot emit, and every value
+  is written or read by several features. Exception and proposal:
+  `docs/proposals/2026-09-29-preference-owners-in-the-kernel.md`. No feature has a `store.ts`.
+- **Current content language** is `study.language`, one writer (`preferences`), set by Onboarding, Languages
+  (LA-5) and read by every feature. Onboarding is needed while it is unset.
+- **Last passage** is `study.lastPassage.<language>`, written by `preferences` when it observes
+  `PassageOpened`, so replay rebuilds it from the verbatim events.
+- **"Now"**: services that need the time take it from the caller: `home.greeting({ at, utcOffsetMinutes })`
+  and `invitation(at)`. The screen passes `Date.now()` and the offset; the sim passes its clock. Emitted times
+  still come only from the journal.
+- **Typed text in replay**: `home.name` and `settings.locale` are journaled without a value; their redo
+  journals the same event and stores nothing, and the snapshot shows neither, so the replayed snapshot matches
+  (ON-3, SE-1).
+- **Bookmarks carry the language** (`BookmarkAdded.language`), since Home words each saved item with it.
+- **Invitation**: region from the Locale port's region or a US time zone; fifth distinct day of use from a
+  `partners` checkpoint fold of `AppOpened` days; hidden ninety days after a dismissal; `InvitationShown`
+  once per cycle. Inferences are listed in `docs/impact-stories.md`.
+- **Impact stories**: one shipped story, a feed at a named constant with an undecided address, images
+  downloaded beside and renamed over under `partners/images/`. New events `ImpactStoriesRefreshStarted`
+  (redo) and `ImpactStoriesRefreshed`; new failure code `partners.invalid-feed`, step `impact-stories`.
+- **Online signal**: `catalog.online()` exposes the Http port's offline signal so Home and Study can say a
+  download waits for a connection.
+- **Resource types** for the library cards and About are one classification, `resourceTypeOf` in
+  `src/lib/catalog/resourceTypes.ts`.
+- **Words**: `kernel.strings.words(locale)` binds a locale; each feature's `strings.ts` narrows the keys to its
+  areas and binds the app locale from `preferences`. Size formatting uses `Intl.NumberFormat`, which lint keeps
+  out of `src/lib`, so it lives in the three feature `strings.ts` that need it (settings, home, languages).
+- **Exception closed**: the root layout's `@lib/network` allowance. `src/lib/kernel.ts` re-exports `hostOf`
+  and `isAllowedUrl`; the lint layer admits only `@lib/kernel`, and a boundary test refuses `@lib/network`.
+- **Appearance**: the root layout reads `appearance()` and `onAppearance` from the settings service; the
+  system scheme and the reduced-blur default apply when no override is set.
+- **Plural rules on Hermes**: `src/platform/intl.ts` loads the formatjs polyfills and CLDR plural data for the
+  sixteen locales, imported first in `app/_layout.tsx`. That Hermes lacks `Intl.PluralRules` is an inference;
+  the polyfill installs only when it is missing.
+- **Trace stays reporting.** `--enforce` would fail on SH-1, SH-2, SH-4, SH-5 and DX-2 (Transfer and Share,
+  in progress elsewhere), SE-2 (a test, not a scenario, since the sim renders nothing) and DX-4.
+
+`npm run verify` exit 0: `Test Files 45 passed`, `Tests 459 passed`; `owns: 11 owners, 20 tables, 14
+created by migrations, one writer each`; `5 checks, 0 pending, none failed`; `sim: 46 scenarios, 46 passed, 0
+failed`; `trace: 51 Must requirements, 44 with a scenario, 1 with a test only, 6 unproven`; `contract: 20
+fixture burritos, 0 failed`; `bundle android: pass`, `bundle ios: pass`.
+
+### Not verified
+
+- Nothing ran on a phone: the polyfill on Hermes, `Intl.DateTimeFormat` with `timeZone: 'UTC'` for the Home
+  date on Hermes, the Kv and SQLite writes of the new modules on the platform adapters, and the root layout
+  re-rendering on an Appearance change.
+- **Audio streaming (ST-4)**: the fixtures carry no stream address, so Study offers only the downloaded clip
+  or the audio pack download; `AudioView` has no streaming state yet.
+- **Never modal (PA-2)** and **SE-2** beyond the type level are screen properties, for T10 to T12.
+- The shipped impact story's body, its security note and its image await communications
+  (`docs/impact-stories.md`). The BT Servant link is the prototype's placeholder, `https://unfoldingword.org`.
+- The feed address `https://unfoldingword.org/app/impact-stories.json` is not published; PA-6 was proven
+  against the sim serving that address.
+- Six new strings were drafted in fifteen locales by an agent (`docs/strings-review.md`).
+
 ## 2026-09-29 T6 Formation
 
 Node v22.22.2. Everything below ran in Node through Vitest, the sim and the checks; nothing ran on a phone

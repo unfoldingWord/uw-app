@@ -43,7 +43,7 @@ if (stray.length > 0) {
 }
 if (!enforce) {
   console.log(
-    'trace: reporting only for the missing scenarios; T8 adds --enforce to the trace script so a Must requirement without a scenario fails',
+    'trace: reporting only for the missing scenarios; --enforce is added once Transfer and Share bring SH-1, SH-2, SH-4, SH-5 and DX-2, and SE-2 and DX-4 have the proof the PRD asks for (docs/progress_tracker.md)',
   );
 }
 process.exitCode = stray.length > 0 || (enforce && noScenario.length > 0) ? 1 : 0;
