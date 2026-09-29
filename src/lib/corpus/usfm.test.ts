@@ -1,0 +1,96 @@
+import { describe, expect, it } from 'vitest';
+import type { Token } from './types';
+import { parseUsfm } from './usfm';
+
+function words(tokens: readonly Token[]): string[] {
+  return tokens.flatMap((token) => (token.kind === 'word' ? [token.text] : []));
+}
+
+const aligned = String.raw`\id TIT EN_ULT en_English_ltr
+\usfm 3.0
+\h Titus
+\toc1 The Letter of Paul to Titus
+\toc2 Titus
+\toc3 Tit
+\mt Titus
+
+\s5
+\c 1
+\p
+\v 1 \zaln-s |x-strong="G39720" x-lemma="Παῦλος" x-morph="Gr,N,,,,,NMS," x-occurrence="1" x-occurrences="1" x-content="Παῦλος"\*\w Paul|x-occurrence="1" x-occurrences="1"\w*\zaln-e\*,
+\zaln-s |x-strong="G14010" x-lemma="δοῦλος" x-occurrence="1" x-occurrences="1" x-content="δοῦλος"\*\zaln-s |x-strong="G23160" x-lemma="θεός" x-occurrence="1" x-occurrences="1" x-content="Θεοῦ"\*\w a|x-occurrence="1" x-occurrences="1"\w*
+\w servant|x-occurrence="1" x-occurrences="1"\w*\zaln-e\*
+\w of|x-occurrence="1" x-occurrences="1"\w*
+\w God|x-occurrence="1" x-occurrences="1"\w*\zaln-e\*\f + \ft A footnote that is not text.\f*.
+\ts\*
+\v 2-3 \add In\add* the hope of \nd eternal\nd* life.
+\q1 A poetic line
+\c 2
+\p
+\v 1 Speak what fits.`;
+
+describe('parseUsfm', () => {
+  it('reads the book code and its names', () => {
+    const book = parseUsfm(aligned);
+    expect(book.code).toBe('TIT');
+    expect(book.name).toBe('Titus');
+    expect(book.names).toEqual(['Titus', 'The Letter of Paul to Titus', 'Tit']);
+  });
+
+  it('keeps each word with the original words it is aligned to, nested alignment included', () => {
+    const [first] = parseUsfm(aligned).chapters.get(1) ?? [];
+    expect(first?.text).toBe('Paul, a servant of God.');
+    const tokens = (first?.tokens ?? []).filter((token) => token.kind === 'word');
+    expect(
+      tokens.map((token) => [token.index, token.text, token.original.map((word) => word.content)]),
+    ).toEqual([
+      [0, 'Paul', ['Παῦλος']],
+      [1, 'a', ['δοῦλος', 'Θεοῦ']],
+      [2, 'servant', ['δοῦλος', 'Θεοῦ']],
+      [3, 'of', ['δοῦλος']],
+      [4, 'God', ['δοῦλος']],
+    ]);
+    expect(tokens[0]?.original[0]).toEqual({
+      content: 'Παῦλος',
+      lemma: 'Παῦλος',
+      strong: 'G39720',
+      occurrence: 1,
+      occurrences: 1,
+    });
+  });
+
+  it('drops footnotes, milestones and character markers, and keeps a verse bridge', () => {
+    const verses = parseUsfm(aligned).chapters.get(1) ?? [];
+    expect(verses.map((verse) => [verse.verse, verse.through, verse.text])).toEqual([
+      [1, undefined, 'Paul, a servant of God.'],
+      [2, 3, 'In the hope of eternal life. A poetic line'],
+    ]);
+  });
+
+  it('splits plain text into words with no alignment and starts each chapter afresh', () => {
+    const book = parseUsfm(aligned);
+    const [second] = book.chapters.get(2) ?? [];
+    expect(second?.text).toBe('Speak what fits.');
+    expect(words(second?.tokens ?? [])).toEqual(['Speak', 'what', 'fits']);
+    expect(second?.tokens.every((token) => token.kind === 'text' || token.original.length === 0)).toBe(true);
+  });
+
+  it('passes right-to-left text and original-language word markers through unchanged', () => {
+    const hebrew = parseUsfm(
+      String.raw`\id RUT
+\h רות
+\c 1
+\p
+\v 16 \w וַתֹּאמֶר|lemma="אָמַר" strong="c:H0559" x-morph="He,C:Vqw3fs"\w* \w רוּת|lemma="רוּת" strong="H7327"\w*׃`,
+    );
+    const [verse] = hebrew.chapters.get(1) ?? [];
+    expect(hebrew.name).toBe('רות');
+    expect(verse?.text).toBe('וַתֹּאמֶר רוּת׃');
+    expect(words(verse?.tokens ?? [])).toEqual(['וַתֹּאמֶר', 'רוּת']);
+  });
+
+  it('reads Windows line endings and a book with no verses', () => {
+    expect(parseUsfm('\\id JUD\r\n\\h Jude\r\n').chapters.size).toBe(0);
+    expect(parseUsfm('\\id JUD\r\n\\c 1\r\n\\v 1 Jude.\r\n').chapters.get(1)?.[0]?.text).toBe('Jude.');
+  });
+});
