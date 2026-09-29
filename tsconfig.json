@@ -11,7 +11,8 @@
       "@features/*": ["./src/features/*"],
       "@shared/*": ["./src/shared/*"],
       "@platform/*": ["./src/platform/*"],
-      "@sim/*": ["./sim/*"]
+      "@sim/*": ["./sim/*"],
+      "@design-system/assets/fonts/*": ["./design-system/assets/fonts/*"]
     }
   },
   "include": ["app/**/*.ts", "app/**/*.tsx", "src/**/*.ts", "src/**/*.tsx", "expo-env.d.ts"],

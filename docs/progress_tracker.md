@@ -65,6 +65,59 @@ The throwaway script was deleted and the archive regenerated before the green ru
 - The fixture JPEG (8x8 grey baseline) and MP3 (silent MPEG-1 Layer III frames) bytes were built by hand and never
   decoded by an image or audio decoder; no decoder is available here.
 - The provisional flavors (`docs/proposals/2026-09-29-provisional-flavors.md`) await human approval.
+## 2026-09-29 T9a theme, fonts and glass primitives
+
+`src/shared/theme` mirrors every custom property in `design-system/tokens/*.css` by its CSS name
+(`tokens.ts`: 193 `:root` tokens, 55 `[data-theme="dark"]` overrides, 3 `prefers-reduced-motion` overrides,
+6 keyframes), and `createTheme({ scheme, reducedBlur, reducedMotion })` resolves them into React Native values
+under camel-cased names (`--glass-fill-2` is `theme.color.glassFill2`, `--shadow-card` is
+`theme.shadow.shadowCard`). `src/shared/fonts` mirrors the 18 `@font-face` rules. `src/shared/glass` holds the
+ten primitives. Deviations from the `.d.ts` props and the non-token values copied from the reference `.jsx`
+are in `docs/exceptions.md`.
+
+`npm ci` failed at `f7dddbb` with ERESOLVE: nothing pinned `react-dom`, npm resolved 19.3.0, and that wants
+react ^19.3.0 against the pinned 19.2.3. Pinning `react-dom` 19.2.3 (the SDK 57 bundled version) fixed it;
+`rm -rf node_modules && npm ci` then completed.
+
+### Checks observed red once
+
+| Check | Command | Throwaway | Red output (excerpt) |
+|---|---|---|---|
+| Tokens agree | `npm run checks` (exit 1) | In `src/shared/theme/tokens.ts`: `--glass-fill-2` changed to `.5`, `--blur-heavy` deleted, `--r-throwaway` added; in `src/shared/fonts/faces.ts`: Inter Regular weight `450` | `FAIL tokens` / `:root: missing --blur-heavy` / `:root: extra --r-throwaway, not in design-system/tokens` / `:root: --glass-fill-2: tokens say 'rgba(255,255,255,.46)', theme says 'rgba(255,255,255,.5)'` / `@font-face: missing Inter \| Inter-Regular.ttf \| 400 ...` / `@font-face: extra Inter \| Inter-Regular.ttf \| 450 ...` |
+
+Both files were restored and the check passed: `pass tokens: 193 tokens, 55 dark overrides, 3 reduced-motion
+overrides, 6 keyframes and 18 font faces agree`. The face key format was tidied after the red run. The check
+also fails when a face names a file missing from `design-system/assets/fonts`.
+
+### What the tests cover
+
+In Node (`vitest`): every token resolves in both schemes with no `var()` left; every token has a category and
+a derived value under its camel-cased name; dark re-points only the aliases; reduced-blur mode zeroes every
+blur step and leaves every other value equal; reduced motion shortens `--dur-base`, `--dur-slow` and
+`--dur-morph`; px, em, ms, cubic-bezier, border, shadow and font shorthand conversions; text roles pick the
+shipped face (`--type-hero` is `InterDisplay-Medium` 28/32.48, -0.56 letter spacing); Noto faces for Arabic,
+Urdu and Bengali; keyframe parsing and timelines; the DotRing and Filament geometry against the reference
+formulas; shadow splitting into outer and inset layers. The primitives themselves are type-checked, not
+rendered.
+
+### Not verified
+
+- Nothing was rendered. No primitive has been seen on a phone, a simulator or react-native-web, in light,
+  dark or reduced-blur mode, at 360 px, at maximum dynamic type or in right-to-left. T10 renders them.
+- React Native 0.86 accepts `boxShadow` strings (outset and inset) and `experimental_backgroundImage` linear
+  and radial gradients by its type definitions and its style parsers (read in `node_modules`); the token
+  strings were not run through those parsers.
+- Blur: `expo-blur` takes an intensity from 0 to 100, not a radius. The ladder maps linearly onto
+  `--blur-heavy` (8, 16, 24, 40, 64 px give 13, 25, 38, 63, 100). The `systemUltraThinMaterial` tints are the
+  least tinted iOS materials but still tint. `saturate(160%)` has no React Native equivalent and is dropped.
+  On Android the blur samples only the AuroraField backdrop (`BlurTargetView`), and only on Android 12 and
+  later; older Android renders the flat fill, which is the reduced-blur look. None of this was seen.
+- The aurora's `filter: blur(28px)` in the reference `AuroraField.jsx` is not applied; the radial gradients
+  already fade to zero. Not compared side by side.
+- Fonts: `useThemeFonts()` loads each face under its file name. Whether Metro resolves the
+  `@design-system/assets/fonts/*` alias for `.ttf` assets, and whether `fontWeight` selects weights inside the
+  variable Nunito Sans and Noto files on iOS and Android, is unverified.
+- `StatusBar` needs a `SafeAreaProvider` above it; the app layout (T10) provides it.
 
 ## 2026-09-29 T1 toolchain and checks
 
