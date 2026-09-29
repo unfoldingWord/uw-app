@@ -285,9 +285,9 @@ export const layers: Layer[] = [
     files: ['app/_layout.tsx'],
     patterns: [
       {
-        regex: '^@lib/(?!kernel$)',
+        regex: '^@lib/(?!(kernel|network)$)',
         message:
-          'The root layout is the composition root: it calls createKernel from @lib/kernel with the platform adapters, and nothing else from src/lib (AGENTS.md section 1).',
+          'The root layout is the composition root: it calls createKernel from @lib/kernel with the platform adapters and hands them the host allowlist from @lib/network, and nothing else from src/lib (AGENTS.md section 1, docs/exceptions.md).',
       },
       {
         regex: '^@features/(?![^/]+/(screens/|service$))',
