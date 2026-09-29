@@ -21,7 +21,7 @@ export type ContractCase = {
   run(subject: ContractSubject): Promise<void>;
 };
 
-export class ContractFailure extends Error {}
+class ContractFailure extends Error {}
 
 function check(condition: boolean, message: string): void {
   if (!condition) {

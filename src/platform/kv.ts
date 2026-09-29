@@ -2,7 +2,7 @@ import { SQLiteStorage } from 'expo-sqlite/kv-store';
 import type { Kv } from '@lib/ports';
 import { messageOf, portError } from './errors';
 
-export const preferencesDatabaseName = 'uw-preferences.db';
+const preferencesDatabaseName = 'uw-preferences.db';
 
 async function writing(key: string, work: () => Promise<unknown>): Promise<void> {
   try {

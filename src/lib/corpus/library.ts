@@ -21,13 +21,13 @@ export type Library = {
   indexes(): readonly IndexRow[];
 };
 
-export const noIndex: IndexStatus = Object.freeze({ built: false, entries: 0, bytes: 0 });
+const noIndex: IndexStatus = Object.freeze({ built: false, entries: 0, bytes: 0 });
 
-export const bookCacheEntries = 4;
+const bookCacheEntries = 4;
 
-export const bookCacheBytes = 32 * 1024 * 1024;
+const bookCacheBytes = 32 * 1024 * 1024;
 
-export const smallCacheEntries = 256;
+const smallCacheEntries = 256;
 
 const bookScoped = /^(usfm|notes|links|questions):/;
 

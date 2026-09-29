@@ -19,7 +19,7 @@ export type BookmarksApi = {
   onChange(listener: () => void): () => void;
 };
 
-export const bookmarkTables: readonly string[] = ['bookmarks'];
+const bookmarkTables: readonly string[] = ['bookmarks'];
 
 type Stored = Bookmark & { readonly ordinal: number };
 

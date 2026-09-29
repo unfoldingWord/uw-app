@@ -23,14 +23,14 @@ function within(path: string, directory: string): boolean {
   return root.length > 0 && root.every((part, index) => parts[index] === part);
 }
 
-export function ownsPath(scope: Scope, path: string): boolean {
+function ownsPath(scope: Scope, path: string): boolean {
   if (segments(path).some((part) => part === '.' || part === '..')) {
     return false;
   }
   return scope.directories.some((directory) => within(path, directory));
 }
 
-export function ownsKey(scope: Scope, key: string): boolean {
+function ownsKey(scope: Scope, key: string): boolean {
   return scope.keys.some((owned) => key === owned || key.startsWith(`${owned}.`));
 }
 

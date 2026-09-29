@@ -12,13 +12,13 @@ export const diagnosticsDirectory = 'diagnostics';
 
 export const diagnosticsPath = `${diagnosticsDirectory}/journal.json`;
 
-export const diagnosticsMimeType = 'application/json';
+const diagnosticsMimeType = 'application/json';
 
 export type JournalReport = { journal: JournalExport; snapshot: DeviceSnapshot };
 
 type Words = Pick<StringsApi, 't'>;
 
-export function attributionOf(words: Words, locale: Locale, provenance: Provenance): string {
+function attributionOf(words: Words, locale: Locale, provenance: Provenance): string {
   return words.t('share.payload.attribution', locale, {
     resource: provenance.title,
     publisher: provenance.publisher,
@@ -39,7 +39,7 @@ function verseText(verse: Verse): string {
   return `${number} ${verse.text}`;
 }
 
-export function passageTitle(passage: Passage): string {
+function passageTitle(passage: Passage): string {
   const space = passage.reference.indexOf(' ');
   const place = space === -1 ? '' : passage.reference.slice(space);
   return `${passage.text.bookName}${place}`;

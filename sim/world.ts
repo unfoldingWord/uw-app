@@ -15,7 +15,7 @@ export type World = {
 
 export type WorldOptions = { at?: number; utcOffsetMinutes?: number; maxChunkBytes?: number };
 
-export const worldChunkBytes = 4096;
+const worldChunkBytes = 4096;
 
 export function createWorld(options: WorldOptions = {}): World {
   const clock = createMemoryClock(options);

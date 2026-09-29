@@ -42,7 +42,7 @@ function joined(parts: readonly Uint8Array[]): Uint8Array {
   return bytes;
 }
 
-export const maximumMessageBytes = 4 * 1024 * 1024;
+const maximumMessageBytes = 4 * 1024 * 1024;
 
 export function createWire(link: TransportLink, maxChunkBytes: number): Wire {
   async function frame(): Promise<Decoded | undefined> {
@@ -125,7 +125,7 @@ export function createDigest(): Digest {
   };
 }
 
-export const reportedSteps = 10;
+const reportedSteps = 10;
 
 export function crossesStep(before: number, after: number, total: number): boolean {
   if (total <= 0) {

@@ -5,7 +5,7 @@ export function compareText(left: string, right: string): number {
   return left < right ? -1 : 1;
 }
 
-export const leadingPublisher = 'unfoldingWord';
+const leadingPublisher = 'unfoldingWord';
 
 export function comparePublishers(left: string, right: string): number {
   if (left === right) {

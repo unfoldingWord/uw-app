@@ -32,7 +32,7 @@ import { parentOf, removeIfPresent } from './tree';
 import type { InstalledBurrito, InstalledPack, InstallOutcome, InstallProgress } from './types';
 import { writeInstalledPack } from './store';
 
-export const archiveTimeoutMs = 120_000;
+const archiveTimeoutMs = 120_000;
 
 const reportedSteps = 10;
 
@@ -169,7 +169,7 @@ export async function resolveSource(ports: ModulePorts, source: PackSource): Pro
   }
 }
 
-export function targetOfPack(pack: PackId): Target | undefined {
+function targetOfPack(pack: PackId): Target | undefined {
   const [kindName, first] = pack.split(':');
   const kind = packKinds.find((item) => item === kindName);
   if (kind === undefined) {

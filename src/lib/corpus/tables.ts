@@ -3,7 +3,7 @@ import { isProvenance, type Provenance } from '../domain/provenance';
 import type { Db, DbTransaction, DbRow } from '../ports';
 import type { CorpusKind, Direction, IndexStatus, TitleKind } from './types';
 
-export const tokenizers = ['words', 'trigram'] as const;
+const tokenizers = ['words', 'trigram'] as const;
 
 export type Tokenizer = (typeof tokenizers)[number];
 

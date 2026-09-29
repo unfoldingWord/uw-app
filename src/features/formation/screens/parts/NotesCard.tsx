@@ -6,7 +6,7 @@ import type { FormationService, FormationWords, Track } from '../../service';
 import { Card } from './Card';
 import { Line } from './Line';
 
-export const noteSettleMs = 900;
+const noteSettleMs = 900;
 
 type SaveState =
   | { readonly state: 'idle' }

@@ -24,7 +24,7 @@ const reExport =
   /^export \{ default \} from '@features\/([a-z][A-Za-z0-9-]*)\/screens\/([A-Z][A-Za-z0-9]*)';\n?$/;
 const quotedRoute = /(['"])(\/[A-Za-z][^'"\s]*)\1/g;
 
-export const rootLayout = 'app/_layout.tsx';
+const rootLayout = 'app/_layout.tsx';
 
 function segmentOf(part: string): RouteSegment {
   if (catchAllSegment.test(part)) {

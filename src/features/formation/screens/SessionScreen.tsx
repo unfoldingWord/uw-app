@@ -28,7 +28,7 @@ import { Screen } from './parts/Screen';
 import { useLoad } from './parts/useLoad';
 import { sectionTitle, sessionHref, storyShareHref } from './parts/wording';
 
-export const frameDwellMs = 6000;
+const frameDwellMs = 6000;
 
 const sessionMovementIds: readonly SessionMovementId[] = sessionMovements;
 

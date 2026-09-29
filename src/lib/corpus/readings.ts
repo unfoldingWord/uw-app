@@ -1,9 +1,9 @@
 import type { LocalizedText } from '../burrito/metadata';
 import type { CorpusKind, Reading, TextChoice } from './types';
 
-export const literalTextCodes: readonly string[] = ['ult', 'ulb', 'glt', 'rlob', 'irv', 'ayt'];
+const literalTextCodes: readonly string[] = ['ult', 'ulb', 'glt', 'rlob', 'irv', 'ayt'];
 
-export const simplifiedTextCodes: readonly string[] = ['ust', 'udb', 'gst', 'rsob', 'ueb'];
+const simplifiedTextCodes: readonly string[] = ['ust', 'udb', 'gst', 'rsob', 'ueb'];
 
 const simplifiedNames =
   /simplif|dynamic|easy|plain|everyday|sencill|facile|fácil|упрощ|простой|sederhana|mudah|dễ hiểu|giản|简|簡|आसान|সরল|آسان|ساده|مبسط|rahisi|eenvoudig/iu;

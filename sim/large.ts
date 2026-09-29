@@ -25,7 +25,7 @@ function generator(seed: number): () => number {
   };
 }
 
-export function alignedBook(code: string, versesPerChapter: number, wordsPerVerse: number, seed = 7): string {
+function alignedBook(code: string, versesPerChapter: number, wordsPerVerse: number, seed = 7): string {
   const book = bookByCode(code);
   if (book === undefined) {
     throw new Error(`${code} is not a book`);

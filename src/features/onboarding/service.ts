@@ -35,7 +35,7 @@ export type OnboardingService = {
   continueInEnglish(options?: ChooseOptions): Promise<Chosen>;
 };
 
-export const englishLanguage = 'en';
+const englishLanguage = 'en';
 
 async function startLanguagePack(
   kernel: Kernel,

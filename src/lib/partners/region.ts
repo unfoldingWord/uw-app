@@ -1,6 +1,6 @@
 import type { DeviceLocale } from '../ports';
 
-export const unitedStatesZones: readonly string[] = Object.freeze([
+const unitedStatesZones: readonly string[] = Object.freeze([
   'America/New_York',
   'America/Detroit',
   'America/Chicago',

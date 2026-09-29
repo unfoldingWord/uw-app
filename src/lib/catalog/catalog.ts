@@ -12,9 +12,9 @@ import type { CatalogLanguage, CatalogRelease } from './types';
 
 export const catalogSearchUrl = `${door43}/api/v1/catalog/search?stage=prod&topic=tc-ready`;
 
-export const catalogTimeoutMs = 20_000;
+const catalogTimeoutMs = 20_000;
 
-export const catalogPageSize = 50;
+const catalogPageSize = 50;
 
 const maximumPages = 400;
 

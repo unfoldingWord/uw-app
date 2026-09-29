@@ -75,7 +75,7 @@ function filesUnder(directory: string): string[] {
     .map((entry) => join(entry.parentPath, entry.name));
 }
 
-export const repositoryRoot = join(import.meta.dirname, '..');
+const repositoryRoot = join(import.meta.dirname, '..');
 
 export function traceRepository(root: string = repositoryRoot): TraceReport {
   const ids = mustRequirementIds(readFileSync(join(root, 'docs', 'PRD.md'), 'utf8'));

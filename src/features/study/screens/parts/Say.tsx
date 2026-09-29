@@ -31,7 +31,7 @@ export function toneColor(theme: Theme, tone: Tone): string {
   return colors[tone];
 }
 
-export function weightOf(theme: Theme, weight: Weight): number {
+function weightOf(theme: Theme, weight: Weight): number {
   const weights: Record<Weight, number> = {
     regular: theme.fontWeight.fwRegular,
     medium: theme.fontWeight.fwMedium,

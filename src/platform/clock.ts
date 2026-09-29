@@ -4,7 +4,7 @@ function twoDigits(value: number): string {
   return String(value).padStart(2, '0');
 }
 
-export function localDayOf(at: number): string {
+function localDayOf(at: number): string {
   const date = new Date(at);
   return `${date.getFullYear()}-${twoDigits(date.getMonth() + 1)}-${twoDigits(date.getDate())}`;
 }

@@ -1,6 +1,6 @@
 export type LockedPackage = { name: string; dev: boolean };
 
-export const networkClients = [
+const networkClients = [
   'axios',
   'node-fetch',
   'cross-fetch',
@@ -20,7 +20,7 @@ export const networkClients = [
   'expo-notifications',
 ];
 
-export const reportingSdks =
+const reportingSdks =
   /^(@sentry\/|sentry-expo$|@bugsnag\/|@segment\/|@amplitude\/|amplitude-js$|mixpanel|@react-native-firebase\/|firebase$|@firebase\/|@datadog\/|posthog|@newrelic\/|newrelic|appcenter|@microsoft\/applicationinsights|react-native-google-analytics|expo-analytics|expo-insights$|@expo\/insights|expo-firebase|@react-native-community\/netinfo-telemetry|react-native-device-info$)/;
 
 export type DependencyInput = {

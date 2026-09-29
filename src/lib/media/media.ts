@@ -6,13 +6,13 @@ export type MediaApi = {
   uriOf(path: string): string | undefined;
 };
 
-export const mediaDirectories: readonly string[] = Object.freeze([packsDirectory, impactImagesDirectory]);
+const mediaDirectories: readonly string[] = Object.freeze([packsDirectory, impactImagesDirectory]);
 
 function segments(path: string): string[] {
   return path.split('/').filter((part) => part !== '');
 }
 
-export function isMediaPath(path: string): boolean {
+function isMediaPath(path: string): boolean {
   const parts = segments(path);
   if (parts.some((part) => part.startsWith('.'))) {
     return false;

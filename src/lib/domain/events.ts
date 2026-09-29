@@ -50,15 +50,15 @@ export const searchKinds = ['reference', 'title', 'fulltext'] as const;
 
 export const shareKinds = ['passage', 'story', 'audio', 'journal'] as const;
 
-export const devicePlatforms = ['ios', 'android'] as const;
+const devicePlatforms = ['ios', 'android'] as const;
 
-export const transferRoles = ['sender', 'receiver'] as const;
+const transferRoles = ['sender', 'receiver'] as const;
 
-export const appPackageCarried = ['included', 'none'] as const;
+const appPackageCarried = ['included', 'none'] as const;
 
 export const bookmarkTargets = ['passage', 'article', 'story'] as const;
 
-export const maximumPackBurritos = 64;
+const maximumPackBurritos = 64;
 
 const releaseRefSpec = {
   list: { publisher: 'publisher', resource: 'resource', language: 'language', tag: 'tag' },

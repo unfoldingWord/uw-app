@@ -51,7 +51,7 @@ export type BurritoFacts = {
   text(key: string): string | undefined;
 };
 
-export function factsOf(files: BurritoFiles): BurritoFacts {
+function factsOf(files: BurritoFiles): BurritoFacts {
   return {
     metadata: files.get(metadataPath),
     fact: (key) => {
@@ -67,7 +67,7 @@ export function factsOf(files: BurritoFiles): BurritoFacts {
 
 export const burritoFormat = 'scripture burrito';
 
-export const burritoVersion = /^1\.0\.\d+$/;
+const burritoVersion = /^1\.0\.\d+$/;
 
 const licenceName = /CC BY-SA 4\.0|Creative Commons Attribution-ShareAlike 4\.0/i;
 const licenceUrl = /creativecommons\.org\/licenses\/by-sa\/4\.0/i;

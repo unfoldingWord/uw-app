@@ -1,8 +1,8 @@
 import type { ImpactStory } from './stories';
 
-export const invitationFirstDay = 5;
+const invitationFirstDay = 5;
 
-export const invitationQuietDays = 90;
+const invitationQuietDays = 90;
 
 export const dayMs = 24 * 60 * 60 * 1000;
 
@@ -23,7 +23,7 @@ export type InvitationInput = {
   readonly give: string;
 };
 
-export function shownThisCycle(schedule: Schedule): boolean {
+function shownThisCycle(schedule: Schedule): boolean {
   return (
     schedule.shownAt !== undefined &&
     (schedule.dismissedAt === undefined || schedule.shownAt > schedule.dismissedAt)

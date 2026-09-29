@@ -7,7 +7,7 @@ export type DeviceRoot = { directory: Directory; uriOf(path: string): string };
 const deviceDirectoryName = 'device';
 const noSpace = /no space|enospc|disk full|not enough space|out of space/i;
 
-export function normalize(path: string): string {
+function normalize(path: string): string {
   const parts = path.split('/').filter((part) => part !== '');
   if (parts.some((part) => part === '.' || part === '..')) {
     throw portError('files.io', `${path} leaves the device root`);

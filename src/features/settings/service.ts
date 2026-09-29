@@ -91,7 +91,7 @@ export type SettingsService = {
   footer(): string;
 };
 
-export const lowSpaceBytes = 200 * 1000 * 1000;
+const lowSpaceBytes = 200 * 1000 * 1000;
 
 const privacyFolds: readonly (keyof Telemetry)[] = [
   'appOpens',
