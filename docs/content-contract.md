@@ -31,8 +31,8 @@ Pinned from the `rc2sb` mirrors on 2026-09-29 and confirmed against a generated 
 | Words, Academy | peripheral | x-peripheralArticles | Markdown tree plus `config.yaml` | Articles |
 | Open Bible Stories | gloss | textStories | `content/01.md` to `content/50.md` | Stories and Frames |
 | Story helps | parascriptural | x-bcvnotes, x-bcvquestions, x-bcvarticles, scoped to stories | one TSV | Helps on Stories |
-| Theological formation | to pin | the `sb` archive for `en_obs-tf` returns a server error today | | Movements on Stories |
-| Audio | to pin | DCS marks audio attachments on releases; the burrito form is unconfirmed | | Audio Pack |
+| Theological formation | to pin | the `sb` archive for `en_obs-tf` returns a server error today; provisional form in [the proposal](proposals/2026-09-29-provisional-flavors.md) | | Movements on Stories |
+| Audio | to pin | DCS marks audio attachments on releases; the burrito form is unconfirmed; provisional form in [the proposal](proposals/2026-09-29-provisional-flavors.md) | | Audio Pack |
 
 Two rows are open and block the corresponding requirements (FO-2, ST-4) until DCS generates them. The validator treats them as unknown flavors, not failures, so the rest of the supply is usable meanwhile.
 

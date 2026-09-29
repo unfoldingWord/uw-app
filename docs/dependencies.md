@@ -15,6 +15,8 @@ list. Versions live in `package.json`; the lock file is committed.
 | expo-linking | ~57.0.11 | Hand-parsed deep links; a required peer of expo-router |
 | react-native-screens | ~4.26.0 | JavaScript-only screen containers; a required peer of expo-router |
 | react-native-safe-area-context | ~5.7.0 | Hand-measured notch and inset padding; a required peer of expo-router |
+| fflate | ^0.8.3 | A hand-written zip reader and writer for burrito archives in `src/lib/burrito`; pure JavaScript, typed, runs on Hermes and in Node |
+| @noble/hashes | ^2.4.0 | A hand-written MD5 for burrito ingredient checksums (`legacy.js`); pure TypeScript, audited, no native code |
 
 ## Development
 
