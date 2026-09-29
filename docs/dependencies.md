@@ -23,6 +23,13 @@ list. Versions live in `package.json`; the lock file is committed.
 | expo-haptics | ~57.0.3 | Native vibration code; the light impact on press |
 | react-native-svg | 15.15.4 | Hand-drawn views for DotRing and Filament; also the renderer lucide-react-native draws with |
 | lucide-react-native | ^1.48.0 | The Lucide path data inlined in `design-system/components/icons/Icon.jsx`; the same outlines as components, ISC licence |
+| expo-file-system | ~57.0.7 | Hand-written native file access; the Files platform adapter (`File`, `Directory`, `FileHandle` for ranges, copy from a system `file://` or `content://` URI) |
+| expo-sqlite | ~57.0.3 | A hand-bound SQLite; the Db platform adapter (FTS5 compiled in by default) and, through `expo-sqlite/kv-store`, the Kv adapter, so preferences need no second native module such as MMKV |
+| expo-crypto | ~57.0.3 | A hand-written random UUID; Hermes has no `crypto.randomUUID`, so the Ids adapter uses `randomUUID()` from the platform's secure random source |
+| expo-network | ~57.0.2 | Hand-written reachability checks; the Http adapter's offline signal (`getNetworkStateAsync`). It makes no network calls of its own; the adapter never calls its IP address function |
+| expo-audio | ~57.0.5 | A hand-written player; the Audio adapter streams an allowlisted URL or plays a downloaded file |
+| expo-sharing | ~57.0.22 | A hand-written Android share intent for files; the ShareSheet adapter shares an audio file on Android (text and iOS files go through React Native's `Share`) |
+| expo-localization | ~57.0.2 | Reading the device locale by hand; the Locale adapter's tag, region, time zone and direction |
 
 ## Development
 
