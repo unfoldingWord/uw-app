@@ -3,6 +3,56 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 T6 Formation
+
+Node v22.22.2. Everything below ran in Node through Vitest, the sim and the checks; nothing ran on a phone
+and no screen was rendered.
+
+### Observed red, then green
+
+| Test | Red | Green |
+|---|---|---|
+| `reads copy tables as copy, not as SQL writes` in `scripts/checks/owns.test.ts` | `TypeError: writerSources is not a function` | 3 passed |
+| `npm run checks` with a throwaway `src/lib/strings/throwaway.ts` holding `'Update when you are ready'` | old scan: `FAIL owns ... src/lib/strings/throwaway.ts writes when, which no one owns` | new scan: `pass owns`; throwaway removed |
+| FO-1 to FO-6, written before `src/lib/formation` existed | each `FAIL`, e.g. FO-1 `Cannot read properties of undefined (reading 'tracks')` | 6 pass |
+| DX-3 with the `GroupCreated` redo handler removed (throwaway) | `FAIL DX-3 ... Expected values to be strictly deep-equal` | pass |
+| FO-4 with the group name added to the snapshot positions (throwaway) | `FAIL FO-4 ... the snapshot never holds the group name Tuesday group` | pass |
+
+A third throwaway emitted `SessionNoteSaved` with the note text in its payload. FO-6 stayed green because
+the journal refused the event (the schema has no text field), so the note never reached the journal. That
+shows the schema guard, not the scenario, catching the leak.
+
+### Decisions
+
+- Formation reads Corpus through `corpusView(files, db)` in `src/lib/corpus/view.ts`. This is a read-only
+  library over Corpus's own tables, using Corpus's own assemble functions, so Formation parses nothing. It
+  emits no `StoryOpened` or `ArticleOpened`.
+- A position's movement is one of the five movements. Drafting, checking and conclusion are session
+  content, not positions. Training positions have no movement. `PositionChanged.movement` is an optional
+  literal field, the first of its kind in `src/lib/domain/events.ts`.
+- The active group lives in Formation's own `formation_state` table. Creating the first group, and
+  starting, advancing or completing with a group, makes it active; `activate` (`GroupActivated`) sets it
+  explicitly. Deleting it hands the role to the earliest remaining group.
+- Replay of typed text follows `docs/replay.md` rule 3. `GroupCreated`, `GroupRenamed` and
+  `SessionNoteSaved` redo with an empty stand-in for the name or note. The snapshot shows counts and
+  positions by id only, so it cannot tell a real name from the stand-in.
+
+`npm run verify` exit 0: `Test Files 39 passed`, `Tests 419 passed`; `owns: 8 owners, 19 tables, 13
+created by migrations, one writer each`; `5 checks, 0 pending, none failed`; `sim: 26 scenarios, 26
+passed, 0 failed`; `trace: 51 Must requirements, 26 with a scenario, 2 with a test only, 23 unproven`;
+`contract: 20 fixture burritos, 0 failed`; `bundle: skipped`.
+
+### Not verified
+
+- Story audio: no pinned or provisional flavor carries audio for a story, so `session.play.audio` is always
+  `{ state: 'not-available' }`.
+- The `not-in-english` fallback state (English movements installed but missing the story) has no test,
+  because the fixtures give English movements for every fixture story.
+- A Formation read during a Corpus update can see the gap between Corpus's two transactions. Read from the
+  code, not tested.
+- The question lists are an inference: the list items of a movement, or else its paragraphs. No real
+  five-movement content has been read.
+
 ## 2026-09-29 M6 merge of Strings (T7a) onto Catalog, Packs, Corpus and F1
 
 Node v22.22.2. Everything below ran in Node through Vitest, the sim and the checks; nothing ran on a phone
