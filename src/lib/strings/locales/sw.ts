@@ -434,8 +434,6 @@ export const sw: LocaleTable = {
     'Sehemu ya programu haikumaliza kusasisha. Shiriki uchunguzi ili mtu aweze kusaidia.',
   'failure.catalog.invalid-response':
     'Orodha ya maktaba imefika katika muundo ambao programu haiwezi kusoma. Jaribu tena baadaye.',
-  'failure.catalog.superseded':
-    'Orodha mpya zaidi ya maktaba imefika kwanza, kwa hiyo hakuna kingine kinachohitajika.',
   'failure.pack.not-found': 'Nyenzo hii haichapishwi tena. Tafuta masasisho baadaye.',
   'failure.pack.no-space':
     'Hakuna nafasi ya kutosha kwa kifurushi hiki. Ondoa kifurushi kingine, kisha ujaribu tena.',

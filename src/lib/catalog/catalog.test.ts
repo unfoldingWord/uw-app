@@ -67,8 +67,25 @@ describe('catalog normalization (LA-1)', () => {
     });
   });
 
-  it('accepts only the catalog search document shape', () => {
-    expect(normalizePage({ ok: true, data: [entry, { name: 'x' }] })).toMatchObject({ ok: true, entries: 2 });
+  it('keys releases whose names, tags and languages go past the narrow forms', () => {
+    expect(
+      normalizeEntry({
+        ...entry,
+        name: 'ne-x-kathmandu_OBS.v2',
+        language: 'ne-x-kathmandu',
+        branch_or_tag_name: 'v2.0.1-2026',
+      }),
+    ).toMatchObject({ resource: 'ne-x-kathmandu_OBS.v2', language: 'ne-x-kathmandu', tag: 'v2.0.1-2026' });
+    expect(normalizeEntry({ ...entry, name: 'has space' })).toBeUndefined();
+    expect(normalizeEntry({ ...entry, name: '../up' })).toBeUndefined();
+  });
+
+  it('accepts only the catalog search document shape, and counts the entries it drops', () => {
+    expect(normalizePage({ ok: true, data: [entry, { name: 'x' }] })).toMatchObject({
+      ok: true,
+      entries: 2,
+      dropped: 1,
+    });
     expect(normalizePage({ ok: false, data: [] })).toEqual({ ok: false });
     expect(normalizePage({ data: {} })).toEqual({ ok: false });
     expect(normalizePage(undefined)).toEqual({ ok: false });
@@ -121,6 +138,33 @@ describe('languages and search (LA-1)', () => {
     expect(englishNameOf('es-419', 'Español')).toBe('Spanish (Latin America)');
     expect(englishNameOf('sw-KE', 'Kiswahili')).toBe('Swahili');
     expect(englishNameOf('xyz', 'Xyzish')).toBe('Xyzish');
+  });
+
+  it.each([
+    ['ne-x-kathmandu', 'Nepali'],
+    ['kmr-x-kurmanji', 'Northern Kurdish'],
+    ['ckb', 'Central Kurdish'],
+    ['awa', 'Awadhi'],
+    ['bho', 'Bhojpuri'],
+    ['hne', 'Chhattisgarhi'],
+    ['mai', 'Maithili'],
+    ['ceb', 'Cebuano'],
+    ['hil', 'Hiligaynon'],
+    ['tpi', 'Tok Pisin'],
+    ['swh', 'Swahili'],
+    ['ti', 'Tigrinya'],
+    ['om', 'Oromo'],
+    ['kri', 'Krio'],
+    ['apd', 'Sudanese Arabic'],
+    ['prs', 'Dari'],
+    ['pes', 'Iranian Persian'],
+    ['cmn', 'Mandarin Chinese'],
+    ['yue', 'Cantonese'],
+    ['zh-tw', 'Chinese (Traditional)'],
+    ['quy', 'Ayacucho Quechua'],
+    ['arc', 'Aramaic'],
+  ])('names %s in English as %s', (code, name) => {
+    expect(englishNameOf(code, code)).toBe(name);
   });
 
   it('searches autonym, English name and code, ignoring case and accents', () => {

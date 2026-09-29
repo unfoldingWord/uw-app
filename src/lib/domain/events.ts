@@ -76,7 +76,10 @@ const installedBurritoSpec = {
 export const eventSchemas = {
   AppOpened: { replay: 'redo', payload: { day: 'day' } },
   CatalogRefreshStarted: { replay: 'redo', payload: {} },
-  CatalogRefreshed: { replay: 'follows', payload: { languages: 'count', releases: 'count' } },
+  CatalogRefreshed: {
+    replay: 'follows',
+    payload: { languages: 'count', releases: 'count', dropped: 'count' },
+  },
   PackInstallStarted: {
     replay: 'redo',
     payload: {

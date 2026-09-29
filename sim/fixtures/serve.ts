@@ -27,10 +27,24 @@ function serveJson(network: MemoryNetwork, url: string, value: unknown): void {
   network.serve(url, { body: JSON.stringify(value), headers: { 'content-type': 'application/json' } });
 }
 
+const catalogPageSize = 50;
+
+function serveCatalogPages(
+  network: MemoryNetwork,
+  document: { ok: boolean; data: readonly unknown[] },
+): void {
+  const pages = Math.floor(document.data.length / catalogPageSize) + 1;
+  for (let page = 1; page <= pages + 1; page += 1) {
+    const data = document.data.slice((page - 1) * catalogPageSize, page * catalogPageSize);
+    serveJson(network, `${catalogSearchUrl}&limit=${catalogPageSize}&page=${page}`, { ...document, data });
+  }
+}
+
 export function serveFixtures(network: MemoryNetwork): FixtureCatalog {
   for (const response of responses()) {
     network.serve(response.url, { body: response.bytes, headers: { 'content-type': response.contentType } });
   }
+  serveCatalogPages(network, catalogSearch(fixtureReleases));
   let releases: readonly FixtureRelease[] = fixtureReleases;
   const archives = new Map<string, Uint8Array>();
   const keyOf = (publisher: string, resource: string, tag: string): string =>
@@ -53,6 +67,7 @@ export function serveFixtures(network: MemoryNetwork): FixtureCatalog {
       });
       releases = releases.map((release) => (release === current ? next : release));
       serveJson(network, catalogSearchUrl, catalogSearch(releases));
+      serveCatalogPages(network, catalogSearch(releases));
       serveJson(network, catalogLanguagesUrl, catalogLanguages(releases));
       return next;
     },

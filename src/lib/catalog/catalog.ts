@@ -14,10 +14,16 @@ export const catalogSearchUrl = `${door43}/api/v1/catalog/search?stage=prod&topi
 
 export const catalogTimeoutMs = 20_000;
 
-const maximumPages = 40;
+export const catalogPageSize = 50;
+
+const maximumPages = 400;
+
+export function catalogPageUrl(page: number): string {
+  return `${catalogSearchUrl}&limit=${catalogPageSize}&page=${page}`;
+}
 
 export type RefreshOutcome =
-  { ok: true; releases: number; languages: number } | { ok: false; code: FailureCode };
+  { ok: true; releases: number; languages: number; dropped: number } | { ok: false; code: FailureCode };
 
 export type CatalogApi = {
   refresh(): Promise<RefreshOutcome>;
@@ -29,7 +35,8 @@ export type CatalogApi = {
 };
 
 type Fetched =
-  { ok: true; releases: CatalogRelease[] } | { ok: false; code: FailureCode; context: FailureContext };
+  | { ok: true; releases: CatalogRelease[]; dropped: number }
+  | { ok: false; code: FailureCode; context: FailureContext };
 
 function unreachable(response: Exclude<HttpResponse, { kind: 'response' }>): Fetched {
   switch (response.kind) {
@@ -52,15 +59,12 @@ function parse(body: Uint8Array): unknown {
   }
 }
 
-function pageUrl(page: number): string {
-  return page === 1 ? catalogSearchUrl : `${catalogSearchUrl}&page=${page}`;
-}
-
 async function fetchCatalog(ports: ModulePorts): Promise<Fetched> {
   const releases: CatalogRelease[] = [];
   let entries = 0;
+  let dropped = 0;
   for (let page = 1; page <= maximumPages; page += 1) {
-    const response = await ports.http.request({ url: pageUrl(page), timeoutMs: catalogTimeoutMs });
+    const response = await ports.http.request({ url: catalogPageUrl(page), timeoutMs: catalogTimeoutMs });
     if (response.kind !== 'response') {
       return unreachable(response);
     }
@@ -73,12 +77,14 @@ async function fetchCatalog(ports: ModulePorts): Promise<Fetched> {
     }
     releases.push(...normalized.releases);
     entries += normalized.entries;
-    const total = Number(response.headers['x-total-count']);
-    if (!Number.isFinite(total) || entries >= total || normalized.entries === 0) {
+    dropped += normalized.dropped;
+    const declared = response.headers['x-total-count'];
+    const total = declared === undefined ? Number.NaN : Number(declared);
+    if (normalized.entries < catalogPageSize || (Number.isFinite(total) && entries >= total)) {
       break;
     }
   }
-  return { ok: true, releases: uniqueReleases(releases) };
+  return { ok: true, releases: uniqueReleases(releases), dropped };
 }
 
 export const catalogModule = defineModule<CatalogApi>({
@@ -88,21 +94,22 @@ export const catalogModule = defineModule<CatalogApi>({
     const { ports } = context;
     let releases: readonly CatalogRelease[] = [];
     let installed = new Set<string>();
-    let latest = 0;
+    let queue: Promise<unknown> = Promise.resolve();
 
     const languages = (): readonly CatalogLanguage[] => languagesOf(releases, installed);
 
-    async function refresh(): Promise<RefreshOutcome> {
-      latest += 1;
-      const generation = latest;
+    function refresh(): Promise<RefreshOutcome> {
+      const next = queue.then(refreshNow, refreshNow);
+      queue = next.catch(() => undefined);
+      return next;
+    }
+
+    async function refreshNow(): Promise<RefreshOutcome> {
       await context.emit({ type: 'CatalogRefreshStarted', payload: {} });
       const fetched = await fetchCatalog(ports);
       if (!fetched.ok) {
         await context.emit({ type: 'Failure', payload: { code: fetched.code, context: fetched.context } });
         return { ok: false, code: fetched.code };
-      }
-      if (generation !== latest) {
-        return { ok: false, code: 'catalog.superseded' };
       }
       const next = [...fetched.releases].sort(compareReleases);
       try {
@@ -115,9 +122,9 @@ export const catalogModule = defineModule<CatalogApi>({
       const counted = languages().length;
       await context.emit({
         type: 'CatalogRefreshed',
-        payload: { languages: counted, releases: next.length },
+        payload: { languages: counted, releases: next.length, dropped: fetched.dropped },
       });
-      return { ok: true, releases: next.length, languages: counted };
+      return { ok: true, releases: next.length, languages: counted, dropped: fetched.dropped };
     }
 
     return {

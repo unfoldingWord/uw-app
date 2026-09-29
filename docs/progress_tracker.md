@@ -3,6 +3,31 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 F2 fixes from review 2: Catalog
+
+Node v22.22.2, in Node through Vitest and the sim. The live catalog was not reached (git.door43.org is
+blocked here), so the paging parameters are from the Gitea and DCS API as I know it: `limit` and `page`, 50 a
+page. That the DCS server honours `limit=50` is an inference.
+
+| Test | Red | Green |
+|---|---|---|
+| `sim/catalog.test.ts`: pages of fifty until a short or empty page, with and without `X-Total-Count` | `refresh` stopped after one page with no total count | pass |
+| `sim/catalog.test.ts`: dropped entries counted in the outcome and in `CatalogRefreshed` | no `dropped` | pass |
+| `sim/catalog.test.ts`: two refreshes run one after the other, the last wins, and a replay of overlapping refreshes has no divergence | the older returned `catalog.superseded` with no `CatalogRefreshed`, which a replay could not reproduce | pass |
+| `src/lib/catalog/catalog.test.ts`: `ne-x-kathmandu_OBS.v2` with language `ne-x-kathmandu` and tag `v2.0.1-2026` is keyed; a name with a space or `..` is not | undefined | pass |
+| `src/lib/catalog/catalog.test.ts`: English names for 22 codes beyond the old table | 21 failed (the autonym came back) | pass |
+
+- `CatalogRefreshed` gains `dropped` (a count, so no text enters the journal). Refreshes are serialized in
+  Catalog, so `catalog.superseded` is gone: the code, its sixteen strings and its only emitter (grepped:
+  no other reference).
+- Field kinds widened: `resource` takes upper case and dots up to 64, `tag` up to 64, a language subtag up
+  to 16 characters and six subtags. None admits a space, a slash or a leading dot.
+- English names: `src/lib/catalog/isoNames.ts` holds every ISO 639-1 code and about 200 ISO 639-3 codes
+  that Door43 publishes in or that I expect it to (South Asian, Philippine, African, Arabic varieties,
+  Chinese varieties, Kurdish, Persian, Quechua), plus tags such as `zh-tw` and `pt-br`. Written from
+  memory of ISO 639 reference names, not fetched from `td.unfoldingword.org` (blocked here); a name not in
+  the table falls back to the autonym. Refreshing the table from `langnames.json` is a follow-up.
+
 ## 2026-09-29 F2 fixes from review 2: reading real releases
 
 Node v22.22.2, in Node through Vitest and the sim; no real release was read (git.door43.org is blocked

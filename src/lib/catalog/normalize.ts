@@ -6,7 +6,8 @@ import { archiveUrlOf, resourceKey } from '../domain/release';
 import { rowOfSubject } from './subjects';
 import type { CatalogRelease } from './types';
 
-export type CatalogPage = { ok: true; releases: readonly CatalogRelease[]; entries: number } | { ok: false };
+export type CatalogPage =
+  { ok: true; releases: readonly CatalogRelease[]; entries: number; dropped: number } | { ok: false };
 
 function text(value: unknown): string | undefined {
   return typeof value === 'string' && value.trim() !== '' ? value.trim() : undefined;
@@ -76,7 +77,7 @@ export function normalizePage(document: unknown): CatalogPage {
   }
   const entries: readonly unknown[] = document.data;
   const releases = entries.flatMap((entry) => normalizeEntry(entry) ?? []);
-  return { ok: true, releases, entries: entries.length };
+  return { ok: true, releases, entries: entries.length, dropped: entries.length - releases.length };
 }
 
 export function uniqueReleases(releases: readonly CatalogRelease[]): CatalogRelease[] {

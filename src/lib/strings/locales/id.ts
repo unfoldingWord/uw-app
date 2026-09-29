@@ -414,8 +414,6 @@ export const id: LocaleTable = {
     'Sebagian aplikasi tidak selesai diperbarui. Bagikan diagnostik supaya ada yang bisa membantu.',
   'failure.catalog.invalid-response':
     'Daftar perpustakaan datang dalam bentuk yang tidak bisa dibaca aplikasi. Coba lagi nanti.',
-  'failure.catalog.superseded':
-    'Daftar perpustakaan yang lebih baru datang lebih dulu, jadi tidak perlu apa-apa lagi.',
   'failure.pack.not-found': 'Sumber ini tidak lagi diterbitkan. Periksa pembaruan nanti.',
   'failure.pack.no-space': 'Ruang tidak cukup untuk paket ini. Hapus paket lain, lalu coba lagi.',
   'failure.pack.checksum-mismatch': 'Unduhan tidak tiba dengan utuh. Coba lagi.',

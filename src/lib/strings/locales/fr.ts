@@ -462,8 +462,6 @@ export const fr: LocaleTable = {
     'Une partie de l’application n’a pas fini de se mettre à jour. Partagez le diagnostic pour qu’on puisse vous aider.',
   'failure.catalog.invalid-response':
     'La liste de la bibliothèque est arrivée sous une forme illisible pour l’application. Réessayez plus tard.',
-  'failure.catalog.superseded':
-    'Une liste plus récente de la bibliothèque est arrivée d’abord, il n’y a rien d’autre à faire.',
   'failure.pack.not-found': 'Cette ressource n’est plus publiée. Recherchez des mises à jour plus tard.',
   'failure.pack.no-space': 'Il n’y a pas assez d’espace pour ce pack. Retirez un autre pack, puis réessayez.',
   'failure.pack.checksum-mismatch': 'Le téléchargement n’est pas arrivé en entier. Réessayez.',
