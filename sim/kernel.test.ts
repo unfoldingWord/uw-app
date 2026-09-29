@@ -161,7 +161,14 @@ describe('journal interface (DX-1)', () => {
 
 describe('kernel composition', () => {
   it('lists its modules in one place, with the tables it owns', () => {
-    expect(Object.keys(kernelModules)).toEqual(['telemetry', 'catalog', 'packs', 'corpus', 'strings']);
+    expect(Object.keys(kernelModules)).toEqual([
+      'telemetry',
+      'catalog',
+      'packs',
+      'corpus',
+      'formation',
+      'strings',
+    ]);
     expect(coreOwns.tables).toEqual(['schema_migrations', 'journal', 'journal_state', 'journal_baseline']);
   });
 

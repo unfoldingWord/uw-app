@@ -54,6 +54,20 @@ export default scenario(
     const ruth = parseReference('RUT 1:16');
     assert.ok(ruth.ok);
     assert.ok(await library.kernel.corpus.passage(ruth.reference, { language: 'qaa' }));
+    const tuesday = await library.kernel.formation.create('Tuesday group');
+    const youth = await library.kernel.formation.create('Youth leaders');
+    assert.ok(tuesday && youth);
+    await library.kernel.formation.start(tuesday.id, 'qaa');
+    await library.kernel.formation.complete(tuesday.id);
+    await library.kernel.formation.saveNote(tuesday.id, 'foundations', 1, 'Maria asked about the light');
+    await library.kernel.formation.advance(youth.id, { track: 'training', session: 2 });
+    await library.kernel.formation.start(youth.id, 'qaa');
+    await library.kernel.formation.complete(youth.id);
+    await library.kernel.formation.rename(youth.id, 'Youth leaders on Friday');
+    await library.kernel.formation.activate(tuesday.id);
+    const elders = await library.kernel.formation.create('Elders');
+    assert.ok(elders);
+    await library.kernel.formation.remove(elders.id);
     await library.restart();
 
     const recorded = library.kernel.snapshot();
@@ -68,6 +82,21 @@ export default scenario(
     };
     assert.deepEqual(Object.keys(corpus.languages), ['qaa', 'qab'], 'the corpus is part of the snapshot');
     assert.deepEqual(Object.keys(corpus.indexes), ['qaa']);
+    assert.deepEqual(rebuilt.snapshot.modules.formation, {
+      groups: 2,
+      active: tuesday.id,
+      positions: {
+        [tuesday.id]: { track: 'foundations', session: 1, movement: 'translation' },
+        [youth.id]: { track: 'training', session: 3 },
+      },
+      notes: 1,
+    });
+    assert.deepEqual(
+      rebuilt.device.kernel.formation.groups().map((group) => group.name),
+      ['', ''],
+      'replay stands in for the names the journal never held',
+    );
+    assert.deepEqual(rebuilt.device.kernel.telemetry.counts().formationSessionsStarted, { qaa: 2 });
     assert.equal(
       rebuilt.device.kernel.corpus.summary('qaa').notes?.burritos,
       1,

@@ -1,5 +1,6 @@
 import { composeKernel, type ComposedKernel, type KernelOptions } from './compose';
 import { corpusModule } from './corpus/corpus';
+import { formationModule } from './formation/formation';
 import type { Ports } from './ports';
 import { catalogModule } from './catalog/catalog';
 import { packsModule } from './packs/packs';
@@ -11,6 +12,7 @@ export const kernelModules = {
   catalog: catalogModule,
   packs: packsModule,
   corpus: corpusModule,
+  formation: formationModule,
   strings: stringsModule,
 } as const;
 
