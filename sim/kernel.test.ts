@@ -11,6 +11,7 @@ import { createMemoryClock } from './adapters/clock';
 import { createMemoryDb } from './adapters/db';
 import { createWorld } from './world';
 import { migrations } from './migrations';
+import { runMigrations } from '@lib/migrate';
 import { mintedIds, replayJournal } from './replay';
 
 function ports(): Ports {
@@ -193,6 +194,24 @@ describe('kernel composition', () => {
     expect(again.journal.stats().lastSeq).toBe(2);
     expect(stableJson(again.snapshot())).toBe(JSON.stringify(again.snapshot()));
     expect(again.snapshot().modules.telemetry).toMatchObject({ counts: { appOpens: 2 } });
+  });
+
+  it('applies migrations once each, in code-point order of their ids, whatever the host locale', async () => {
+    const db = createMemoryDb();
+    const outcome = await runMigrations(db, [
+      { id: '0100-corpus', statements: ['CREATE TABLE c (x)'] },
+      { id: '0002-catalog', statements: ['CREATE TABLE b (x)'] },
+      { id: '0001-journal', statements: ['CREATE TABLE a (x)'] },
+      { id: '0002-Catalog', statements: ['CREATE TABLE d (x)'] },
+    ]);
+    expect(outcome).toEqual({
+      ok: true,
+      applied: ['0001-journal', '0002-Catalog', '0002-catalog', '0100-corpus'],
+    });
+    expect(await runMigrations(db, [{ id: '0001-journal', statements: ['CREATE TABLE a (x)'] }])).toEqual({
+      ok: true,
+      applied: [],
+    });
   });
 
   it('records a failed migration as a Failure with its id', async () => {
