@@ -1,14 +1,5 @@
 import type { ReactNode } from 'react';
-import {
-  Animated,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-  type GestureResponderEvent,
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native';
+import { Animated, Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useTheme, type Theme } from '@shared/theme';
 import { ContentColor } from './context';
 import { GlassBlur } from './GlassBlur';
@@ -16,7 +7,8 @@ import { useKeyframeLoop } from './motion';
 import { referenceValues } from './referenceValues';
 import { shadowCss } from './shadows';
 import { coreFont } from './typeface';
-import { usePress } from './usePress';
+import { slopFor } from './pressGate';
+import { usePress, type PressHandler } from './usePress';
 
 export type GlassButtonVariant = 'glass' | 'solid' | 'dark' | 'night' | 'quiet';
 export type GlassButtonSize = 'sm' | 'md' | 'lg';
@@ -30,7 +22,7 @@ export type GlassButtonProps = Named & {
   full?: boolean;
   leading?: ReactNode;
   trailing?: ReactNode;
-  onPress?: (event: GestureResponderEvent) => void;
+  onPress?: PressHandler;
   disabled?: boolean;
   busy?: boolean;
   accessibilityHint?: string;
@@ -119,16 +111,18 @@ export function GlassButton({
 }: GlassButtonProps) {
   const theme = useTheme();
   const look = treatment(theme, variant);
-  const inert = disabled || busy;
-  const press = usePress(onPress, inert);
+  const press = usePress(onPress, disabled || busy);
+  const working = busy || press.pending;
+  const inert = disabled || working;
   const pulse = useKeyframeLoop(
     theme.motion.keyframes.breathe,
     referenceValues.dotRing.breatheMs,
     theme.motion.easing.easeLiquid,
-    busy && !theme.reducedMotion,
+    working && !theme.reducedMotion,
   );
   const [vertical, horizontal] = referenceValues.glassButton.padding[size];
   const fontSize = fontSizeFor(theme, size);
+  const slop = slopFor(2 * vertical + fontSize * referenceValues.glassButton.lineHeight);
   const label = typeof children === 'string' ? children : undefined;
   const focusGlow = press.focused ? theme.shadow.glowFocus.css : undefined;
   const lift = press.hovered && !inert ? theme.motion.hoverLift.translateY : 0;
@@ -138,8 +132,9 @@ export function GlassButton({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? label}
       accessibilityHint={accessibilityHint}
-      accessibilityState={{ disabled: inert, busy }}
+      accessibilityState={{ disabled: inert, busy: working }}
       disabled={inert}
+      hitSlop={{ top: slop, bottom: slop }}
       testID={testID}
       {...press.handlers}
       style={[full ? styles.full : styles.hug, style]}

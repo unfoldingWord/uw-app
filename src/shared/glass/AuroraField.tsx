@@ -39,7 +39,13 @@ export function AuroraField({ intensity = 1, drift = true, style, children }: Au
 
   return (
     <View style={[styles.field, { backgroundColor: theme.color.surfaceApp }, style]}>
-      <BlurTargetView ref={target} style={StyleSheet.absoluteFill} pointerEvents="none">
+      <BlurTargetView
+        ref={target}
+        style={StyleSheet.absoluteFill}
+        pointerEvents="none"
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+      >
         <Animated.View
           onLayout={measure}
           style={{

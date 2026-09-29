@@ -1,20 +1,13 @@
 import type { ReactNode } from 'react';
-import {
-  Animated,
-  Pressable,
-  StyleSheet,
-  View,
-  type GestureResponderEvent,
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native';
+import { Animated, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useTheme, type Theme } from '@shared/theme';
 import { ContentColor } from './context';
 import { GlassBlur } from './GlassBlur';
 import { useKeyframeLoop } from './motion';
 import { referenceValues } from './referenceValues';
 import { shadowCss } from './shadows';
-import { usePress } from './usePress';
+import { slopFor } from './pressGate';
+import { usePress, type PressHandler } from './usePress';
 
 export type GlassIconButtonTone = 'light' | 'dark' | 'night';
 
@@ -23,7 +16,7 @@ export type GlassIconButtonProps = {
   tone?: GlassIconButtonTone;
   label: string;
   children?: ReactNode;
-  onPress?: (event: GestureResponderEvent) => void;
+  onPress?: PressHandler;
   disabled?: boolean;
   busy?: boolean;
   accessibilityHint?: string;
@@ -76,15 +69,16 @@ export function GlassIconButton({
   style,
 }: GlassIconButtonProps) {
   const theme = useTheme();
-  const inert = disabled || busy;
-  const press = usePress(onPress, inert);
+  const press = usePress(onPress, disabled || busy);
+  const working = busy || press.pending;
+  const inert = disabled || working;
   const glowing = press.focused || (press.hovered && !inert);
   const treatment = look(theme, tone, glowing);
   const pulse = useKeyframeLoop(
     theme.motion.keyframes.breathe,
     referenceValues.dotRing.breatheMs,
     theme.motion.easing.easeLiquid,
-    busy && !theme.reducedMotion,
+    working && !theme.reducedMotion,
   );
   const lift = press.hovered && !inert ? theme.motion.hoverLift.translateY : 0;
 
@@ -93,8 +87,9 @@ export function GlassIconButton({
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityHint={accessibilityHint}
-      accessibilityState={{ disabled: inert, busy }}
+      accessibilityState={{ disabled: inert, busy: working }}
       disabled={inert}
+      hitSlop={slopFor(size)}
       testID={testID}
       {...press.handlers}
       style={[styles.hug, style]}

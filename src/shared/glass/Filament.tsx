@@ -14,8 +14,8 @@ export type FilamentProps = {
 };
 
 export function Filament({
-  height = 70,
-  width = 120,
+  height = referenceValues.filament.height,
+  width = referenceValues.filament.width,
   branch = false,
   color,
   node = true,

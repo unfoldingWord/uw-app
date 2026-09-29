@@ -48,7 +48,7 @@ export function GlassInput({
       style={[
         styles.row,
         {
-          height,
+          minHeight: height,
           gap: theme.space.sp6,
           paddingHorizontal: theme.space.sp9,
           borderRadius: pill,

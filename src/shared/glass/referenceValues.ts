@@ -1,6 +1,9 @@
 export const referenceValues = {
   auroraField: { insetPercent: 18, driftMs: 22000 },
   dotRing: {
+    size: 170,
+    rings: 7,
+    dots: 30,
     dotRadius: 0.9,
     breatheMs: 4500,
     innerBand: 0.34,
@@ -8,7 +11,15 @@ export const referenceValues = {
     bandTwist: 0.16,
     fade: 0.25,
   },
-  filament: { strokeWidth: 1, nodeRadius: 3.5, branchInset: 8, straightWidth: 2, bend: [0.55, 0.45] },
+  filament: {
+    height: 70,
+    width: 120,
+    strokeWidth: 1,
+    nodeRadius: 3.5,
+    branchInset: 8,
+    straightWidth: 2,
+    bend: [0.55, 0.45],
+  },
   glassSurface: { refractionOpacity: 0.6 },
   glassButton: {
     padding: { sm: [8, 14], md: [12, 20], lg: [15, 26] },

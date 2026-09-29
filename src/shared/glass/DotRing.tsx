@@ -15,7 +15,14 @@ export type DotRingProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-export function DotRing({ size = 170, rings = 7, dots = 30, color, children, style }: DotRingProps) {
+export function DotRing({
+  size = referenceValues.dotRing.size,
+  rings = referenceValues.dotRing.rings,
+  dots = referenceValues.dotRing.dots,
+  color,
+  children,
+  style,
+}: DotRingProps) {
   const theme = useTheme();
   const points = useMemo(() => dotRingPoints(size, rings, dots), [size, rings, dots]);
   const breathe = useKeyframeLoop(
@@ -30,6 +37,8 @@ export function DotRing({ size = 170, rings = 7, dots = 30, color, children, sty
     <View style={[{ width: size, height: size }, style]}>
       <Animated.View
         pointerEvents="none"
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
         style={[
           StyleSheet.absoluteFill,
           { opacity: breathe.value('opacity'), transform: [{ scale: breathe.value('scale') }] },
