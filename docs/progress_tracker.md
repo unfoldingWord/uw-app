@@ -51,6 +51,13 @@ Everything below ran in Node (the sim, Vitest and the checks); nothing ran on a 
   English app on an Arabic phone left to right (inference from React Native's `I18nUtil`, not observed on a
   phone). Skipped on web. Settings shows `settings.appLanguage.direction` under the language list, in all 16
   locales (AI-drafted).
+- `npm run verify`: green (639 tests, 7 checks, 52 scenarios, trace 51 Must with 0 unproven, contract 21
+  fixture burritos with the live check skipped offline, Android and iOS bundles).
+- Not verified: any of it on a phone. In particular the direction switch and reload (`I18nManager` and
+  `reloadAppAsync` with OTA updates off), that `AppState` reports `active` on each foreground on both
+  platforms, the feed fetch against the real `unfoldingword.org` feed (it does not exist yet), each screen in
+  light, dark, reduced blur and RTL, and every AI-drafted string. A saved item opens in the current content
+  language, not the language it was saved in, when the two differ.
 
 ## 2026-09-29 I1 import a burrito file on the phone (SH-3)
 
