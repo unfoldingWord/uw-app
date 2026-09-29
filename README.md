@@ -14,6 +14,15 @@ internet.
   and the decision log.
 - [AGENTS.md](AGENTS.md): the rules for anyone, human or agent, changing code
   in this repository. Read it in full before your first edit.
+- [CONTEXT.md](CONTEXT.md): the vocabulary. One word per concept, everywhere.
+- [docs/architecture.md](docs/architecture.md): the shape. One kernel over ports,
+  driven headlessly in a sim, with events as the spine.
+- [docs/content-contract.md](docs/content-contract.md): what content the app
+  accepts and produces, and the validator both sides run.
+- [docs/adr/](docs/adr/): why the shape is this way.
+- [design-system/](design-system/readme.md): the Generative Glass design system,
+  with tokens, glass primitives and the clickable prototype of the app. Start
+  with its `HANDOFF.md`.
 
 ## Status
 
