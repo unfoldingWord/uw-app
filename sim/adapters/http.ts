@@ -18,6 +18,7 @@ export type ScriptedOutcome = 'offline' | 'timeout' | { status: number };
 export type MemoryHttp = Http & {
   setOnline(online: boolean): void;
   script(urlPrefix: string, outcome: ScriptedOutcome, times?: number): void;
+  hold(urlPrefix: string): () => void;
   requests(): readonly string[];
 };
 
@@ -48,7 +49,12 @@ export function createMemoryHttp(options: {
   const hosts = options.hosts ?? allowedHosts;
   const scripts: { prefix: string; outcome: ScriptedOutcome; remaining: number }[] = [];
   const log: string[] = [];
+  const holds: { prefix: string; released: Promise<void> }[] = [];
   let online = true;
+
+  async function held(url: string): Promise<void> {
+    await Promise.all(holds.filter((item) => url.startsWith(item.prefix)).map((item) => item.released));
+  }
 
   function scripted(url: string): ScriptedOutcome | undefined {
     const script = scripts.find((item) => item.remaining > 0 && url.startsWith(item.prefix));
@@ -83,8 +89,12 @@ export function createMemoryHttp(options: {
   }
 
   return {
-    request: async (request) => respond(request),
+    request: async (request) => {
+      await held(request.url);
+      return respond(request);
+    },
     download: async (request) => {
+      await held(request.url);
       const response = respond(request);
       if (response.kind !== 'response') {
         return response;
@@ -105,6 +115,18 @@ export function createMemoryHttp(options: {
     },
     script: (prefix, outcome, times = 1) => {
       scripts.push({ prefix, outcome, remaining: times });
+    },
+    hold: (prefix) => {
+      let release = (): void => undefined;
+      const released = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      const hold = { prefix, released };
+      holds.push(hold);
+      return () => {
+        holds.splice(holds.indexOf(hold), 1);
+        release();
+      };
     },
     requests: () => log.slice(),
   };

@@ -4,6 +4,7 @@ import { portError } from './errors';
 export type MemoryFiles = Files & {
   setCapacity(bytes: number): void;
   failWrites(fail: boolean): void;
+  failRename(targetPrefix: string, times?: number): void;
   tree(): readonly string[];
 };
 
@@ -31,6 +32,15 @@ export function createMemoryFiles(options: { capacity?: number } = {}): MemoryFi
   const directories = new Set<string>(['']);
   let capacity = options.capacity ?? defaultCapacity;
   let failing = false;
+  const renameFailures: { prefix: string; remaining: number }[] = [];
+
+  function guardRename(target: string): void {
+    const failure = renameFailures.find((item) => item.remaining > 0 && within(target, item.prefix));
+    if (failure !== undefined) {
+      failure.remaining -= 1;
+      throw portError('files.io', `rename onto ${target} refused`);
+    }
+  }
 
   const used = (): number => [...files.values()].reduce((sum, data) => sum + data.byteLength, 0);
 
@@ -149,7 +159,10 @@ export function createMemoryFiles(options: { capacity?: number } = {}): MemoryFi
         throw portError('files.io', `${from} cannot move to ${to}`);
       }
       requireDirectory(parentOf(target));
-      removeTree(target);
+      if (files.has(target) || directories.has(target)) {
+        throw portError('files.io', `${to} already exists; a rename never replaces`);
+      }
+      guardRename(target);
       if (files.has(source)) {
         files.set(target, files.get(source) ?? new Uint8Array());
         files.delete(source);
@@ -176,6 +189,9 @@ export function createMemoryFiles(options: { capacity?: number } = {}): MemoryFi
     },
     failWrites: (fail) => {
       failing = fail;
+    },
+    failRename: (targetPrefix, times = 1) => {
+      renameFailures.push({ prefix: normalize(targetPrefix), remaining: times });
     },
     tree: () =>
       [...[...directories].filter((path) => path !== '').map((path) => `${path}/`), ...files.keys()].sort(),

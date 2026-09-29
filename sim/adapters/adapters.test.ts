@@ -63,15 +63,28 @@ describe('Files memory adapter', () => {
     expect(await codeOf(files.readText('../etc/passwd'))).toBe('files.io');
   });
 
-  it('renames a directory over another atomically', async () => {
+  it('renames a directory to a free name, and refuses to replace one that exists, as a phone does', async () => {
     const files = createMemoryFiles();
     await files.mkdir('packs/qaa');
     await files.writeText('packs/qaa/old.txt', 'old');
     await files.mkdir('packs/qaa.next');
     await files.writeText('packs/qaa.next/new.txt', 'new');
+    expect(await codeOf(files.rename('packs/qaa.next', 'packs/qaa'))).toBe('files.io');
+    expect(await files.readText('packs/qaa/old.txt')).toBe('old');
+    await files.rename('packs/qaa', 'packs/qaa.old');
     await files.rename('packs/qaa.next', 'packs/qaa');
-    expect(files.tree()).toEqual(['packs/', 'packs/qaa/', 'packs/qaa/new.txt']);
+    expect(files.tree()).toEqual([
+      'packs/',
+      'packs/qaa.old/',
+      'packs/qaa.old/old.txt',
+      'packs/qaa/',
+      'packs/qaa/new.txt',
+    ]);
     expect(await codeOf(files.rename('packs', 'packs/qaa/inside'))).toBe('files.io');
+    files.failRename('packs/qaa');
+    expect(await codeOf(files.rename('packs/qaa.old', 'packs/qaa/again'))).toBe('files.io');
+    await files.rename('packs/qaa.old', 'packs/qaa/again');
+    expect(await files.readText('packs/qaa/again/old.txt')).toBe('old');
     await files.remove('packs');
     expect(files.tree()).toEqual([]);
   });
