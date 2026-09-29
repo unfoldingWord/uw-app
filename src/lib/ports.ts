@@ -31,6 +31,7 @@ export type Files = {
   remove(path: string): Promise<void>;
   adopt(external: string, path: string): Promise<number>;
   freeSpace(): Promise<number>;
+  uriOf(path: string): string | undefined;
 };
 
 export type SqlValue = string | number | null | Uint8Array;

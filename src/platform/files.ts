@@ -213,5 +213,13 @@ export function createPlatformFiles(root: DeviceRoot): Files {
         return fileAt(target).size;
       }),
     freeSpace: async () => Paths.availableDiskSpace,
+    uriOf: (path) => {
+      try {
+        const target = normalize(path);
+        return isFile(target) ? fileAt(target).uri : undefined;
+      } catch {
+        return undefined;
+      }
+    },
   };
 }

@@ -1,6 +1,7 @@
 import { composeKernel, type ComposedKernel, type KernelOptions } from './compose';
 import { corpusModule } from './corpus/corpus';
 import { formationModule } from './formation/formation';
+import { mediaModule } from './media/media';
 import type { Ports } from './ports';
 import { catalogModule } from './catalog/catalog';
 import { packsModule } from './packs/packs';
@@ -26,6 +27,7 @@ export const kernelModules = {
   partners: partnersModule,
   transfer: transferModule,
   share: shareModule,
+  media: mediaModule,
 } as const;
 
 export type Kernel = ComposedKernel<typeof kernelModules>;

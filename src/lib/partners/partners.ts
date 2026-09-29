@@ -19,7 +19,7 @@ import {
 
 export const partnersDirectory = 'partners';
 
-const imagesDirectory = `${partnersDirectory}/images`;
+export const impactImagesDirectory = `${partnersDirectory}/images`;
 
 const stagingDirectory = `${partnersDirectory}/staging`;
 
@@ -88,7 +88,7 @@ function cacheOf(value: unknown): Cache {
   const paths = Object.fromEntries(
     Object.entries(images).filter(
       (entry): entry is [string, string] =>
-        typeof entry[1] === 'string' && entry[1].startsWith(`${imagesDirectory}/`),
+        typeof entry[1] === 'string' && entry[1].startsWith(`${impactImagesDirectory}/`),
     ),
   );
   return { stories, images: paths };
@@ -189,10 +189,10 @@ export const partnersModule = defineModule<PartnersApi>({
         return undefined;
       }
       const staged = `${stagingDirectory}/${story.slug}`;
-      const target = `${imagesDirectory}/${story.slug}`;
+      const target = `${impactImagesDirectory}/${story.slug}`;
       try {
         await files.mkdir(stagingDirectory);
-        await files.mkdir(imagesDirectory);
+        await files.mkdir(impactImagesDirectory);
         const downloaded = await http.download({
           url: story.imageUrl,
           to: staged,

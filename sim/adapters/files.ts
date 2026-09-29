@@ -18,6 +18,8 @@ export type MemoryFiles = Files & {
 
 type Stored = { parts: Uint8Array[]; length: number };
 
+export const memoryUriScheme = 'memory://device/';
+
 const defaultCapacity = 1024 * 1024 * 1024;
 
 function normalize(path: string): string {
@@ -296,6 +298,14 @@ export function createMemoryFiles(options: { capacity?: number } = {}): MemoryFi
       return data.byteLength;
     },
     freeSpace: async () => Math.max(0, capacity - usedBytes),
+    uriOf: (path) => {
+      try {
+        const target = normalize(path);
+        return files.has(target) ? `${memoryUriScheme}${target}` : undefined;
+      } catch {
+        return undefined;
+      }
+    },
     offerExternal: (uri, data) => {
       external.set(uri, data.slice());
     },

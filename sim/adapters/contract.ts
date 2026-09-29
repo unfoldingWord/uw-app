@@ -105,6 +105,20 @@ const filesCases: ContractCase[] = [
   },
   {
     port: 'files',
+    name: 'gives a renderable address for a file that exists, and none for a directory, a missing file or a path that leaves the root',
+    async run({ ports: { files }, scratch }) {
+      await files.mkdir(`${scratch}/pictures`);
+      await files.writeBytes(`${scratch}/pictures/01-01.jpg`, new Uint8Array(2));
+      const uri = files.uriOf(`${scratch}/pictures/01-01.jpg`);
+      check(uri !== undefined && uri.endsWith(`${scratch}/pictures/01-01.jpg`), 'a file has an address');
+      same(files.uriOf(`${scratch}/pictures/01-01.jpg`), uri, 'the address is stable');
+      same(files.uriOf(`${scratch}/pictures`), undefined, 'a directory has no address');
+      same(files.uriOf(`${scratch}/pictures/missing.jpg`), undefined, 'a missing file has no address');
+      same(files.uriOf(`${scratch}/../outside.jpg`), undefined, 'dot segments have no address');
+    },
+  },
+  {
+    port: 'files',
     name: 'renames to a free name only, and never replaces what is there',
     async run({ ports: { files }, scratch }) {
       await files.mkdir(`${scratch}/current`);
