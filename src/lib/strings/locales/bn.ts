@@ -443,6 +443,7 @@ export const bn: LocaleTable = {
   'failure.transfer.unsupported': 'এই ফোন অ্যাপটি নিজেই পাঠাতে পারে না। উপকরণগুলো তবুও পাঠানো যাবে।',
   'failure.transfer.declined': 'অন্য ফোনটি গ্রহণ করেনি। আপনি আবার দিতে পারেন।',
   'failure.transfer.peer-lost': 'অন্য ফোনটি নাগালের বাইরে চলে গেছে। ফোন দুটি কাছে আনুন এবং আবার চেষ্টা করুন।',
+  'failure.transfer.cancelled': 'স্থানান্তর থামানো হয়েছে। অসম্পূর্ণ কিছুই রাখা হয়নি।',
   'failure.audio.unavailable': 'এটির জন্য এখন অডিও পাওয়া যাচ্ছে না।',
   'failure.share.unavailable': 'এই ফোনে এখন শেয়ার করা যাচ্ছে না।',
   'failure.unexpected':

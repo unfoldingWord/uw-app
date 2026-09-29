@@ -445,6 +445,7 @@ export const fa: LocaleTable = {
   'failure.transfer.declined': 'گوشی دیگر نپذیرفت. می‌توانید دوباره پیشنهاد کنید.',
   'failure.transfer.peer-lost':
     'گوشی دیگر از دسترس خارج شد. گوشی‌ها را نزدیک‌تر بیاورید و دوباره امتحان کنید.',
+  'failure.transfer.cancelled': 'انتقال متوقف شد. هیچ بخش ناقصی نگه داشته نشد.',
   'failure.audio.unavailable': 'صدا برای این مورد اکنون در دسترس نیست.',
   'failure.share.unavailable': 'هم‌رسانی اکنون روی این گوشی در دسترس نیست.',
   'failure.unexpected':

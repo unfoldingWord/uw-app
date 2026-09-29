@@ -467,6 +467,7 @@ export const es419: LocaleTable = {
   'failure.transfer.declined': 'El otro teléfono no aceptó. Puedes volver a ofrecerlo.',
   'failure.transfer.peer-lost':
     'El otro teléfono quedó fuera de alcance. Acerca los teléfonos e intenta de nuevo.',
+  'failure.transfer.cancelled': 'La transferencia se detuvo. No se guardó nada a medias.',
   'failure.audio.unavailable': 'El audio no está disponible para esto ahora.',
   'failure.share.unavailable': 'Compartir no está disponible en este teléfono ahora.',
   'failure.unexpected':

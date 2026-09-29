@@ -466,6 +466,7 @@ export const ptBR: LocaleTable = {
   'failure.transfer.declined': 'O outro celular não aceitou. Você pode oferecer de novo.',
   'failure.transfer.peer-lost':
     'O outro celular ficou fora de alcance. Aproxime os celulares e tente de novo.',
+  'failure.transfer.cancelled': 'A transferência foi interrompida. Nada pela metade foi mantido.',
   'failure.audio.unavailable': 'O áudio não está disponível para isto agora.',
   'failure.share.unavailable': 'Compartilhar não está disponível neste celular agora.',
   'failure.unexpected':

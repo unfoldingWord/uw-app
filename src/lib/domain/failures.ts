@@ -30,6 +30,7 @@ export const failureCodes = [
   'transfer.unsupported',
   'transfer.declined',
   'transfer.peer-lost',
+  'transfer.cancelled',
   'audio.unavailable',
   'share.unavailable',
   'unexpected',

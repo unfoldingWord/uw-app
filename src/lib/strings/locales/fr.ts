@@ -482,6 +482,7 @@ export const fr: LocaleTable = {
   'failure.transfer.declined': 'L’autre téléphone n’a pas accepté. Vous pouvez proposer de nouveau.',
   'failure.transfer.peer-lost':
     'L’autre téléphone est hors de portée. Rapprochez les téléphones et réessayez.',
+  'failure.transfer.cancelled': 'Le transfert a été arrêté. Rien d’incomplet n’a été gardé.',
   'failure.audio.unavailable': 'L’audio n’est pas disponible pour ceci pour le moment.',
   'failure.share.unavailable': 'Le partage n’est pas disponible sur ce téléphone pour le moment.',
   'failure.unexpected':

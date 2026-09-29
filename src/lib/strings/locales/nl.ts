@@ -460,6 +460,7 @@ export const nl: LocaleTable = {
   'failure.transfer.declined': 'De andere telefoon accepteerde niet. Je kunt het opnieuw aanbieden.',
   'failure.transfer.peer-lost':
     'De andere telefoon is buiten bereik. Breng de telefoons dichterbij en probeer het opnieuw.',
+  'failure.transfer.cancelled': 'De overdracht is gestopt. Er is niets half bewaard.',
   'failure.audio.unavailable': 'Audio is hiervoor nu niet beschikbaar.',
   'failure.share.unavailable': 'Delen is nu niet beschikbaar op deze telefoon.',
   'failure.unexpected': 'Iets werkte niet. Probeer het opnieuw, of deel de diagnose zodat iemand kan helpen.',

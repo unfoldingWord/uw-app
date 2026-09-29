@@ -411,6 +411,7 @@ export const zhHans: LocaleTable = {
   'failure.transfer.unsupported': '这部手机无法发送应用本身。资源仍然可以发送。',
   'failure.transfer.declined': '另一部手机没有接受。你可以再次发送邀请。',
   'failure.transfer.peer-lost': '另一部手机已超出范围。请让两部手机靠近后重试。',
+  'failure.transfer.cancelled': '传输已停止。没有保留任何不完整的内容。',
   'failure.audio.unavailable': '这项内容目前没有可用的音频。',
   'failure.share.unavailable': '这部手机目前无法分享。',
   'failure.unexpected': '有些操作没有成功。请重试，或分享诊断信息，以便有人帮助你。',

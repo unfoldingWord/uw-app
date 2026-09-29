@@ -447,6 +447,7 @@ export const hi: LocaleTable = {
   'failure.transfer.unsupported': 'यह फ़ोन ऐप को ही नहीं भेज सकता। संसाधन फिर भी भेजे जा सकते हैं।',
   'failure.transfer.declined': 'दूसरे फ़ोन ने स्वीकार नहीं किया। आप फिर से पेश कर सकते हैं।',
   'failure.transfer.peer-lost': 'दूसरा फ़ोन पहुँच से बाहर चला गया। फ़ोन पास लाएँ और फिर कोशिश करें।',
+  'failure.transfer.cancelled': 'स्थानांतरण रोक दिया गया। कुछ भी अधूरा नहीं रखा गया।',
   'failure.audio.unavailable': 'इसके लिए ऑडियो अभी उपलब्ध नहीं है।',
   'failure.share.unavailable': 'इस फ़ोन पर अभी साझा करना उपलब्ध नहीं है।',
   'failure.unexpected': 'कुछ काम नहीं किया। फिर कोशिश करें, या निदान साझा करें ताकि कोई मदद कर सके।',

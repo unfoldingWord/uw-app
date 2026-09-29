@@ -432,6 +432,7 @@ export const id: LocaleTable = {
     'Ponsel ini tidak bisa mengirim aplikasinya sendiri. Sumbernya tetap bisa dikirim.',
   'failure.transfer.declined': 'Ponsel lain tidak menerima. Anda bisa menawarkan lagi.',
   'failure.transfer.peer-lost': 'Ponsel lain sudah di luar jangkauan. Dekatkan kedua ponsel dan coba lagi.',
+  'failure.transfer.cancelled': 'Pengiriman dihentikan. Tidak ada bagian yang setengah jadi disimpan.',
   'failure.audio.unavailable': 'Audio untuk ini belum tersedia sekarang.',
   'failure.share.unavailable': 'Berbagi belum tersedia di ponsel ini sekarang.',
   'failure.unexpected':

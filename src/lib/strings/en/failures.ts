@@ -36,6 +36,7 @@ export const failures = {
   'failure.transfer.unsupported': 'This phone cannot send the app itself. Resources can still go.',
   'failure.transfer.declined': 'The other phone did not accept. You can offer again.',
   'failure.transfer.peer-lost': 'The other phone moved out of reach. Bring the phones closer and try again.',
+  'failure.transfer.cancelled': 'The transfer was stopped. Nothing partial was kept.',
   'failure.audio.unavailable': 'Audio is not available for this right now.',
   'failure.share.unavailable': 'Sharing is not available on this phone right now.',
   'failure.unexpected': 'Something did not work. Try again, or share diagnostics so someone can help.',

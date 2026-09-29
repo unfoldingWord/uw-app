@@ -4,10 +4,13 @@ import { compareText } from '../order';
 
 export type PerLanguage = Readonly<Record<string, number>>;
 
+export type PerPlatformPair = Readonly<Record<string, number>>;
+
 export type Telemetry = {
   appOpens: number;
   languagePackDownloads: PerLanguage;
   transfersCompleted: number;
+  transfersByPlatformPair: PerPlatformPair;
   sharesSent: number;
   formationSessionsStarted: PerLanguage;
   invitationTaps: number;
@@ -18,6 +21,7 @@ export const emptyTelemetry: Telemetry = Object.freeze({
   appOpens: 0,
   languagePackDownloads: Object.freeze({}),
   transfersCompleted: 0,
+  transfersByPlatformPair: Object.freeze({}),
   sharesSent: 0,
   formationSessionsStarted: Object.freeze({}),
   invitationTaps: 0,
@@ -39,7 +43,16 @@ export function telemetryStep(counts: Telemetry, event: DomainEvent): Telemetry 
         ? { ...counts, languagePackDownloads: bump(counts.languagePackDownloads, event.payload.language) }
         : counts;
     case 'TransferCompleted':
-      return { ...counts, transfersCompleted: counts.transfersCompleted + 1 };
+      return event.payload.role === 'receiver'
+        ? {
+            ...counts,
+            transfersCompleted: counts.transfersCompleted + 1,
+            transfersByPlatformPair: bump(
+              counts.transfersByPlatformPair,
+              `${event.payload.from}-${event.payload.to}`,
+            ),
+          }
+        : counts;
     case 'ShareSent':
       return { ...counts, sharesSent: counts.sharesSent + 1 };
     case 'SessionStarted':
@@ -95,7 +108,16 @@ function countsOf(value: unknown): Telemetry | undefined {
   if (languagePackDownloads === undefined || formationSessionsStarted === undefined) {
     return undefined;
   }
-  const counts: Record<string, unknown> = { languagePackDownloads, formationSessionsStarted };
+  const transfersByPlatformPair =
+    value.transfersByPlatformPair === undefined ? {} : perLanguageOf(value.transfersByPlatformPair);
+  if (transfersByPlatformPair === undefined) {
+    return undefined;
+  }
+  const counts: Record<string, unknown> = {
+    languagePackDownloads,
+    formationSessionsStarted,
+    transfersByPlatformPair,
+  };
   for (const field of countFields) {
     counts[field] = value[field];
   }

@@ -437,6 +437,7 @@ export const my: LocaleTable = {
   'failure.transfer.declined': 'အခြားဖုန်းက လက်မခံပါ။ ထပ်ပေးကြည့်နိုင်ပါသည်။',
   'failure.transfer.peer-lost':
     'အခြားဖုန်းသည် အကွာအဝေး ပြင်ပသို့ ရောက်သွားပါသည်။ ဖုန်းများကို နီးနီးထားပြီး ထပ်စမ်းကြည့်ပါ။',
+  'failure.transfer.cancelled': 'လွှဲပြောင်းမှုကို ရပ်လိုက်သည်။ မပြီးဆုံးသေးသော အစိတ်အပိုင်း မသိမ်းထားပါ။',
   'failure.audio.unavailable': 'ဤအရာအတွက် အသံ ယခု မရနိုင်ပါ။',
   'failure.share.unavailable': 'ဤဖုန်းတွင် မျှဝေခြင်း ယခု မရနိုင်ပါ။',
   'failure.unexpected':

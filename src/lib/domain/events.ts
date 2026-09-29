@@ -49,6 +49,12 @@ export const searchKinds = ['reference', 'title', 'fulltext'] as const;
 
 export const shareKinds = ['passage', 'story', 'audio', 'journal'] as const;
 
+export const devicePlatforms = ['ios', 'android'] as const;
+
+export const transferRoles = ['sender', 'receiver'] as const;
+
+export const appPackageCarried = ['included', 'none'] as const;
+
 export const bookmarkTargets = ['passage', 'article', 'story'] as const;
 
 export const maximumPackBurritos = 64;
@@ -125,11 +131,40 @@ export const eventSchemas = {
   },
   SessionCompleted: { replay: 'follows', payload: { group: 'id', track: tracks, session: 'count' } },
   SessionNoteSaved: { replay: 'redo', payload: { group: 'id', track: tracks, session: 'count' } },
-  TransferOffered: { replay: 'verbatim', payload: { transfer: 'id', resources: 'count', bytes: 'bytes' } },
-  TransferAccepted: { replay: 'verbatim', payload: { transfer: 'id' } },
+  TransferOffered: {
+    replay: 'verbatim',
+    payload: {
+      transfer: 'id',
+      language: 'language?',
+      resources: 'count',
+      bytes: 'bytes',
+      app: appPackageCarried,
+    },
+  },
+  TransferAccepted: {
+    replay: 'verbatim',
+    payload: {
+      transfer: 'id',
+      role: transferRoles,
+      language: 'language?',
+      resources: 'count',
+      app: appPackageCarried,
+    },
+  },
   TransferProgressed: { replay: 'verbatim', payload: { transfer: 'id', bytes: 'bytes', total: 'bytes' } },
-  TransferCompleted: { replay: 'verbatim', payload: { transfer: 'id', bytes: 'bytes' } },
-  TransferFailed: { replay: 'verbatim', payload: { transfer: 'id', code: 'code' } },
+  TransferCompleted: {
+    replay: 'verbatim',
+    payload: {
+      transfer: 'id',
+      role: transferRoles,
+      from: devicePlatforms,
+      to: devicePlatforms,
+      resources: 'count',
+      bytes: 'bytes',
+      app: appPackageCarried,
+    },
+  },
+  TransferFailed: { replay: 'verbatim', payload: { transfer: 'id', role: transferRoles, code: 'code' } },
   ImportReceived: { replay: 'verbatim', payload: { install: 'id' } },
   ShareSent: { replay: 'verbatim', payload: { kind: shareKinds, language: 'language?' } },
   BookmarkAdded: {

@@ -513,6 +513,7 @@ export const ar: LocaleTable = {
   'failure.transfer.unsupported': 'لا يستطيع هذا الهاتف إرسال التطبيق نفسه. يمكن إرسال الموارد مع ذلك.',
   'failure.transfer.declined': 'لم يقبل الهاتف الآخر. يمكنك العرض مرة أخرى.',
   'failure.transfer.peer-lost': 'ابتعد الهاتف الآخر عن النطاق. قرِّب الهاتفين وحاول مرة أخرى.',
+  'failure.transfer.cancelled': 'توقف النقل. لم يُحتفظ بأي جزء ناقص.',
   'failure.audio.unavailable': 'الصوت غير متاح لهذا الآن.',
   'failure.share.unavailable': 'المشاركة غير متاحة على هذا الهاتف الآن.',
   'failure.unexpected': 'لم ينجح أمر ما. حاول مرة أخرى، أو شارك بيانات التشخيص ليتمكن أحد من مساعدتك.',

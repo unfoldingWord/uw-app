@@ -450,6 +450,7 @@ export const sw: LocaleTable = {
   'failure.transfer.unsupported': 'Simu hii haiwezi kutuma programu yenyewe. Nyenzo bado zinaweza kutumwa.',
   'failure.transfer.declined': 'Simu nyingine haikukubali. Unaweza kutoa tena.',
   'failure.transfer.peer-lost': 'Simu nyingine imetoka nje ya eneo. Sogeza simu karibu na ujaribu tena.',
+  'failure.transfer.cancelled': 'Uhamisho umesimamishwa. Hakuna sehemu iliyobaki nusu.',
   'failure.audio.unavailable': 'Sauti haipatikani kwa hiki kwa sasa.',
   'failure.share.unavailable': 'Kushiriki hakupatikani kwenye simu hii kwa sasa.',
   'failure.unexpected':
