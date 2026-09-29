@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { noteRows, parseHelpsReference, parseTsv, questionRows, wordLinkRows } from './tsv';
+import { helpsRowCount, noteRows, parseHelpsReference, parseTsv, questionRows, wordLinkRows } from './tsv';
 
 describe('parseHelpsReference', () => {
   it('reads verses, ranges, lists and ranges across chapters', () => {
@@ -74,5 +74,49 @@ describe('helps rows', () => {
         link: 'rc://*/tw/dict/bible/kt/love',
       },
     ]);
+  });
+
+  it('reads the nine-column notes of older releases by book, chapter and verse', () => {
+    const nine =
+      'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote\n' +
+      'RUT\tfront\tintro\tx1\t\t\t0\t\t# Ruth\n' +
+      'RUT\t1\tintro\tx2\t\t\t0\t\tChapter one\n' +
+      'RUT\t1\t16\tab12\trc://*/ta/man/translate/figs-idiom\tאֱלֹהַ֖יִךְ\t1\tyour God\tNote text<br>more\n';
+    expect(noteRows(nine)).toEqual([
+      { reference: { kind: 'intro' }, id: 'x1', support: '', quote: '', occurrence: 0, note: '# Ruth' },
+      { reference: { kind: 'intro' }, id: 'x2', support: '', quote: '', occurrence: 0, note: 'Chapter one' },
+      {
+        reference: {
+          kind: 'verses',
+          ranges: [{ start: { chapter: 1, verse: 16 }, end: { chapter: 1, verse: 16 } }],
+        },
+        id: 'ab12',
+        support: 'rc://*/ta/man/translate/figs-idiom',
+        quote: 'אֱלֹהַ֖יִךְ',
+        occurrence: 1,
+        note: 'Note text\nmore',
+      },
+    ]);
+    expect(helpsRowCount(nine)).toBe(3);
+  });
+
+  it('counts only the rows it can read', () => {
+    const text =
+      'Reference\tID\tQuestion\tResponse\n1:1\tq1\tWho?\tJohn.\n1:2\t\tNo id\t-\nsomewhere\tq3\tWhere?\tHere.\n';
+    expect(helpsRowCount(text)).toBe(1);
+  });
+});
+
+describe('parseHelpsReference in the forms releases carry', () => {
+  it('reads a part of a verse as the verse, and a chapter front as an introduction', () => {
+    expect(parseHelpsReference('1:2a')).toEqual({
+      kind: 'verses',
+      ranges: [{ start: { chapter: 1, verse: 2 }, end: { chapter: 1, verse: 2 } }],
+    });
+    expect(parseHelpsReference('1:2b-4a')).toEqual({
+      kind: 'verses',
+      ranges: [{ start: { chapter: 1, verse: 2 }, end: { chapter: 1, verse: 4 } }],
+    });
+    expect(parseHelpsReference('2:front')).toEqual({ kind: 'intro' });
   });
 });

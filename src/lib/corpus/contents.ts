@@ -1,6 +1,7 @@
 import { bookByCode } from '../domain/books';
 import { compareText } from '../order';
 import type { Library } from './library';
+import { readingOfKind } from './readings';
 import { academyOrder, audioClips, movementStories, stories } from './loaders';
 import type { Contents } from './types';
 
@@ -18,7 +19,7 @@ export async function contentsOf(library: Library, language: string): Promise<Co
     const reader = await library.reader(entry);
     const scope = reader.metadata.type.flavorType.currentScope ?? {};
     texts.push({
-      reading: entry.kind === 'simplified' || entry.kind === 'original' ? entry.kind : ('literal' as const),
+      reading: readingOfKind(entry.kind),
       books: entry.books.map((code) => ({
         code,
         chapters: chaptersInScope(code, scope[code] ?? []),

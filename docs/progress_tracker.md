@@ -3,6 +3,48 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 F2 fixes from review 2: reading real releases
+
+Node v22.22.2, in Node through Vitest and the sim; no real release was read (git.door43.org is blocked
+here), so every format below comes from what I know of unfoldingWord and Door43 releases. That is an
+inference, labelled as such where it matters.
+
+| Test | Red | Green |
+|---|---|---|
+| `src/lib/corpus/tsv.test.ts`: nine-column notes, rows counted as read, `1:2a` and `2:front` | 3 failed: nine-column rows `[]`; `helpsRowCount` 2 for one readable row; `1:2a` undefined | pass |
+| `src/lib/corpus/alignment.test.ts`: repeated words, gaps (`…`, `&`), the nth phrase past a shared word | 2 failed: `καὶ λέγει καὶ` attached `[0, 1]` | pass |
+| `src/lib/corpus/usfm.test.ts`: `\d` kept, `\fig`, `\va`, `\vp`, `\ca` dropped | 2 failed: `titles` undefined; `A picture|src="x.jpg" ... Many say 3 of my soul.` | pass |
+| `src/lib/corpus/links.test.ts`: `rc://*/obs/book/obs/01/01`, `rc://*/tn/help/obs/01/02`, `rc://*/obs/50`, `rc://*/bible/gen/01/02` | 1 failed: all unresolved | pass |
+| `src/lib/corpus/readings.test.ts`: literal or simplified from the repository code, the burrito abbreviation, then its name; study helps | failed: no module | pass |
+| ST-2 extended: a nine-column notes release and a repeated-word quote imported from files, and a psalm title | with `alignment.ts` from `b416757`: `+ 'and said'  - 'and said and'` | pass |
+| ST-3 extended: `rlob` and `rsob` texts imported from files | with `ingest.ts` and `layout.ts` from `b416757`: `availableTexts` `[]` | pass |
+| `sim/corpus.test.ts`: story questions from `qaa_obs-sq` carry `study: true` | `study` undefined | pass |
+
+Decisions and inferences:
+
+- Notes TSV: the current seven-column form (`Reference ID Tags SupportReference Quote Occurrence Note`) and
+  the older nine-column form (`Book Chapter Verse ID SupportReference OrigQuote Occurrence GLQuote
+  OccurrenceNote`) are both read, by header name. `front`/`intro` in the older columns is an introduction.
+  A verse part (`2a`) is the verse. The row count in the corpus summary is of rows that parse.
+- A quote is matched as a phrase: the verse's original words are put in an order that is the target
+  text's order with each word's occurrences kept ascending (the source order is not in the aligned text;
+  this is an approximation), and the nth contiguous match of the quote is taken, or the nth match with
+  gaps when there are fewer contiguous ones. `…`, `...` and `&` separate the parts of a quote.
+- Literal or simplified: pinned codes `ult ulb glt rlob irv ayt` are literal, `ust udb gst rsob ueb` are
+  simplified, read from the repository name after the language, then from the burrito abbreviation;
+  otherwise a burrito named with a word for simplified, dynamic or easy (in the sixteen locales' languages)
+  is simplified; anything else is literal. `irv` (Hindi and Bengali Indian Revised Version) and `ayt`
+  (Indonesian Alkitab Yang Terbuka) being literal, and `rlob`/`rsob` being the Russian literal and
+  simplified open Bibles, are inferences from memory of DCS; `ar_nav` and `fa_opcb` are not pinned because
+  I could not place them with confidence.
+- `\d` before the first verse is the chapter's title (Psalm superscriptions), shown in `PassageText.titles`
+  when the passage includes verse 1; `\d` inside a verse stays in its text.
+- Study Notes and Study Questions stay in the notes and questions of a passage or story, now with
+  `study: true` (repository codes `sn`, `sq`, `obs-sn`, `obs-sq`).
+- The unfoldingWord-first order is `comparePublishers` in `src/lib/order.ts`, used by Catalog and Corpus;
+  `isRecord` in Catalog comes from `src/lib/burrito/metadata.ts`; the reading of a corpus kind is
+  `readingOfKind`.
+
 ## 2026-09-29 F2 fixes from review 2: Strings
 
 Node v22.22.2, in Node through Vitest and ESLint; nothing ran on a phone.

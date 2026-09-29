@@ -12,6 +12,7 @@ import {
 } from './loaders';
 import { movementSectionOrder } from './layout';
 import { renderMarkdown } from './markdown';
+import { isStudyResource } from './readings';
 import type { Entry } from './tables';
 import type { HelpsReference } from './tsv';
 import type {
@@ -104,6 +105,7 @@ async function storyHelps(library: Library, language: string, story: number) {
       if (frame !== undefined) {
         notes.push({
           id: row.id,
+          study: isStudyResource(entry.provenance.resource, entry.language),
           frame,
           quote: row.quote,
           blocks: render(row.note),
@@ -118,6 +120,7 @@ async function storyHelps(library: Library, language: string, story: number) {
       if (frame !== undefined) {
         questions.push({
           id: row.id,
+          study: isStudyResource(entry.provenance.resource, entry.language),
           frame,
           question: row.question,
           response: row.response,

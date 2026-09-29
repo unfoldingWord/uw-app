@@ -1,10 +1,8 @@
-import { compareText } from '../order';
+import { comparePublishers, compareText } from '../order';
 import type { Files } from '../ports';
 import { openBurrito, type BurritoReader } from './source';
 import type { Entry, IndexRow, TitleRow } from './tables';
 import type { CorpusKind, IndexStatus, LinkTarget } from './types';
-
-export const preferredPublisher = 'unfoldingWord';
 
 export type Library = {
   all(): readonly Entry[];
@@ -24,11 +22,8 @@ export type Library = {
 export const noIndex: IndexStatus = Object.freeze({ built: false, entries: 0, bytes: 0 });
 
 function preference(left: Entry, right: Entry): number {
-  const leftFirst = left.provenance.publisher === preferredPublisher ? 0 : 1;
-  const rightFirst = right.provenance.publisher === preferredPublisher ? 0 : 1;
   return (
-    leftFirst - rightFirst ||
-    compareText(left.provenance.publisher, right.provenance.publisher) ||
+    comparePublishers(left.provenance.publisher, right.provenance.publisher) ||
     compareText(left.root, right.root)
   );
 }

@@ -93,4 +93,35 @@ describe('parseUsfm', () => {
     expect(parseUsfm('\\id JUD\r\n\\h Jude\r\n').chapters.size).toBe(0);
     expect(parseUsfm('\\id JUD\r\n\\c 1\r\n\\v 1 Jude.\r\n').chapters.get(1)?.[0]?.text).toBe('Jude.');
   });
+
+  it('keeps a psalm title as the chapter title and drops figures, alternate and published numbers', () => {
+    const psalm = parseUsfm(
+      String.raw`\id PSA
+\c 3
+\d A psalm of David, when he fled from Absalom his son.
+\q1
+\v 1 Yahweh, how many are my foes!
+\v 2 \fig A picture|src="x.jpg" size="col"\fig* Many say \va 3\va* of my soul.
+\v 3 \vp 3b\vp* But you \ca 4\ca* are a shield.`,
+    );
+    expect(psalm.titles.get(3)).toBe('A psalm of David, when he fled from Absalom his son.');
+    expect((psalm.chapters.get(3) ?? []).map((verse) => verse.text)).toEqual([
+      'Yahweh, how many are my foes!',
+      'Many say of my soul.',
+      'But you are a shield.',
+    ]);
+  });
+
+  it('keeps a title that closes a chapter inside the last verse', () => {
+    const habakkuk = parseUsfm(
+      String.raw`\id HAB
+\c 3
+\v 19 He makes my feet like a deer.
+\d For the music director, on my stringed instruments.`,
+    );
+    expect(habakkuk.titles.size).toBe(0);
+    expect(habakkuk.chapters.get(3)?.[0]?.text).toBe(
+      'He makes my feet like a deer. For the music director, on my stringed instruments.',
+    );
+  });
 });

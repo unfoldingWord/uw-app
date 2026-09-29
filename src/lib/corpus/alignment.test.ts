@@ -61,6 +61,57 @@ describe('attachQuote', () => {
   });
 });
 
+function greekVerse(originals: readonly [string, string, number][]): Verse {
+  return {
+    chapter: 1,
+    verse: 1,
+    text: originals.map(([text]) => text).join(' '),
+    tokens: originals.map(([text, content, occurrence], index) =>
+      word(index, text, [{ content, lemma: content, strong: '', occurrence, occurrences: 3 }]),
+    ),
+  };
+}
+
+describe('attachQuote with repeated words', () => {
+  const repeated = greekVerse([
+    ['and', 'καὶ', 1],
+    ['says', 'λέγει', 1],
+    ['and', 'καὶ', 2],
+  ]);
+
+  it('attaches every word of a quote that repeats a word, and the parts around a gap', () => {
+    expect(attachQuote('καὶ λέγει καὶ', 1, reference('1:1'), [repeated])).toEqual([
+      { chapter: 1, verse: 1, tokens: [0, 1, 2] },
+    ]);
+    expect(attachQuote('καὶ … καὶ', 1, reference('1:1'), [repeated])).toEqual([
+      { chapter: 1, verse: 1, tokens: [0, 2] },
+    ]);
+    expect(attachQuote('καὶ & καὶ', 1, reference('1:1'), [repeated])).toEqual([
+      { chapter: 1, verse: 1, tokens: [0, 2] },
+    ]);
+  });
+
+  it('finds the nth occurrence of the whole quote, past a word it shares with the verse', () => {
+    const verse = greekVerse([
+      ['and', 'καὶ', 1],
+      ['another', 'ἄλλος', 1],
+      ['and', 'καὶ', 2],
+      ['says', 'λέγει', 1],
+      ['and', 'καὶ', 3],
+      ['says', 'λέγει', 2],
+    ]);
+    expect(attachQuote('καὶ λέγει', 1, reference('1:1'), [verse])).toEqual([
+      { chapter: 1, verse: 1, tokens: [2, 3] },
+    ]);
+    expect(attachQuote('καὶ λέγει', 2, reference('1:1'), [verse])).toEqual([
+      { chapter: 1, verse: 1, tokens: [4, 5] },
+    ]);
+    expect(attachQuote('καὶ λέγει καὶ', 1, reference('1:1'), [verse])).toEqual([
+      { chapter: 1, verse: 1, tokens: [2, 3, 4] },
+    ]);
+  });
+});
+
 describe('coversVerse', () => {
   it('covers ranges across chapters and verse bridges, never introductions', () => {
     expect(coversVerse(reference('1:10-2:2'), { ...verse, chapter: 2, verse: 1 })).toBe(true);

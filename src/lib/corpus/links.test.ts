@@ -48,11 +48,19 @@ describe('resolveLink', () => {
   it('leaves unknown, external and out-of-range links unresolved', () => {
     expect(resolveLink('https://example.org/page', word)).toBeUndefined();
     expect(resolveLink('mailto:someone@example.org', word)).toBeUndefined();
-    expect(resolveLink('rc://*/obs/book/obs/01/01', note)).toBeUndefined();
     expect(resolveLink('rc://*/ult/book/rut/09/01', note)).toBeUndefined();
     expect(resolveLink('rc://*/ta/man/translate', note)).toBeUndefined();
     expect(resolveLink('#definition', word)).toBeUndefined();
     expect(resolveLink('../kt/', word)).toBeUndefined();
     expect(resolveLink('notes.txt', academy)).toBeUndefined();
+  });
+
+  it('resolves links to stories and frames, in the forms story helps and notes carry', () => {
+    expect(resolveLink('rc://*/obs/book/obs/01/01', note)).toEqual({ kind: 'story', story: 1 });
+    expect(resolveLink('rc://*/tn/help/obs/01/02', note)).toEqual({ kind: 'story', story: 1 });
+    expect(resolveLink('rc://en/obs/01/02', note)).toEqual({ kind: 'story', story: 1 });
+    expect(resolveLink('rc://*/obs/50', note)).toEqual({ kind: 'story', story: 50 });
+    expect(resolveLink('rc://*/obs/51/01', note)).toBeUndefined();
+    expect(resolveLink('rc://*/bible/gen/01/02', note)).toEqual({ kind: 'passage', reference: 'GEN 1:2' });
   });
 });

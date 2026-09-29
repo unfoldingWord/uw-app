@@ -57,22 +57,25 @@ export function parseTsv(text: string): TsvRow[] {
   });
 }
 
-const pointPattern = /^(\d+):(\d+)$/;
+const pointPattern = /^(\d+):(\d+)[a-z]?$/;
+const versePattern = /^(\d+)[a-z]?$/;
+const introPattern = /^(front|\d+):(intro|front)$|^front$|^intro$/;
 
 function point(text: string, chapter: number | undefined): HelpsPoint | undefined {
   const full = pointPattern.exec(text);
   if (full) {
     return { chapter: Number(full[1]), verse: Number(full[2]) };
   }
-  if (chapter !== undefined && /^\d+$/.test(text)) {
-    return { chapter, verse: Number(text) };
+  const verse = versePattern.exec(text);
+  if (chapter !== undefined && verse) {
+    return { chapter, verse: Number(verse[1]) };
   }
   return undefined;
 }
 
 export function parseHelpsReference(text: string): HelpsReference | undefined {
   const trimmed = text.trim();
-  if (/(^|:)intro$/.test(trimmed) || trimmed.startsWith('front')) {
+  if (introPattern.test(trimmed)) {
     return { kind: 'intro' };
   }
   const ranges: { start: HelpsPoint; end: HelpsPoint }[] = [];
@@ -95,15 +98,50 @@ export function parseHelpsReference(text: string): HelpsReference | undefined {
 }
 
 function occurrenceOf(text: string | undefined): number {
-  const parsed = Number(text);
-  return Number.isInteger(parsed) ? parsed : 1;
+  const trimmed = (text ?? '').trim();
+  const parsed = Number(trimmed);
+  return trimmed !== '' && Number.isInteger(parsed) ? parsed : 1;
+}
+
+const legacyColumns: Readonly<Record<string, string>> = {
+  OrigQuote: 'Quote',
+  OccurrenceNote: 'Note',
+};
+
+function referenceText(row: TsvRow): string {
+  if (row.Reference !== undefined) {
+    return row.Reference;
+  }
+  const chapter = (row.Chapter ?? '').trim();
+  const verse = (row.Verse ?? '').trim();
+  return chapter === '' || verse === '' ? '' : `${chapter}:${verse}`;
+}
+
+function current(row: TsvRow): TsvRow {
+  if (row.Reference !== undefined) {
+    return row;
+  }
+  const renamed: Record<string, string> = { ...row };
+  for (const [legacy, name] of Object.entries(legacyColumns)) {
+    const value = row[legacy];
+    if (value !== undefined && renamed[name] === undefined) {
+      renamed[name] = value;
+    }
+  }
+  return renamed;
+}
+
+type ReadRow = { readonly row: TsvRow; readonly reference: HelpsReference };
+
+function readRows(text: string): ReadRow[] {
+  return parseTsv(text).flatMap((row) => {
+    const reference = parseHelpsReference(referenceText(row));
+    return reference === undefined || (row.ID ?? '').trim() === '' ? [] : [{ row: current(row), reference }];
+  });
 }
 
 function rowsWith<T>(text: string, build: (row: TsvRow, reference: HelpsReference) => T): T[] {
-  return parseTsv(text).flatMap((row) => {
-    const reference = parseHelpsReference(row.Reference ?? '');
-    return reference === undefined || (row.ID ?? '') === '' ? [] : [build(row, reference)];
-  });
+  return readRows(text).map(({ row, reference }) => build(row, reference));
 }
 
 export function noteRows(text: string): NoteRow[] {
@@ -139,5 +177,5 @@ export function questionRows(text: string): QuestionRow[] {
 }
 
 export function helpsRowCount(text: string): number {
-  return parseTsv(text).filter((row) => (row.ID ?? '') !== '').length;
+  return readRows(text).length;
 }

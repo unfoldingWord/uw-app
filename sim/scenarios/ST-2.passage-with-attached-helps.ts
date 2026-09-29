@@ -2,6 +2,9 @@ import assert from 'node:assert/strict';
 import { languagePackId } from '@lib/domain/pack';
 import { parseReference, type Reference } from '@lib/domain/reference';
 import type { Passage, Token, WordSpan } from '@lib/corpus/types';
+import { utf8 } from '@lib/burrito/files';
+import { mimeTypes } from '@lib/burrito/flavors';
+import { importLocalBurrito } from '../burritos';
 import { installFromCatalog } from '../install';
 import { scenario } from '../scenario';
 
@@ -24,6 +27,23 @@ function wordsAt(passage: Passage, spans: readonly WordSpan[]): string[] {
     return span.tokens.map((index) => words.find((word) => word.index === index)?.text ?? '?');
   });
 }
+
+const repeatedWords = String.raw`\id MAT
+\c 1
+\v 1 \zaln-s |x-occurrence="1" x-occurrences="2" x-content="καὶ"\*\w and|x-occurrence="1" x-occurrences="2"\w*\zaln-e\* \zaln-s |x-occurrence="1" x-occurrences="1" x-content="εἶπεν"\*\w said|x-occurrence="1" x-occurrences="1"\w*\zaln-e\* \zaln-s |x-occurrence="2" x-occurrences="2" x-content="καὶ"\*\w and|x-occurrence="2" x-occurrences="2"\w*\zaln-e\* \zaln-s |x-occurrence="1" x-occurrences="1" x-content="ἦλθεν"\*\w came|x-occurrence="1" x-occurrences="1"\w*\zaln-e\*.`;
+
+const psalmTitle = String.raw`\id PSA
+\c 3
+\d A psalm of David.
+\q1
+\v 1 Yahweh, how many are my foes!`;
+
+const legacyNotes = [
+  'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote',
+  'MAT\tfront\tintro\tm000\t\t\t0\t\t# Matthew',
+  'MAT\t1\t1\tm001\t\tκαὶ εἶπεν καὶ\t1\tand said and\tA repeated word.',
+  'MAT\t1\t1\tm002\t\tκαὶ … καὶ\t1\tand and\tTwo parts.',
+].join('\n');
 
 export default scenario(
   'ST-2',
@@ -107,5 +127,45 @@ export default scenario(
     await device.restart();
     const again = await device.kernel.corpus.passage(reference('RUT 1:16'), { language: 'qaa' });
     assert.deepEqual(again?.notes, ruth.notes, 'a restart rebuilds the corpus from its own tables');
+
+    const text = await importLocalBurrito(device, {
+      resource: 'qaf_ult',
+      language: 'qaf',
+      abbreviation: 'ult',
+      name: 'Literal text',
+      flavorType: 'scripture',
+      flavor: 'textTranslation',
+      ingredients: [
+        { path: '41-MAT.usfm', bytes: utf8(repeatedWords), mimeType: mimeTypes.usfm, scope: { MAT: ['1'] } },
+        { path: '19-PSA.usfm', bytes: utf8(psalmTitle), mimeType: mimeTypes.usfm, scope: { PSA: ['3'] } },
+      ],
+    });
+    assert.ok(text.ok, text.ok ? '' : text.code);
+    const notes = await importLocalBurrito(device, {
+      resource: 'qaf_tn',
+      language: 'qaf',
+      abbreviation: 'tn',
+      name: 'Notes',
+      flavorType: 'parascriptural',
+      flavor: 'x-bcvnotes',
+      ingredients: [
+        { path: 'tn_MAT.tsv', bytes: utf8(legacyNotes), mimeType: mimeTypes.tsv, scope: { MAT: [] } },
+      ],
+    });
+    assert.ok(notes.ok, notes.ok ? '' : notes.code);
+    const matthew = await device.kernel.corpus.passage(reference('MAT 1:1'), { language: 'qaf' });
+    assert.ok(matthew);
+    assert.deepEqual(
+      matthew.notes.map((note) => [note.id, wordsAt(matthew, note.words).join(' ')]),
+      [
+        ['m001', 'and said and'],
+        ['m002', 'and and'],
+      ],
+      'a quote that repeats a word attaches to each of its words, from nine-column notes',
+    );
+    assert.equal(device.kernel.corpus.summary('qaf').notes?.items, 3, 'the count is of the rows read');
+    const psalm = await device.kernel.corpus.passage(reference('PSA 3:1'), { language: 'qaf' });
+    assert.deepEqual(psalm?.text.titles, [{ chapter: 3, text: 'A psalm of David.' }]);
+    assert.equal(psalm?.text.verses[0]?.text, 'Yahweh, how many are my foes!');
   },
 );

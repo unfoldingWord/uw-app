@@ -105,13 +105,13 @@ describe('corpus stories', () => {
     for (const frame of story?.frames ?? []) {
       expect(await device.adapters.files.exists(frame.image?.path ?? '')).toBe(true);
     }
-    expect(story?.notes.map((note) => [note.id, note.frame])).toEqual([
-      ['s002', 1],
-      ['s003', 2],
+    expect(story?.notes.map((note) => [note.id, note.frame, note.study])).toEqual([
+      ['s002', 1, false],
+      ['s003', 2, false],
     ]);
-    expect(story?.questions.map((question) => [question.id, question.frame])).toEqual([
-      ['q001', 1],
-      ['q002', 3],
+    expect(story?.questions.map((question) => [question.id, question.frame, question.study])).toEqual([
+      ['q001', 1, true],
+      ['q002', 3, true],
     ]);
     expect(
       device.kernel.journal

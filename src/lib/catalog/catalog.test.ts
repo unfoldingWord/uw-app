@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { englishNameOf } from './languageNames';
 import { languagesOf, searchLanguages } from './languages';
-import { comparePublishers, normalizeEntry, normalizePage } from './normalize';
+import { comparePublishers } from '../order';
+import { normalizeEntry, normalizePage } from './normalize';
 import { rowOfSubject } from './subjects';
 import type { CatalogRelease } from './types';
 

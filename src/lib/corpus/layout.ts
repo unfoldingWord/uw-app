@@ -176,12 +176,6 @@ export function audioEntries(reader: BurritoReader): readonly AudioEntry[] {
   });
 }
 
-export const simplifiedTextCodes: readonly string[] = ['ust', 'gst', 'udb', 'ueb'];
-
-export function resourceCode(resource: string, language: string): string {
-  return resource.startsWith(`${language}_`) ? resource.slice(language.length + 1) : resource;
-}
-
 export const storyHelpsFlavors = {
   notes: 'x-bcvnotes',
   questions: 'x-bcvquestions',
