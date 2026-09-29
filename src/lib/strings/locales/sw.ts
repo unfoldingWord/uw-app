@@ -474,4 +474,10 @@ export const sw: LocaleTable = {
   'study.frame.picture': 'Mchoro wa picha ya {number}',
   'transfer.app.ready': 'Programu imefika kwenye simu hii ({size}) na iko tayari kusakinishwa.',
   'failure.boot': 'Programu haikuweza kujiandaa kwenye simu hii. Jaribu tena baada ya muda mfupi.',
+  'languages.import.title': 'Kutoka kwenye faili',
+  'languages.import': 'Leta kutoka kwenye faili',
+  'languages.import.about': 'Sakinisha kumbukumbu ya Scripture Burrito (.zip) uliyohifadhi au uliyopewa.',
+  'languages.import.opened': 'Umefungua {name}. Isakinishe kwenye simu hii?',
+  'languages.import.install': 'Sakinisha',
+  'languages.import.done': 'Imesakinishwa kutoka kwenye faili. Iko tayari kusomwa bila mtandao.',
 };

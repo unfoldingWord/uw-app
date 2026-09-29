@@ -471,4 +471,10 @@ export const hi: LocaleTable = {
   'study.frame.picture': 'दृश्य {number} का चित्र',
   'transfer.app.ready': 'ऐप इस फ़ोन पर आ गया है ({size}) और इंस्टॉल के लिए तैयार है।',
   'failure.boot': 'ऐप इस फ़ोन पर तैयार नहीं हो सका। थोड़ी देर बाद फिर से कोशिश करें।',
+  'languages.import.title': 'फ़ाइल से',
+  'languages.import': 'फ़ाइल से आयात करें',
+  'languages.import.about': 'Scripture Burrito संग्रह (.zip) इंस्टॉल करें जो आपने सहेजा या पाया है।',
+  'languages.import.opened': 'आपने {name} खोला। इसे इस फ़ोन पर इंस्टॉल करें?',
+  'languages.import.install': 'इंस्टॉल करें',
+  'languages.import.done': 'फ़ाइल से इंस्टॉल हो गया। अब इसे बिना इंटरनेट के पढ़ सकते हैं।',
 };

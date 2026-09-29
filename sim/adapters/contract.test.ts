@@ -9,6 +9,7 @@ import { createMemoryHttp, createMemoryNetwork } from './http';
 import { createMemoryIds } from './ids';
 import { createMemoryKv } from './kv';
 import { createMemoryLocale } from './locale';
+import { createMemoryPicker } from './picker';
 import { createMemoryShareSheet } from './share-sheet';
 import { createTransportBus } from './transport';
 
@@ -32,6 +33,7 @@ function memorySubject(index: number): ContractSubject {
     transport: createTransportBus().transport({ platform: 'ios' }),
     audio: createMemoryAudio({ clock }),
     shareSheet: createMemoryShareSheet(),
+    picker: createMemoryPicker(),
     locale: createMemoryLocale(),
   };
   let external = 0;

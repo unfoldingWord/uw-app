@@ -6,7 +6,12 @@ function introspected(options: {
   allowBackup?: string;
   infoPlist?: Record<string, unknown>;
   entitlements?: Record<string, unknown>;
+  intentData?: { scheme: string; mimeType?: string }[];
 }): unknown {
+  const intentData = options.intentData ?? [
+    { scheme: 'content', mimeType: 'application/zip' },
+    { scheme: 'content', mimeType: 'application/octet-stream' },
+  ];
   return {
     _internal: {
       modResults: {
@@ -19,12 +24,40 @@ function introspected(options: {
                   ...(permission.remove === true ? { 'tools:node': 'remove' } : {}),
                 },
               })),
-              application: [{ $: { 'android:allowBackup': options.allowBackup } }],
+              application: [
+                {
+                  $: { 'android:allowBackup': options.allowBackup },
+                  activity: [
+                    {
+                      'intent-filter': [
+                        {
+                          action: [{ $: { 'android:name': 'android.intent.action.VIEW' } }],
+                          data: [{ $: { 'android:scheme': 'unfoldingword' } }],
+                        },
+                        {
+                          action: [{ $: { 'android:name': 'android.intent.action.VIEW' } }],
+                          data: intentData.map((data) => ({
+                            $: {
+                              'android:scheme': data.scheme,
+                              ...(data.mimeType === undefined ? {} : { 'android:mimeType': data.mimeType }),
+                            },
+                          })),
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
             },
           },
         },
         ios: {
-          infoPlist: { ITSAppUsesNonExemptEncryption: false, ...options.infoPlist },
+          infoPlist: {
+            ITSAppUsesNonExemptEncryption: false,
+            LSSupportsOpeningDocumentsInPlace: false,
+            CFBundleDocumentTypes: [{ LSItemContentTypes: ['public.zip-archive'] }],
+            ...options.infoPlist,
+          },
           entitlements: options.entitlements ?? {},
         },
       },
@@ -79,6 +112,30 @@ describe('permissionFindings', () => {
       'Android manifest requests android.permission.BLUETOOTH_SCAN, which is not on the admitted list in scripts/checks/permissions.ts',
       'Info.plist allows arbitrary loads; the Http port only reaches allowlisted hosts over HTTPS',
       'iOS entitlements carry com.apple.developer.icloud-container-identifiers, which nothing in the PRD needs',
+    ]);
+  });
+
+  it('refuses a burrito registration that reads file URIs, edits in place, or is missing (SH-3)', () => {
+    const config = nativeConfigOf(
+      introspected({
+        permissions: blocked,
+        allowBackup: 'false',
+        intentData: [{ scheme: 'file', mimeType: 'application/zip' }],
+        infoPlist: {
+          CFBundleDocumentTypes: [{ LSItemContentTypes: ['public.data'] }],
+          LSSupportsOpeningDocumentsInPlace: true,
+          UIFileSharingEnabled: true,
+        },
+      }),
+    );
+    expect(permissionFindings(config)).toEqual([
+      'An Android intent filter admits the scheme file; only unfoldingword and content are admitted, and a file URI would need storage permission',
+      'Android does not offer the app to open application/zip over content, so a burrito cannot be opened from another app (SH-3)',
+      'Android does not offer the app to open application/octet-stream over content, so a burrito cannot be opened from another app (SH-3)',
+      'Info.plist declares the document type public.data; only public.zip-archive is admitted',
+      'Info.plist declares no document type for public.zip-archive, so iOS never offers the app a burrito (SH-3)',
+      'Info.plist does not set LSSupportsOpeningDocumentsInPlace false; an opened burrito must be copied, never edited in place',
+      "Info.plist sets UIFileSharingEnabled, which shows the app's files in the Files app and Finder",
     ]);
   });
 });

@@ -521,4 +521,10 @@ export const ru: LocaleTable = {
   'study.frame.picture': 'Иллюстрация к кадру {number}',
   'transfer.app.ready': 'Приложение пришло на этот телефон ({size}) и готово к установке.',
   'failure.boot': 'Приложению не удалось подготовиться на этом телефоне. Попробуйте ещё раз чуть позже.',
+  'languages.import.title': 'Из файла',
+  'languages.import': 'Импорт из файла',
+  'languages.import.about': 'Установите архив Scripture Burrito (.zip), который вы сохранили или получили.',
+  'languages.import.opened': 'Вы открыли {name}. Установить на этот телефон?',
+  'languages.import.install': 'Установить',
+  'languages.import.done': 'Установлено из файла. Можно читать без интернета.',
 };

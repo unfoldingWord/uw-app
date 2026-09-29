@@ -434,4 +434,10 @@ export const zhHans: LocaleTable = {
   'study.frame.picture': '第 {number} 幅的插图',
   'transfer.app.ready': '应用已到达这部手机（{size}），可以安装了。',
   'failure.boot': '应用未能在这部手机上准备好。请稍后再试。',
+  'languages.import.title': '来自文件',
+  'languages.import': '从文件导入',
+  'languages.import.about': '安装您保存或收到的 Scripture Burrito 压缩包（.zip）。',
+  'languages.import.opened': '您打开了 {name}。要安装到这部手机上吗？',
+  'languages.import.install': '安装',
+  'languages.import.done': '已从文件安装。现在可以离线阅读。',
 };

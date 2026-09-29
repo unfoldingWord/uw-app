@@ -470,4 +470,11 @@ export const fa: LocaleTable = {
   'study.frame.picture': 'تصویر صحنهٔ {number}',
   'transfer.app.ready': 'برنامه به این گوشی رسید ({size}) و آمادهٔ نصب است.',
   'failure.boot': 'برنامه نتوانست روی این گوشی آماده شود. کمی بعد دوباره امتحان کنید.',
+  'languages.import.title': 'از یک فایل',
+  'languages.import': 'وارد کردن از فایل',
+  'languages.import.about':
+    'یک بایگانی Scripture Burrito (.zip) را که ذخیره کرده‌اید یا دریافت کرده‌اید نصب کنید.',
+  'languages.import.opened': 'شما {name} را باز کردید. روی این گوشی نصب شود؟',
+  'languages.import.install': 'نصب',
+  'languages.import.done': 'از فایل نصب شد. اکنون بدون اینترنت قابل خواندن است.',
 };

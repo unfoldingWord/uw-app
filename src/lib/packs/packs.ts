@@ -5,6 +5,7 @@ import { failureCodeOf } from '../domain/failures';
 import { languagePackId, packDirectory, packsDirectory, type PackId } from '../domain/pack';
 import { refOf } from '../domain/release';
 import { defineModule } from '../module';
+import type { PickedFile } from '../ports';
 import { catalogOffer, createInstaller, resolveSource, type Resolved } from './install';
 import { defaultReleases, missingReleases, updatesOf } from './plan';
 import { fromCatalog, fromFile, type PackPlan, type PackSource } from './source';
@@ -34,6 +35,7 @@ export type LanguageStatus = {
 export type PacksApi = {
   install(source: PackSource, plan?: PackPlan): Promise<InstallOutcome>;
   importFile(external: string): Promise<InstallOutcome>;
+  importPicked(): Promise<InstallOutcome | undefined>;
   installFromCatalog(pack: PackId): Promise<InstallOutcome>;
   update(pack: PackId): Promise<InstallOutcome>;
   remove(pack: PackId): Promise<RemoveOutcome>;
@@ -116,6 +118,18 @@ export const packsModule = defineModule<PacksApi>({
           await removeIfPresent(ports.files, inboxDirectory);
         }
       });
+    }
+
+    async function importPicked(): Promise<InstallOutcome | undefined> {
+      let picked: PickedFile | undefined;
+      try {
+        picked = await ports.picker.pickArchive();
+      } catch (error) {
+        const code = failureCodeOf(error);
+        await context.emit({ type: 'Failure', payload: { code, context: { step: 'file' } } });
+        return { ok: false, install: undefined, pack: undefined, code };
+      }
+      return picked === undefined ? undefined : importFile(picked.uri);
     }
 
     function installFromCatalog(pack: PackId): Promise<InstallOutcome> {
@@ -205,6 +219,7 @@ export const packsModule = defineModule<PacksApi>({
       api: {
         install,
         importFile,
+        importPicked,
         installFromCatalog,
         update,
         remove,

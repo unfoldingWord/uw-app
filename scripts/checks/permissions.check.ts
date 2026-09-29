@@ -7,7 +7,7 @@ const repositoryRoot = join(import.meta.dirname, '..', '..');
 
 const check: Check = {
   name: 'permissions',
-  rule: 'The native projects prebuild would write ask for no permission, usage description, background mode or entitlement the PRD does not admit, and Android backs nothing up (PRD sections 9 and 12)',
+  rule: 'The native projects prebuild would write ask for no permission, usage description, background mode or entitlement the PRD does not admit, and Android backs nothing up (PRD sections 9 and 12); a burrito .zip opens the app over content URIs and an iOS document type only (SH-3)',
   run() {
     const result = spawnSync(
       join(repositoryRoot, 'node_modules', '.bin', 'expo'),
@@ -30,7 +30,7 @@ const check: Check = {
     const requested = config.androidPermissions.filter((permission) => !permission.removed);
     return {
       status: 'pass',
-      summary: `Android requests ${requested.map((permission) => permission.name.replace('android.permission.', '')).join(', ')}; ${androidRefused.length} refused permissions blocked; allowBackup false; no iOS usage description, background mode or entitlement`,
+      summary: `Android requests ${requested.map((permission) => permission.name.replace('android.permission.', '')).join(', ')}; ${androidRefused.length} refused permissions blocked; allowBackup false; no iOS usage description, background mode or entitlement; a .zip opens the app over content URIs (Android) and public.zip-archive (iOS)`,
     };
   },
 };

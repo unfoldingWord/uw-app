@@ -470,4 +470,10 @@ export const ur: LocaleTable = {
   'study.frame.picture': 'منظر {number} کی تصویر',
   'transfer.app.ready': 'ایپ اس فون پر آ گئی ہے ({size}) اور انسٹال کے لیے تیار ہے۔',
   'failure.boot': 'ایپ اس فون پر تیار نہیں ہو سکی۔ تھوڑی دیر بعد دوبارہ کوشش کریں۔',
+  'languages.import.title': 'فائل سے',
+  'languages.import': 'فائل سے درآمد کریں',
+  'languages.import.about': 'Scripture Burrito آرکائیو (.zip) انسٹال کریں جو آپ نے محفوظ کیا یا پایا ہے۔',
+  'languages.import.opened': 'آپ نے {name} کھولا۔ کیا اسے اس فون پر انسٹال کریں؟',
+  'languages.import.install': 'انسٹال کریں',
+  'languages.import.done': 'فائل سے انسٹال ہو گیا۔ اب اسے انٹرنیٹ کے بغیر پڑھا جا سکتا ہے۔',
 };

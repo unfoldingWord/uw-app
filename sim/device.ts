@@ -8,6 +8,7 @@ import { createMemoryHttp, type MemoryHttp, type MemoryNetwork } from './adapter
 import { createMemoryIds } from './adapters/ids';
 import { createMemoryKv, type MemoryKv } from './adapters/kv';
 import { createMemoryLocale, type MemoryLocale } from './adapters/locale';
+import { createMemoryPicker, type MemoryPicker } from './adapters/picker';
 import { createMemoryShareSheet, type MemoryShareSheet } from './adapters/share-sheet';
 import type { MemoryTransport, TransportBus } from './adapters/transport';
 import { migrations } from './migrations';
@@ -32,6 +33,7 @@ export type SimAdapters = {
   transport: MemoryTransport;
   audio: MemoryAudio;
   shareSheet: MemoryShareSheet;
+  picker: MemoryPicker;
   locale: MemoryLocale;
 };
 
@@ -62,6 +64,7 @@ export function createSimDevice(name: string, world: DeviceWorld, options: Devic
     ),
     audio: createMemoryAudio({ clock: world.clock }),
     shareSheet: createMemoryShareSheet(),
+    picker: createMemoryPicker(),
     locale: createMemoryLocale(options.locale),
   };
   const boot = (): Kernel =>

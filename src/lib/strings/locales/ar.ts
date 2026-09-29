@@ -537,4 +537,10 @@ export const ar: LocaleTable = {
   'study.frame.picture': 'صورة المشهد {number}',
   'transfer.app.ready': 'وصل التطبيق إلى هذا الهاتف ({size}) وهو جاهز للتثبيت.',
   'failure.boot': 'لم يتمكن التطبيق من الاستعداد على هذا الهاتف. حاول مرة أخرى بعد قليل.',
+  'languages.import.title': 'من ملف',
+  'languages.import': 'استيراد من ملف',
+  'languages.import.about': 'ثبّت أرشيف Scripture Burrito ‏(.zip) حفظته أو استلمته.',
+  'languages.import.opened': 'فتحت {name}. هل تثبّته على هذا الهاتف؟',
+  'languages.import.install': 'تثبيت',
+  'languages.import.done': 'تم التثبيت من الملف. يمكنك قراءته الآن دون اتصال.',
 };

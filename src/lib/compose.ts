@@ -142,6 +142,7 @@ function modulePorts(ports: Ports, scope: Scope, ids: Ids): ModulePorts {
     transport: ports.transport,
     audio: allowlistedAudio(ports.audio),
     shareSheet: ports.shareSheet,
+    picker: ports.picker,
     locale: ports.locale,
   };
 }

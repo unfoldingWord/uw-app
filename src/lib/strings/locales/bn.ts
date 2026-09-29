@@ -468,4 +468,10 @@ export const bn: LocaleTable = {
   'study.frame.picture': 'দৃশ্য {number}-এর ছবি',
   'transfer.app.ready': 'অ্যাপটি এই ফোনে এসেছে ({size}) এবং ইনস্টলের জন্য প্রস্তুত।',
   'failure.boot': 'অ্যাপটি এই ফোনে প্রস্তুত হতে পারেনি। একটু পরে আবার চেষ্টা করুন।',
+  'languages.import.title': 'ফাইল থেকে',
+  'languages.import': 'ফাইল থেকে আমদানি করুন',
+  'languages.import.about': 'আপনার সংরক্ষিত বা পাওয়া একটি Scripture Burrito আর্কাইভ (.zip) ইনস্টল করুন।',
+  'languages.import.opened': 'আপনি {name} খুলেছেন। এই ফোনে ইনস্টল করবেন?',
+  'languages.import.install': 'ইনস্টল করুন',
+  'languages.import.done': 'ফাইল থেকে ইনস্টল হয়েছে। এখন ইন্টারনেট ছাড়াই পড়া যাবে।',
 };

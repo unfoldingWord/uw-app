@@ -8,6 +8,7 @@ import { createPlatformHttp, type HostPolicy } from './http';
 import { createPlatformIds } from './ids';
 import { createPlatformKv } from './kv';
 import { createPlatformLocale } from './locale';
+import { createPlatformPicker } from './picker';
 import { createPlatformShareSheet } from './share-sheet';
 import { createPlatformTransport } from './transport';
 
@@ -30,6 +31,7 @@ export function createPlatformPorts(policy: HostPolicy): Ports {
     transport: createPlatformTransport(platform),
     audio: createPlatformAudio({ policy, http, uriOf: root.uriOf }),
     shareSheet: createPlatformShareSheet({ platform, uriOf: root.uriOf }),
+    picker: createPlatformPicker(),
     locale: createPlatformLocale(),
   };
 }

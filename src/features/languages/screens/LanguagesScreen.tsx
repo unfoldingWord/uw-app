@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import type { PackId } from '@lib/domain/pack';
 import { GlassInput, Icon } from '@shared/glass';
@@ -7,6 +7,8 @@ import { useTheme } from '@shared/theme';
 import { Header, IconAction, Notice, ScreenScaffold, useAsyncValue } from '@shared/ui';
 import { createLanguagesService } from '../service';
 import { ExtrasSection } from './ExtrasSection';
+import { ImportSection, OpenedFile, openedKey, type RunImport } from './ImportSection';
+import { openedParam } from './intent';
 import { LanguageList } from './LanguageList';
 import { withOutcome, type Failures, type Outcome } from './outcomes';
 import { RemoveSheet, type PendingRemove } from './RemoveSheet';
@@ -19,6 +21,10 @@ export default function LanguagesScreen() {
   const languages = useService(createLanguagesService);
   const theme = useTheme();
   const router = useRouter();
+  const handed = useLocalSearchParams<Partial<Record<typeof openedParam, string>>>()[openedParam];
+  const [dismissed, setDismissed] = useState<string | undefined>(undefined);
+  const [imported, setImported] = useState(false);
+  const opened = typeof handed === 'string' && handed !== '' && handed !== dismissed ? handed : undefined;
   const words = languages.words();
   const [query, setQuery] = useState('');
   const [version, setVersion] = useState(0);
@@ -47,6 +53,20 @@ export default function LanguagesScreen() {
     setRunning((current) => current - 1);
     setFailures((current) => withOutcome(current, key, outcome));
     bump();
+  };
+
+  const runImport: RunImport = async (key, action) => {
+    setImported(false);
+    await run(key, async () => {
+      const outcome = await action();
+      if (outcome.ok && outcome.installed !== undefined) {
+        setImported(true);
+        if (key === openedKey) {
+          setDismissed(opened);
+        }
+      }
+      return outcome;
+    });
   };
 
   const refreshFailure =
@@ -84,6 +104,14 @@ export default function LanguagesScreen() {
         )
       }
     >
+      {opened === undefined ? null : (
+        <OpenedFile
+          opened={opened}
+          failures={failures}
+          onImport={runImport}
+          onDismiss={() => setDismissed(opened)}
+        />
+      )}
       <GlassInput
         accessibilityLabel={words.t('languages.search')}
         placeholder={words.t('languages.search')}
@@ -117,6 +145,7 @@ export default function LanguagesScreen() {
         failures={failures}
         onUpdate={(pack) => run(pack, () => languages.update(pack))}
       />
+      <ImportSection imported={imported} failures={failures} onImport={runImport} />
       <StorageSection version={version} rows={everyRow} failures={failures} onRemove={setPending} />
     </ScreenScaffold>
   );

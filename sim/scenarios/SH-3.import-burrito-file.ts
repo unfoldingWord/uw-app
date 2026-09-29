@@ -10,6 +10,7 @@ import { fixtureRows } from '../fixtures/rows';
 import { installFromCatalog } from '../install';
 import { fixturePeer } from '../peer';
 import { scenario } from '../scenario';
+import { servicesOf } from '../services';
 import { transferBetween } from '../transfer';
 
 type Metadata = { identification: Record<string, unknown> } & Record<string, unknown>;
@@ -204,6 +205,54 @@ export default scenario(
     const gone = await opened.kernel.packs.importFile('content://gone/qab_obs.zip');
     assert.equal(gone.ok, false);
     assert.equal(!gone.ok && gone.code, 'files.not-found');
+
+    const picking = world.device('picked-in-languages');
+    await picking.start();
+    picking.adapters.http.setOnline(false);
+    const languages = servicesOf(picking).languages;
+    const closedAt = picking.kernel.journal.stats().lastSeq;
+    picking.adapters.picker.script({ kind: 'cancel' });
+    assert.deepEqual(await languages.importFile(), { ok: true, installed: undefined });
+    assert.deepEqual(picking.kernel.journal.read(closedAt), [], 'closing the picker changes nothing');
+    const broken = 'content://com.android.providers.downloads.documents/document/msf%3A31';
+    picking.adapters.files.offerExternal(broken, utf8('a note, not an archive'));
+    picking.adapters.picker.script({ kind: 'file', uri: broken });
+    const invalidAt = picking.kernel.journal.stats().lastSeq;
+    assert.deepEqual(await languages.importFile(), { ok: false, code: 'pack.invalid-burrito' });
+    assert.deepEqual(
+      picking.kernel.journal.read(invalidAt).map((entry) => entry.type),
+      ['Failure'],
+      'a file that is not a burrito is refused before anything installs',
+    );
+    assert.deepEqual(picking.kernel.packs.installed(), []);
+    assert.deepEqual(
+      picking.adapters.files.tree().filter((path) => path.startsWith('packs/') && !path.endsWith('/')),
+      [],
+      'nothing of the refused file stays on the phone',
+    );
+    picking.adapters.picker.script({ kind: 'fail', code: 'files.io' });
+    assert.deepEqual(await languages.importFile(), { ok: false, code: 'files.io' });
+    const picked = 'file:///data/user/0/org.unfoldingword.app/cache/DocumentPicker/qab_obs.zip';
+    picking.adapters.files.offerExternal(picked, qab);
+    picking.adapters.picker.script({ kind: 'file', uri: picked });
+    assert.deepEqual(await languages.importFile(), { ok: true, installed: languagePackId('qab') });
+    assert.equal(picking.adapters.picker.opened(), 4, 'each tap opens the picker once');
+    assert.equal(picking.kernel.packs.installed()[0]?.source, 'file');
+    assert.deepEqual(burritoFiles(picking), burritoFiles(online), 'a picked file lands as a download lands');
+
+    const handedOver = world.device('opened-in-another-app');
+    await handedOver.start();
+    handedOver.adapters.http.setOnline(false);
+    const inbox = 'file:///var/mobile/Containers/Data/Application/A1/Documents/Inbox/qab_obs.zip';
+    handedOver.adapters.files.offerExternal(inbox, qab);
+    const handedLanguages = servicesOf(handedOver).languages;
+    assert.equal(handedLanguages.openedName(inbox), 'qab_obs.zip');
+    assert.equal(handedLanguages.openedName(handed), 'qab_obs.zip');
+    assert.deepEqual(await handedLanguages.importOpened(inbox), {
+      ok: true,
+      installed: languagePackId('qab'),
+    });
+    assert.equal(handedOver.adapters.picker.opened(), 0, 'a file opened from another app needs no picker');
 
     const giver = world.device('giver', { platform: 'ios' });
     await giver.start();

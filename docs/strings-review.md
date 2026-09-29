@@ -102,3 +102,14 @@ Dates are formatted by the screen layer with the platform's date formatting, and
 ## Added with the release wiring (T13)
 
 - `failure.boot`: the one line shown when the app could not start its library on the phone (the database or the files would not open), above Try again (`common.retry`). The kernel has not started, so the line is chosen from the phone's own language, not the app setting. Drafted by an AI agent in fifteen locales; it must stay calm and must not suggest anything was lost.
+
+## Added with file import (I1)
+
+- Six keys for importing a burrito on the phone (SH-3), drafted by an AI agent in fifteen locales:
+  `languages.import.title` (the section heading), `languages.import` (the row), `languages.import.about` (one
+  sentence under it), `languages.import.opened` (asked when another app opened a `.zip` in unfoldingWord, with
+  the file name in `{name}`), `languages.import.install` (the button) and `languages.import.done`.
+  "Scripture Burrito" is a format name and is kept in Latin letters in every locale; check that the word
+  chosen for "archive" (`.zip`) is the one phones in that language use. The Arabic draft puts a right-to-left
+  mark before `(.zip)` so the parentheses sit on the right side. `languages.import.opened` must read as a
+  question the leader can decline, not a warning.

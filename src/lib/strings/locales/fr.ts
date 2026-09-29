@@ -508,4 +508,11 @@ export const fr: LocaleTable = {
   'transfer.app.ready':
     'L’application est arrivée sur ce téléphone ({size}) et elle est prête à être installée.',
   'failure.boot': 'L’application n’a pas pu se préparer sur ce téléphone. Réessayez dans un instant.',
+  'languages.import.title': 'Depuis un fichier',
+  'languages.import': 'Importer depuis un fichier',
+  'languages.import.about':
+    'Installez une archive Scripture Burrito (.zip) que vous avez enregistrée ou reçue.',
+  'languages.import.opened': 'Vous avez ouvert {name}. L’installer sur ce téléphone ?',
+  'languages.import.install': 'Installer',
+  'languages.import.done': 'Installé depuis le fichier. Vous pouvez le lire hors connexion.',
 };

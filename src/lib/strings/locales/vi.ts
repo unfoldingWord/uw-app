@@ -447,4 +447,10 @@ export const vi: LocaleTable = {
   'study.frame.picture': 'Hình cho khung {number}',
   'transfer.app.ready': 'Ứng dụng đã đến điện thoại này ({size}) và sẵn sàng để cài đặt.',
   'failure.boot': 'Ứng dụng chưa thể chuẩn bị trên điện thoại này. Hãy thử lại sau giây lát.',
+  'languages.import.title': 'Từ một tệp',
+  'languages.import': 'Nhập từ tệp',
+  'languages.import.about': 'Cài đặt một kho lưu trữ Scripture Burrito (.zip) bạn đã lưu hoặc được gửi.',
+  'languages.import.opened': 'Bạn đã mở {name}. Cài đặt vào điện thoại này?',
+  'languages.import.install': 'Cài đặt',
+  'languages.import.done': 'Đã cài đặt từ tệp. Có thể đọc khi không có mạng.',
 };

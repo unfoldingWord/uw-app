@@ -456,4 +456,10 @@ export const id: LocaleTable = {
   'study.frame.picture': 'Gambar untuk bingkai {number}',
   'transfer.app.ready': 'Aplikasi sudah sampai di ponsel ini ({size}) dan siap dipasang.',
   'failure.boot': 'Aplikasi belum bisa bersiap di ponsel ini. Coba lagi sebentar lagi.',
+  'languages.import.title': 'Dari berkas',
+  'languages.import': 'Impor dari berkas',
+  'languages.import.about': 'Pasang arsip Scripture Burrito (.zip) yang Anda simpan atau terima.',
+  'languages.import.opened': 'Anda membuka {name}. Pasang di ponsel ini?',
+  'languages.import.install': 'Pasang',
+  'languages.import.done': 'Terpasang dari berkas. Siap dibaca tanpa koneksi.',
 };

@@ -58,6 +58,21 @@ function sizeOfDirectory(directory: Directory): number {
     .reduce((sum, entry) => sum + (entry instanceof File ? entry.size : sizeOfDirectory(entry)), 0);
 }
 
+function handedCopyRoots(): readonly string[] {
+  return [Paths.cache.uri, new Directory(Paths.document, 'Inbox').uri];
+}
+
+function discardHandedCopy(source: File): void {
+  if (!handedCopyRoots().some((prefix) => source.uri.startsWith(prefix))) {
+    return;
+  }
+  try {
+    source.delete();
+  } catch {
+    return;
+  }
+}
+
 export function createPlatformFiles(root: DeviceRoot): Files {
   const fileAt = (path: string): File => new File(root.directory, path);
   const directoryAt = (path: string): Directory =>
@@ -210,6 +225,7 @@ export function createPlatformFiles(root: DeviceRoot): Files {
           fileAt(target).delete();
         }
         await source.copy(fileAt(target));
+        discardHandedCopy(source);
         return fileAt(target).size;
       }),
     freeSpace: async () => Paths.availableDiskSpace,

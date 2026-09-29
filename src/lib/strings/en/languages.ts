@@ -77,4 +77,10 @@ export const languages = {
   'share.payload.attribution': '{resource} by {publisher}, {version}, {licence}.',
   'share.payload.link': 'Get the app: {link}',
   'transfer.app.ready': 'The app arrived on this phone ({size}) and is ready to install.',
+  'languages.import.title': 'From a file',
+  'languages.import': 'Import from a file',
+  'languages.import.about': 'Install a Scripture Burrito archive (.zip) you saved or were given.',
+  'languages.import.opened': 'You opened {name}. Install it on this phone?',
+  'languages.import.install': 'Install',
+  'languages.import.done': 'Installed from the file. It is ready to read offline.',
 } as const;

@@ -1,5 +1,6 @@
 import type { RefreshOutcome } from '@lib/catalog/catalog';
 import type { CatalogLanguage, CatalogRelease, ScriptDirection } from '@lib/catalog/types';
+import type { FailureCode } from '@lib/domain/failures';
 import { imagePackId, languagePackId, originalPackId, type PackId } from '@lib/domain/pack';
 import type { Kernel } from '@lib/kernel';
 import type { InstallOutcome, PackUpdate, RemoveOutcome, Storage } from '@lib/packs/types';
@@ -26,6 +27,8 @@ export type OptionalDownload = {
   readonly installed: boolean;
 };
 
+export type ImportOutcome = { ok: true; installed: PackId | undefined } | { ok: false; code: FailureCode };
+
 export type LanguagesService = {
   words(): LanguagesWords;
   refresh(): Promise<RefreshOutcome>;
@@ -43,6 +46,9 @@ export type LanguagesService = {
   storage(): Promise<Storage>;
   updates(): Promise<readonly PackUpdate[]>;
   update(pack: PackId): Promise<InstallOutcome>;
+  importFile(): Promise<ImportOutcome>;
+  importOpened(uri: string): Promise<ImportOutcome>;
+  openedName(uri: string): string;
 };
 
 function languageBytes(releases: readonly CatalogRelease[]): number | undefined {
@@ -76,6 +82,30 @@ function rowOf(kernel: Kernel, words: LanguagesWords, item: CatalogLanguage): La
     installing: kernel.packs.installing().some((progress) => progress.pack === pack),
     pack,
   };
+}
+
+function importOutcomeOf(outcome: InstallOutcome | undefined): ImportOutcome {
+  if (outcome === undefined) {
+    return { ok: true, installed: undefined };
+  }
+  return outcome.ok ? { ok: true, installed: outcome.pack.pack } : { ok: false, code: outcome.code };
+}
+
+function decoded(part: string): string {
+  try {
+    return decodeURIComponent(part);
+  } catch {
+    return part;
+  }
+}
+
+function nameOfOpened(uri: string): string {
+  const path = decoded(uri.split(/[?#]/)[0] ?? uri);
+  const name = path
+    .split(/[/:]/)
+    .filter((part) => part !== '')
+    .at(-1);
+  return name ?? uri;
 }
 
 export function createLanguagesService(kernel: Kernel): LanguagesService {
@@ -126,5 +156,8 @@ export function createLanguagesService(kernel: Kernel): LanguagesService {
     storage: () => kernel.packs.storage(),
     updates: () => kernel.packs.updates(),
     update: (pack) => kernel.packs.update(pack),
+    importFile: async () => importOutcomeOf(await kernel.packs.importPicked()),
+    importOpened: async (uri) => importOutcomeOf(await kernel.packs.importFile(uri)),
+    openedName: nameOfOpened,
   };
 }

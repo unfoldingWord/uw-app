@@ -491,4 +491,10 @@ export const ptBR: LocaleTable = {
   'study.frame.picture': 'Imagem do quadro {number}',
   'transfer.app.ready': 'O aplicativo chegou a este celular ({size}) e está pronto para instalar.',
   'failure.boot': 'O aplicativo não conseguiu se preparar neste celular. Tente de novo daqui a pouco.',
+  'languages.import.title': 'De um arquivo',
+  'languages.import': 'Importar de um arquivo',
+  'languages.import.about': 'Instale um arquivo Scripture Burrito (.zip) que você salvou ou recebeu.',
+  'languages.import.opened': 'Você abriu {name}. Instalar neste celular?',
+  'languages.import.install': 'Instalar',
+  'languages.import.done': 'Instalado a partir do arquivo. Já pode ser lido sem conexão.',
 };

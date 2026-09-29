@@ -492,4 +492,10 @@ export const es419: LocaleTable = {
   'study.frame.picture': 'Imagen del cuadro {number}',
   'transfer.app.ready': 'La aplicación llegó a este teléfono ({size}) y está lista para instalar.',
   'failure.boot': 'La aplicación no pudo prepararse en este teléfono. Intenta de nuevo en un momento.',
+  'languages.import.title': 'Desde un archivo',
+  'languages.import': 'Importar desde un archivo',
+  'languages.import.about': 'Instala un archivo de Scripture Burrito (.zip) que guardaste o que te dieron.',
+  'languages.import.opened': 'Abriste {name}. ¿Quieres instalarlo en este teléfono?',
+  'languages.import.install': 'Instalar',
+  'languages.import.done': 'Se instaló desde el archivo. Ya puedes leerlo sin conexión.',
 };

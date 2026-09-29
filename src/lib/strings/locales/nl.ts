@@ -484,4 +484,11 @@ export const nl: LocaleTable = {
   'study.frame.picture': 'Afbeelding bij beeld {number}',
   'transfer.app.ready': 'De app staat nu op deze telefoon ({size}) en is klaar om te installeren.',
   'failure.boot': 'De app kon zich niet klaarmaken op deze telefoon. Probeer het zo meteen opnieuw.',
+  'languages.import.title': 'Uit een bestand',
+  'languages.import': 'Importeren uit een bestand',
+  'languages.import.about':
+    'Installeer een Scripture Burrito-archief (.zip) dat je hebt bewaard of gekregen.',
+  'languages.import.opened': 'Je hebt {name} geopend. Op deze telefoon installeren?',
+  'languages.import.install': 'Installeren',
+  'languages.import.done': 'Geïnstalleerd uit het bestand. Je kunt het nu offline lezen.',
 };

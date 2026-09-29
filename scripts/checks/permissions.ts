@@ -28,9 +28,24 @@ const iosAdmittedEntitlements: readonly string[] = [];
 
 export type ManifestPermission = { name: string; removed: boolean };
 
+export type IntentData = { scheme: string | undefined; mimeType: string | undefined };
+
+export type IntentFilter = { actions: readonly string[]; data: readonly IntentData[] };
+
+const appScheme = 'unfoldingword';
+
+const importedMimeTypes: readonly string[] = ['application/zip', 'application/octet-stream'];
+
+const admittedIntentSchemes: readonly string[] = [appScheme, 'content'];
+
+const admittedDocumentTypes: readonly string[] = ['public.zip-archive'];
+
+const viewAction = 'android.intent.action.VIEW';
+
 export type NativeConfig = {
   androidPermissions: readonly ManifestPermission[];
   androidAllowBackup: string | undefined;
+  androidIntentFilters: readonly IntentFilter[];
   infoPlist: Readonly<Record<string, unknown>>;
   entitlements: Readonly<Record<string, unknown>>;
 };
@@ -60,17 +75,90 @@ export function nativeConfigOf(introspected: unknown): NativeConfig {
       return { name: String(named['android:name']), removed: named['tools:node'] === 'remove' };
     },
   );
-  const application = attributes(list(manifest.application)[0]);
+  const applicationNode = list(manifest.application)[0];
+  const application = attributes(applicationNode);
   const allowBackup = application['android:allowBackup'];
+  const filters = list(record(applicationNode).activity)
+    .flatMap((activity) => list(record(activity)['intent-filter']))
+    .map((filter) => ({
+      actions: list(record(filter).action).map((node) => String(attributes(node)['android:name'])),
+      data: list(record(filter).data).map((node) => {
+        const named = attributes(node);
+        const scheme = named['android:scheme'];
+        const mimeType = named['android:mimeType'];
+        return {
+          scheme: typeof scheme === 'string' ? scheme : undefined,
+          mimeType: typeof mimeType === 'string' ? mimeType : undefined,
+        };
+      }),
+    }));
   return {
     androidPermissions: permissions,
     androidAllowBackup: typeof allowBackup === 'string' ? allowBackup : undefined,
+    androidIntentFilters: filters,
     infoPlist: record(ios.infoPlist),
     entitlements: record(ios.entitlements),
   };
 }
 
 const usageDescription = /^NS\w+UsageDescription$/;
+
+function documentTypesOf(infoPlist: Readonly<Record<string, unknown>>): string[] {
+  return list(infoPlist.CFBundleDocumentTypes).flatMap((type) =>
+    list(record(type).LSItemContentTypes).map(String),
+  );
+}
+
+function importFindings(config: NativeConfig): string[] {
+  const findings: string[] = [];
+  for (const filter of config.androidIntentFilters) {
+    for (const data of filter.data) {
+      if (data.scheme === undefined || !admittedIntentSchemes.includes(data.scheme)) {
+        findings.push(
+          `An Android intent filter admits the scheme ${data.scheme ?? '(any)'}; only ${admittedIntentSchemes.join(' and ')} are admitted, and a file URI would need storage permission`,
+        );
+      }
+    }
+  }
+  const offered = new Set(
+    config.androidIntentFilters
+      .filter((filter) => filter.actions.includes(viewAction))
+      .flatMap((filter) => filter.data)
+      .filter((data) => data.scheme === 'content')
+      .flatMap((data) => (data.mimeType === undefined ? [] : [data.mimeType])),
+  );
+  for (const mimeType of importedMimeTypes) {
+    if (!offered.has(mimeType)) {
+      findings.push(
+        `Android does not offer the app to open ${mimeType} over content, so a burrito cannot be opened from another app (SH-3)`,
+      );
+    }
+  }
+  const documentTypes = documentTypesOf(config.infoPlist);
+  for (const type of documentTypes) {
+    if (!admittedDocumentTypes.includes(type)) {
+      findings.push(
+        `Info.plist declares the document type ${type}; only ${admittedDocumentTypes.join(', ')} is admitted`,
+      );
+    }
+  }
+  if (!documentTypes.includes('public.zip-archive')) {
+    findings.push(
+      'Info.plist declares no document type for public.zip-archive, so iOS never offers the app a burrito (SH-3)',
+    );
+  }
+  if (config.infoPlist.LSSupportsOpeningDocumentsInPlace !== false) {
+    findings.push(
+      'Info.plist does not set LSSupportsOpeningDocumentsInPlace false; an opened burrito must be copied, never edited in place',
+    );
+  }
+  if (config.infoPlist.UIFileSharingEnabled === true) {
+    findings.push(
+      "Info.plist sets UIFileSharingEnabled, which shows the app's files in the Files app and Finder",
+    );
+  }
+  return findings;
+}
 
 export function permissionFindings(config: NativeConfig): string[] {
   const findings: string[] = [];
@@ -118,5 +206,5 @@ export function permissionFindings(config: NativeConfig): string[] {
       findings.push(`iOS entitlements carry ${key}, which nothing in the PRD needs`);
     }
   }
-  return findings;
+  return [...findings, ...importFindings(config)];
 }

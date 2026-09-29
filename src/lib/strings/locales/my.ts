@@ -464,4 +464,11 @@ export const my: LocaleTable = {
   'study.frame.picture': 'ပုံ {number} ၏ ရုပ်ပုံ',
   'transfer.app.ready': 'အက်ပ်သည် ဤဖုန်းသို့ ရောက်ရှိပြီး ({size}) ထည့်သွင်းရန် အသင့်ဖြစ်ပါသည်။',
   'failure.boot': 'အက်ပ်သည် ဤဖုန်းပေါ်တွင် အသင့်မဖြစ်နိုင်ခဲ့ပါ။ ခဏနေမှ ထပ်စမ်းကြည့်ပါ။',
+  'languages.import.title': 'ဖိုင်မှ',
+  'languages.import': 'ဖိုင်မှ ထည့်သွင်းရန်',
+  'languages.import.about':
+    'သင်သိမ်းထားသော သို့မဟုတ် ရရှိထားသော Scripture Burrito ဖိုင် (.zip) ကို ထည့်သွင်းပါ။',
+  'languages.import.opened': 'သင် {name} ကို ဖွင့်ထားသည်။ ဤဖုန်းတွင် ထည့်သွင်းမလား။',
+  'languages.import.install': 'ထည့်သွင်းရန်',
+  'languages.import.done': 'ဖိုင်မှ ထည့်သွင်းပြီးပါပြီ။ အင်တာနက်မလိုဘဲ ဖတ်နိုင်ပါပြီ။',
 };

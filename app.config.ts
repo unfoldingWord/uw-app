@@ -8,6 +8,8 @@ const brand = {
   night: '#04161F',
 } as const;
 
+const archiveTypes = ['application/zip', 'application/octet-stream'];
+
 const blockedPermissions = [
   'android.permission.RECORD_AUDIO',
   'android.permission.READ_EXTERNAL_STORAGE',
@@ -42,6 +44,14 @@ const config: ExpoConfig = {
     infoPlist: {
       UIFileSharingEnabled: false,
       LSSupportsOpeningDocumentsInPlace: false,
+      CFBundleDocumentTypes: [
+        {
+          CFBundleTypeName: 'Scripture Burrito archive',
+          CFBundleTypeRole: 'Viewer',
+          LSHandlerRank: 'Alternate',
+          LSItemContentTypes: ['public.zip-archive'],
+        },
+      ],
       NSAppTransportSecurity: { NSAllowsArbitraryLoads: false, NSAllowsLocalNetworking: true },
     },
     privacyManifests: {
@@ -72,6 +82,13 @@ const config: ExpoConfig = {
     package: identifier,
     allowBackup: false,
     blockedPermissions,
+    intentFilters: [
+      {
+        action: 'VIEW',
+        category: ['DEFAULT'],
+        data: archiveTypes.map((mimeType) => ({ scheme: 'content', mimeType })),
+      },
+    ],
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
       monochromeImage: './assets/adaptive-icon-monochrome.png',

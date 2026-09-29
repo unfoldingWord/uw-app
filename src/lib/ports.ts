@@ -169,6 +169,12 @@ export type ShareSheet = {
   share(payload: SharePayload): Promise<ShareOutcome>;
 };
 
+export type PickedFile = { uri: string };
+
+export type Picker = {
+  pickArchive(): Promise<PickedFile | undefined>;
+};
+
 export type DeviceLocale = { tag: string; region: string | undefined; timeZone: string; rtl: boolean };
 
 export type Locale = {
@@ -185,5 +191,6 @@ export type Ports = {
   transport: Transport;
   audio: Audio;
   shareSheet: ShareSheet;
+  picker: Picker;
   locale: Locale;
 };
