@@ -156,8 +156,26 @@ describe('journal interface (DX-1)', () => {
 
 describe('kernel composition', () => {
   it('lists its modules in one place, with the tables it owns', () => {
-    expect(Object.keys(kernelModules)).toEqual(['telemetry']);
+    expect(Object.keys(kernelModules)).toEqual(expect.arrayContaining(['telemetry', 'catalog', 'packs']));
     expect(coreOwns.tables).toEqual(['schema_migrations', 'journal', 'journal_state']);
+  });
+
+  it('gives every table a migration creates exactly one owner, and every directory one owner', () => {
+    const owners = [coreOwns, ...Object.values(kernelModules).map((module) => module.owns)];
+    const tables = owners.flatMap((owns) => owns.tables);
+    const directories = owners.flatMap((owns) => owns.directories);
+    expect(new Set(tables).size).toBe(tables.length);
+    expect(new Set(directories).size).toBe(directories.length);
+    const created = migrations
+      .flatMap((migration) => migration.statements)
+      .flatMap((statement) => /^CREATE TABLE (\w+)/.exec(statement)?.[1] ?? []);
+    expect(created.filter((table) => !tables.includes(table))).toEqual([]);
+    expect(kernelModules.catalog.owns.tables).toEqual(['catalog_releases']);
+    expect(kernelModules.packs.owns).toEqual({
+      tables: ['packs', 'pack_burritos'],
+      directories: ['packs'],
+      keys: [],
+    });
   });
 
   it('runs migrations once, opens the app, and snapshots deterministically', async () => {

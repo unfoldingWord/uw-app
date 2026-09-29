@@ -1,9 +1,13 @@
 import { composeKernel, type ComposedKernel, type KernelOptions } from './compose';
 import type { Ports } from './ports';
+import { catalogModule } from './catalog/catalog';
+import { packsModule } from './packs/packs';
 import { telemetryModule } from './telemetry/telemetry';
 
 export const kernelModules = {
   telemetry: telemetryModule,
+  catalog: catalogModule,
+  packs: packsModule,
 } as const;
 
 export type Kernel = ComposedKernel<typeof kernelModules>;
