@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
+import { stableJson } from '@lib/json';
 import type { DeviceLocale } from '@lib/ports';
 import type { World } from '../world';
+import { replayJournal } from '../replay';
 import { scenario } from '../scenario';
 
 const day = 24 * 60 * 60 * 1000;
@@ -17,7 +19,7 @@ async function deviceOnDay(world: World, name: string, locale: Partial<DeviceLoc
 
 export default scenario(
   'PA-2',
-  'the invitation shows only in the United States, first on the fifth distinct day of use, dismissible, again every three months, never without a story',
+  'the invitation shows only in the United States, first on the fifth distinct day of use (counted on a warm resume too), dismissible, again every three months, never without a story',
   async (world) => {
     const kenya = await deviceOnDay(
       world,
@@ -88,6 +90,37 @@ export default scenario(
       JSON.stringify(phone.kernel.snapshot()).includes('US'),
       false,
       'the region never enters the snapshot',
+    );
+
+    const kept = world.device('kept', { locale: { tag: 'en-US', region: 'US', timeZone: 'UTC' } });
+    await kept.start();
+    assert.equal(await kept.kernel.resume(), false, 'a resume on the day the app opened is not a new day');
+    for (let opened = 2; opened <= 5; opened += 1) {
+      world.clock.advanceDays(1);
+      assert.equal(await kept.kernel.resume(), true, 'the first resume on a new day counts it');
+      assert.equal(await kept.kernel.resume(), false, 'a second resume that day does not');
+    }
+    assert.equal(
+      kept.kernel.partners.daysOfUse(),
+      5,
+      'a phone kept open across five days has five days of use',
+    );
+    assert.equal(
+      kept.kernel.partners.invitation(world.clock.now()).state,
+      'due',
+      'and shows the invitation without ever being restarted',
+    );
+    const replayed = await replayJournal(
+      world,
+      JSON.parse(JSON.stringify(kept.kernel.journal.export())) as unknown,
+      'kept-replayed',
+    );
+    assert.ok(replayed.ok, replayed.ok ? '' : replayed.reason);
+    assert.deepEqual(replayed.divergence, []);
+    assert.equal(
+      stableJson(replayed.snapshot),
+      stableJson(kept.kernel.snapshot()),
+      'a resume replays (DX-3)',
     );
   },
 );

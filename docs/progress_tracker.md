@@ -33,6 +33,13 @@ Everything below ran in Node (the sim, Vitest and the checks); nothing ran on a 
   `docs/release-checklist.md`. `privacy.counts` now says the app counts these numbers on the phone and will
   send only them, in batches, once sending is turned on in a later release, in English and fifteen locales
   (AI-drafted, `docs/strings-review.md`); `privacy.count.transfersByPlatformPair` is removed everywhere.
+- PA-2 on a warm resume, red first: the extended `PA-2` scenario failed (`kept.kernel.resume is not a
+  function`). The kernel's controls gain `resume()`: it journals `AppOpened` for today when the last one it
+  journaled was for another day, and returns whether it did. The root layout calls it when React Native's
+  `AppState` becomes `active` (exception recorded in `docs/exceptions.md`, rule 2 and rule 4, same commit).
+  The scenario keeps one phone open for five days with two resumes a day: five days of use, invitation due,
+  and its journal replays with no divergence and the same snapshot (DX-3). Because the impact story refresh
+  is once per `AppOpened`, a resume on a new day also lets Home fetch the feed again.
 
 ## 2026-09-29 I1 import a burrito file on the phone (SH-3)
 

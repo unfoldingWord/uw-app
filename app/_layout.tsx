@@ -1,7 +1,7 @@
 import Stack from 'expo-router/stack';
 import { hide, preventAutoHideAsync } from 'expo-splash-screen';
 import { useEffect, useState, type ReactNode } from 'react';
-import { useColorScheme } from 'react-native';
+import { AppState, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { createHomeService } from '@features/home/service';
 import { createOnboardingService } from '@features/onboarding/service';
@@ -65,6 +65,20 @@ function useAppearance(kernel: Kernel | undefined): Appearance {
   return appearance;
 }
 
+function useResume(kernel: Kernel | undefined): void {
+  useEffect(() => {
+    if (kernel === undefined) {
+      return undefined;
+    }
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        void kernel.resume().catch(() => false);
+      }
+    });
+    return () => subscription.remove();
+  }, [kernel]);
+}
+
 function useOnboardingNeeded(kernel: Kernel | undefined): boolean {
   const read = () => (kernel === undefined ? true : serviceOf(kernel, createOnboardingService).needed());
   const [needed, setNeeded] = useState<boolean>(read);
@@ -114,6 +128,7 @@ export default function RootLayout() {
   const kernel = state.status === 'ready' ? state.booted : undefined;
   const appearance = useAppearance(kernel);
   const needed = useOnboardingNeeded(kernel);
+  useResume(kernel);
   const fonts = useThemeFonts();
   const firstBoot = state.status === 'booting' && state.attempt <= 1;
   const settled = !firstBoot && (fonts.loaded || fonts.error !== null);

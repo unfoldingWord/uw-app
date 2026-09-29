@@ -45,6 +45,8 @@ Every event type is a row in `eventSchemas` in `src/lib/domain/events.ts`. The r
 | `verbatim` | An observation that changes nothing but the journal | Appends it again as recorded |
 
 `AppOpened` is `redo`, and replay redoes it by restarting the device: a new kernel over the same memory adapters.
+The kernel journals it in `start` and again from `resume()` when the app comes back to the foreground on a day
+with no `AppOpened` yet; a restart in replay journals the same event at the same time, so both replay alike.
 
 ## The rules a module follows
 

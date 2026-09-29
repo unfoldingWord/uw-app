@@ -47,6 +47,7 @@ export type RedoOutcome = 'redone' | 'appended' | 'skipped' | 'restart' | 'unhan
 export type KernelControls = {
   journal: JournalView;
   start(): Promise<void>;
+  resume(): Promise<boolean>;
   snapshot(): DeviceSnapshot;
   redo(event: DomainEvent): Promise<RedoOutcome>;
 };
@@ -59,7 +60,7 @@ type ApiOf<M> = M extends KernelModule<infer Api> ? Api : never;
 
 export type ComposedKernel<M extends ModuleSet> = { readonly [K in keyof M]: ApiOf<M[K]> } & KernelControls;
 
-const reservedNames: ReadonlySet<string> = new Set(['journal', 'start', 'snapshot', 'redo']);
+const reservedNames: ReadonlySet<string> = new Set(['journal', 'start', 'resume', 'snapshot', 'redo']);
 
 const coreEvents: readonly EventType[] = ['AppOpened', 'Failure'];
 
@@ -197,6 +198,7 @@ export function composeKernel<M extends ModuleSet>(
   });
   const tailSize = options.tailSize ?? defaultTailSize;
   let started = false;
+  let openedDay: string | undefined;
 
   for (const [name, module] of Object.entries(modules)) {
     const ledger = mintLedger(name, ports.ids);
@@ -256,6 +258,13 @@ export function composeKernel<M extends ModuleSet>(
     return 'redone';
   }
 
+  async function appOpened(): Promise<void> {
+    await journal.append((at) => {
+      openedDay = ports.clock.dayOf(at);
+      return { type: 'AppOpened', payload: { day: openedDay } };
+    });
+  }
+
   const controls: KernelControls = {
     journal: view,
     async start() {
@@ -277,7 +286,14 @@ export function composeKernel<M extends ModuleSet>(
       for (const instance of instances.values()) {
         await instance.start?.();
       }
-      await journal.append((at) => ({ type: 'AppOpened', payload: { day: ports.clock.dayOf(at) } }));
+      await appOpened();
+    },
+    async resume() {
+      if (!started || openedDay === ports.clock.dayOf(ports.clock.now())) {
+        return false;
+      }
+      await appOpened();
+      return true;
     },
     snapshot() {
       const stats = journal.stats();
