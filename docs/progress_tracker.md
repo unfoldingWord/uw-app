@@ -3,6 +3,40 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 T12 Formation, About, Licence, Privacy and Settings screens
+
+Node v22.22.2. The screens were typechecked, linted, scanned by the strings check and bundled for Android
+and iOS through Metro; none was rendered, on a phone or through react-native-web.
+
+### Observed red, then green
+
+| Test | Red | Green |
+|---|---|---|
+| `npm run checks` with the first screens | `FAIL strings ... SessionScreen.tsx has the literal "common.busy"` and every other key passed to `words.t`: the prose scan read string keys as copy | `pass strings ... 102 screen and shared files hold no literal copy` after `isStringKey` in `scripts/checks/strings-literals.ts` (test: `reads the key handed to words.t or words.plural as a key, not as copy`) |
+| `npm run checks` with `setEnglishFailure('http.offline')` in a screen | `FAIL strings ... has the literal "http.offline"` | the offline code comes from the service's `download` outcome instead; FO-5 asserts it |
+
+### Decisions
+
+- Screens reach only their own feature's `service.ts`. Formation gains `languageName` and `download(pack)`
+  (the one-tap English pack, FO-5); About gains `story(slug)` and `openStory(slug)` (PA-6, counts
+  `ImpactStoryOpened`). Asserted in FO-5 and PA-6.
+- External links (Give, the three About links, the full impact story) open through `router.push(url)`,
+  which Expo Router hands to the system browser.
+- Story pictures and impact-story images render as a calm Ocean well: `Frame.image.path` and the cached
+  impact image are paths under the Files port root, and no port or kernel fact turns a path into a
+  renderable URI. A remote image URL is not loaded, since that would be a network call outside the Http port.
+- The Settings diagnostics row navigates to `/diagnostics`, which no route serves on this branch.
+
+`npm run verify` exit 0: `Test Files 45 passed`, `Tests 460 passed`; `5 checks, 0 pending, none failed`;
+`sim: 46 scenarios, 46 passed, 0 failed`; `contract: 20 fixture burritos, 0 failed`; `bundle android: pass`,
+`bundle ios: pass`.
+
+### Not verified
+
+- No screen was rendered: light, dark, reduced blur, 360 px width, dynamic type at the maximum, RTL and
+  screen reader labels are unverified beyond the code.
+- Frame play steps every 6 s (`frameDwellMs`, from the prototype); story audio is never available.
+
 ## 2026-09-29 T8 Feature services, preference owners and the partner invitation
 
 Node v22.22.2. Everything below ran in Node through Vitest, the sim, the checks and the Metro bundle; nothing

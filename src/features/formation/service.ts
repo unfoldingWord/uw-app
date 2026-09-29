@@ -7,8 +7,28 @@ import type {
   Track,
   TrackSummary,
 } from '@lib/formation/types';
+import type { FailureCode } from '@lib/domain/failures';
 import type { Kernel } from '@lib/kernel';
 import { formationWords, type FormationWords } from './strings';
+
+export type { Block, Frame, Inline, MovementSection } from '@lib/corpus/types';
+export type {
+  EnglishMovements,
+  FormationContent,
+  FoundationsSession,
+  Group,
+  Position,
+  Progress,
+  Session,
+  SessionMovement,
+  SessionMovementId,
+  Track,
+  TrackSummary,
+  TrainingSession,
+} from '@lib/formation/types';
+export type { FormationWords } from './strings';
+
+export type DownloadOutcome = { readonly ok: true } | { readonly ok: false; readonly code: FailureCode };
 
 export type FormationService = {
   words(): FormationWords;
@@ -31,6 +51,8 @@ export type FormationService = {
   next(group: string): Promise<NextSession | undefined>;
   note(group: string, track: Track, session: number): string | undefined;
   saveNote(group: string, track: Track, session: number, text: string): Promise<boolean>;
+  languageName(language: string): string;
+  download(pack: string): Promise<DownloadOutcome>;
 };
 
 export function createFormationService(kernel: Kernel): FormationService {
@@ -67,5 +89,11 @@ export function createFormationService(kernel: Kernel): FormationService {
     next: (group) => withLanguage((current) => formation.next(group, current)),
     note: (group, track, session) => formation.note(group, track, session),
     saveNote: (group, track, session, text) => formation.saveNote(group, track, session, text),
+    languageName: (code) =>
+      kernel.catalog.languages().find((item) => item.language === code)?.autonym ?? code,
+    async download(pack) {
+      const outcome = await kernel.packs.installFromCatalog(pack);
+      return outcome.ok ? { ok: true } : { ok: false, code: outcome.code };
+    },
   };
 }

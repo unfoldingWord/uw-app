@@ -71,6 +71,14 @@ export default scenario(
     assert.equal(phone.kernel.telemetry.counts().impactStoryOpens, 1);
     assert.equal(phone.kernel.journal.read().at(-1)?.type, 'ImpactStoryOpened');
 
+    const about = servicesOf(phone).about;
+    assert.equal(about.story('a-church-reads-together')?.securityNote, 'Names have been changed.');
+    const fromAbout = await about.openStory('jeremiah-and-the-occult-king');
+    assert.equal(fromAbout?.securityNote, 'Names in this story are changed for security.');
+    assert.equal(fromAbout?.readMore, 'Read the full story on unfoldingword.org');
+    assert.equal(phone.kernel.telemetry.counts().impactStoryOpens, 2, 'the About screen counts an open too');
+    assert.equal(await about.openStory('no-such-story'), undefined);
+
     phone.adapters.http.setOnline(true);
     world.network.serve(feedUrl, { body: '{"stories": "none"}' });
     assert.deepEqual(await partners().refresh(), { ok: false, code: 'partners.invalid-feed' });
