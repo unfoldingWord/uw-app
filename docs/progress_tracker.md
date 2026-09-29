@@ -3,6 +3,69 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 T10 Onboarding, Home, Languages and the shared screen pieces
+
+Node v22.22.2. Everything below ran in Node through ESLint, TypeScript, Vitest, the checks, the sim and the
+Metro bundle for Android and iOS. No screen was rendered: nothing ran on a phone, a simulator or a browser.
+
+### Observed red, then green
+
+| Test | Red | Green |
+|---|---|---|
+| `npm run checks` once the first screens called `words.t('common.back')` | `FAIL strings`, 80 findings such as `ChooseLanguage.tsx:27 has the literal "common.back"` (the prose rule reads a dotted key as prose) | the scan takes the English keys and failure codes as names, not copy: `pass strings ... 98 screen and shared files hold no literal copy` |
+| `reads a string key or a failure code as a name, not as copy` in `scripts/checks/strings.test.ts` | my own expected list missed `common.close`: `expected [ 'common.back', 'http.offline', ...(2) ]` | 8 passed |
+| `npx tsc` with `ThemedText` taking a `role` prop | `TS2322: Type 'string' is not assignable to type 'undefined'` (React Native's `Text` already has `role`) | the prop is `variant` |
+| `npx tsc` with the Languages header calling `words.t('transfer.open')` | `TS2554: Expected 2 arguments, but got 1` (the languages words did not cover the `transfer` area) | `LanguagesWords` covers `transfer` |
+| `knip` with the `sharedPrimitivesAwaitingScreens` entries removed | 20 unused exports and 51 unused types in the four shared barrels | the shared barrels are entries as the public surface of `src/shared/*` |
+
+### Decisions
+
+- **Routes.** `app/_layout.tsx` renders an Expo Router `Stack` with `Stack.Protected`: `onboarding` while
+  `onboarding.needed()`, otherwise `(tabs)` and `languages` (a modal). The root re-reads `needed()` on every
+  preference change through `home.onChange`, so choosing a language (or English) lands on Home. `app/(tabs)`
+  holds the Home route; Study and Formation are registered as tab names only (T11 and T12 add
+  `app/(tabs)/study.tsx` and `app/(tabs)/formation.tsx`). The bundle passes without them.
+- **Tab bar.** `app/(tabs)/_layout.tsx` re-exports `src/features/home/screens/TabsLayout.tsx`, since Home's
+  words own the `nav.*` labels and a nested layout may reach a feature only through its screens.
+- **Shared pieces** in `src/shared/ui`: `ScreenScaffold`, `Header`, `IconAction`, `SectionTitle`, `Row`,
+  `Card`, `Tappable`, `ProgressBar`, `EmptyState`, `Notice`, `Badge`, `Dot`, `Sheet`, `Logo`, `TabBar`,
+  `ThemedText`, `useAsyncValue`, `useChanges`, and the prototype literals in `prototypeValues`
+  (exception recorded).
+- **Logo.** The two horizontal lockups are imported from `design-system/assets/logo/` through a scoped alias,
+  as the fonts are, rather than copied (exception recorded).
+- **Strings check.** A literal that is exactly an English string key or a failure code is a name, not copy.
+- **Home checks the catalog** on first render (`home.checkForUpdates()`, HO-8) so what is new appears without
+  opening Languages. HO-8 now asserts it through the Home service; the method was written before the
+  assertion, so this part was not observed red.
+- **Progress** on Home and in Languages is read again every second while a pack installs, since no service
+  offers a change signal for install progress. Inference: a `packs` progress listener on the service would
+  replace the polling.
+- **No new strings, no new dependencies.**
+- **Web rendering harness: not built.** `react-native-web` would need a third adapter set for Files and Db
+  (the platform adapters use expo-file-system and expo-sqlite, which have no usable web implementation here,
+  and the memory adapters live in `sim/`, which app code may not import). Rule: every port has exactly two
+  adapters. Left for a decision.
+
+`npm run verify` exit 0: `Test Files 45 passed`, `Tests 465 passed`; typecheck pass on the three projects;
+`5 checks, 0 pending, none failed`; `sim: 46 scenarios, 46 passed, 0 failed`; `trace: 51 Must requirements,
+44 with a scenario, 1 with a test only, 6 unproven`; `contract: 20 fixture burritos, 0 failed`;
+`bundle android: pass` (1817 modules), `bundle ios: pass` (1683 modules).
+
+### Not verified
+
+- No screen was rendered in light, dark or reduced-blur mode, at 360 px, with dynamic type at the maximum, or
+  in right-to-left. AGENTS.md section 7 asks for all of these; none was done.
+- The iOS modal presentation of Languages keeps the status bar spacer, which may leave extra space at the top
+  of a page sheet. Inference from the code.
+- On Android the tab bar sits outside the aurora's blur target, so it shows its fill without blur. Inference.
+- The impact story image is not shown: a remote `url` would be a request outside the Http port and a Files
+  `path` has no address a screen can reach. The well shows the prototype's gradient under the title.
+- Saved articles show the last segment of the article id as their title; Study owns the article titles.
+- Home opens a saved item with `/study?bookmark=<id>`, and Languages opens `/transfer`; neither route exists
+  on this branch (T11 and T13).
+- `Linking.openURL` for Give and the full story, `Intl.DateTimeFormat` on Hermes, and `Stack.Protected`
+  redirects were not run on a device.
+
 ## 2026-09-29 T8 Feature services, preference owners and the partner invitation
 
 Node v22.22.2. Everything below ran in Node through Vitest, the sim, the checks and the Metro bundle; nothing
