@@ -195,7 +195,7 @@ A language that has content. What a leader reads in.
 _Avoid_: locale (that is the app's own language)
 
 **Preference**:
-A value the leader chooses that shapes the app on this device: the app locale, the theme, reduced blur, the first name, the current language, the reading, the full-text index, English movements alongside. One of a closed list of keys.
+A value the leader chooses that shapes the app on this device: the app locale, the theme, reduced blur, the first name, the current language, the reading, English movements alongside. One of a closed list of keys. Whether a language's full-text index is wanted is not a preference; Corpus keeps it.
 _Avoid_: setting (that is the screen), option, config
 
 **Locale**:

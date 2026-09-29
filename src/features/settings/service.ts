@@ -155,7 +155,7 @@ export function createSettingsService(kernel: Kernel): SettingsService {
     );
     const largest = Math.max(0, ...costs.map((item) => item.bytes));
     return {
-      on: preferences.get('settings.fullText') === 'on',
+      on: languages.length > 0 && languages.every((language) => kernel.corpus.indexWanted(language)),
       built: languages.length > 0 && languages.every((language) => kernel.corpus.index(language).built),
       languages,
       cost,
@@ -222,10 +222,11 @@ export function createSettingsService(kernel: Kernel): SettingsService {
     setName: (name) => preferences.set('home.name', name),
     fullText,
     async setFullText(on) {
-      await preferences.set('settings.fullText', on ? 'on' : 'off');
-      if (on) {
-        for (const language of kernel.corpus.languages()) {
+      for (const language of kernel.corpus.languages()) {
+        if (on) {
           await kernel.corpus.reindex(language);
+        } else {
+          await kernel.corpus.dropIndex(language);
         }
       }
       return fullText();

@@ -36,7 +36,7 @@ export default scenario(
     await services.settings.setReducedBlur(true);
     assert.equal(await services.settings.setName('Jesse'), true);
     await phone.restart();
-    const settings = servicesOf(phone).settings;
+    let settings = servicesOf(phone).settings;
     assert.equal(settings.locale(), 'sw');
     assert.equal(settings.theme(), 'dark');
     assert.deepEqual(settings.appearance(), { scheme: 'dark', reducedBlur: true });
@@ -52,6 +52,18 @@ export default scenario(
     assert.equal(on.on, true);
     assert.equal(on.built, true);
     assert.equal(phone.kernel.corpus.index('qaa').built, true);
+    assert.equal(phone.kernel.corpus.indexWanted('qaa'), true, 'the wish for the index is a Corpus fact');
+    await phone.restart();
+    settings = servicesOf(phone).settings;
+    assert.equal((await settings.fullText()).on, true, 'the toggle reads the kept wish');
+    const dropped = await settings.setFullText(false);
+    assert.equal(dropped.on, false);
+    assert.equal(dropped.built, false, 'turning it off drops the index and gives the space back');
+    assert.equal(phone.kernel.corpus.indexWanted('qaa'), false);
+    assert.equal(phone.kernel.journal.read().at(-1)?.type, 'IndexDropped');
+    await phone.restart();
+    settings = servicesOf(phone).settings;
+    assert.equal((await settings.fullText()).on, false);
 
     const storage = await settings.storage();
     assert.deepEqual(
