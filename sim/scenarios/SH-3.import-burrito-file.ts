@@ -130,5 +130,22 @@ export default scenario(
     );
     const missing = await offline.kernel.packs.install(fromFile('imports/nothing.zip'));
     assert.equal(!missing.ok && missing.code, 'files.not-found');
+
+    const opened = world.device('opened-from-files');
+    await opened.start();
+    opened.adapters.http.setOnline(false);
+    const handed =
+      'content://com.android.externalstorage.documents/document/primary%3ADownload%2Fqab_obs.zip';
+    opened.adapters.files.offerExternal(handed, qab);
+    const adopted = await opened.kernel.packs.importFile(handed);
+    assert.ok(adopted.ok, adopted.ok ? '' : adopted.code);
+    assert.equal(opened.kernel.packs.installed()[0]?.source, 'file');
+    assert.ok(
+      !opened.adapters.files.tree().some((path) => path.startsWith('packs/.inbox')),
+      'the adopted copy is removed once installed',
+    );
+    const gone = await opened.kernel.packs.importFile('content://gone/qab_obs.zip');
+    assert.equal(gone.ok, false);
+    assert.equal(!gone.ok && gone.code, 'files.not-found');
   },
 );

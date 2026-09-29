@@ -6,6 +6,8 @@ export const stagingDirectory = `${packsDirectory}/.staging`;
 
 export const asideDirectory = `${packsDirectory}/.old`;
 
+export const inboxDirectory = `${packsDirectory}/.inbox`;
+
 export function stagingPath(install: string): string {
   return `${stagingDirectory}/${install}`;
 }
@@ -78,6 +80,7 @@ export async function recoverPacks(files: Files, known: readonly PackId[] | unde
   }
   await removeIfPresent(files, asideDirectory);
   await removeIfPresent(files, stagingDirectory);
+  await removeIfPresent(files, inboxDirectory);
   if (known === undefined) {
     return;
   }

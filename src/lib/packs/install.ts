@@ -1,5 +1,5 @@
 import { compareText } from '../order';
-import { readArchive } from '../burrito/archive';
+import { createArchiveReader, readArchive } from '../burrito/archive';
 import type { BurritoFiles } from '../burrito/files';
 import { failureCodeOf, type FailureCode } from '../domain/failures';
 import {
@@ -74,8 +74,23 @@ function downloadProblem(outcome: HttpDownloaded): FailureCode | undefined {
   }
 }
 
+export const archiveChunkBytes = 1024 * 1024;
+
 function opened(archive: Uint8Array): Opened {
   const read = readArchive(archive);
+  return read.ok ? { ok: true, files: read.files } : { ok: false, code: 'pack.invalid-burrito' };
+}
+
+async function openedFromDisk(files: ModulePorts['files'], path: string): Promise<Opened> {
+  const size = await files.size(path);
+  const reader = createArchiveReader();
+  let offset = 0;
+  do {
+    const chunk = await files.readRange(path, offset, archiveChunkBytes);
+    offset += archiveChunkBytes;
+    reader.push(chunk, offset >= size);
+  } while (offset < size);
+  const read = reader.finish();
   return read.ok ? { ok: true, files: read.files } : { ok: false, code: 'pack.invalid-burrito' };
 }
 
@@ -98,7 +113,7 @@ export function catalogOffer(ports: ModulePorts, choice: CatalogChoice): Offer {
         if (problem !== undefined) {
           return { ok: false, code: problem };
         }
-        return opened(await ports.files.readBytes(to));
+        return await openedFromDisk(ports.files, to);
       } finally {
         await removeIfPresent(ports.files, to);
       }
@@ -107,13 +122,12 @@ export function catalogOffer(ports: ModulePorts, choice: CatalogChoice): Offer {
 }
 
 async function fileOffer(ports: ModulePorts, path: string): Promise<Resolution> {
-  let archive: Uint8Array;
+  let read: Opened;
   try {
-    archive = await ports.files.readBytes(path);
+    read = await openedFromDisk(ports.files, path);
   } catch (error) {
     return { ok: false, code: failureCodeOf(error) };
   }
-  const read = opened(archive);
   if (!read.ok) {
     return read;
   }

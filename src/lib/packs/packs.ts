@@ -7,9 +7,10 @@ import { refOf } from '../domain/release';
 import { defineModule } from '../module';
 import { catalogOffer, createInstaller, resolveSource, type Resolved } from './install';
 import { defaultReleases, missingReleases, updatesOf } from './plan';
-import { fromCatalog, type PackPlan, type PackSource } from './source';
+import { fromCatalog, fromFile, type PackPlan, type PackSource } from './source';
 import { deleteInstalledPack, packTables, readInstalledPacks } from './store';
-import { recoverPacks } from './swap';
+import { inboxDirectory, recoverPacks } from './swap';
+import { removeIfPresent } from './tree';
 import type {
   InstalledBurrito,
   InstalledPack,
@@ -32,6 +33,7 @@ export type LanguageStatus = {
 
 export type PacksApi = {
   install(source: PackSource, plan?: PackPlan): Promise<InstallOutcome>;
+  importFile(external: string): Promise<InstallOutcome>;
   installFromCatalog(pack: PackId): Promise<InstallOutcome>;
   update(pack: PackId): Promise<InstallOutcome>;
   remove(pack: PackId): Promise<RemoveOutcome>;
@@ -94,6 +96,26 @@ export const packsModule = defineModule<PacksApi>({
 
     function install(source: PackSource, plan: PackPlan = {}): Promise<InstallOutcome> {
       return serial(() => installNow(source, plan));
+    }
+
+    function importFile(external: string): Promise<InstallOutcome> {
+      const path = `${inboxDirectory}/import.zip`;
+      return serial(async () => {
+        try {
+          await removeIfPresent(ports.files, inboxDirectory);
+          await ports.files.mkdir(inboxDirectory);
+          await ports.files.adopt(external, path);
+        } catch (error) {
+          const code = failureCodeOf(error);
+          await context.emit({ type: 'Failure', payload: { code, context: { step: 'file' } } });
+          return { ok: false, install: undefined, pack: undefined, code };
+        }
+        try {
+          return await installNow(fromFile(path), {});
+        } finally {
+          await removeIfPresent(ports.files, inboxDirectory);
+        }
+      });
     }
 
     function installFromCatalog(pack: PackId): Promise<InstallOutcome> {
@@ -182,6 +204,7 @@ export const packsModule = defineModule<PacksApi>({
     return {
       api: {
         install,
+        importFile,
         installFromCatalog,
         update,
         remove,

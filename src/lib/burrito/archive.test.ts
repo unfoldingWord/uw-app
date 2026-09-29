@@ -1,6 +1,6 @@
 import { unzipSync, zipSync } from 'fflate';
 import { describe, expect, it } from 'vitest';
-import { readArchive, writeArchive } from './archive';
+import { createArchiveReader, readArchive, writeArchive } from './archive';
 import { utf8 } from './files';
 
 const mtime = 315619200000;
@@ -58,6 +58,32 @@ describe('readArchive', () => {
   it('refuses an archive with two candidate burritos', () => {
     const read = readArchive(zipSync({ 'a/metadata.json': utf8('{}'), 'b/metadata.json': utf8('{}') }));
     expect(!read.ok && read.rule).toBe('metadata-missing');
+  });
+
+  it('refuses an archive that unpacks past its limits, before holding it all', () => {
+    const bomb = zipSync({ 'metadata.json': utf8('{}'), 'ingredients/zeros.bin': new Uint8Array(4_000_000) });
+    expect(bomb.byteLength).toBeLessThan(10_000);
+    const read = readArchive(bomb, { entries: 100, bytes: 1_000_000 });
+    expect(!read.ok && read.rule).toBe('archive-too-large');
+    const many = zipSync(
+      Object.fromEntries(Array.from({ length: 30 }, (_, index) => [`f${index}.txt`, utf8('x')])),
+    );
+    expect(!readArchive(many, { entries: 20, bytes: 1_000_000 }).ok).toBe(true);
+  });
+
+  it('reads an archive pushed in chunks, as Packs reads one from disk', () => {
+    const bytes = writeArchive(new Map([...burrito, ...repositoryFiles]), { root: 'qaa_ult', mtime });
+    const reader = createArchiveReader();
+    for (let offset = 0; offset < bytes.byteLength; offset += 7) {
+      reader.push(bytes.subarray(offset, offset + 7), offset + 7 >= bytes.byteLength);
+    }
+    const read = reader.finish();
+    expect(read.ok && Object.fromEntries(read.files)).toEqual(Object.fromEntries(burrito));
+  });
+
+  it('refuses an archive cut short', () => {
+    const bytes = writeArchive(burrito, { root: 'qaa_ult', mtime });
+    expect(readArchive(bytes.subarray(0, 60)).ok).toBe(false);
   });
 
   it('refuses a path that climbs out of the archive', () => {
