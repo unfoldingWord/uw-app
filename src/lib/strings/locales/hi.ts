@@ -478,4 +478,8 @@ export const hi: LocaleTable = {
   'languages.import.done': 'फ़ाइल से इंस्टॉल हो गया। अब इसे बिना इंटरनेट के पढ़ सकते हैं।',
   'settings.appLanguage.direction':
     'अरबी, उर्दू या फ़ारसी पर जाने या उनसे हटने पर लेआउट की दिशा बदलने के लिए ऐप फिर से शुरू होता है।',
+  'study.audio.back': '10 सेकंड पीछे',
+  'study.audio.forward': '10 सेकंड आगे',
+  'study.audio.loading': 'ऑडियो तैयार हो रहा है',
+  'session.audio.time': '{position} / {duration}',
 };

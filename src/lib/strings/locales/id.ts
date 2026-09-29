@@ -463,4 +463,8 @@ export const id: LocaleTable = {
   'languages.import.done': 'Terpasang dari berkas. Siap dibaca tanpa koneksi.',
   'settings.appLanguage.direction':
     'Aplikasi dimulai ulang untuk mengubah arah tampilan saat Anda beralih ke atau dari bahasa Arab, Urdu atau Persia.',
+  'study.audio.back': 'Mundur 10 detik',
+  'study.audio.forward': 'Maju 10 detik',
+  'study.audio.loading': 'Menyiapkan audio',
+  'session.audio.time': '{position} / {duration}',
 };

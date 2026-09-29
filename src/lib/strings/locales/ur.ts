@@ -477,4 +477,8 @@ export const ur: LocaleTable = {
   'languages.import.done': 'فائل سے انسٹال ہو گیا۔ اب اسے انٹرنیٹ کے بغیر پڑھا جا سکتا ہے۔',
   'settings.appLanguage.direction':
     'عربی، اردو یا فارسی پر جانے یا ان سے ہٹنے پر اسکرین کی سمت بدلنے کے لیے ایپ دوبارہ شروع ہوتی ہے۔',
+  'study.audio.back': '10 سیکنڈ پیچھے',
+  'study.audio.forward': '10 سیکنڈ آگے',
+  'study.audio.loading': 'آڈیو تیار ہو رہا ہے',
+  'session.audio.time': '{position} / {duration}',
 };

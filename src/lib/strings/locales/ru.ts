@@ -528,4 +528,8 @@ export const ru: LocaleTable = {
   'languages.import.done': 'Установлено из файла. Можно читать без интернета.',
   'settings.appLanguage.direction':
     'Приложение перезапускается, чтобы сменить направление экрана, когда вы переходите на арабский, урду или персидский или уходите с них.',
+  'study.audio.back': 'Назад на 10 секунд',
+  'study.audio.forward': 'Вперёд на 10 секунд',
+  'study.audio.loading': 'Аудио готовится',
+  'session.audio.time': '{position} / {duration}',
 };

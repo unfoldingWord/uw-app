@@ -455,4 +455,8 @@ export const vi: LocaleTable = {
   'languages.import.done': 'Đã cài đặt từ tệp. Có thể đọc khi không có mạng.',
   'settings.appLanguage.direction':
     'Ứng dụng khởi động lại để đổi hướng bố cục khi bạn chuyển sang hoặc rời khỏi tiếng Ả Rập, tiếng Urdu hoặc tiếng Ba Tư.',
+  'study.audio.back': 'Lùi 10 giây',
+  'study.audio.forward': 'Tới 10 giây',
+  'study.audio.loading': 'Đang chuẩn bị âm thanh',
+  'session.audio.time': '{position} / {duration}',
 };

@@ -475,4 +475,8 @@ export const bn: LocaleTable = {
   'languages.import.done': 'ফাইল থেকে ইনস্টল হয়েছে। এখন ইন্টারনেট ছাড়াই পড়া যাবে।',
   'settings.appLanguage.direction':
     'আরবি, উর্দু বা ফারসিতে যাওয়ার বা সেখান থেকে ফেরার সময় লেআউটের দিক বদলাতে অ্যাপটি আবার চালু হয়।',
+  'study.audio.back': '10 সেকেন্ড পিছনে',
+  'study.audio.forward': '10 সেকেন্ড সামনে',
+  'study.audio.loading': 'অডিও তৈরি হচ্ছে',
+  'session.audio.time': '{position} / {duration}',
 };

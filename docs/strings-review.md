@@ -128,3 +128,13 @@ Dates are formatted by the screen layer with the platform's date formatting, and
   restarts to change the layout direction when the leader switches to or from Arabic, Urdu or Farsi (PRD 11).
   Drafted by an AI agent in fifteen locales. It names the three languages in each locale's own words for them;
   check the names and that "restarts" does not read as a fault.
+## Added with the audio player (G2)
+
+- `study.audio.back` and `study.audio.forward`: the two pills under the audio bar that move ten seconds back
+  and ahead. Each is the pill's visible text and its accessible name, so it spells out "seconds". The digits
+  are ASCII in every locale, including `ar`, `fa`, `ur`, `bn`, `hi` and `my`; a reviewer may prefer the
+  locale's own digits.
+- `study.audio.loading`: the caption while a clip is being opened. It must not suggest a download.
+- `session.audio.time`: the elapsed and total time under "Play and discuss" when a story has audio, the same
+  shape as `study.audio.time`. The times are written `m:ss` with ASCII digits.
+- Drafted by an AI agent in fifteen locales; none reviewed.

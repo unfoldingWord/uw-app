@@ -491,4 +491,8 @@ export const nl: LocaleTable = {
   'languages.import.done': 'Geïnstalleerd uit het bestand. Je kunt het nu offline lezen.',
   'settings.appLanguage.direction':
     'De app start opnieuw om de richting van het scherm te wijzigen als je overstapt naar of van Arabisch, Urdu of Perzisch.',
+  'study.audio.back': '10 seconden terug',
+  'study.audio.forward': '10 seconden vooruit',
+  'study.audio.loading': 'De audio wordt klaargezet',
+  'session.audio.time': '{position} / {duration}',
 };

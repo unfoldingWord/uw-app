@@ -1,5 +1,6 @@
 import type {
   Article,
+  AudioClip,
   Block,
   Frame,
   MovementSection,
@@ -68,7 +69,8 @@ export type MovementLayer =
 
 export type OutlinePart = MovementSectionId | 'frames' | 'study-questions';
 
-export type StoryAudio = { readonly state: 'not-available' };
+export type StoryAudio =
+  { readonly state: 'not-available' } | { readonly state: 'available'; readonly clip: AudioClip };
 
 export type FoundationsSession = {
   readonly track: 'foundations';

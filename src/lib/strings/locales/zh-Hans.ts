@@ -441,4 +441,8 @@ export const zhHans: LocaleTable = {
   'languages.import.done': '已从文件安装。现在可以离线阅读。',
   'settings.appLanguage.direction':
     '切换到阿拉伯语、乌尔都语或波斯语，或从这些语言切换出来时，应用会重新启动以改变界面方向。',
+  'study.audio.back': '后退 10 秒',
+  'study.audio.forward': '前进 10 秒',
+  'study.audio.loading': '正在准备音频',
+  'session.audio.time': '{position} / {duration}',
 };

@@ -497,4 +497,8 @@ export const ptBR: LocaleTable = {
   'languages.import.done': 'Instalado a partir do arquivo. Já pode ser lido sem conexão.',
   'settings.appLanguage.direction':
     'O aplicativo reinicia para mudar a direção da tela quando você muda para árabe, urdu ou persa, ou sai deles.',
+  'study.audio.back': 'Voltar 10 segundos',
+  'study.audio.forward': 'Avançar 10 segundos',
+  'study.audio.loading': 'Preparando o áudio',
+  'session.audio.time': '{position} / {duration}',
 };

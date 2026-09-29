@@ -482,4 +482,8 @@ export const sw: LocaleTable = {
   'languages.import.done': 'Imesakinishwa kutoka kwenye faili. Iko tayari kusomwa bila mtandao.',
   'settings.appLanguage.direction':
     'Programu inaanza upya ili kubadilisha mwelekeo wa skrini unapohamia au kutoka Kiarabu, Kiurdu au Kiajemi.',
+  'study.audio.back': 'Rudi nyuma sekunde 10',
+  'study.audio.forward': 'Songa mbele sekunde 10',
+  'study.audio.loading': 'Sauti inaandaliwa',
+  'session.audio.time': '{position} / {duration}',
 };

@@ -498,4 +498,8 @@ export const es419: LocaleTable = {
   'languages.import.done': 'Se instaló desde el archivo. Ya puedes leerlo sin conexión.',
   'settings.appLanguage.direction':
     'La aplicación se reinicia para cambiar la dirección de la pantalla cuando cambias a árabe, urdu o persa, o dejas uno de ellos.',
+  'study.audio.back': 'Retroceder 10 segundos',
+  'study.audio.forward': 'Avanzar 10 segundos',
+  'study.audio.loading': 'Preparando el audio',
+  'session.audio.time': '{position} / {duration}',
 };

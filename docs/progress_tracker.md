@@ -3,6 +3,29 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 G2 audio playback: the player kernel module, the audio bar and story audio (ST-4, FO-3)
+
+- Red first: `npm run sim -- ST-4` failed with `services.study.listen is not a function` once the scenario
+  installed the audio pack through the study service and drove play, pause and seek; `npm run sim -- FO-3`
+  failed with `services.formation.listen is not a function`. The new Audio port contract case ("loads one
+  source, plays, pauses, seeks within its length and unloads") failed against the memory adapter while the
+  subject provided no playable source. `sim/player.test.ts` "keeps the last clip asked for when two loads
+  overlap" failed (the port held the older clip, 40 s instead of 20 s) until port calls were queued in order.
+- Built under the exception in `docs/exceptions.md` (rule 4, `src/lib/player`); the audio-player proposal is
+  marked built under exception, awaiting approval. `player` is registered in `kernelModules` and the pin in
+  `sim/kernel.test.ts`. It journals nothing but a `Failure` with step `audio`; ST-4 asserts that play, pause,
+  seek and the end of a clip add no journal entry.
+- Screens: the Study audio bar plays and pauses, shows elapsed and total time with a progress bar, and has
+  Back 10 seconds and Ahead 10 seconds pills; a failure shows in place in its caption. "Play and discuss" plays
+  story audio when a session carries it (the fixtures carry none, so on a phone it still only moves frames).
+  Four new string keys in all sixteen locales, listed in `docs/strings-review.md`.
+- `npm run verify`: green (638 tests in 59 files, 52 scenarios, 7 checks, trace 0 unproven, contract 21
+  fixture burritos, both bundles); live checks skipped offline. The permissions check still passes: no
+  FOREGROUND_SERVICE and no iOS background mode.
+- Not verified: playback on a phone (expo-audio through `src/platform/audio.ts`, unchanged), streaming from a
+  URL (no release carries a stream address, so nothing in the app asks for one), the audio bar and session
+  footer in light, dark and reduced-blur, at 360 px, with dynamic type or in RTL. The platform adapter reports
+  `ended` only from its `didJustFinish` listener; the player also treats a position at the duration as ended.
 ## 2026-09-29 G1 buildable gaps from the scope audit (HO-4, HO-6, ST-10, PA-6, PA-2, PRD 9, 11 and 12)
 
 Everything below ran in Node (the sim, Vitest and the checks); nothing ran on a phone.

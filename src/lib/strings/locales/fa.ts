@@ -478,4 +478,8 @@ export const fa: LocaleTable = {
   'languages.import.done': 'از فایل نصب شد. اکنون بدون اینترنت قابل خواندن است.',
   'settings.appLanguage.direction':
     'وقتی به عربی، اردو یا فارسی می‌روید یا از آن‌ها بیرون می‌آیید، برنامه برای تغییر جهت صفحه دوباره راه‌اندازی می‌شود.',
+  'study.audio.back': '10 ثانیه به عقب',
+  'study.audio.forward': '10 ثانیه به جلو',
+  'study.audio.loading': 'صدا در حال آماده شدن است',
+  'session.audio.time': '{position} / {duration}',
 };

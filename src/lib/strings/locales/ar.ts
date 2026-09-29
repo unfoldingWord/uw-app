@@ -545,4 +545,8 @@ export const ar: LocaleTable = {
   'languages.import.done': 'تم التثبيت من الملف. يمكنك قراءته الآن دون اتصال.',
   'settings.appLanguage.direction':
     'يُعاد تشغيل التطبيق لتغيير اتجاه الواجهة عندما تنتقل إلى العربية أو الأردية أو الفارسية أو منها.',
+  'study.audio.back': 'رجوع 10 ثوانٍ',
+  'study.audio.forward': 'تقدّم 10 ثوانٍ',
+  'study.audio.loading': 'جارٍ تجهيز الصوت',
+  'session.audio.time': '{position} / {duration}',
 };

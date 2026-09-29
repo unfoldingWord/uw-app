@@ -471,4 +471,8 @@ export const my: LocaleTable = {
   'languages.import.done': 'ဖိုင်မှ ထည့်သွင်းပြီးပါပြီ။ အင်တာနက်မလိုဘဲ ဖတ်နိုင်ပါပြီ။',
   'settings.appLanguage.direction':
     'အာရဗီ၊ အူရဒူ သို့မဟုတ် ပါရှန်းဘာသာသို့ ပြောင်းသည့်အခါ သို့မဟုတ် ၎င်းတို့မှ ပြောင်းသည့်အခါ မျက်နှာပြင် ဦးတည်ရာ ပြောင်းရန် အက်ပ်ကို ပြန်စတင်ပါသည်။',
+  'study.audio.back': '10 စက္ကန့် နောက်ပြန်',
+  'study.audio.forward': '10 စက္ကန့် ရှေ့သို့',
+  'study.audio.loading': 'အသံကို ပြင်ဆင်နေသည်',
+  'session.audio.time': '{position} / {duration}',
 };
