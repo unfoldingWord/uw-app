@@ -1,8 +1,11 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { useTheme } from '@shared/theme';
+import { prototypeValues } from '@shared/ui';
 
-export function StoryWell({ children }: { children?: ReactNode }) {
+export type StoryWellProps = { image?: string; label?: string; children?: ReactNode };
+
+export function StoryWell({ image, label, children }: StoryWellProps) {
   const theme = useTheme();
   return (
     <View
@@ -16,6 +19,25 @@ export function StoryWell({ children }: { children?: ReactNode }) {
         },
       ]}
     >
+      {image === undefined ? null : (
+        <>
+          <Image
+            source={{ uri: image }}
+            resizeMode="cover"
+            accessible={label !== undefined}
+            accessibilityRole="image"
+            accessibilityLabel={label}
+            style={StyleSheet.absoluteFill}
+          />
+          <View
+            pointerEvents="none"
+            style={[
+              StyleSheet.absoluteFill,
+              { experimental_backgroundImage: prototypeValues.imageProtection },
+            ]}
+          />
+        </>
+      )}
       <View
         pointerEvents="none"
         style={[StyleSheet.absoluteFill, { experimental_backgroundImage: theme.gradient.refraction }]}

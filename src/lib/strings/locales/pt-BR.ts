@@ -488,4 +488,6 @@ export const ptBR: LocaleTable = {
   'library.download': 'Baixar {resource}',
   'library.onPhone': 'Neste celular',
   'search.fullText.inSettings': 'Ative nas Configurações. O índice fica neste celular.',
+  'study.frame.picture': 'Imagem do quadro {number}',
+  'transfer.app.ready': 'O aplicativo chegou a este celular ({size}) e está pronto para instalar.',
 };

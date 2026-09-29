@@ -468,4 +468,6 @@ export const hi: LocaleTable = {
   'library.download': '{resource} डाउनलोड करें',
   'library.onPhone': 'इस फ़ोन पर',
   'search.fullText.inSettings': 'इसे सेटिंग्स में चालू करें। अनुक्रमणिका इसी फ़ोन पर रहती है।',
+  'study.frame.picture': 'दृश्य {number} का चित्र',
+  'transfer.app.ready': 'ऐप इस फ़ोन पर आ गया है ({size}) और इंस्टॉल के लिए तैयार है।',
 };

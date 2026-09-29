@@ -12,6 +12,10 @@ export function sessionHref(track: Track, session: number): Href {
   return `/formation/session/${track}/${session}`;
 }
 
+export function storyShareHref(story: number): Href {
+  return { pathname: '/share', params: { kind: 'story', number: String(story) } };
+}
+
 export function movementTitle(words: FormationWords, movement: SessionMovementId): string {
   return words.t(`movement.${movement}`);
 }

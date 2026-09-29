@@ -148,6 +148,10 @@ _Avoid_: driver, provider, service
 A concrete implementation of a port. Every port has exactly two: the platform adapter and the memory adapter.
 _Avoid_: mock, stub, implementation (when the seam is the topic)
 
+**Media address**:
+The address a screen renders a picture from: a story frame image in a pack or a cached impact story image, given by the kernel's media module for a file on the device. A web address is never loaded as a picture.
+_Avoid_: image URL, picture link, remote image
+
 **Event**:
 A typed record of something that happened in the kernel. Modules communicate and the journal is written in events.
 _Avoid_: log line, message, action

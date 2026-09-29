@@ -504,4 +504,7 @@ export const fr: LocaleTable = {
   'library.download': 'Télécharger {resource}',
   'library.onPhone': 'Sur ce téléphone',
   'search.fullText.inSettings': 'Activez-la dans Réglages. L’index reste sur ce téléphone.',
+  'study.frame.picture': 'Illustration de l’image {number}',
+  'transfer.app.ready':
+    'L’application est arrivée sur ce téléphone ({size}) et elle est prête à être installée.',
 };

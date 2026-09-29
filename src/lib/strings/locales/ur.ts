@@ -467,4 +467,6 @@ export const ur: LocaleTable = {
   'library.download': '{resource} ڈاؤن لوڈ کریں',
   'library.onPhone': 'اس فون پر',
   'search.fullText.inSettings': 'اسے ترتیبات میں آن کریں۔ فہرست اسی فون پر رہتی ہے۔',
+  'study.frame.picture': 'منظر {number} کی تصویر',
+  'transfer.app.ready': 'ایپ اس فون پر آ گئی ہے ({size}) اور انسٹال کے لیے تیار ہے۔',
 };

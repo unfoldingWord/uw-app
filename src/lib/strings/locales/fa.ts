@@ -467,4 +467,6 @@ export const fa: LocaleTable = {
   'library.download': 'بارگیری {resource}',
   'library.onPhone': 'روی این گوشی',
   'search.fullText.inSettings': 'آن را در تنظیمات روشن کنید. نمایه روی این گوشی می‌ماند.',
+  'study.frame.picture': 'تصویر صحنهٔ {number}',
+  'transfer.app.ready': 'برنامه به این گوشی رسید ({size}) و آمادهٔ نصب است.',
 };

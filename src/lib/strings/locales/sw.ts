@@ -471,4 +471,6 @@ export const sw: LocaleTable = {
   'library.download': 'Pakua {resource}',
   'library.onPhone': 'Kwenye simu hii',
   'search.fullText.inSettings': 'Iwashe katika Mipangilio. Faharasa inabaki kwenye simu hii.',
+  'study.frame.picture': 'Mchoro wa picha ya {number}',
+  'transfer.app.ready': 'Programu imefika kwenye simu hii ({size}) na iko tayari kusakinishwa.',
 };

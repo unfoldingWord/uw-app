@@ -431,4 +431,6 @@ export const zhHans: LocaleTable = {
   'library.download': '下载{resource}',
   'library.onPhone': '在这部手机上',
   'search.fullText.inSettings': '在设置中开启。索引保存在这部手机上。',
+  'study.frame.picture': '第 {number} 幅的插图',
+  'transfer.app.ready': '应用已到达这部手机（{size}），可以安装了。',
 };

@@ -77,7 +77,10 @@ export type InvitationWords = {
 };
 
 export type InvitationCard =
-  | (Extract<Invitation, { state: 'due' }> & { readonly words: InvitationWords })
+  | (Extract<Invitation, { state: 'due' }> & {
+      readonly words: InvitationWords;
+      readonly image: string | undefined;
+    })
   | Extract<Invitation, { state: 'not-due' }>;
 
 export type WhatsNewItem = {
@@ -265,7 +268,14 @@ export function createHomeService(kernel: Kernel): HomeService {
     invitation(at) {
       const invitation = kernel.partners.invitation(at);
       return invitation.state === 'due'
-        ? { ...invitation, words: invitationWords(words(), invitation.story) }
+        ? {
+            ...invitation,
+            words: invitationWords(words(), invitation.story),
+            image:
+              invitation.story.image !== undefined && 'path' in invitation.story.image
+                ? kernel.media.uriOf(invitation.story.image.path)
+                : undefined,
+          }
         : invitation;
     },
     invitationShown: (at) => kernel.partners.shown(at),

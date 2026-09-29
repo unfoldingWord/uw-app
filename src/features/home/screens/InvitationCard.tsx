@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
+import { Image, Linking, StyleSheet, View } from 'react-native';
 import { GlassButton } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
@@ -33,7 +33,7 @@ export function InvitationCard() {
   if (invitation.state !== 'due') {
     return null;
   }
-  const { story, words, give } = invitation;
+  const { story, words, give, image } = invitation;
   const [excerpt] = story.body;
 
   return (
@@ -50,6 +50,25 @@ export function InvitationCard() {
           },
         ]}
       >
+        {image === undefined ? null : (
+          <>
+            <Image
+              source={{ uri: image }}
+              resizeMode="cover"
+              accessible
+              accessibilityRole="image"
+              accessibilityLabel={story.title}
+              style={StyleSheet.absoluteFill}
+            />
+            <View
+              pointerEvents="none"
+              style={[
+                StyleSheet.absoluteFill,
+                { experimental_backgroundImage: prototypeValues.imageProtection },
+              ]}
+            />
+          </>
+        )}
         <ThemedText variant="overline" tone="onImage" family="brand">
           {words.overline}
         </ThemedText>

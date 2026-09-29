@@ -58,6 +58,60 @@ fixtures and on test burritos copied from the captured shapes.
 - Not verified: anything against real data (the next CI run is the check); the ingest smoke end to end, which
   cannot run here; that a catalog `commit_sha` always equals the burrito's `revision` (inference: both come from
   the tag's commit; catalog installs do not depend on it, peer and file imports do).
+## 2026-09-29 U1 Transfer, Share and diagnostics screens, and pictures from the device
+
+Node v22.22.2. Everything below ran in Node through ESLint, TypeScript, Vitest, the checks, the sim and the
+Metro bundle for Android and iOS. No screen was rendered: nothing ran on a phone, a simulator or a browser.
+
+- Routes: `/transfer` (modal), `/share` (modal) and `/diagnostics`, each a one-line re-export of
+  `src/features/{transfer,share,diagnostics}/screens/*Screen.tsx`, registered in the root `Stack`. Formation's
+  story session gains a Share action that opens `/share?kind=story&number=<n>`.
+- Transfer screen: send or receive; on send, the language's resources with sizes (all chosen at first), the
+  app package on Android with its size or the iPhone reason, the selection summary, the pairing code and
+  progress, then sent or failed in place with Try again. On receive: looking for nearby phones, peers with
+  their codes, the offer with a subset choice, progress, ready to read with Open (sets the content language
+  and goes to Study), and the app package's ready-to-install state. When `capabilities().available` is
+  false, which is what a phone shows today (`src/platform/transport.ts` stops at the seam), the screen shows
+  `failure.transfer.unavailable` and the transfer note and nothing else.
+- Share screen: share as text, share as audio when the passage has audio (otherwise the no-audio line), the
+  attribution note (SH-5), a failure in place under the control that failed, and a dismissed share leaves
+  the sheet open. Diagnostics: one sentence of what the file holds and the share action.
+- Media addresses: `Files.uriOf(path)` on the port, both adapters and a port contract case; a `media`
+  kernel module answers only under `packs/` and `partners/images/`. Services expose `study.picture(frame)`,
+  `formation.picture(frame)`, `ImpactStoryView.image` and the Home invitation `image`; the Formation frame
+  card, the Study story reader, the About and impact story wells and the Home invitation render the picture
+  under the protection gradient, and keep the Ocean well when there is none. Proposal
+  `docs/proposals/2026-09-29-media-addresses.md`, exception recorded.
+- New check `routes` (`scripts/checks/routes.check.ts`, logic in `routes.ts`, tests in `routes.test.ts`).
+- New strings `study.frame.picture` and `transfer.app.ready` in all 16 locales, listed in
+  `docs/strings-review.md`.
+
+### Observed red, then green
+
+| Test | Red | Green |
+|---|---|---|
+| `npm run checks` with the routes check, before the three routes | `FAIL routes`: `LanguagesScreen.tsx navigates to /transfer`, `SettingsScreen.tsx navigates to /diagnostics`, `study/screens/parts/routes.ts navigates to /share`, each `which no route file under app/ serves` | `pass routes: 19 routes, each a re-export of a feature screen; 34 navigation targets, each served` |
+| Same, with a throwaway `app/throwaway.tsx` re-exporting `@features/ghost/screens/GhostScreen` | `app/throwaway.tsx re-exports src/features/ghost/screens/GhostScreen.tsx, which has no default export` | throwaway removed |
+| Port contract with the memory `uriOf` answering for any path (throwaway) | `a directory has no address: expected undefined, got "memory://device/contract/3/pictures"` | 18 passed |
+| PA-6 and `sim/media.test.ts` with `media.uriOf` answering nothing (throwaway) | `FAIL PA-6.impact-stories`; `Tests 1 failed / 1 passed` | pass |
+
+`npm run verify` exit 0: `Test Files 54 passed`, `Tests 590 passed`; typecheck pass on the three projects;
+`6 checks, 0 pending, none failed` (strings: 425 keys in 16 locales); `sim: 52 scenarios, 52 passed, 0 failed`;
+`trace: 51 Must requirements, 50 with a scenario, 1 proven by a test on the documented list, 0 unproven`;
+`contract: 20 fixture burritos, 0 failed` (live skipped offline); `bundle android: pass` (1905 modules),
+`bundle ios: pass` (1771 modules).
+
+### Not verified
+
+- No screen was rendered: light, dark, reduced blur, 360 px width, dynamic type at the maximum, RTL and
+  screen reader labels are unverified beyond the code.
+- The transfer flows beyond the unavailable state never ran on a phone: no radio exists. They are wired to
+  the service calls the sim proves (SH-1, SH-2), but the screen itself was not driven.
+- `File(...).uri` from expo-file-system rendering in `Image` on iOS and Android, and the picture crop.
+- Pushing `/transfer` as a modal over the Languages modal, and `router.navigate('/study')` from it
+  returning to the tabs, are inferences about Expo Router's native stack.
+- Installing a received app package: the screen shows the ready-to-install state and stops there.
+- The two new translations by a native speaker.
 
 ## 2026-09-29 M8 merge of the F2 fixes onto T8, T7b, M7 and the screens (T10 to T12)
 

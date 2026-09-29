@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { useTheme } from '@shared/theme';
+import { prototypeValues } from '@shared/ui';
 
-export type PictureWellProps = { label?: string; tall?: boolean; children?: ReactNode };
+export type PictureWellProps = { label?: string; uri?: string; tall?: boolean; children?: ReactNode };
 
-export function PictureWell({ label, tall = false, children }: PictureWellProps) {
+export function PictureWell({ label, uri, tall = false, children }: PictureWellProps) {
   const theme = useTheme();
   return (
     <View
@@ -21,6 +22,24 @@ export function PictureWell({ label, tall = false, children }: PictureWellProps)
         },
       ]}
     >
+      {uri === undefined ? null : (
+        <>
+          <Image
+            source={{ uri }}
+            resizeMode="cover"
+            accessibilityElementsHidden
+            importantForAccessibility="no"
+            style={StyleSheet.absoluteFill}
+          />
+          <View
+            pointerEvents="none"
+            style={[
+              StyleSheet.absoluteFill,
+              { experimental_backgroundImage: prototypeValues.imageProtection },
+            ]}
+          />
+        </>
+      )}
       <View
         pointerEvents="none"
         style={[StyleSheet.absoluteFill, { experimental_backgroundImage: theme.gradient.refraction }]}

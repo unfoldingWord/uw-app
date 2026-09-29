@@ -8,6 +8,7 @@ import { useTheme } from '@shared/theme';
 import { createStudyService } from '../service';
 import { Attribution } from './parts/Attribution';
 import { ScreenFrame, TopBar } from './parts/Frame';
+import { FramePicture } from './parts/FramePicture';
 import { passageHref, studyRoutes } from './parts/routes';
 import { Say } from './parts/Say';
 import { contentText } from './parts/script';
@@ -105,8 +106,14 @@ export default function StoryScreen() {
             blur="strong"
             radius="xl"
             shadow="rest"
-            style={{ padding: theme.space.gutterCard }}
+            style={{ padding: theme.space.gutterCard, gap: theme.space.sp6 }}
           >
+            {item.image === undefined && item.imageName === undefined ? null : (
+              <FramePicture
+                uri={service.picture(item)}
+                label={words.t('study.frame.picture', { number: item.number })}
+              />
+            )}
             <Say role="body" tone="title" selectable style={text}>
               {item.text}
             </Say>

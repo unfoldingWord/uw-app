@@ -79,6 +79,9 @@ function Routes({ needed }: { needed: boolean }) {
       <Stack.Protected guard={!needed}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="languages" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="share" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="transfer" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="diagnostics" />
       </Stack.Protected>
     </Stack>
   );

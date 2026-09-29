@@ -73,6 +73,12 @@ export default scenario(
 
     const about = servicesOf(phone).about;
     assert.equal(about.story('a-church-reads-together')?.securityNote, 'Names have been changed.');
+    assert.equal(
+      about.story('a-church-reads-together')?.image,
+      'memory://device/partners/images/a-church-reads-together',
+      'the cached image shows from the phone, offline',
+    );
+    assert.equal(about.story('jeremiah-and-the-occult-king')?.image, undefined, 'no image, no address');
     const fromAbout = await about.openStory('jeremiah-and-the-occult-king');
     assert.equal(fromAbout?.securityNote, 'Names in this story are changed for security.');
     assert.equal(fromAbout?.readMore, 'Read the full story on unfoldingword.org');

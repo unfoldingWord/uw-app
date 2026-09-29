@@ -465,4 +465,6 @@ export const bn: LocaleTable = {
   'library.download': '{resource} ডাউনলোড করুন',
   'library.onPhone': 'এই ফোনে',
   'search.fullText.inSettings': 'সেটিংসে এটি চালু করুন। সূচিটি এই ফোনেই থাকে।',
+  'study.frame.picture': 'দৃশ্য {number}-এর ছবি',
+  'transfer.app.ready': 'অ্যাপটি এই ফোনে এসেছে ({size}) এবং ইনস্টলের জন্য প্রস্তুত।',
 };

@@ -534,4 +534,6 @@ export const ar: LocaleTable = {
   'library.download': 'تنزيل {resource}',
   'library.onPhone': 'على هذا الهاتف',
   'search.fullText.inSettings': 'فعِّله من الإعدادات. يبقى الفهرس على هذا الهاتف.',
+  'study.frame.picture': 'صورة المشهد {number}',
+  'transfer.app.ready': 'وصل التطبيق إلى هذا الهاتف ({size}) وهو جاهز للتثبيت.',
 };
