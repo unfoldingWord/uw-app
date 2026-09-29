@@ -473,4 +473,6 @@ export const bn: LocaleTable = {
   'languages.import.opened': 'আপনি {name} খুলেছেন। এই ফোনে ইনস্টল করবেন?',
   'languages.import.install': 'ইনস্টল করুন',
   'languages.import.done': 'ফাইল থেকে ইনস্টল হয়েছে। এখন ইন্টারনেট ছাড়াই পড়া যাবে।',
+  'settings.appLanguage.direction':
+    'আরবি, উর্দু বা ফারসিতে যাওয়ার বা সেখান থেকে ফেরার সময় লেআউটের দিক বদলাতে অ্যাপটি আবার চালু হয়।',
 };

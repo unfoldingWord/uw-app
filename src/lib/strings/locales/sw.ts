@@ -480,4 +480,6 @@ export const sw: LocaleTable = {
   'languages.import.opened': 'Umefungua {name}. Isakinishe kwenye simu hii?',
   'languages.import.install': 'Sakinisha',
   'languages.import.done': 'Imesakinishwa kutoka kwenye faili. Iko tayari kusomwa bila mtandao.',
+  'settings.appLanguage.direction':
+    'Programu inaanza upya ili kubadilisha mwelekeo wa skrini unapohamia au kutoka Kiarabu, Kiurdu au Kiajemi.',
 };

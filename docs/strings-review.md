@@ -124,3 +124,7 @@ Dates are formatted by the screen layer with the platform's date formatting, and
   `privacy.dropped` ("If the counts cannot be sent, they are dropped") is unchanged and still true of the
   later release.
 - `privacy.count.transfersByPlatformPair` is removed from English and every locale (see Privacy above).
+- `settings.appLanguage.direction`: one sentence under the app language list in Settings, saying the app
+  restarts to change the layout direction when the leader switches to or from Arabic, Urdu or Farsi (PRD 11).
+  Drafted by an AI agent in fifteen locales. It names the three languages in each locale's own words for them;
+  check the names and that "restarts" does not read as a fault.

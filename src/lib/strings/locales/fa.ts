@@ -476,4 +476,6 @@ export const fa: LocaleTable = {
   'languages.import.opened': 'شما {name} را باز کردید. روی این گوشی نصب شود؟',
   'languages.import.install': 'نصب',
   'languages.import.done': 'از فایل نصب شد. اکنون بدون اینترنت قابل خواندن است.',
+  'settings.appLanguage.direction':
+    'وقتی به عربی، اردو یا فارسی می‌روید یا از آن‌ها بیرون می‌آیید، برنامه برای تغییر جهت صفحه دوباره راه‌اندازی می‌شود.',
 };

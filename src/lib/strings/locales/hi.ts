@@ -476,4 +476,6 @@ export const hi: LocaleTable = {
   'languages.import.opened': 'आपने {name} खोला। इसे इस फ़ोन पर इंस्टॉल करें?',
   'languages.import.install': 'इंस्टॉल करें',
   'languages.import.done': 'फ़ाइल से इंस्टॉल हो गया। अब इसे बिना इंटरनेट के पढ़ सकते हैं।',
+  'settings.appLanguage.direction':
+    'अरबी, उर्दू या फ़ारसी पर जाने या उनसे हटने पर लेआउट की दिशा बदलने के लिए ऐप फिर से शुरू होता है।',
 };

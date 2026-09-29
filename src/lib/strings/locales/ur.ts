@@ -475,4 +475,6 @@ export const ur: LocaleTable = {
   'languages.import.opened': 'آپ نے {name} کھولا۔ کیا اسے اس فون پر انسٹال کریں؟',
   'languages.import.install': 'انسٹال کریں',
   'languages.import.done': 'فائل سے انسٹال ہو گیا۔ اب اسے انٹرنیٹ کے بغیر پڑھا جا سکتا ہے۔',
+  'settings.appLanguage.direction':
+    'عربی، اردو یا فارسی پر جانے یا ان سے ہٹنے پر اسکرین کی سمت بدلنے کے لیے ایپ دوبارہ شروع ہوتی ہے۔',
 };

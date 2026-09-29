@@ -2,7 +2,13 @@ import type { IndexCost } from '@lib/corpus/types';
 import type { PackKind } from '@lib/domain/pack';
 import type { Kernel } from '@lib/kernel';
 import type { RemoveOutcome } from '@lib/packs/types';
-import { localeNames, type Direction, type Locale } from '@lib/strings/locales';
+import {
+  direction,
+  localeNames,
+  needsDirectionChange,
+  type Direction,
+  type Locale,
+} from '@lib/strings/locales';
 import { leavingFolds, type LeavingFold } from '@lib/telemetry/folds';
 import { settingsWords, type SettingsWords } from './strings';
 
@@ -74,6 +80,9 @@ export type SettingsService = {
   locales(): readonly LocaleChoice[];
   locale(): Locale;
   setLocale(locale: Locale): Promise<boolean>;
+  layoutDirection(): Direction;
+  directionChangeNeeded(currentIsRTL: boolean): boolean;
+  onLayoutDirection(listener: (direction: Direction) => void): () => void;
   theme(): ThemeChoice;
   setTheme(theme: ThemeChoice): Promise<boolean>;
   reducedBlur(): boolean | undefined;
@@ -193,6 +202,14 @@ export function createSettingsService(kernel: Kernel): SettingsService {
     locale: () => preferences.locale(),
     setLocale: (locale) =>
       kernel.strings.isLocale(locale) ? preferences.set('settings.locale', locale) : Promise.resolve(false),
+    layoutDirection: () => direction(preferences.locale()),
+    directionChangeNeeded: (currentIsRTL) => needsDirectionChange(preferences.locale(), currentIsRTL),
+    onLayoutDirection: (listener) =>
+      preferences.onChange((key) => {
+        if (key === 'settings.locale') {
+          listener(direction(preferences.locale()));
+        }
+      }),
     theme: () => preferences.get('home.theme') ?? 'system',
     setTheme: (theme) => preferences.set('home.theme', theme),
     reducedBlur: () => {

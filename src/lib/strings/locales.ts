@@ -77,6 +77,10 @@ export function direction(locale: Locale): Direction {
   return rightToLeft.has(locale) ? 'rtl' : 'ltr';
 }
 
+export function needsDirectionChange(locale: Locale, currentIsRTL: boolean): boolean {
+  return (direction(locale) === 'rtl') !== currentIsRTL;
+}
+
 function localeOfTag(tag: string): Locale | undefined {
   const normalized = tag.trim().replaceAll('_', '-');
   if (isLocale(normalized)) {

@@ -513,4 +513,6 @@ export const fr: LocaleTable = {
   'languages.import.opened': 'Vous avez ouvert {name}. L’installer sur ce téléphone ?',
   'languages.import.install': 'Installer',
   'languages.import.done': 'Installé depuis le fichier. Vous pouvez le lire hors connexion.',
+  'settings.appLanguage.direction':
+    'L’application redémarre pour changer le sens de l’affichage quand vous passez à l’arabe, à l’ourdou ou au persan, ou que vous les quittez.',
 };

@@ -543,4 +543,6 @@ export const ar: LocaleTable = {
   'languages.import.opened': 'فتحت {name}. هل تثبّته على هذا الهاتف؟',
   'languages.import.install': 'تثبيت',
   'languages.import.done': 'تم التثبيت من الملف. يمكنك قراءته الآن دون اتصال.',
+  'settings.appLanguage.direction':
+    'يُعاد تشغيل التطبيق لتغيير اتجاه الواجهة عندما تنتقل إلى العربية أو الأردية أو الفارسية أو منها.',
 };

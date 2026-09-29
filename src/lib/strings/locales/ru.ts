@@ -526,4 +526,6 @@ export const ru: LocaleTable = {
   'languages.import.opened': 'Вы открыли {name}. Установить на этот телефон?',
   'languages.import.install': 'Установить',
   'languages.import.done': 'Установлено из файла. Можно читать без интернета.',
+  'settings.appLanguage.direction':
+    'Приложение перезапускается, чтобы сменить направление экрана, когда вы переходите на арабский, урду или персидский или уходите с них.',
 };

@@ -26,7 +26,24 @@ export default scenario(
 
     await services.onboarding.refresh();
     assert.ok((await (await services.onboarding.choose('qaa')).done).ok);
+    assert.equal(services.settings.layoutDirection(), 'ltr');
+    const directions: string[] = [];
+    const stop = services.settings.onLayoutDirection((next) => directions.push(next));
+    assert.equal(await services.settings.setLocale('ar'), true);
+    assert.equal(
+      services.settings.layoutDirection(),
+      'rtl',
+      'the layout follows the app language, not the content',
+    );
+    assert.equal(await services.settings.setLocale('fa'), true);
     assert.equal(await services.settings.setLocale('sw'), true);
+    stop();
+    assert.deepEqual(directions, ['rtl', 'rtl', 'ltr'], 'the root layout hears each app language change');
+    assert.equal(services.settings.layoutDirection(), 'ltr');
+    assert.equal(
+      phone.kernel.strings.words('en').t('settings.appLanguage.direction'),
+      'The app restarts to change the layout direction when you switch to or from Arabic, Urdu or Farsi.',
+    );
     assert.equal(services.home.words().locale, 'sw', 'every feature words itself in the app language');
     assert.equal(services.home.words().t('nav.home'), phone.kernel.strings.t('nav.home', 'sw'));
     assert.equal(services.home.header().language?.language, 'qaa', 'the content language is unchanged');

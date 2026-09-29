@@ -495,4 +495,6 @@ export const ptBR: LocaleTable = {
   'languages.import.opened': 'Você abriu {name}. Instalar neste celular?',
   'languages.import.install': 'Instalar',
   'languages.import.done': 'Instalado a partir do arquivo. Já pode ser lido sem conexão.',
+  'settings.appLanguage.direction':
+    'O aplicativo reinicia para mudar a direção da tela quando você muda para árabe, urdu ou persa, ou sai deles.',
 };

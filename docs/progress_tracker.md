@@ -40,6 +40,17 @@ Everything below ran in Node (the sim, Vitest and the checks); nothing ran on a 
   The scenario keeps one phone open for five days with two resumes a day: five days of use, invitation due,
   and its journal replays with no divergence and the same snapshot (DX-3). Because the impact story refresh
   is once per `AppOpened`, a resume on a new day also lets Home fetch the feed again.
+- PRD 11 layout direction, red first: the new `needsDirectionChange` case in
+  `src/lib/strings/strings.test.ts` failed (`needsDirectionChange is not a function`), then the extended
+  `SE-1` scenario (`services.settings.layoutDirection is not a function`). The Settings service gains
+  `layoutDirection()`, `onLayoutDirection()` and `directionChangeNeeded(currentIsRTL)`; the root layout, on
+  boot and on every app language change, compares with `I18nManager.isRTL`, and on a mismatch calls
+  `allowRTL(rtl)` and `forceRTL(rtl)` and `reloadAppAsync` from `expo` (exception recorded). It uses
+  `allowRTL(false)` for a left-to-right locale, not `allowRTL(true)`: React Native lays out right to left when
+  RTL is allowed and either forced or the phone's language is right to left, so only `allowRTL(false)` keeps an
+  English app on an Arabic phone left to right (inference from React Native's `I18nUtil`, not observed on a
+  phone). Skipped on web. Settings shows `settings.appLanguage.direction` under the language list, in all 16
+  locales (AI-drafted).
 
 ## 2026-09-29 I1 import a burrito file on the phone (SH-3)
 

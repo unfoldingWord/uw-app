@@ -489,4 +489,6 @@ export const nl: LocaleTable = {
   'languages.import.opened': 'Je hebt {name} geopend. Op deze telefoon installeren?',
   'languages.import.install': 'Installeren',
   'languages.import.done': 'Geïnstalleerd uit het bestand. Je kunt het nu offline lezen.',
+  'settings.appLanguage.direction':
+    'De app start opnieuw om de richting van het scherm te wijzigen als je overstapt naar of van Arabisch, Urdu of Perzisch.',
 };

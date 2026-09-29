@@ -461,4 +461,6 @@ export const id: LocaleTable = {
   'languages.import.opened': 'Anda membuka {name}. Pasang di ponsel ini?',
   'languages.import.install': 'Pasang',
   'languages.import.done': 'Terpasang dari berkas. Siap dibaca tanpa koneksi.',
+  'settings.appLanguage.direction':
+    'Aplikasi dimulai ulang untuk mengubah arah tampilan saat Anda beralih ke atau dari bahasa Arab, Urdu atau Persia.',
 };

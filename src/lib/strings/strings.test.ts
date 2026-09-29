@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { englishAreas } from './en/index';
-import { direction, locales, resolveLocale, type Locale } from './locales';
+import { direction, locales, needsDirectionChange, resolveLocale, type Locale } from './locales';
 import { tables } from './locales/index';
 import { createStrings, stringsModule, type LocaleTables } from './strings';
 import { english, type LocaleTable } from './table';
@@ -177,6 +177,18 @@ describe('locales', () => {
 
   it('lays out Arabic, Urdu and Farsi right to left and every other locale left to right', () => {
     expect(locales.filter((locale) => direction(locale) === 'rtl')).toEqual(['ar', 'ur', 'fa']);
+  });
+
+  it('asks for a layout change only when the app locale and the current layout direction disagree', () => {
+    expect(needsDirectionChange('ar', false)).toBe(true);
+    expect(needsDirectionChange('ur', false)).toBe(true);
+    expect(needsDirectionChange('fa', false)).toBe(true);
+    expect(needsDirectionChange('ar', true)).toBe(false);
+    expect(needsDirectionChange('en', true)).toBe(true);
+    expect(needsDirectionChange('sw', true)).toBe(true);
+    expect(needsDirectionChange('en', false)).toBe(false);
+    expect(locales.filter((locale) => needsDirectionChange(locale, false))).toEqual(['ar', 'ur', 'fa']);
+    expect(locales.filter((locale) => !needsDirectionChange(locale, true))).toEqual(['ar', 'ur', 'fa']);
   });
 
   it('maps device locale tags to a registered locale, in the order the device prefers them', () => {

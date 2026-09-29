@@ -439,4 +439,6 @@ export const zhHans: LocaleTable = {
   'languages.import.opened': '您打开了 {name}。要安装到这部手机上吗？',
   'languages.import.install': '安装',
   'languages.import.done': '已从文件安装。现在可以离线阅读。',
+  'settings.appLanguage.direction':
+    '切换到阿拉伯语、乌尔都语或波斯语，或从这些语言切换出来时，应用会重新启动以改变界面方向。',
 };

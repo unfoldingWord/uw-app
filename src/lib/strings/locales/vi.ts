@@ -453,4 +453,6 @@ export const vi: LocaleTable = {
   'languages.import.opened': 'Bạn đã mở {name}. Cài đặt vào điện thoại này?',
   'languages.import.install': 'Cài đặt',
   'languages.import.done': 'Đã cài đặt từ tệp. Có thể đọc khi không có mạng.',
+  'settings.appLanguage.direction':
+    'Ứng dụng khởi động lại để đổi hướng bố cục khi bạn chuyển sang hoặc rời khỏi tiếng Ả Rập, tiếng Urdu hoặc tiếng Ba Tư.',
 };

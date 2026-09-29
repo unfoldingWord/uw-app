@@ -50,6 +50,8 @@ export const about = {
   'settings.appLanguage': 'App language',
   'settings.appLanguage.about': 'The language of buttons and labels, separate from what you read.',
   'settings.appLanguage.partial': 'Some words still appear in English in this language.',
+  'settings.appLanguage.direction':
+    'The app restarts to change the layout direction when you switch to or from Arabic, Urdu or Farsi.',
   'settings.theme': 'Theme',
   'settings.theme.about': 'Light, dark or follow the phone.',
   'settings.reducedBlur': 'Reduce blur',

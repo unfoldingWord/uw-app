@@ -1,7 +1,8 @@
 import Stack from 'expo-router/stack';
 import { hide, preventAutoHideAsync } from 'expo-splash-screen';
 import { useEffect, useState, type ReactNode } from 'react';
-import { AppState, useColorScheme } from 'react-native';
+import { reloadAppAsync } from 'expo';
+import { AppState, I18nManager, Platform, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { createHomeService } from '@features/home/service';
 import { createOnboardingService } from '@features/onboarding/service';
@@ -79,6 +80,26 @@ function useResume(kernel: Kernel | undefined): void {
   }, [kernel]);
 }
 
+function useLayoutDirection(kernel: Kernel | undefined): void {
+  useEffect(() => {
+    if (kernel === undefined || Platform.OS === 'web') {
+      return undefined;
+    }
+    const settings = serviceOf(kernel, createSettingsService);
+    const follow = () => {
+      if (!settings.directionChangeNeeded(I18nManager.isRTL)) {
+        return;
+      }
+      const rightToLeft = settings.layoutDirection() === 'rtl';
+      I18nManager.allowRTL(rightToLeft);
+      I18nManager.forceRTL(rightToLeft);
+      void reloadAppAsync().catch(() => undefined);
+    };
+    follow();
+    return settings.onLayoutDirection(follow);
+  }, [kernel]);
+}
+
 function useOnboardingNeeded(kernel: Kernel | undefined): boolean {
   const read = () => (kernel === undefined ? true : serviceOf(kernel, createOnboardingService).needed());
   const [needed, setNeeded] = useState<boolean>(read);
@@ -129,6 +150,7 @@ export default function RootLayout() {
   const appearance = useAppearance(kernel);
   const needed = useOnboardingNeeded(kernel);
   useResume(kernel);
+  useLayoutDirection(kernel);
   const fonts = useThemeFonts();
   const firstBoot = state.status === 'booting' && state.attempt <= 1;
   const settled = !firstBoot && (fonts.loaded || fonts.error !== null);

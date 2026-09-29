@@ -496,4 +496,6 @@ export const es419: LocaleTable = {
   'languages.import.opened': 'Abriste {name}. ¿Quieres instalarlo en este teléfono?',
   'languages.import.install': 'Instalar',
   'languages.import.done': 'Se instaló desde el archivo. Ya puedes leerlo sin conexión.',
+  'settings.appLanguage.direction':
+    'La aplicación se reinicia para cambiar la dirección de la pantalla cuando cambias a árabe, urdu o persa, o dejas uno de ellos.',
 };

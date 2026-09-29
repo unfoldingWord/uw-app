@@ -136,6 +136,9 @@ export default function SettingsScreen() {
               }}
             />
           ))}
+          <Line role="caption" tone="dim">
+            {words.t('settings.appLanguage.direction')}
+          </Line>
         </Card>
       ) : null}
       <Card level={1}>
