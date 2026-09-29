@@ -11,7 +11,7 @@
   "scripts": {
     "sim": "tsx sim/cli.ts run",
     "replay": "tsx sim/cli.ts replay",
-    "trace": "tsx scripts/trace/cli.ts",
+    "trace": "tsx scripts/trace/cli.ts --enforce",
     "contract": "tsx scripts/contract.ts",
     "lint": "eslint .",
     "format": "prettier --write .",

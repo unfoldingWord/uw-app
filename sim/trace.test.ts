@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { coverage, mustRequirementIds, strayScenarios, unproven, withoutScenario } from './trace.ts';
+import {
+  coverage,
+  mustRequirementIds,
+  provenByTestOnly,
+  strayScenarios,
+  unproven,
+  withoutScenario,
+} from './trace';
 
 const prd = [
   '| ID | Requirement | Priority |',
@@ -39,6 +46,21 @@ describe('trace', () => {
     );
     expect(unproven(rows)).toEqual([]);
     expect(withoutScenario(rows)).toEqual(['ST-3']);
+  });
+
+  it('accepts a test in place of a scenario only for a requirement on the documented list', () => {
+    const rows = coverage(
+      ['SE-2', 'ST-3'],
+      [],
+      [
+        { path: 'src/shared/glass/names.test.ts', text: 'SE-2' },
+        { path: 'src/lib/corpus/corpus.test.ts', text: 'ST-3' },
+      ],
+    );
+    const allowed = { 'SE-2': 'rendering verified on a phone' };
+    expect(withoutScenario(rows, allowed)).toEqual(['ST-3']);
+    expect(provenByTestOnly(rows, allowed)).toEqual(['SE-2']);
+    expect(withoutScenario(coverage(['SE-2'], [], []), allowed)).toEqual(['SE-2']);
   });
 
   it('names a scenario whose ID is not a Must requirement', () => {

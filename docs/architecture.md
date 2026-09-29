@@ -105,7 +105,7 @@ The cockpit, once scaffolded:
 npm run sim -- <scenario>        run one scenario and print its snapshot and journal
 npm run sim -- all               every scenario
 npm run replay -- <journal.json> rebuild a device from an exported journal, print the snapshot
-npm run trace                    Must requirement IDs against scenarios and tests: which have none
+npm run trace                    Must requirement IDs against scenarios and tests: fails on any without a scenario
 npm run contract                 validate every fixture burrito, and a live release when online
 npm run verify                   lint, typecheck (including lib with no DOM), test, knip, checks, trace, contract
 ```
@@ -127,7 +127,7 @@ A rule that lives only in prose drifts. Each of these has a check in `verify` an
 | Tokens agree | `src/shared/theme` is compared to `design-system/tokens/*.css` by name and value |
 | Strings live in one table | no punctuated literal in `app/`, `features/` or `hooks/` that the table does not hold |
 | Nothing unused | knip over files, dependencies, exports and types |
-| Every Must requirement is proven | `trace` fails on a Must ID with neither a scenario nor a test |
+| Every Must requirement is proven | `trace --enforce` fails on a Must ID with no scenario named for it, unless the ID is on the documented list in `sim/trace.ts` and a test names it (SE-2, `docs/exceptions.md`); the DX-4 scenario runs the same check |
 | Content matches the contract | `contract` validates every fixture burrito against `docs/content-contract.md` |
 
 ## Where a change goes
