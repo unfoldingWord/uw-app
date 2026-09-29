@@ -19,7 +19,7 @@ export default scenario(
       state: 'none',
       language: 'qaa',
       pack: languagePackId('qaa'),
-      missing: 11,
+      missing: 12,
       online: true,
     });
 
@@ -35,7 +35,7 @@ export default scenario(
       language: 'qaa',
       pack: languagePackId('qaa'),
       resources: 2,
-      missing: 9,
+      missing: 10,
       online: true,
     });
 
@@ -45,8 +45,8 @@ export default scenario(
       state: 'complete',
       language: 'qaa',
       pack: languagePackId('qaa'),
-      resources: 11,
-      label: '11 resources ready offline in Fixture A',
+      resources: 12,
+      label: '12 resources ready offline in Fixture A',
     });
 
     phone.adapters.http.setOnline(false);

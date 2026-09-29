@@ -1,6 +1,7 @@
 import { pinnedRows, rowFor, type ListedIngredient, type ContractRow } from './flavors';
 import { fromUtf8, ingredientsDirectory, md5Hex, metadataPath, type BurritoFiles } from './files';
-import { isRecord, type BurritoMetadata, type IngredientEntry } from './metadata';
+import { isLicenceFile, licenceName, licenceUrl } from './licence';
+import { isRecord, primaryRepository, type BurritoMetadata, type IngredientEntry } from './metadata';
 
 type InvalidRule =
   | 'metadata-missing'
@@ -69,9 +70,6 @@ export const burritoFormat = 'scripture burrito';
 
 export const burritoVersion = /^1\.0\.\d+$/;
 
-const licenceName = /CC BY-SA 4\.0|Creative Commons Attribution-ShareAlike 4\.0/i;
-const licenceUrl = /creativecommons\.org\/licenses\/by-sa\/4\.0/i;
-const licenceFile = /(^|\/)licen[cs]e(\.[a-z]+)?$/i;
 const md5Pattern = /^[0-9a-f]{32}$/;
 
 function invalid(rule: InvalidRule, path: string, message: string): ValidationReport {
@@ -216,16 +214,12 @@ function hasLicence(
     return true;
   }
   return ingredients.some(({ key }) => {
-    if (!licenceFile.test(key)) {
+    if (!isLicenceFile(key)) {
       return false;
     }
     const text = facts.text(key);
     return text !== undefined && licenceName.test(text);
   });
-}
-
-export function isLicenceFile(key: string): boolean {
-  return licenceFile.test(key);
 }
 
 export function validate(files: BurritoFiles, options: ValidateOptions = {}): ValidationReport {
@@ -259,8 +253,10 @@ export function validateFacts(facts: BurritoFacts, options: ValidateOptions = {}
   }
   const flavorType = String(at(metadata, ['type', 'flavorType', 'name']));
   const flavor = String(at(metadata, ['type', 'flavorType', 'flavor', 'name']));
-  const row = rowFor(options.rows ?? pinnedRows, flavorType, flavor, ingredients);
-  if (!row) {
+  const matched = rowFor(options.rows ?? pinnedRows, flavorType, flavor, ingredients, {
+    repository: primaryRepository(metadata),
+  });
+  if (!matched) {
     return {
       ok: false,
       kind: 'ignored',
@@ -269,9 +265,10 @@ export function validateFacts(facts: BurritoFacts, options: ValidateOptions = {}
       message: `${flavorType}/${flavor} matches no row of the content contract`,
     };
   }
-  const mismatch = row.check(ingredients);
+  const { row, form } = matched;
+  const mismatch = form.check(ingredients);
   if (mismatch) {
-    return invalid('row-ingredients', mismatch.path, `${row.resource}: ${mismatch.message}`);
+    return invalid('row-ingredients', mismatch.path, `${form.resource}: ${mismatch.message}`);
   }
   const absent = options.contents === false ? undefined : checkPresence(facts, ingredients);
   if (absent) {

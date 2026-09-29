@@ -13,7 +13,6 @@ type Verse = { readonly number: number; readonly parts: readonly VersePart[] };
 
 export type Book = {
   readonly code: string;
-  readonly sort: number;
   readonly title: string;
   readonly short: string;
   readonly chapter: number;
@@ -71,20 +70,82 @@ function verseUsfm(verse: Verse): string {
   return `\\v ${verse.number} ${pieces.join(' ')}`;
 }
 
-export function bookUsfm(book: Book, resource: string, language: string): string {
+function headerLines(
+  book: Pick<Book, 'code' | 'title' | 'short'>,
+  resource: string,
+  language: string,
+): string[] {
   return [
-    `\\id ${book.code} ${language}_${resource} ${language} fixture`,
+    `\\id ${book.code} ${language.toUpperCase()}_${resource.toUpperCase()} ${language}_Fixture_ltr tc`,
     '\\usfm 3.0',
     '\\ide UTF-8',
     `\\h ${book.title}`,
     `\\toc1 The Book of ${book.title}`,
     `\\toc2 ${book.title}`,
     `\\toc3 ${book.short}`,
-    `\\mt ${book.title}`,
+    `\\mt1 ${book.title}`,
     '',
+  ];
+}
+
+export function bookUsfm(book: Book, resource: string, language: string): string {
+  return [
+    ...headerLines(book, resource, language),
+    '\\ts\\*',
     `\\c ${book.chapter}`,
     '\\p',
     ...book.verses.map(verseUsfm),
+    '',
+  ].join('\n');
+}
+
+export function frontMatterUsfm(resource: string, language: string): string {
+  return [
+    `\\id FRT ${language.toUpperCase()}_${resource.toUpperCase()} ${language}_Fixture_ltr tc`,
+    '\\usfm 3.0',
+    '\\ide UTF-8',
+    '\\h Front Matter',
+    '\\mt1 Front Matter',
+    '\\is Introduction',
+    '\\ip This fixture text is front matter, not a book of the Bible.',
+    '',
+  ].join('\n');
+}
+
+export function stubBookUsfm(code: string, title: string, resource: string, language: string): string {
+  return [...headerLines({ code, title, short: title.slice(0, 3) }, resource, language)].join('\n');
+}
+
+const originalWordPattern = /[\p{L}\p{M}\u2060]+/gu;
+
+function originalSources(): Map<string, SourceWord> {
+  return new Map(
+    [...Object.values(ruthHebrew), ...Object.values(johnGreek)].map((word) => [word.content, word]),
+  );
+}
+
+function originalVerse(verse: Verse, hebrew: boolean): string {
+  const known = originalSources();
+  const text = verse.parts.map((part) => (part.kind === 'plain' ? part.text : part.target)).join(' ');
+  const marked = text.replace(originalWordPattern, (word) => {
+    const source = known.get(word);
+    const lemma = source?.lemma ?? word;
+    const strong = source?.strong ?? (hebrew ? 'H0000' : 'G00000');
+    const morph = hebrew ? 'He,Ncmsa' : 'Gr,N,,,,,NMS,';
+    return `\\w ${word}|lemma="${lemma}" strong="${strong}" x-morph="${morph}"\\w*`;
+  });
+  return `\\v ${verse.number}\n${marked}`;
+}
+
+export function originalUsfm(book: Book, resource: string, language: string): string {
+  const hebrew = language === 'hbo';
+  return [
+    `\\id ${book.code} unfoldingWord® ${hebrew ? 'Hebrew Bible' : 'Greek New Testament'}`,
+    ...headerLines(book, resource, language).slice(1),
+    `\\c ${book.chapter}`,
+    '\\p',
+    '',
+    ...book.verses.map((verse) => originalVerse(verse, hebrew)),
     '',
   ].join('\n');
 }
@@ -112,7 +173,6 @@ const johnGreek = {
 export const literalBooks: readonly Book[] = [
   {
     code: 'RUT',
-    sort: 8,
     title: 'Ruth',
     short: 'Rut',
     chapter: 1,
@@ -161,7 +221,6 @@ export const literalBooks: readonly Book[] = [
   },
   {
     code: '3JN',
-    sort: 65,
     title: '3 John',
     short: '3Jn',
     chapter: 1,
@@ -210,7 +269,6 @@ const simple = (number: number, text: string): Verse => ({ number, parts: [plain
 export const simplifiedBooks: readonly Book[] = [
   {
     code: 'RUT',
-    sort: 8,
     title: 'Ruth',
     short: 'Rut',
     chapter: 1,
@@ -233,7 +291,6 @@ export const simplifiedBooks: readonly Book[] = [
   },
   {
     code: '3JN',
-    sort: 65,
     title: '3 John',
     short: '3Jn',
     chapter: 1,
@@ -255,7 +312,6 @@ export const simplifiedBooks: readonly Book[] = [
 export const hebrewBooks: readonly Book[] = [
   {
     code: 'RUT',
-    sort: 8,
     title: 'רות',
     short: 'Rut',
     chapter: 1,
@@ -275,7 +331,6 @@ export const hebrewBooks: readonly Book[] = [
 export const greekBooks: readonly Book[] = [
   {
     code: '3JN',
-    sort: 65,
     title: 'Ἰωάννου γʹ',
     short: '3Jn',
     chapter: 1,
@@ -287,5 +342,5 @@ export const greekBooks: readonly Book[] = [
 ];
 
 export function usfmFileName(book: Book): string {
-  return `${String(book.sort).padStart(2, '0')}-${book.code}.usfm`;
+  return `${book.code}.usfm`;
 }

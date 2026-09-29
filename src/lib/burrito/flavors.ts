@@ -1,5 +1,5 @@
 import type { ResourceRow } from '../domain/pack';
-import type { IngredientEntry } from './metadata';
+import { repositoryCode, type IngredientEntry } from './metadata';
 
 export type RowId = ResourceRow;
 
@@ -13,18 +13,27 @@ export type ListedIngredient = {
 
 type RowMismatch = { readonly path: string; readonly message: string };
 
+export type RowContext = { readonly repository: string | undefined };
+
+export type RowForm = {
+  readonly resource: string;
+  readonly flavorType: string;
+  readonly flavors: readonly string[];
+  readonly appliesTo: (ingredients: readonly ListedIngredient[], context: RowContext) => boolean;
+  readonly check: (ingredients: readonly ListedIngredient[]) => RowMismatch | undefined;
+};
+
 export type ContractRow = {
   readonly id: RowId;
   readonly status: RowStatus;
   readonly resource: string;
-  readonly flavorType: string;
-  readonly flavors: readonly string[];
-  readonly appliesTo: (ingredients: readonly ListedIngredient[]) => boolean;
-  readonly check: (ingredients: readonly ListedIngredient[]) => RowMismatch | undefined;
+  readonly forms: readonly RowForm[];
 };
 
+export type MatchedRow = { readonly row: ContractRow; readonly form: RowForm };
+
 export const mimeTypes = {
-  usfm: 'text/x-usfm',
+  usfm: 'text/plain',
   tsv: 'text/tab-separated-values',
   markdown: 'text/markdown',
   yaml: 'text/yaml',
@@ -32,8 +41,26 @@ export const mimeTypes = {
   jpeg: 'image/jpeg',
 } as const;
 
+const usfmMimeTypes: ReadonlySet<string> = new Set([mimeTypes.usfm, 'text/x-usfm', 'text/usfm']);
+
+const usfmExtension = /\.u?sfm$/i;
+
+export const wordsPayloadDirectory = 'payload/';
+
+const wordsRepositoryCode = 'tw';
+
+const storiesScope = 'OBS';
+
+export function isUsfm(ingredient: Pick<ListedIngredient, 'path' | 'entry'>): boolean {
+  return usfmExtension.test(ingredient.path) && usfmMimeTypes.has(ingredient.entry.mimeType);
+}
+
+export function isTsv(ingredient: Pick<ListedIngredient, 'entry'>): boolean {
+  return ingredient.entry.mimeType === mimeTypes.tsv;
+}
+
 export const provisionalFlavors = {
-  formation: { flavorType: 'parascriptural', flavor: 'x-obsMovements' },
+  formation: { flavorType: 'peripheral', flavor: 'x-OBSTheologicalFormation' },
   audio: { flavorType: 'scripture', flavor: 'audioTranslation' },
   images: { flavorType: 'peripheral', flavor: 'x-obsImages' },
 } as const;
@@ -71,6 +98,12 @@ function ofType(ingredients: readonly ListedIngredient[], mimeType: string): Lis
   return ingredients.filter((ingredient) => ingredient.entry.mimeType === mimeType);
 }
 
+type IngredientKind = { readonly name: string; readonly test: (ingredient: ListedIngredient) => boolean };
+
+const usfmKind: IngredientKind = { name: 'USFM (.usfm, text/plain)', test: isUsfm };
+
+const tsvKind: IngredientKind = { name: `TSV (${mimeTypes.tsv})`, test: isTsv };
+
 function ofMimePrefix(ingredients: readonly ListedIngredient[], prefix: string): ListedIngredient[] {
   return ingredients.filter((ingredient) => ingredient.entry.mimeType.startsWith(prefix));
 }
@@ -82,24 +115,37 @@ function isStoryNumber(value: string): boolean {
 
 function oneBookEach(
   ingredients: readonly ListedIngredient[],
-  mimeType: string,
-  kind: string,
+  kind: IngredientKind,
 ): RowMismatch | undefined {
-  const files = ofType(ingredients, mimeType);
+  const files = ingredients.filter(kind.test);
   if (files.length === 0) {
-    return { path: 'ingredients', message: `no ${kind} ingredient (${mimeType})` };
+    return { path: 'ingredients', message: `no ${kind.name} ingredient` };
   }
   for (const file of files) {
     const books = scopedBooks(file.entry);
-    if (books.length !== 1 || !books.every((book) => bookCode.test(book))) {
-      return { path: file.key, message: `a ${kind} ingredient has a scope naming exactly one book` };
+    if (books.length !== 1 || !books.every((book) => bookCode.test(book) && book !== storiesScope)) {
+      return { path: file.key, message: `a ${kind.name} ingredient has a scope naming exactly one book` };
     }
   }
   return undefined;
 }
 
-function bookScopedTsv(ingredients: readonly ListedIngredient[]): boolean {
-  return ofType(ingredients, mimeTypes.tsv).some((ingredient) => scopedBooks(ingredient.entry).length > 0);
+function storyScopedTsv(ingredients: readonly ListedIngredient[]): boolean {
+  return !ofType(ingredients, mimeTypes.tsv).some((ingredient) =>
+    scopedBooks(ingredient.entry).some((book) => book !== storiesScope),
+  );
+}
+
+function payloadArticles(ingredients: readonly ListedIngredient[]): ListedIngredient[] {
+  return ofType(ingredients, mimeTypes.markdown).filter((ingredient) =>
+    ingredient.path.startsWith(wordsPayloadDirectory),
+  );
+}
+
+function carriesWords(ingredients: readonly ListedIngredient[], context: RowContext): boolean {
+  return (
+    repositoryCode(context.repository) === wordsRepositoryCode && payloadArticles(ingredients).length > 0
+  );
 }
 
 function oneStoryTsv(ingredients: readonly ListedIngredient[]): RowMismatch | undefined {
@@ -129,16 +175,32 @@ const academyArticle = /^([^/]+)\/[^/]+\/01\.md$/;
 
 const configFile = 'config.yaml';
 
-function articleTree(ingredients: readonly ListedIngredient[]): RowMismatch | undefined {
-  if (ofType(ingredients, mimeTypes.markdown).length === 0) {
-    return { path: 'ingredients', message: 'no Markdown article ingredient' };
-  }
+function configsOf(ingredients: readonly ListedIngredient[]): ListedIngredient[] | RowMismatch {
   const configs = ingredients.filter(
     (ingredient) => ingredient.path === configFile || ingredient.path.endsWith(`/${configFile}`),
   );
   const misnamed = configs.find((config) => config.entry.mimeType !== mimeTypes.yaml);
   if (misnamed) {
     return { path: misnamed.key, message: `${configFile} is listed as ${mimeTypes.yaml}` };
+  }
+  return configs;
+}
+
+function payloadTree(ingredients: readonly ListedIngredient[]): RowMismatch | undefined {
+  if (payloadArticles(ingredients).length === 0) {
+    return { path: `ingredients/${wordsPayloadDirectory}`, message: 'no Markdown article under payload/' };
+  }
+  const configs = configsOf(ingredients);
+  return Array.isArray(configs) ? undefined : configs;
+}
+
+function articleTree(ingredients: readonly ListedIngredient[]): RowMismatch | undefined {
+  if (ofType(ingredients, mimeTypes.markdown).length === 0) {
+    return { path: 'ingredients', message: 'no Markdown article ingredient' };
+  }
+  const configs = configsOf(ingredients);
+  if (!Array.isArray(configs)) {
+    return configs;
   }
   const listed = new Set(configs.map((config) => config.path));
   for (const ingredient of ofType(ingredients, mimeTypes.markdown)) {
@@ -208,106 +270,160 @@ export const pinnedRows: readonly ContractRow[] = [
     id: 'text',
     status: 'pinned',
     resource: 'Literal text, Simplified text, Hebrew, Greek',
-    flavorType: 'scripture',
-    flavors: ['textTranslation'],
-    appliesTo: always,
-    check: (ingredients) => oneBookEach(ingredients, mimeTypes.usfm, 'USFM'),
+    forms: [
+      {
+        resource: 'Literal text, Simplified text, Hebrew, Greek',
+        flavorType: 'scripture',
+        flavors: ['textTranslation'],
+        appliesTo: always,
+        check: (ingredients) => oneBookEach(ingredients, usfmKind),
+      },
+    ],
   },
   {
     id: 'storyHelps',
     status: 'pinned',
     resource: 'Story helps',
-    flavorType: 'parascriptural',
-    flavors: ['x-bcvnotes', 'x-bcvquestions', 'x-bcvarticles'],
-    appliesTo: (ingredients) => !bookScopedTsv(ingredients),
-    check: oneStoryTsv,
+    forms: [
+      {
+        resource: 'Story helps',
+        flavorType: 'parascriptural',
+        flavors: ['x-bcvnotes', 'x-bcvquestions', 'x-bcvarticles'],
+        appliesTo: storyScopedTsv,
+        check: oneStoryTsv,
+      },
+      {
+        resource: 'Story helps',
+        flavorType: 'peripheral',
+        flavors: ['x-obsnotes', 'x-obsquestions'],
+        appliesTo: always,
+        check: oneStoryTsv,
+      },
+    ],
   },
   {
     id: 'notes',
     status: 'pinned',
     resource: 'Notes',
-    flavorType: 'parascriptural',
-    flavors: ['x-bcvnotes'],
-    appliesTo: always,
-    check: (ingredients) => oneBookEach(ingredients, mimeTypes.tsv, 'TSV'),
-  },
-  {
-    id: 'wordLinks',
-    status: 'pinned',
-    resource: 'Word Links',
-    flavorType: 'parascriptural',
-    flavors: ['x-bcvarticles'],
-    appliesTo: always,
-    check: (ingredients) => oneBookEach(ingredients, mimeTypes.tsv, 'TSV'),
-  },
-  {
-    id: 'questions',
-    status: 'pinned',
-    resource: 'Questions',
-    flavorType: 'parascriptural',
-    flavors: ['x-bcvquestions'],
-    appliesTo: always,
-    check: (ingredients) => oneBookEach(ingredients, mimeTypes.tsv, 'TSV'),
+    forms: [
+      {
+        resource: 'Notes',
+        flavorType: 'parascriptural',
+        flavors: ['x-bcvnotes'],
+        appliesTo: always,
+        check: (ingredients) => oneBookEach(ingredients, tsvKind),
+      },
+    ],
   },
   {
     id: 'articles',
     status: 'pinned',
     resource: 'Words, Academy',
-    flavorType: 'peripheral',
-    flavors: ['x-peripheralArticles'],
-    appliesTo: always,
-    check: articleTree,
+    forms: [
+      {
+        resource: 'Words',
+        flavorType: 'parascriptural',
+        flavors: ['x-bcvarticles'],
+        appliesTo: carriesWords,
+        check: payloadTree,
+      },
+      {
+        resource: 'Words, Academy',
+        flavorType: 'peripheral',
+        flavors: ['x-peripheralArticles'],
+        appliesTo: always,
+        check: articleTree,
+      },
+    ],
+  },
+  {
+    id: 'wordLinks',
+    status: 'pinned',
+    resource: 'Word Links',
+    forms: [
+      {
+        resource: 'Word Links',
+        flavorType: 'parascriptural',
+        flavors: ['x-bcvarticles'],
+        appliesTo: always,
+        check: (ingredients) => oneBookEach(ingredients, tsvKind),
+      },
+    ],
+  },
+  {
+    id: 'questions',
+    status: 'pinned',
+    resource: 'Questions',
+    forms: [
+      {
+        resource: 'Questions',
+        flavorType: 'parascriptural',
+        flavors: ['x-bcvquestions'],
+        appliesTo: always,
+        check: (ingredients) => oneBookEach(ingredients, tsvKind),
+      },
+    ],
   },
   {
     id: 'stories',
     status: 'pinned',
     resource: 'Open Bible Stories',
-    flavorType: 'gloss',
-    flavors: ['textStories'],
-    appliesTo: always,
-    check: storyFiles,
+    forms: [
+      {
+        resource: 'Open Bible Stories',
+        flavorType: 'gloss',
+        flavors: ['textStories'],
+        appliesTo: always,
+        check: storyFiles,
+      },
+    ],
   },
 ];
 
+function provisional(id: RowId, resource: string, form: Omit<RowForm, 'resource'>): ContractRow {
+  return { id, status: 'provisional', resource, forms: [{ resource, ...form }] };
+}
+
 const provisionalRows: readonly ContractRow[] = [
-  {
-    id: 'formation',
-    status: 'provisional',
-    resource: 'Theological formation',
+  provisional('formation', 'Theological formation', {
     flavorType: provisionalFlavors.formation.flavorType,
     flavors: [provisionalFlavors.formation.flavor],
     appliesTo: always,
     check: movementsPerStory,
-  },
-  {
-    id: 'audio',
-    status: 'provisional',
-    resource: 'Audio',
+  }),
+  provisional('audio', 'Audio', {
     flavorType: provisionalFlavors.audio.flavorType,
     flavors: [provisionalFlavors.audio.flavor],
     appliesTo: always,
     check: scopedAudio,
-  },
-  {
-    id: 'images',
-    status: 'provisional',
-    resource: 'Story images',
+  }),
+  provisional('images', 'Story images', {
     flavorType: provisionalFlavors.images.flavorType,
     flavors: [provisionalFlavors.images.flavor],
     appliesTo: always,
     check: storyImages,
-  },
+  }),
 ];
 
 export const admittedRows: readonly ContractRow[] = [...pinnedRows, ...provisionalRows];
+
+function orderedForms(rows: readonly ContractRow[]): MatchedRow[] {
+  const all = rows.flatMap((row) => row.forms.map((form) => ({ row, form })));
+  return [
+    ...all.filter(({ form }) => form.appliesTo !== always),
+    ...all.filter(({ form }) => form.appliesTo === always),
+  ];
+}
 
 export function rowFor(
   rows: readonly ContractRow[],
   flavorType: string,
   flavor: string,
   ingredients: readonly ListedIngredient[],
-): ContractRow | undefined {
-  return rows.find(
-    (row) => row.flavorType === flavorType && row.flavors.includes(flavor) && row.appliesTo(ingredients),
+  context: RowContext,
+): MatchedRow | undefined {
+  return orderedForms(rows).find(
+    ({ form }) =>
+      form.flavorType === flavorType && form.flavors.includes(flavor) && form.appliesTo(ingredients, context),
   );
 }

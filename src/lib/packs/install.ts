@@ -13,6 +13,7 @@ import {
   type PackSourceKind,
   type ResourceRow,
 } from '../domain/pack';
+import { unrecordedCommit } from '../domain/provenance';
 import { archiveUrlOf, refOf, resourceKey, type ReleaseRef } from '../domain/release';
 import type { JournalEntry } from '../journal/entry';
 import type { EventDraft } from '../journal/journal';
@@ -40,6 +41,7 @@ type Fetched = { ok: true; path: string; temporary: boolean } | { ok: false; cod
 
 type Offer = {
   ref: ReleaseRef;
+  revision?: string | undefined;
   row: ResourceRow | undefined;
   bytes: number | undefined;
   choice: CatalogChoice | undefined;
@@ -106,7 +108,23 @@ export function catalogOffer(ports: ModulePorts, choice: CatalogChoice): Offer {
   };
 }
 
-async function fileOffer(ports: ModulePorts, path: string): Promise<Resolution> {
+export type KnownReleases = () => Promise<readonly CatalogChoice[]>;
+
+async function catalogMatch(
+  known: KnownReleases,
+  revision: string | undefined,
+): Promise<CatalogChoice | undefined> {
+  if (revision === undefined || revision === unrecordedCommit) {
+    return undefined;
+  }
+  try {
+    return (await known()).find((release) => release.commit === revision);
+  } catch {
+    return undefined;
+  }
+}
+
+async function fileOffer(ports: ModulePorts, path: string, known: KnownReleases): Promise<Resolution> {
   let peeked: Awaited<ReturnType<typeof unpackArchive>>;
   try {
     peeked = await unpackArchive(ports.files, path, { hash: false });
@@ -116,7 +134,12 @@ async function fileOffer(ports: ModulePorts, path: string): Promise<Resolution> 
   if (!peeked.ok) {
     return { ok: false, code: 'pack.invalid-burrito' };
   }
-  const checked = checkBurrito(peeked.facts, undefined, false);
+  const read = checkBurrito(peeked.facts, undefined, false);
+  if (!read.ok) {
+    return read;
+  }
+  const choice = await catalogMatch(known, read.burrito.revision);
+  const checked = choice === undefined ? read : checkBurrito(peeked.facts, choice, false);
   if (!checked.ok) {
     return checked;
   }
@@ -125,13 +148,17 @@ async function fileOffer(ports: ModulePorts, path: string): Promise<Resolution> 
     ref: refOf(burrito.provenance),
     row: burrito.row,
     bytes: burrito.bytes,
-    choice: undefined,
+    choice,
     fetch: async () => ({ ok: true, path, temporary: false }),
   };
   return { ok: true, resolved: { kind: 'file', offers: [offer], announce: true } };
 }
 
-export async function resolveSource(ports: ModulePorts, source: PackSource): Promise<Resolution> {
+export async function resolveSource(
+  ports: ModulePorts,
+  source: PackSource,
+  known: KnownReleases,
+): Promise<Resolution> {
   switch (source.kind) {
     case 'catalog':
       return {
@@ -146,9 +173,10 @@ export async function resolveSource(ports: ModulePorts, source: PackSource): Pro
       const { session } = source;
       const offers = session.offered().map((burrito): Offer => ({
         ref: refOf(burrito),
+        revision: burrito.commit,
         row: burrito.row,
         bytes: burrito.bytes,
-        choice: undefined,
+        choice: { ...refOf(burrito), row: burrito.row, bytes: burrito.bytes },
         async fetch(stage, index, onBytes) {
           const receipt = await session.receive(refOf(burrito), onBytes);
           if (!receipt.ok) {
@@ -165,7 +193,7 @@ export async function resolveSource(ports: ModulePorts, source: PackSource): Pro
       return { ok: true, resolved: { kind: 'peer', offers, announce: false } };
     }
     case 'file':
-      return fileOffer(ports, source.path);
+      return fileOffer(ports, source.path, known);
   }
 }
 
@@ -248,6 +276,10 @@ export function createInstaller(context: InstallerContext): Installer {
       throw new InstallFailure('pack.mixed-packs');
     }
     if (resourceKey(provenance) !== resourceKey(offer.ref) || provenance.tag !== offer.ref.tag) {
+      throw new InstallFailure('pack.invalid-burrito');
+    }
+    const promised = offer.revision;
+    if (promised !== undefined && promised !== unrecordedCommit && burrito.revision !== promised) {
       throw new InstallFailure('pack.invalid-burrito');
     }
   }

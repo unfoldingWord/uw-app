@@ -12,16 +12,13 @@ export type LocalBurrito = {
   readonly flavorType: string;
   readonly flavor: string;
   readonly ingredients: readonly IngredientInput[];
-  readonly tag?: string;
 };
 
 export function localBurritoArchive(burrito: LocalBurrito): Uint8Array {
   const files = buildBurrito({
     publisher: 'unfoldingWord',
     resource: burrito.resource,
-    tag: burrito.tag ?? 'v1',
     commit: 'c0ffee',
-    released: '2026-09-01T00:00:00Z',
     dateCreated: '2026-09-01T00:00:00Z',
     generator: { softwareName: 'sim', softwareVersion: '1' },
     language: { tag: burrito.language, name: { en: `Fixture ${burrito.language}` } },

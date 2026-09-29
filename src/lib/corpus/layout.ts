@@ -1,5 +1,5 @@
-import { mimeTypes, storyImagesDirectory, type ListedIngredient } from '../burrito/flavors';
-import { bookByCode } from '../domain/books';
+import { isTsv, mimeTypes, storyImagesDirectory, type ListedIngredient } from '../burrito/flavors';
+import { bookByCode, books } from '../domain/books';
 import { academyArticleId, wordsArticleId } from './links';
 import { storyNumberOf } from './stories';
 import type { BurritoReader } from './source';
@@ -48,19 +48,24 @@ function isContent(ingredient: ListedIngredient): boolean {
   return !licenceOrReadme.test(ingredient.path.split('/').at(-1) ?? '');
 }
 
-export function bookKeys(reader: BurritoReader, mimeType: string): ReadonlyMap<string, string> {
+export function bookKeys(
+  reader: BurritoReader,
+  kind: (ingredient: ListedIngredient) => boolean,
+): ReadonlyMap<string, string> {
   const found = new Map<string, string>();
-  for (const ingredient of ofMime(reader, mimeType)) {
+  for (const ingredient of reader.ingredients.filter(kind)) {
     const [book] = Object.keys(ingredient.entry.scope ?? {});
     if (book !== undefined && bookByCode(book) !== undefined && !found.has(book)) {
       found.set(book, ingredient.key);
     }
   }
-  return found;
+  return new Map(
+    books.filter((book) => found.has(book.code)).map((book) => [book.code, found.get(book.code) ?? '']),
+  );
 }
 
 export function storyHelpsKey(reader: BurritoReader): string | undefined {
-  return ofMime(reader, mimeTypes.tsv)[0]?.key;
+  return reader.ingredients.find(isTsv)?.key;
 }
 
 export function wordKeys(reader: BurritoReader): ReadonlyMap<string, ListedIngredient> {
@@ -177,7 +182,7 @@ export function audioEntries(reader: BurritoReader): readonly AudioEntry[] {
 }
 
 export const storyHelpsFlavors = {
-  notes: 'x-bcvnotes',
-  questions: 'x-bcvquestions',
-  wordLinks: 'x-bcvarticles',
-} as const;
+  notes: ['x-bcvnotes', 'x-obsnotes'],
+  questions: ['x-bcvquestions', 'x-obsquestions'],
+  wordLinks: ['x-bcvarticles'],
+} as const satisfies Readonly<Record<string, readonly string[]>>;

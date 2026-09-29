@@ -1,7 +1,7 @@
 import { formatReference, type Reference } from '../domain/reference';
 import { attachQuote, coversVerse } from './alignment';
 import type { Library } from './library';
-import { resolveLink } from './links';
+import { resolveLink, wordLinkArticle } from './links';
 import { audioClips, bookNotes, bookQuestions, bookWordLinks, textBook } from './loaders';
 import { renderMarkdown } from './markdown';
 import { isStudyResource, readingOfKind } from './readings';
@@ -121,11 +121,6 @@ async function notesFor(
   return notes;
 }
 
-function articleOfLink(link: string): string | undefined {
-  const target = resolveLink(link, { resource: 'other', path: '' });
-  return target?.kind === 'article' ? target.id : undefined;
-}
-
 async function wordLinksFor(
   library: Library,
   language: string,
@@ -135,7 +130,7 @@ async function wordLinksFor(
   const links: WordLink[] = [];
   for (const entry of library.of(language, ['wordLinks']).filter((item) => item.books.includes(book))) {
     for (const row of await bookWordLinks(library, entry, book)) {
-      const article = articleOfLink(row.link);
+      const article = wordLinkArticle(row.link);
       if (article === undefined || !helpsCover(row.reference, verses)) {
         continue;
       }

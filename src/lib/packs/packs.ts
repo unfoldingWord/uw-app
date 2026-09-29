@@ -83,7 +83,7 @@ export const packsModule = defineModule<PacksApi>({
     const catalogReleases = (): Promise<CatalogRelease[]> => readCatalogReleases(ports.db);
 
     async function installNow(source: PackSource, plan: PackPlan): Promise<InstallOutcome> {
-      const resolution = await resolveSource(ports, source);
+      const resolution = await resolveSource(ports, source, catalogReleases);
       if (!resolution.ok) {
         await context.emit({
           type: 'Failure',

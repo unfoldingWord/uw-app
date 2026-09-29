@@ -112,6 +112,7 @@ export function receivedSession(
     tag: item.tag,
     row: item.row,
     bytes: item.bytes,
+    ...(item.commit === undefined ? {} : { commit: item.commit }),
   }));
   return {
     offered: () => offered,

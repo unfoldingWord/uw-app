@@ -29,7 +29,7 @@ export default scenario(
       summary.stats.map((stat) => [stat.value, stat.label]),
       [
         [3, 'languages'],
-        [20, 'published releases'],
+        [21, 'published releases'],
         [14, 'resource types'],
       ],
     );

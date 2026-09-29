@@ -15,7 +15,7 @@ type Word = {
 
 const words: readonly Word[] = [
   {
-    path: 'bible/kt/god.md',
+    path: 'payload/kt/god.md',
     title: 'God',
     definition:
       'In the Bible, the term "God" refers to the eternal being who created the universe out of nothing. God exists as Father, Son and Holy Spirit.',
@@ -27,7 +27,7 @@ const words: readonly Word[] = [
     strongs: 'H0430, G2316',
   },
   {
-    path: 'bible/kt/love.md',
+    path: 'payload/kt/love.md',
     title: 'love, beloved',
     definition:
       'To love another person is to care for that person and do things that will benefit him. The word "beloved" describes someone who is loved.',
@@ -36,7 +36,7 @@ const words: readonly Word[] = [
     strongs: 'G0025, G0027',
   },
   {
-    path: 'bible/kt/truth.md',
+    path: 'payload/kt/truth.md',
     title: 'truth, true',
     definition: 'Truth refers to what agrees with how things really are and with what God has said.',
     seeAlso: ['[[rc://*/tw/dict/bible/kt/god]]'],
@@ -47,7 +47,7 @@ const words: readonly Word[] = [
     strongs: 'G0225',
   },
   {
-    path: 'bible/names/ruth.md',
+    path: 'payload/names/ruth.md',
     title: 'Ruth',
     definition:
       'Ruth was a woman from Moab who married an Israelite. She stayed with her mother-in-law Naomi after her husband died.',
@@ -56,7 +56,7 @@ const words: readonly Word[] = [
     strongs: 'H7327',
   },
   {
-    path: 'bible/names/naomi.md',
+    path: 'payload/names/naomi.md',
     title: 'Naomi',
     definition: 'Naomi was a woman from Bethlehem who moved to Moab with her husband and two sons.',
     seeAlso: ['[Ruth](../names/ruth.md)', '[famine](../other/famine.md)'],
@@ -64,7 +64,7 @@ const words: readonly Word[] = [
     strongs: 'H5281',
   },
   {
-    path: 'bible/other/famine.md',
+    path: 'payload/other/famine.md',
     title: 'famine',
     definition:
       'A famine is a time when there is not enough food in a land, often because the rain did not come.',
@@ -99,11 +99,22 @@ function wordMarkdown(word: Word): string {
   ].join('\n');
 }
 
-export const wordArticles: readonly ArticleFile[] = words.map((word): ArticleFile => ({
-  path: word.path,
-  text: wordMarkdown(word),
-  mimeType: 'markdown',
-}));
+function wordsConfig(): string {
+  return words
+    .flatMap((word) => [
+      `${word.path.split('/').at(-1)?.replace(/\.md$/, '') ?? ''}:`,
+      '  false_positives: []',
+      '  occurrences:',
+      ...word.references.map((reference) => `    - ${reference.link.replace('rc://*/ult/', 'rc://*/*/')}`),
+    ])
+    .concat('')
+    .join('\n');
+}
+
+export const wordArticles: readonly ArticleFile[] = [
+  ...words.map((word): ArticleFile => ({ path: word.path, text: wordMarkdown(word), mimeType: 'markdown' })),
+  { path: 'payload/config.yaml', text: wordsConfig(), mimeType: 'yaml' },
+];
 
 type Lesson = {
   readonly slug: string;

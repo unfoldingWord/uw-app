@@ -15,12 +15,12 @@ export default scenario(
     const pending = phone.kernel.packs.installFromCatalog(languagePackId('qaa'));
     await until(() => phone.kernel.packs.installing().length > 0);
     assert.deepEqual(phone.kernel.packs.installing(), [
-      { install: 'id-000001', pack: 'language:qaa', resources: 0, total: 11, bytes: 0 },
+      { install: 'id-000001', pack: 'language:qaa', resources: 0, total: 12, bytes: 0 },
     ]);
     const snapshot = phone.kernel.snapshot().modules.packs;
     assert.deepEqual(snapshot, {
       installed: [],
-      installing: [{ install: 'id-000001', pack: 'language:qaa', resources: 0, total: 11, bytes: 0 }],
+      installing: [{ install: 'id-000001', pack: 'language:qaa', resources: 0, total: 12, bytes: 0 }],
     });
     assert.equal(phone.kernel.journal.read().at(-1)?.type, 'PackInstallStarted');
 
@@ -32,7 +32,7 @@ export default scenario(
       .read()
       .flatMap((entry) => (entry.type === 'PackInstallProgressed' ? [entry.payload.resources] : []));
     assert.ok(progressed.length > 0 && progressed.length <= 10, `progress events: ${progressed.length}`);
-    assert.equal(progressed.at(-1), 11);
+    assert.equal(progressed.at(-1), 12);
     assert.deepEqual(phone.kernel.telemetry.counts().languagePackDownloads, { qaa: 1 });
   },
 );

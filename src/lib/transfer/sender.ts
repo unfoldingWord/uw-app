@@ -55,6 +55,7 @@ export async function prepareOffer(ports: ModulePorts, plan: TransferPlan): Prom
         resource: burrito.provenance.resource,
         language: burrito.provenance.language,
         tag: burrito.provenance.tag,
+        commit: burrito.provenance.commit,
         row: burrito.row,
         title: burrito.provenance.title,
         bytes: burrito.bytes,

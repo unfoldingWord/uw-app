@@ -66,9 +66,7 @@ function burrito(
 ) {
   return buildBurrito({
     publisher: 'unfoldingWord',
-    tag: 'v1',
     commit: 'abc123',
-    released: '2026-09-01T00:00:00Z',
     dateCreated: '2026-09-01T00:00:00Z',
     generator: { softwareName: 'corpus test', softwareVersion: '1' },
     language: { tag: 'qac', name: { en: 'Fixture language C' } },

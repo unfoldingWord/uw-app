@@ -1,4 +1,4 @@
-import { mimeTypes } from '../burrito/flavors';
+import { isTsv, isUsfm } from '../burrito/flavors';
 import { bookByCode } from '../domain/books';
 import { formatReference } from '../domain/reference';
 import type { Db, DbTransaction, DbRow, SqlValue } from '../ports';
@@ -80,7 +80,7 @@ function entryOf(root: string, kind: IndexKind, target: string, body: string): I
 
 async function* textEntries(library: Library, entry: Entry): AsyncGenerator<IndexEntry> {
   const reader = await library.reader(entry);
-  const keys = bookKeys(reader, mimeTypes.usfm);
+  const keys = bookKeys(reader, isUsfm);
   for (const code of entry.books) {
     const key = keys.get(code);
     if (key === undefined) {
@@ -102,7 +102,7 @@ async function* textEntries(library: Library, entry: Entry): AsyncGenerator<Inde
 
 async function* helpsEntries(library: Library, entry: Entry): AsyncGenerator<IndexEntry> {
   const reader = await library.reader(entry);
-  const keys = bookKeys(reader, mimeTypes.tsv);
+  const keys = bookKeys(reader, isTsv);
   for (const code of entry.books) {
     const key = keys.get(code);
     if (key === undefined) {

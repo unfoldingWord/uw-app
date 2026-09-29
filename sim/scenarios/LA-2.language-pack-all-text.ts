@@ -12,6 +12,7 @@ const textRows = [
   'stories',
   'storyHelps',
   'storyHelps',
+  'storyHelps',
   'text',
   'text',
   'wordLinks',
@@ -55,7 +56,7 @@ export default scenario(
 
     const tree = phone.adapters.files.tree();
     assert.ok(tree.includes(`${burritoRootOf(phone, 'qaa_ult')}/metadata.json`));
-    assert.ok(tree.includes(`${burritoRootOf(phone, 'qaa_tn')}/ingredients/tn_RUT.tsv`));
+    assert.ok(tree.includes(`${burritoRootOf(phone, 'qaa_tn')}/ingredients/RUT.tsv`));
     assert.ok(
       !tree.some((path) => /README|\.github|\.gitignore/.test(path)),
       'only the burrito is kept from the archive',

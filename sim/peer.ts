@@ -1,5 +1,6 @@
 import { fixtureRows } from './fixtures/rows';
 import { readArchive } from '@lib/burrito/archive';
+import { readProvenance } from '@lib/burrito/metadata';
 import { validate } from '@lib/burrito/validate';
 import { refOf, type ReleaseRef } from '@lib/domain/release';
 import { resourceRows } from '@lib/domain/pack';
@@ -23,7 +24,8 @@ export function fixturePeer(world: World, releases: readonly ReleaseRef[]): Fixt
       );
     }
     const bytes = [...read.files.values()].reduce((sum, item) => sum + item.byteLength, 0);
-    return { ...refOf(ref), row, bytes };
+    const commit = report?.ok ? readProvenance(report.metadata)?.commit : undefined;
+    return { ...refOf(ref), row, bytes, ...(commit === undefined ? {} : { commit }) };
   });
   return {
     offered: () => offered,

@@ -15,6 +15,7 @@ export type WireResource = {
   resource: string;
   language: string;
   tag: string;
+  commit?: string;
   row: ResourceRow;
   title: string;
   bytes: number;
@@ -131,10 +132,10 @@ function resourceOf(value: unknown): WireResource | undefined {
     fieldValidators.tag(value.tag) &&
     typeof value.title === 'string' &&
     isCount(value.bytes);
-  if (row === undefined || !valid) {
+  if (row === undefined || !valid || (value.commit !== undefined && !fieldValidators.token(value.commit))) {
     return undefined;
   }
-  return {
+  const resource: WireResource = {
     ...choice,
     language: value.language as string,
     tag: value.tag as string,
@@ -142,6 +143,7 @@ function resourceOf(value: unknown): WireResource | undefined {
     title: value.title as string,
     bytes: value.bytes as number,
   };
+  return typeof value.commit === 'string' ? { ...resource, commit: value.commit } : resource;
 }
 
 function listOf<T>(value: unknown, item: (entry: unknown) => T | undefined): T[] | undefined {

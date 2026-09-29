@@ -124,4 +124,100 @@ describe('parseUsfm', () => {
       'He makes my feet like a deer. For the music director, on my stringed instruments.',
     );
   });
+
+  describe('the heads captured from real releases (CI run 36618141715)', () => {
+    const ult = String.raw`\id 1CO EN_ULT en_English_ltr Wed Dec 14 2022 15:04:37 GMT-0500 (Eastern Standard Time) tc
+\usfm 3.0
+\ide UTF-8
+\h 1 Corinthians
+\toc1 The First Letter of Paul to the Corinthians
+\toc2 First Corinthians
+\toc3 1Co
+\mt1 First Corinthians
+
+\ts\*
+\c 1
+\p
+\v 1 \zaln-s |x-strong="G39720" x-lemma="Παῦλος" x-morph="Gr,N,,,,,NMS," x-occurrence="1" x-occurrences="1" x-content="Παῦλος"\*\w Paul|x-occurrence="1" x-occurrences="1"\w*\zaln-e\*,
+\zaln-s |x-strong="G28220" x-lemma="κλητός" x-morph="Gr,NS,,,,NMS," x-occurrence="1" x-occurrences="1" x-content="κλητὸς"\*\w called|x-occurrence="1" x-occurrences="1"\w*\zaln-e\* {\zaln-s |x-strong="G06520" x-lemma="ἀπόστολος" x-morph="Gr,N,,,,,NMS," x-occurrence="1" x-occurrences="1" x-content="ἀπόστολος"\*\w to|x-occurrence="1" x-occurrences="1"\w*
+\w be|x-occurrence="1" x-occurrences="1"\w*}
+\w an|x-occurrence="1" x-occurrences="1"\w*
+\w apostle|x-occurrence="1" x-occurrences="1"\w*\zaln-e\*`;
+
+    it('reads an aligned gateway text with chunk markers and implied words in braces', () => {
+      const book = parseUsfm(ult);
+      expect(book.code).toBe('1CO');
+      expect(book.names).toEqual([
+        'First Corinthians',
+        '1 Corinthians',
+        'The First Letter of Paul to the Corinthians',
+        '1Co',
+      ]);
+      const [first] = book.chapters.get(1) ?? [];
+      expect(first?.text).toBe('Paul, called {to be} an apostle');
+      const aligned = (first?.tokens ?? []).flatMap((token) =>
+        token.kind === 'word' ? [[token.text, token.original.map((word) => word.content).join('+')]] : [],
+      );
+      expect(aligned).toEqual([
+        ['Paul', 'Παῦλος'],
+        ['called', 'κλητὸς'],
+        ['to', 'ἀπόστολος'],
+        ['be', 'ἀπόστολος'],
+        ['an', 'ἀπόστολος'],
+        ['apostle', 'ἀπόστολος'],
+      ]);
+    });
+
+    it('reads two alignments opened together and closed together', () => {
+      const [verse] =
+        parseUsfm(String.raw`\id 3JN ES-419_GST es-419_Español⋅Latin⋅America_ltr
+\cl Capítulo 1
+\mt2 (Simple)
+\c 1
+\p
+\v 1 \zaln-s |x-strong="G35880" x-lemma="ὁ" x-occurrence="1" x-occurrences="1" x-content="Ὁ"\*\zaln-s |x-strong="G42450" x-lemma="πρεσβύτερος" x-occurrence="1" x-occurrences="1" x-content="πρεσβύτερος"\*\w El|x-occurrence="1" x-occurrences="1"\w*
+\w anciano|x-occurrence="1" x-occurrences="1"\w*\zaln-e\*\zaln-e\*.`).chapters.get(1) ?? [];
+      expect(verse?.text).toBe('El anciano.');
+      expect(
+        (verse?.tokens ?? []).flatMap((token) =>
+          token.kind === 'word' ? [token.original.map((word) => word.content)] : [],
+        ),
+      ).toEqual([
+        ['Ὁ', 'πρεσβύτερος'],
+        ['Ὁ', 'πρεσβύτερος'],
+      ]);
+    });
+
+    it('reads original-language words with unprefixed lemma and strong, prefixes and word joiners kept', () => {
+      const book = parseUsfm(String.raw`\id 1CH unfoldingWord® Hebrew Bible
+\usfm 3.0
+\ide UTF-8
+\h 1 Chronicles
+\toc1 The First Book of the Chronicles
+\toc2 First Chronicles
+\toc3 1Ch
+\mt First Chronicles
+
+\c 1
+\p
+
+\v 1
+\w אָדָ֥ם|lemma="אָדָם" strong="H0121" x-morph="He,Np"\w*
+\w וָ⁠יָֽפֶת|lemma="יֶפֶת" strong="c:H3315" x-morph="He,C:Np"\w*׃ס`);
+      const [verse] = book.chapters.get(1) ?? [];
+      expect(verse?.text).toBe('אָדָ֥ם וָ⁠יָֽפֶת׃ס');
+      expect(verse?.text).not.toContain('lemma');
+      const words = (verse?.tokens ?? []).flatMap((token) => (token.kind === 'word' ? [token.text] : []));
+      expect(words.slice(0, 2)).toEqual(['אָדָ֥ם', 'וָ⁠יָֽפֶת']);
+    });
+
+    it('finds no verses in front matter or in a stub book', () => {
+      const front = parseUsfm('\\id FRT EN_ULT\n\\usfm 3.0\n\\is Introduction\n\\ip This is front matter.\n');
+      expect(front.code).toBe('FRT');
+      expect(front.chapters.size).toBe(0);
+      const stub = parseUsfm('\\id NEH ES-419_TPL\n\\usfm 3.0\n\\ide UTF-8\n\\h Nehemías\n\\mt Nehemías\n');
+      expect(stub.chapters.size).toBe(0);
+      expect(stub.name).toBe('Nehemías');
+    });
+  });
 });

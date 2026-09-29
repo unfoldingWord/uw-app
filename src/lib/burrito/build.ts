@@ -22,9 +22,7 @@ export type IngredientInput = {
 export type BurritoInput = {
   readonly publisher: string;
   readonly resource: string;
-  readonly tag: string;
   readonly commit: string;
-  readonly released: string;
   readonly dateCreated: string;
   readonly generator: { readonly softwareName: string; readonly softwareVersion: string };
   readonly language: BurritoLanguage;
@@ -34,13 +32,12 @@ export type BurritoInput = {
   readonly flavor: string;
   readonly flavorDetails?: { readonly [detail: string]: JsonValue };
   readonly currentScope?: Scope;
-  readonly licence: { readonly statement: string; readonly text: string };
+  readonly licence: { readonly statement: string; readonly text: string; readonly bare?: boolean };
   readonly ingredients: readonly IngredientInput[];
 };
 
 const scriptureBurritoVersion = '1.0.0';
 const licenceIngredient = 'LICENSE.md';
-const ccBySa4Url = 'http://creativecommons.org/licenses/by-sa/4.0/';
 
 function entryFor(ingredient: IngredientInput): IngredientEntry {
   return {
@@ -71,7 +68,7 @@ export function buildBurrito(input: BurritoInput): BurritoFiles {
     meta: {
       version: scriptureBurritoVersion,
       category: 'source',
-      generator: input.generator,
+      generator: { ...input.generator, userName: '' },
       defaultLocale: input.language.tag,
       dateCreated: input.dateCreated,
       normalization: 'NFC',
@@ -80,11 +77,11 @@ export function buildBurrito(input: BurritoInput): BurritoFiles {
       [doorAuthority]: { id: doorAuthorityId, name: { en: 'Door43 Content Service' } },
     },
     identification: {
-      primary: { [doorAuthority]: { [repository]: { revision: input.tag, timestamp: input.released } } },
-      upstream: {
-        [doorAuthority]: [{ [repository]: { revision: input.commit, timestamp: input.released } }],
+      primary: {
+        [doorAuthority]: { [repository]: { revision: input.commit, timestamp: input.dateCreated } },
       },
       name: input.name,
+      description: input.name,
       abbreviation: input.abbreviation,
     },
     languages: [input.language],
@@ -98,9 +95,10 @@ export function buildBurrito(input: BurritoInput): BurritoFiles {
     confidential: false,
     copyright: {
       shortStatements: [
-        { statement: input.licence.statement, mimetype: 'text/plain', lang: input.language.tag },
+        input.licence.bare === true
+          ? { statement: input.licence.statement }
+          : { statement: input.licence.statement, mimetype: 'text/plain', lang: input.language.tag },
       ],
-      licenses: [{ url: ccBySa4Url }],
     },
     ingredients: entries,
   };

@@ -11,7 +11,8 @@ import {
   type ArchiveLimits,
 } from './archive';
 import { fromUtf8, metadataPath } from './files';
-import { isLicenceFile, type BurritoFacts, type IngredientFact } from './validate';
+import { isLicenceFile } from './licence';
+import type { BurritoFacts, IngredientFact } from './validate';
 
 export const archiveReadBytes = 64 * 1024;
 

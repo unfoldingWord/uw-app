@@ -30,14 +30,14 @@ export default scenario(
     await until(() => phone.kernel.packs.installing().length > 0);
     const during = await home.download();
     assert.equal(during.state, 'installing');
-    assert.equal(during.state === 'installing' && during.progress.total, 11);
+    assert.equal(during.state === 'installing' && during.progress.total, 12);
 
     release();
     const outcome = await chosen.done;
     assert.ok(outcome.ok);
     const after = await home.download();
     assert.equal(after.state, 'complete');
-    assert.equal(after.state === 'complete' && after.resources, 11);
+    assert.equal(after.state === 'complete' && after.resources, 12);
 
     const english = world.device('english');
     await english.start();

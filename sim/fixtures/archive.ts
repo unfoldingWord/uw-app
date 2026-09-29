@@ -24,9 +24,7 @@ function fixtureBurrito(release: FixtureRelease): BurritoFiles {
   return buildBurrito({
     publisher: release.publisher,
     resource: release.resource,
-    tag: release.tag,
     commit: commitOf(release),
-    released: release.released,
     dateCreated: release.released,
     generator,
     language: {
@@ -41,8 +39,9 @@ function fixtureBurrito(release: FixtureRelease): BurritoFiles {
     ...(release.flavorDetails ? { flavorDetails: release.flavorDetails } : {}),
     ...(release.currentScope ? { currentScope: release.currentScope } : {}),
     licence: {
-      statement: `Copyright 2026 ${release.publisher}, released under CC BY-SA 4.0`,
+      statement: release.statement?.statement ?? `© ${release.publisher} 2026, CC BY-SA 4.0`,
       text: licenceText(release),
+      bare: release.statement?.bare ?? false,
     },
     ingredients: release.ingredients,
   });

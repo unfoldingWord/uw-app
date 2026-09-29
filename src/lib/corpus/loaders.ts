@@ -1,5 +1,5 @@
 import { parse as parseYaml } from 'yaml';
-import { mimeTypes } from '../burrito/flavors';
+import { isTsv, isUsfm } from '../burrito/flavors';
 import {
   academyEntries,
   academyFile,
@@ -40,14 +40,14 @@ export type RawMovements = ReadonlyMap<MovementSectionId, string>;
 
 export function textBook(library: Library, entry: Entry, book: string): Promise<UsfmBook | undefined> {
   return library.cached(entry, `usfm:${book}`, async (reader) => {
-    const key = bookKeys(reader, mimeTypes.usfm).get(book);
+    const key = bookKeys(reader, isUsfm).get(book);
     return key === undefined ? undefined : parseUsfm(await reader.read(key));
   });
 }
 
 async function helpsText(library: Library, entry: Entry, book: string): Promise<string | undefined> {
   const reader = await library.reader(entry);
-  const key = bookKeys(reader, mimeTypes.tsv).get(book);
+  const key = bookKeys(reader, isTsv).get(book);
   return key === undefined ? undefined : reader.read(key);
 }
 

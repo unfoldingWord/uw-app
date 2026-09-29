@@ -1,4 +1,4 @@
-import { unrecordedCommit, type Provenance } from '../domain/provenance';
+import type { Provenance } from '../domain/provenance';
 
 export type JsonValue =
   string | number | boolean | null | readonly JsonValue[] | { readonly [key: string]: JsonValue };
@@ -14,9 +14,9 @@ export type IngredientEntry = {
   readonly scope?: Scope;
 };
 
-type Revision = { readonly revision: string; readonly timestamp: string };
+type Revision = { readonly revision: string; readonly timestamp?: string };
 
-type ShortStatement = { readonly statement: string; readonly mimetype: string; readonly lang: string };
+type ShortStatement = { readonly statement: string; readonly mimetype?: string; readonly lang?: string };
 
 export type BurritoLanguage = {
   readonly tag: string;
@@ -29,7 +29,11 @@ export type BurritoMetadata = {
   readonly meta: {
     readonly version: string;
     readonly category?: string;
-    readonly generator?: { readonly softwareName: string; readonly softwareVersion: string };
+    readonly generator?: {
+      readonly softwareName: string;
+      readonly softwareVersion: string;
+      readonly userName?: string;
+    };
     readonly defaultLocale?: string;
     readonly dateCreated?: string;
     readonly normalization?: string;
@@ -37,8 +41,8 @@ export type BurritoMetadata = {
   readonly idAuthorities?: Readonly<Record<string, { readonly id: string; readonly name: LocalizedText }>>;
   readonly identification: {
     readonly primary?: Readonly<Record<string, Readonly<Record<string, Revision>>>>;
-    readonly upstream?: Readonly<Record<string, readonly Readonly<Record<string, Revision>>[]>>;
     readonly name: LocalizedText;
+    readonly description?: LocalizedText;
     readonly abbreviation: LocalizedText;
   };
   readonly languages: readonly BurritoLanguage[];
@@ -57,6 +61,8 @@ export type BurritoMetadata = {
   readonly ingredients: Readonly<Record<string, IngredientEntry>>;
 };
 
+export const unrecordedTag = 'unrecorded';
+
 export const doorAuthority = 'dcs';
 export const doorAuthorityId = 'https://git.door43.org';
 
@@ -65,24 +71,12 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function revisionOf(value: unknown): Revision | undefined {
-  if (!isRecord(value) || typeof value.revision !== 'string' || typeof value.timestamp !== 'string') {
+  if (!isRecord(value) || typeof value.revision !== 'string' || value.revision.trim() === '') {
     return undefined;
   }
-  return { revision: value.revision, timestamp: value.timestamp };
-}
-
-function upstreamCommit(metadata: BurritoMetadata, repository: string): string | undefined {
-  const upstream: unknown = metadata.identification.upstream?.[doorAuthority];
-  if (!Array.isArray(upstream)) {
-    return undefined;
-  }
-  for (const entry of upstream) {
-    const revision = isRecord(entry) ? revisionOf(entry[repository]) : undefined;
-    if (revision) {
-      return revision.revision;
-    }
-  }
-  return undefined;
+  return typeof value.timestamp === 'string'
+    ? { revision: value.revision, timestamp: value.timestamp }
+    : { revision: value.revision };
 }
 
 export function titleOf(metadata: BurritoMetadata, fallback: string): string {
@@ -90,16 +84,28 @@ export function titleOf(metadata: BurritoMetadata, fallback: string): string {
   return names.en ?? Object.values(names).find((name) => name.trim() !== '') ?? fallback;
 }
 
-export function readProvenance(metadata: BurritoMetadata): Provenance | undefined {
-  const primary: unknown = metadata.identification.primary?.[doorAuthority];
-  if (!isRecord(primary)) {
+export function primaryRepository(metadata: unknown): string | undefined {
+  const identification = isRecord(metadata) ? metadata.identification : undefined;
+  const primary = isRecord(identification) ? identification.primary : undefined;
+  const authority = isRecord(primary) ? primary[doorAuthority] : undefined;
+  if (!isRecord(authority)) {
     return undefined;
   }
-  const [repository] = Object.keys(primary);
+  return Object.keys(authority)[0];
+}
+
+export function repositoryCode(repository: string | undefined): string | undefined {
+  const name = repository?.split('/').at(-1)?.toLowerCase();
+  return name === undefined || name === '' ? undefined : name.split('_').at(-1);
+}
+
+export function readProvenance(metadata: BurritoMetadata): Provenance | undefined {
+  const repository = primaryRepository(metadata);
   if (repository === undefined) {
     return undefined;
   }
-  const revision = revisionOf(primary[repository]);
+  const primary: unknown = metadata.identification.primary?.[doorAuthority];
+  const revision = revisionOf(isRecord(primary) ? primary[repository] : undefined);
   const [publisher, resource] = repository.split('/');
   const language = metadata.languages[0]?.tag;
   const licence = metadata.copyright.shortStatements[0]?.statement;
@@ -110,10 +116,9 @@ export function readProvenance(metadata: BurritoMetadata): Provenance | undefine
     publisher,
     resource,
     language,
-    tag: revision.revision,
-    commit: upstreamCommit(metadata, repository) ?? unrecordedCommit,
+    tag: unrecordedTag,
+    commit: revision.revision,
     licence,
     title: titleOf(metadata, resource),
-    released: revision.timestamp,
   };
 }

@@ -31,7 +31,7 @@ describe('catalog interface (LA-1, LA-7)', () => {
     const { device } = await phone();
     expect(await device.kernel.catalog.refresh()).toEqual({
       ok: true,
-      releases: 20,
+      releases: 21,
       languages: 3,
       dropped: 0,
     });
@@ -43,7 +43,7 @@ describe('catalog interface (LA-1, LA-7)', () => {
       'CatalogRefreshed',
     ]);
     await device.restart();
-    expect(device.kernel.catalog.all()).toHaveLength(20);
+    expect(device.kernel.catalog.all()).toHaveLength(21);
     expect(device.kernel.catalog.releases('qaa').map((release) => release.resource)).toContain(
       'qaa_ult-audio',
     );
@@ -59,7 +59,7 @@ describe('catalog interface (LA-1, LA-7)', () => {
     expect(lastFailure(device)).toEqual({ code: 'http.status', context: { step: 'catalog', status: 503 } });
     device.adapters.http.setOnline(false);
     expect(await device.kernel.catalog.refresh()).toEqual({ ok: false, code: 'http.offline' });
-    expect(device.kernel.catalog.all()).toHaveLength(20);
+    expect(device.kernel.catalog.all()).toHaveLength(21);
   });
 
   it('refuses a document that is not a catalog, and skips entries it cannot key', async () => {
@@ -67,7 +67,7 @@ describe('catalog interface (LA-1, LA-7)', () => {
     await device.kernel.catalog.refresh();
     world.network.serve(catalogPageUrl(1), { body: '<html>maintenance</html>' });
     expect(await device.kernel.catalog.refresh()).toEqual({ ok: false, code: 'catalog.invalid-response' });
-    expect(device.kernel.catalog.all()).toHaveLength(20);
+    expect(device.kernel.catalog.all()).toHaveLength(21);
     world.network.serve(catalogPageUrl(1), {
       body: JSON.stringify({
         ok: true,
@@ -109,6 +109,16 @@ describe('catalog interface (LA-1, LA-7)', () => {
     expect(device.adapters.http.requests().length - before).toBe(2);
   });
 
+  it('serves the fixture catalog the way DCS pages it: x-total-count, a Link header, last_updated', async () => {
+    const { device } = await phone();
+    const first = await device.adapters.http.request({ url: catalogPageUrl(1), timeoutMs: 1000 });
+    expect(first.kind === 'response' && first.headers['x-total-count']).toBe('21');
+    expect(first.kind === 'response' && first.headers['link']).toBeUndefined();
+    const body =
+      first.kind === 'response' ? (JSON.parse(new TextDecoder().decode(first.body)) as object) : {};
+    expect(Object.keys(body)).toEqual(['ok', 'data', 'last_updated']);
+  });
+
   it('runs refreshes one after another, so the last asked for wins and a replay agrees', async () => {
     const { world, device } = await phone();
     const release = device.adapters.http.hold(catalogPageUrl(1));
@@ -116,7 +126,7 @@ describe('catalog interface (LA-1, LA-7)', () => {
     await new Promise((resolve) => setImmediate(resolve));
     const newer = device.kernel.catalog.refresh();
     release();
-    expect(await older).toMatchObject({ ok: true, releases: 20 });
+    expect(await older).toMatchObject({ ok: true, releases: 21 });
     world.network.serve(catalogPageUrl(1), { body: JSON.stringify({ ok: true, data: [entry('qaa_obs')] }) });
     expect(await newer).toEqual({ ok: true, releases: 1, languages: 1, dropped: 0 });
     expect(device.kernel.catalog.all()).toHaveLength(1);

@@ -1,4 +1,5 @@
-import { mimeTypes } from '../burrito/flavors';
+import { isTsv, isUsfm } from '../burrito/flavors';
+import { licenceKeyOf } from '../burrito/licence';
 import { originalPackId } from '../domain/pack';
 import {
   academyEntries,
@@ -19,6 +20,15 @@ import type { Entry, TitleRow } from './tables';
 import { helpsRowCount } from './tsv';
 import type { CorpusBurrito, CorpusKind } from './types';
 
+const verseMarker = /\\v\s+\d/;
+
+const stubBookBytes = 64 * 1024;
+
+async function hasVerses(reader: BurritoReader, key: string): Promise<boolean> {
+  const size = reader.ingredients.find((ingredient) => ingredient.key === key)?.entry.size ?? 0;
+  return size > stubBookBytes || verseMarker.test(await reader.read(key));
+}
+
 export type Analysis = { readonly entry: Entry; readonly titles: readonly TitleRow[] };
 
 const originalPackPrefix = originalPackId('');
@@ -31,11 +41,11 @@ function textKind(pack: string, burrito: CorpusBurrito, reader: BurritoReader): 
 }
 
 function storyHelpsKind(reader: BurritoReader): CorpusKind {
-  const flavor = reader.metadata.type.flavorType.flavor.name;
-  if (flavor === storyHelpsFlavors.questions) {
+  const flavor: string = reader.metadata.type.flavorType.flavor.name;
+  if (storyHelpsFlavors.questions.some((name) => name === flavor)) {
     return 'storyQuestions';
   }
-  return flavor === storyHelpsFlavors.wordLinks ? 'storyWordLinks' : 'storyNotes';
+  return storyHelpsFlavors.wordLinks.some((name) => name === flavor) ? 'storyWordLinks' : 'storyNotes';
 }
 
 export function kindOf(pack: string, burrito: CorpusBurrito, reader: BurritoReader): CorpusKind {
@@ -79,7 +89,12 @@ async function counted(kind: CorpusKind, reader: BurritoReader, language: string
     case 'literal':
     case 'simplified':
     case 'original': {
-      const books = bookKeys(reader, mimeTypes.usfm);
+      const books = new Map<string, string>();
+      for (const [book, key] of bookKeys(reader, isUsfm)) {
+        if (await hasVerses(reader, key)) {
+          books.set(book, key);
+        }
+      }
       return {
         books: [...books.keys()],
         items: books.size,
@@ -90,7 +105,7 @@ async function counted(kind: CorpusKind, reader: BurritoReader, language: string
     case 'notes':
     case 'wordLinks':
     case 'questions': {
-      const books = bookKeys(reader, mimeTypes.tsv);
+      const books = bookKeys(reader, isTsv);
       let items = 0;
       for (const key of books.values()) {
         items += helpsRowCount(await reader.read(key));
@@ -159,7 +174,9 @@ export async function analyze(
   burrito: CorpusBurrito,
   reader: BurritoReader,
 ): Promise<Analysis | undefined> {
-  const provenance = provenanceOf(burrito, reader.metadata);
+  const licenceKey = licenceKeyOf(reader.ingredients.map((ingredient) => ingredient.key));
+  const licenceText = licenceKey === undefined ? undefined : await reader.read(licenceKey);
+  const provenance = provenanceOf(burrito, reader.metadata, licenceText);
   if (provenance === undefined) {
     return undefined;
   }

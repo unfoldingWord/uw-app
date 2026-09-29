@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readArchive, writeArchive } from '@lib/burrito/archive';
 import { fromUtf8, md5Hex, utf8 } from '@lib/burrito/files';
+import { unrecordedTag } from '@lib/burrito/metadata';
 import { validate } from '@lib/burrito/validate';
 import { languagePackId } from '@lib/domain/pack';
 import { fromFile, fromPeer } from '@lib/packs/source';
@@ -72,9 +73,26 @@ export default scenario(
     const installedFrom = offline.kernel.packs.installed()[0];
     assert.equal(installedFrom?.source, 'file');
     const [burrito] = installedFrom.burritos;
-    assert.equal(burrito?.provenance.tag, 'v1');
+    assert.equal(
+      burrito?.provenance.tag,
+      unrecordedTag,
+      'a DCS burrito carries its commit but not its tag, and this phone has no catalog to find it in',
+    );
     assert.match(burrito.provenance.commit, /^[0-9a-f]{40}$/);
     assert.match(burrito.provenance.licence, /CC BY-SA 4\.0/);
+
+    const listed = world.device('listed');
+    await listed.start();
+    await listed.kernel.catalog.refresh();
+    await listed.adapters.files.mkdir('imports');
+    await listed.adapters.files.writeBytes('imports/qab_obs.zip', qab);
+    const known = await listed.kernel.packs.install(fromFile('imports/qab_obs.zip'));
+    assert.ok(known.ok, known.ok ? '' : known.code);
+    assert.deepEqual(
+      known.pack.burritos.map((item) => [item.provenance.tag, item.provenance.commit]),
+      [['v1', burrito.provenance.commit]],
+      'with the catalog on the phone, the commit names the release it came from',
+    );
 
     const peered = world.device('peered');
     await peered.start();
@@ -126,7 +144,6 @@ export default scenario(
         metadata.identification.primary = {
           dcs: { 'Local-Church/qab_obs-local': { revision: 'v3', timestamp: '2026-09-20T00:00:00Z' } },
         };
-        metadata.identification.upstream = {};
       },
       'ingredients/extra.txt',
     );
@@ -143,11 +160,10 @@ export default scenario(
         publisher: 'Local-Church',
         resource: 'qab_obs-local',
         language: 'qab',
-        tag: 'v3',
-        commit: 'unrecorded',
+        tag: unrecordedTag,
+        commit: 'v3',
         licence: true,
         title: 'Fixture B Open Bible Stories',
-        released: '2026-09-20T00:00:00Z',
       },
       'a burrito the catalog does not list keeps the provenance its metadata carries',
     );

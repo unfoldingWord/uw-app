@@ -65,6 +65,11 @@
     "contentType": "application/zip"
   },
   {
+    "url": "https://git.door43.org/unfoldingWord/qaa_obs-twl/sb/v1.zip",
+    "file": "sb/unfoldingWord/qaa_obs-twl/v1.zip",
+    "contentType": "application/zip"
+  },
+  {
     "url": "https://git.door43.org/unfoldingWord/qaa_obs-tf/sb/v1.zip",
     "file": "sb/unfoldingWord/qaa_obs-tf/v1.zip",
     "contentType": "application/zip"
@@ -90,13 +95,13 @@
     "contentType": "application/zip"
   },
   {
-    "url": "https://git.door43.org/unfoldingWord/en_obs-tf/sb/v1.zip",
-    "file": "sb/unfoldingWord/en_obs-tf/v1.zip",
+    "url": "https://git.door43.org/unfoldingWord/en_obs-tf/sb/v4.zip",
+    "file": "sb/unfoldingWord/en_obs-tf/v4.zip",
     "contentType": "application/zip"
   },
   {
-    "url": "https://git.door43.org/unfoldingWord/hbo_uhb/sb/v2.1.30.zip",
-    "file": "sb/unfoldingWord/hbo_uhb/v2.1.30.zip",
+    "url": "https://git.door43.org/unfoldingWord/hbo_uhb/sb/v3.0.0.zip",
+    "file": "sb/unfoldingWord/hbo_uhb/v3.0.0.zip",
     "contentType": "application/zip"
   },
   {

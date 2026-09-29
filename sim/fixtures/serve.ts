@@ -5,6 +5,7 @@ import {
   catalogLanguages,
   catalogLanguagesUrl,
   catalogSearch,
+  catalogSearchBase,
   catalogSearchUrl,
 } from './catalog.ts';
 import { fixtureResponses, type FixtureResponse } from './load.ts';
@@ -23,20 +24,47 @@ function responses(): readonly FixtureResponse[] {
   return cached;
 }
 
-function serveJson(network: MemoryNetwork, url: string, value: unknown): void {
-  network.serve(url, { body: JSON.stringify(value), headers: { 'content-type': 'application/json' } });
+function serveJson(
+  network: MemoryNetwork,
+  url: string,
+  value: unknown,
+  headers: Readonly<Record<string, string>> = {},
+): void {
+  network.serve(url, {
+    body: JSON.stringify(value),
+    headers: { 'content-type': 'application/json', ...headers },
+  });
 }
 
 const catalogPageSize = 50;
 
+function pageLink(page: number): string {
+  return `${catalogSearchBase}?limit=${catalogPageSize}&page=${page}&stage=prod&topic=tc-ready`;
+}
+
+function pagingHeaders(page: number, total: number): Record<string, string> {
+  const last = Math.max(1, Math.ceil(total / catalogPageSize));
+  const links = [
+    ...(page < last ? [`<${pageLink(page + 1)}>; rel="next"`, `<${pageLink(last)}>; rel="last"`] : []),
+    ...(page > 1 ? [`<${pageLink(1)}>; rel="first"`, `<${pageLink(page - 1)}>; rel="prev"`] : []),
+  ];
+  return { 'x-total-count': String(total), ...(links.length === 0 ? {} : { link: links.join(',') }) };
+}
+
 function serveCatalogPages(
   network: MemoryNetwork,
-  document: { ok: boolean; data: readonly unknown[] },
+  document: { ok: boolean; data: readonly unknown[]; last_updated: string },
 ): void {
-  const pages = Math.floor(document.data.length / catalogPageSize) + 1;
+  const total = document.data.length;
+  const pages = Math.floor(total / catalogPageSize) + 1;
   for (let page = 1; page <= pages + 1; page += 1) {
     const data = document.data.slice((page - 1) * catalogPageSize, page * catalogPageSize);
-    serveJson(network, `${catalogSearchUrl}&limit=${catalogPageSize}&page=${page}`, { ...document, data });
+    serveJson(
+      network,
+      `${catalogSearchUrl}&limit=${catalogPageSize}&page=${page}`,
+      { ...document, data },
+      pagingHeaders(page, total),
+    );
   }
 }
 

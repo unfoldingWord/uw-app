@@ -17,7 +17,7 @@ export default scenario(
       phone.kernel.packs.installed().map((pack) => [pack.pack, pack.burritos.length]),
       [
         ['language:en', 2],
-        ['language:qaa', 11],
+        ['language:qaa', 12],
         ['language:qab', 2],
       ],
     );

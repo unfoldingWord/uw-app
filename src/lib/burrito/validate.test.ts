@@ -9,7 +9,7 @@ import {
   requiredFormationSections,
   type RowId,
 } from './flavors';
-import { readProvenance } from './metadata';
+import { readProvenance, unrecordedTag } from './metadata';
 import { validate, type ValidationReport } from './validate';
 
 const markdown = (path: string, text = `# ${path}\n`): IngredientInput => ({
@@ -34,9 +34,7 @@ const tsv = (path: string): IngredientInput => ({
 const base: BurritoInput = {
   publisher: 'unfoldingWord',
   resource: 'qaa_ult',
-  tag: 'v1',
   commit: 'a'.repeat(40),
-  released: '2026-09-01T00:00:00Z',
   dateCreated: '2026-09-01T00:00:00Z',
   generator: { softwareName: 'test', softwareVersion: '1' },
   language: { tag: 'qaa', name: { en: 'Fixture' } },
@@ -140,14 +138,13 @@ describe('validate', () => {
     });
   });
 
-  it('carries provenance in the metadata: publisher, tag, commit and licence', () => {
+  it('carries provenance in the metadata: publisher, commit and licence, the tag left to the catalog', () => {
     const report = validate(burrito());
     expect(report.ok && readProvenance(report.metadata)).toEqual({
       publisher: 'unfoldingWord',
       resource: 'qaa_ult',
-      tag: 'v1',
+      tag: unrecordedTag,
       commit: 'a'.repeat(40),
-      released: '2026-09-01T00:00:00Z',
       language: 'qaa',
       licence: 'Released under CC BY-SA 4.0',
       title: 'Fixture Literal Text',

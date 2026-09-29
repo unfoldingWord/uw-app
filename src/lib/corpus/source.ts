@@ -1,5 +1,6 @@
 import type { ListedIngredient } from '../burrito/flavors';
 import { ingredientsDirectory, metadataPath } from '../burrito/files';
+import { displayedLicence } from '../burrito/licence';
 import { isRecord, type BurritoMetadata, type IngredientEntry } from '../burrito/metadata';
 import { unrecordedCommit, type Provenance } from '../domain/provenance';
 import type { Files } from '../ports';
@@ -54,11 +55,16 @@ function titleOf(metadata: BurritoMetadata, language: string): string {
   return names[language] ?? names.en ?? Object.values(names)[0] ?? '';
 }
 
-export function provenanceOf(burrito: CorpusBurrito, metadata: BurritoMetadata): Provenance | undefined {
-  const licence = metadata.copyright.shortStatements[0]?.statement ?? '';
-  if (licence.trim() === '') {
+export function provenanceOf(
+  burrito: CorpusBurrito,
+  metadata: BurritoMetadata,
+  licenceText?: string,
+): Provenance | undefined {
+  const statement = metadata.copyright.shortStatements[0]?.statement ?? '';
+  if (statement.trim() === '') {
     return undefined;
   }
+  const licence = displayedLicence(statement, licenceText);
   const title = titleOf(metadata, burrito.language);
   return {
     publisher: burrito.publisher,

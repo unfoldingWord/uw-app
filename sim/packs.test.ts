@@ -73,17 +73,17 @@ describe('packs interface (LA-2, LA-6, LA-7, SH-3)', () => {
     const { device } = await phone();
     const before = await device.kernel.packs.status('qaa');
     expect(before).toMatchObject({ pack: 'language:qaa', installed: [], complete: false });
-    expect(before.missing).toHaveLength(11);
+    expect(before.missing).toHaveLength(12);
     await device.kernel.packs.install(fromCatalog(device.kernel.catalog.releases('qaa')), {
       resources: [{ publisher: 'unfoldingWord', resource: 'qaa_ult' }],
     });
     const partial = await device.kernel.packs.status('qaa');
     expect(partial.installed.map((burrito) => burrito.provenance.resource)).toEqual(['qaa_ult']);
-    expect(partial.missing).toHaveLength(10);
+    expect(partial.missing).toHaveLength(11);
     const seq = device.kernel.journal.stats().lastSeq;
     await device.kernel.packs.installFromCatalog(languagePackId('qaa'));
     const started = device.kernel.journal.read(seq).find((entry) => entry.type === 'PackInstallStarted');
-    expect(started?.type === 'PackInstallStarted' && started.payload.releases).toHaveLength(10);
+    expect(started?.type === 'PackInstallStarted' && started.payload.releases).toHaveLength(11);
     expect(await device.kernel.packs.status('qaa')).toMatchObject({ complete: true, missing: [] });
   });
 
@@ -129,7 +129,7 @@ describe('packs interface (LA-2, LA-6, LA-7, SH-3)', () => {
   });
 
   it('checks free space before writing when the sizes are known, and maps a full disk to pack.no-space', async () => {
-    const { world, device } = await phone(4096);
+    const { world, device } = await phone(2048);
     const peer = fixturePeer(world, [qaaObs]);
     const seq = device.kernel.journal.stats().lastSeq;
     expect(await device.kernel.packs.install(fromPeer(peer))).toMatchObject({

@@ -70,7 +70,7 @@ export default scenario(
     assert.ok((await phone.kernel.packs.installFromCatalog(pack)).ok);
     const firstRoots = rootsOf(phone);
     const notes = firstRoots.qaa_tn ?? '';
-    const original = await phone.adapters.files.readBytes(`${notes}/ingredients/tn_RUT.tsv`);
+    const original = await phone.adapters.files.readBytes(`${notes}/ingredients/RUT.tsv`);
 
     world.fixtures.publish('unfoldingWord', 'qaa_tn', 'v2');
     assert.deepEqual(await phone.kernel.packs.updates(), [], 'nothing is new until the catalog says so');
@@ -101,7 +101,7 @@ export default scenario(
     const interrupted = await phone.kernel.packs.update(pack);
     assert.equal(!interrupted.ok && interrupted.code, 'files.io');
 
-    assert.deepEqual(await phone.adapters.files.readBytes(`${notes}/ingredients/tn_RUT.tsv`), original);
+    assert.deepEqual(await phone.adapters.files.readBytes(`${notes}/ingredients/RUT.tsv`), original);
     assert.equal(tagsOf(phone).qaa_tn, 'v1', 'every failed update leaves the old pack whole');
     assert.deepEqual(staged(phone), [], 'nothing is left staged');
     assert.deepEqual(installDirectories(phone, 'qaa_tn'), [`${notes}/`], 'no half-written release is left');
@@ -131,7 +131,7 @@ export default scenario(
     const tags = tagsOf(phone);
     assert.equal(tags.qaa_tn, 'v2');
     assert.equal(tags.qaa_ult, 'v1');
-    assert.equal(Object.keys(tags).length, 11);
+    assert.equal(Object.keys(tags).length, 12);
     const secondRoots = rootsOf(phone);
     assert.notEqual(secondRoots.qaa_tn, notes, 'the new release has a directory of its own');
     assert.deepEqual(
@@ -143,7 +143,15 @@ export default scenario(
     const metadata = JSON.parse(
       await phone.adapters.files.readText(`${secondRoots.qaa_tn ?? ''}/metadata.json`),
     ) as { identification: { primary: { dcs: Record<string, { revision: string }> } } };
-    assert.equal(metadata.identification.primary.dcs['unfoldingWord/qaa_tn']?.revision, 'v2');
+    const updatedNotes = phone.kernel.packs
+      .installed()
+      .flatMap((item) => item.burritos)
+      .find((burrito) => burrito.provenance.resource === 'qaa_tn');
+    assert.equal(
+      metadata.identification.primary.dcs['unfoldingWord/qaa_tn']?.revision,
+      updatedNotes?.provenance.commit,
+      'the new burrito is the commit the catalog names for v2',
+    );
     assert.deepEqual(await phone.kernel.packs.updates(), []);
 
     world.fixtures.publish('unfoldingWord', 'qaa_tn', 'v3');

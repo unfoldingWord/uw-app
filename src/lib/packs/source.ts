@@ -5,11 +5,12 @@ import type { ReleaseRef } from '../domain/release';
 export type CatalogChoice = ReleaseRef & {
   commit?: string;
   title?: string;
+  published?: string;
   row?: ResourceRow | undefined;
   bytes?: number | undefined;
 };
 
-export type PeerBurrito = ReleaseRef & { row: ResourceRow; bytes: number };
+export type PeerBurrito = ReleaseRef & { row: ResourceRow; bytes: number; commit?: string };
 
 export type PeerReceipt =
   { ok: true; archive: Uint8Array } | { ok: true; path: string } | { ok: false; code: FailureCode };

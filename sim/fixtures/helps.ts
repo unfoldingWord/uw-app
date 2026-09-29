@@ -82,19 +82,27 @@ export const bookWordLinks: Readonly<Record<string, HelpsTable>> = {
   RUT: {
     header: wordLinksHeader,
     rows: [
-      ['1:1', 'r101', 'other', 'רָעָב', '1', 'rc://*/tw/dict/bible/other/famine'],
-      ['1:2', 'r102', 'names', 'נָעֳמִי', '1', 'rc://*/tw/dict/bible/names/naomi'],
-      ['1:16', 'r103', 'names', 'רוּת', '1', 'rc://*/tw/dict/bible/names/ruth'],
-      ['1:16', 'r104', 'kt', 'אֱלֹהָי', '1', 'rc://*/tw/dict/bible/kt/god'],
+      ['1:1', 'r101', '', 'רָעָב', '1', './payload/other/famine.md'],
+      ['1:2', 'r102', 'name', 'נָעֳמִי', '1', './payload/names/naomi.md'],
+      ['1:16', 'r103', 'keyterm; name', 'רוּת', '1', './payload/names/ruth.md'],
+      ['1:16', 'r104', 'keyterm', 'אֱלֹהָי', '1', './payload/kt/god.md'],
     ],
   },
   '3JN': {
     header: wordLinksHeader,
     rows: [
-      ['1:1', 'j101', 'kt', 'ἀγαπῶ', '1', 'rc://*/tw/dict/bible/kt/love'],
-      ['1:1', 'j102', 'kt', 'ἀληθείᾳ', '1', 'rc://*/tw/dict/bible/kt/truth'],
+      ['1:1', 'j101', 'keyterm', 'ἀγαπῶ', '1', './payload/kt/love.md'],
+      ['1:1', 'j102', 'keyterm', 'ἀληθείᾳ', '1', './payload/kt/truth.md'],
     ],
   },
+};
+
+export const storyWordLinks: HelpsTable = {
+  header: wordLinksHeader,
+  rows: [
+    ['1:1', 'aoaa', 'keyterm', 'God', '1', 'rc://*/tw/dict/bible/kt/god'],
+    ['2:1', 'aoab', 'keyterm', 'love', '1', 'rc://*/tw/dict/bible/kt/love'],
+  ],
 };
 
 export const bookQuestions: Readonly<Record<string, HelpsTable>> = {

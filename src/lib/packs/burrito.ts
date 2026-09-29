@@ -1,4 +1,5 @@
 import { admittedRows, type ContractRow } from '../burrito/flavors';
+import { displayedLicence, licenceKeyOf } from '../burrito/licence';
 import { readProvenance, titleOf } from '../burrito/metadata';
 import { validateFacts, type BurritoFacts } from '../burrito/validate';
 import type { FailureCode } from '../domain/failures';
@@ -12,6 +13,7 @@ export const packRows: readonly ContractRow[] = admittedRows;
 export type CheckedBurrito = {
   row: ResourceRow;
   provenance: Provenance;
+  revision: string | undefined;
   listed: readonly string[];
   bytes: number;
 };
@@ -55,11 +57,14 @@ export function checkBurrito(
   }
   const { metadata } = report;
   const read = readProvenance(metadata);
-  const licence = metadata.copyright.shortStatements[0]?.statement ?? read?.licence;
+  const statement = metadata.copyright.shortStatements[0]?.statement;
   const origin = choice ?? read;
-  if (origin === undefined || licence === undefined) {
+  if (origin === undefined || statement === undefined) {
     return { ok: false, code: 'pack.no-provenance' };
   }
+  const licenceKey = licenceKeyOf(Object.keys(metadata.ingredients));
+  const licence = displayedLicence(statement, licenceKey === undefined ? undefined : facts.text(licenceKey));
+  const released = choice?.published === undefined || choice.published === '' ? undefined : choice.published;
   const provenance: Provenance = {
     publisher: origin.publisher,
     resource: origin.resource,
@@ -68,7 +73,7 @@ export function checkBurrito(
     commit: choice?.commit ?? read?.commit ?? unrecordedCommit,
     licence,
     title: titleOf(metadata, choice?.title ?? origin.resource),
-    ...(read?.released === undefined ? {} : { released: read.released }),
+    ...(released === undefined ? {} : { released }),
   };
   if (!eventSafe(provenance)) {
     return { ok: false, code: 'pack.no-provenance' };
@@ -76,5 +81,5 @@ export function checkBurrito(
   const listed = Object.keys(metadata.ingredients);
   const bytes =
     (facts.metadata?.byteLength ?? 0) + listed.reduce((sum, key) => sum + (facts.fact(key)?.size ?? 0), 0);
-  return { ok: true, burrito: { row, provenance, listed, bytes } };
+  return { ok: true, burrito: { row, provenance, revision: read?.commit, listed, bytes } };
 }

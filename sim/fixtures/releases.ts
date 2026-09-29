@@ -9,16 +9,20 @@ import {
   bookWordLinks,
   storyNotes,
   storyQuestions,
+  storyWordLinks,
   tsv,
   type HelpsTable,
 } from './helps.ts';
 import { greyJpeg, silentMp3 } from './media.ts';
 import {
   bookUsfm,
+  frontMatterUsfm,
   greekBooks,
   hebrewBooks,
   literalBooks,
+  originalUsfm,
   simplifiedBooks,
+  stubBookUsfm,
   usfmFileName,
   type Book,
 } from './scripture.ts';
@@ -40,6 +44,10 @@ type FixtureLanguage = {
   readonly gatewayLanguage: boolean;
 };
 
+type CatalogFlavor = { readonly flavorType: string; readonly flavor: string };
+
+export type FixtureStatement = { readonly statement: string; readonly bare: boolean };
+
 export type FixtureRelease = {
   readonly publisher: string;
   readonly resource: string;
@@ -51,6 +59,8 @@ export type FixtureRelease = {
   readonly abbreviation: string;
   readonly flavorType: string;
   readonly flavor: string;
+  readonly catalogFlavor?: CatalogFlavor;
+  readonly statement?: FixtureStatement;
   readonly flavorDetails?: { readonly [detail: string]: JsonValue };
   readonly currentScope?: Scope;
   readonly books: readonly string[];
@@ -101,11 +111,15 @@ const unfoldingWord = 'unfoldingWord';
 const door43Catalog = 'Door43-Catalog';
 
 const textFlavor = {
-  projectType: 'standard',
-  translationType: 'firstTranslation',
-  audience: 'common',
   usfmVersion: '3.0',
+  translationType: 'revision',
+  audience: 'common',
+  projectType: 'standard',
 } as const;
+
+const storiesStatement: FixtureStatement = { statement: 'Copyright © 2023 by unfoldingWord', bare: true };
+
+const catalogArticles: CatalogFlavor = { flavorType: 'peripheral', flavor: 'x-peripheralArticles' };
 
 function bookScope(books: readonly Book[]): Scope {
   return Object.fromEntries(books.map((book) => [book.code, [String(book.chapter)]]));
@@ -120,13 +134,44 @@ function textIngredients(books: readonly Book[], resource: string, language: str
   }));
 }
 
-function helpsIngredients(prefix: string, tables: Readonly<Record<string, HelpsTable>>): IngredientInput[] {
+function literalIngredients(): IngredientInput[] {
+  return [
+    ...textIngredients(literalBooks, 'ult', 'qaa'),
+    {
+      path: 'FRT.usfm',
+      bytes: utf8(frontMatterUsfm('ult', 'qaa')),
+      mimeType: mimeTypes.usfm,
+      scope: { FRT: [] },
+    },
+    {
+      path: 'NEH.usfm',
+      bytes: utf8(stubBookUsfm('NEH', 'Nehemiah', 'ult', 'qaa')),
+      mimeType: mimeTypes.usfm,
+      scope: { NEH: [] },
+    },
+  ];
+}
+
+function originalIngredients(books: readonly Book[], resource: string, language: string): IngredientInput[] {
+  return books.map((book) => ({
+    path: usfmFileName(book),
+    bytes: utf8(originalUsfm(book, resource, language)),
+    mimeType: mimeTypes.usfm,
+    scope: { [book.code]: [String(book.chapter)] },
+  }));
+}
+
+function helpsIngredients(tables: Readonly<Record<string, HelpsTable>>): IngredientInput[] {
   return Object.entries(tables).map(([book, table]) => ({
-    path: `${prefix}_${book}.tsv`,
+    path: `${book}.tsv`,
     bytes: utf8(tsv(table)),
     mimeType: mimeTypes.tsv,
-    scope: { [book]: ['1'] },
+    scope: { [book]: [] },
   }));
+}
+
+function wordsIngredients(): IngredientInput[] {
+  return [...helpsIngredients(bookWordLinks), ...articleIngredients(wordArticles)];
 }
 
 function articleIngredients(files: readonly ArticleFile[]): IngredientInput[] {
@@ -175,9 +220,16 @@ function formationIngredients(): IngredientInput[] {
   );
 }
 
-function storyHelp(prefix: string, table: HelpsTable): IngredientInput[] {
-  return [{ path: `${prefix}_OBS.tsv`, bytes: utf8(tsv(table)), mimeType: mimeTypes.tsv }];
+function storyHelp(table: HelpsTable, scope?: Scope): IngredientInput[] {
+  const bytes = utf8(tsv(table));
+  return [
+    scope === undefined
+      ? { path: 'OBS.tsv', bytes, mimeType: mimeTypes.tsv }
+      : { path: 'OBS.tsv', bytes, mimeType: mimeTypes.tsv, scope },
+  ];
 }
+
+const storiesScope: Scope = { OBS: [] };
 
 const audioFrames = 20;
 
@@ -199,13 +251,13 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     language: languages.qaa,
     subject: 'Aligned Bible',
     title: 'Fixture Literal Text',
-    abbreviation: 'ult',
+    abbreviation: 'ULT',
     flavorType: 'scripture',
     flavor: 'textTranslation',
     flavorDetails: textFlavor,
-    currentScope: bookScope(literalBooks),
+    currentScope: { ...bookScope(literalBooks), FRT: [], NEH: [] },
     books: bookCodes(literalBooks),
-    ingredients: textIngredients(literalBooks, 'ult', 'qaa'),
+    ingredients: literalIngredients(),
   }),
   release({
     resource: 'qaa_ust',
@@ -213,7 +265,7 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     language: languages.qaa,
     subject: 'Aligned Bible',
     title: 'Fixture Simplified Text',
-    abbreviation: 'ust',
+    abbreviation: 'UST',
     flavorType: 'scripture',
     flavor: 'textTranslation',
     flavorDetails: textFlavor,
@@ -227,12 +279,12 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     language: languages.qaa,
     subject: 'TSV Translation Notes',
     title: 'Fixture Translation Notes',
-    abbreviation: 'tn',
+    abbreviation: 'TN',
     flavorType: 'parascriptural',
     flavor: 'x-bcvnotes',
     currentScope: bookScope(literalBooks),
     books: bookCodes(literalBooks),
-    ingredients: helpsIngredients('tn', bookNotes),
+    ingredients: helpsIngredients(bookNotes),
   }),
   release({
     resource: 'qaa_twl',
@@ -240,12 +292,12 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     language: languages.qaa,
     subject: 'TSV Translation Words Links',
     title: 'Fixture Translation Words Links',
-    abbreviation: 'twl',
+    abbreviation: 'TW',
     flavorType: 'parascriptural',
     flavor: 'x-bcvarticles',
     currentScope: bookScope(literalBooks),
     books: bookCodes(literalBooks),
-    ingredients: helpsIngredients('twl', bookWordLinks),
+    ingredients: wordsIngredients(),
   }),
   release({
     resource: 'qaa_tq',
@@ -253,12 +305,12 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     language: languages.qaa,
     subject: 'TSV Translation Questions',
     title: 'Fixture Translation Questions',
-    abbreviation: 'tq',
+    abbreviation: 'TQ',
     flavorType: 'parascriptural',
     flavor: 'x-bcvquestions',
     currentScope: bookScope(literalBooks),
     books: bookCodes(literalBooks),
-    ingredients: helpsIngredients('tq', bookQuestions),
+    ingredients: helpsIngredients(bookQuestions),
   }),
   release({
     resource: 'qaa_tw',
@@ -266,10 +318,13 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     language: languages.qaa,
     subject: 'Translation Words',
     title: 'Fixture Translation Words',
-    abbreviation: 'tw',
-    flavorType: 'peripheral',
-    flavor: 'x-peripheralArticles',
-    ingredients: articleIngredients(wordArticles),
+    abbreviation: 'TW',
+    flavorType: 'parascriptural',
+    flavor: 'x-bcvarticles',
+    catalogFlavor: catalogArticles,
+    currentScope: bookScope(literalBooks),
+    books: bookCodes(literalBooks),
+    ingredients: wordsIngredients(),
   }),
   release({
     resource: 'qaa_ta',
@@ -277,7 +332,7 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     language: languages.qaa,
     subject: 'Translation Academy',
     title: 'Fixture Translation Academy',
-    abbreviation: 'ta',
+    abbreviation: 'TA',
     flavorType: 'peripheral',
     flavor: 'x-peripheralArticles',
     ingredients: articleIngredients(academyArticles),
@@ -288,9 +343,10 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     language: languages.qaa,
     subject: 'Open Bible Stories',
     title: 'Fixture Open Bible Stories',
-    abbreviation: 'obs',
+    abbreviation: 'OBS',
     flavorType: 'gloss',
     flavor: 'textStories',
+    statement: storiesStatement,
     ingredients: [...storyIngredients('qaa'), imageOverride()],
   }),
   release({
@@ -300,9 +356,10 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     language: languages.qaa,
     subject: 'Open Bible Stories',
     title: 'Fixture Open Bible Stories (Door43 Catalog)',
-    abbreviation: 'obs',
+    abbreviation: 'OBS',
     flavorType: 'gloss',
     flavor: 'textStories',
+    statement: storiesStatement,
     ingredients: storyIngredients('qaa'),
   }),
   release({
@@ -311,10 +368,11 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     language: languages.qaa,
     subject: 'TSV OBS Translation Notes',
     title: 'Fixture OBS Translation Notes',
-    abbreviation: 'obs-tn',
-    flavorType: 'parascriptural',
-    flavor: 'x-bcvnotes',
-    ingredients: storyHelp('tn', storyNotes),
+    abbreviation: 'OBSTN',
+    flavorType: 'peripheral',
+    flavor: 'x-obsnotes',
+    catalogFlavor: { flavorType: 'parascriptural', flavor: 'x-notes' },
+    ingredients: storyHelp(storyNotes),
   }),
   release({
     resource: 'qaa_obs-sq',
@@ -322,10 +380,25 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     language: languages.qaa,
     subject: 'TSV OBS Study Questions',
     title: 'Fixture OBS Study Questions',
-    abbreviation: 'obs-sq',
+    abbreviation: 'OBSSQ',
+    flavorType: 'peripheral',
+    flavor: 'x-obsquestions',
+    catalogFlavor: { flavorType: 'parascriptural', flavor: 'x-questions' },
+    ingredients: storyHelp(storyQuestions('qaa')),
+  }),
+  release({
+    resource: 'qaa_obs-twl',
+    tag: 'v1',
+    language: languages.qaa,
+    subject: 'TSV OBS Translation Words Links',
+    title: 'Fixture OBS Translation Words Links',
+    abbreviation: 'OBSTWL',
     flavorType: 'parascriptural',
-    flavor: 'x-bcvquestions',
-    ingredients: storyHelp('sq', storyQuestions('qaa')),
+    flavor: 'x-bcvarticles',
+    catalogFlavor: { flavorType: 'parascriptural', flavor: 'x-links' },
+    statement: { statement: 'Copyright © 2021 by unfoldingWord', bare: true },
+    currentScope: storiesScope,
+    ingredients: storyHelp(storyWordLinks, storiesScope),
   }),
   release({
     resource: 'qaa_obs-tf',
@@ -333,7 +406,7 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     language: languages.qaa,
     subject: 'OBS Theological Formation',
     title: 'Fixture OBS Theological Formation',
-    abbreviation: 'obs-tf',
+    abbreviation: 'OBSTF',
     flavorType: provisionalFlavors.formation.flavorType,
     flavor: provisionalFlavors.formation.flavor,
     ingredients: formationIngredients(),
@@ -365,9 +438,10 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     language: languages.qab,
     subject: 'Open Bible Stories',
     title: 'Fixture B Open Bible Stories',
-    abbreviation: 'obs',
+    abbreviation: 'OBS',
     flavorType: 'gloss',
     flavor: 'textStories',
+    statement: storiesStatement,
     ingredients: storyIngredients('qab'),
   }),
   release({
@@ -376,10 +450,11 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     language: languages.qab,
     subject: 'TSV OBS Study Questions',
     title: 'Fixture B OBS Study Questions',
-    abbreviation: 'obs-sq',
-    flavorType: 'parascriptural',
-    flavor: 'x-bcvquestions',
-    ingredients: storyHelp('sq', storyQuestions('qab')),
+    abbreviation: 'OBSSQ',
+    flavorType: 'peripheral',
+    flavor: 'x-obsquestions',
+    catalogFlavor: { flavorType: 'parascriptural', flavor: 'x-questions' },
+    ingredients: storyHelp(storyQuestions('qab')),
   }),
   release({
     resource: 'en_obs',
@@ -387,35 +462,36 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     language: languages.en,
     subject: 'Open Bible Stories',
     title: 'Open Bible Stories (fixture)',
-    abbreviation: 'obs',
+    abbreviation: 'OBS',
     flavorType: 'gloss',
     flavor: 'textStories',
+    statement: storiesStatement,
     ingredients: storyIngredients('en'),
   }),
   release({
     resource: 'en_obs-tf',
-    tag: 'v1',
+    tag: 'v4',
     language: languages.en,
     subject: 'OBS Theological Formation',
     title: 'OBS Theological Formation (fixture)',
-    abbreviation: 'obs-tf',
+    abbreviation: 'OBSTF',
     flavorType: provisionalFlavors.formation.flavorType,
     flavor: provisionalFlavors.formation.flavor,
     ingredients: formationIngredients(),
   }),
   release({
     resource: 'hbo_uhb',
-    tag: 'v2.1.30',
+    tag: 'v3.0.0',
     language: languages.hbo,
     subject: 'Hebrew Old Testament',
     title: 'Hebrew Bible (fixture)',
-    abbreviation: 'uhb',
+    abbreviation: 'UHB',
     flavorType: 'scripture',
     flavor: 'textTranslation',
     flavorDetails: textFlavor,
     currentScope: bookScope(hebrewBooks),
     books: bookCodes(hebrewBooks),
-    ingredients: textIngredients(hebrewBooks, 'uhb', 'hbo'),
+    ingredients: originalIngredients(hebrewBooks, 'uhb', 'hbo'),
   }),
   release({
     resource: 'el-x-koine_ugnt',
@@ -423,13 +499,13 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     language: languages.grc,
     subject: 'Greek New Testament',
     title: 'Greek New Testament (fixture)',
-    abbreviation: 'ugnt',
+    abbreviation: 'UGNT',
     flavorType: 'scripture',
     flavor: 'textTranslation',
     flavorDetails: textFlavor,
     currentScope: bookScope(greekBooks),
     books: bookCodes(greekBooks),
-    ingredients: textIngredients(greekBooks, 'ugnt', 'el-x-koine'),
+    ingredients: originalIngredients(greekBooks, 'ugnt', 'el-x-koine'),
   }),
   release({
     resource: 'obs-images',

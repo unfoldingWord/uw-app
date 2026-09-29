@@ -1,5 +1,5 @@
 import type { Library } from './library';
-import { academyPrefix, resolveLink, wordsPrefix } from './links';
+import { academyPrefix, wordLinkArticle, wordsPrefix } from './links';
 import {
   academyArticle,
   images,
@@ -132,14 +132,14 @@ async function storyHelps(library: Library, language: string, story: number) {
   for (const entry of library.of(language, ['storyWordLinks'])) {
     for (const row of await storyWordLinkRows(library, entry)) {
       const frame = frameOf(row.reference, story);
-      const target = resolveLink(row.link, { resource: 'other', path: '' });
-      if (frame !== undefined && target?.kind === 'article') {
-        const title = library.titleOf(language, target);
+      const article = wordLinkArticle(row.link);
+      if (frame !== undefined && article !== undefined) {
+        const title = library.titleOf(language, { kind: 'article', id: article });
         const link = {
           id: row.id,
           frame,
           words: row.original,
-          article: target.id,
+          article,
           provenance: entry.provenance,
         };
         wordLinks.push(title === undefined ? link : { ...link, title });

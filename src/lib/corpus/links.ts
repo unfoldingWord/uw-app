@@ -18,8 +18,11 @@ function articleId(prefix: string, path: string): string | undefined {
   return articleShape.test(id) ? id : undefined;
 }
 
+const wordsPayload = /^payload\//;
+const wordsDictionary = 'bible/';
+
 export function wordsArticleId(path: string): string | undefined {
-  return articleId(wordsPrefix, path);
+  return articleId(wordsPrefix, path.replace(wordsPayload, wordsDictionary));
 }
 
 export function academyArticleId(manual: string, slug: string): string | undefined {
@@ -124,6 +127,11 @@ function resolveRelative(href: string, base: LinkBase): LinkTarget | undefined {
     return id === undefined ? undefined : { kind: 'article', id };
   }
   return undefined;
+}
+
+export function wordLinkArticle(link: string): string | undefined {
+  const target = resolveLink(link, { resource: 'tw', path: '' });
+  return target?.kind === 'article' && target.id.startsWith(`${wordsPrefix}/`) ? target.id : undefined;
 }
 
 export function resolveLink(href: string, base: LinkBase): LinkTarget | undefined {

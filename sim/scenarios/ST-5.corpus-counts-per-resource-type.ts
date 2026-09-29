@@ -32,6 +32,7 @@ export default scenario(
       stories: count(3),
       storyNotes: count(5),
       storyQuestions: count(4),
+      storyWordLinks: count(2),
       movements: count(3),
       audio: count(1),
     });

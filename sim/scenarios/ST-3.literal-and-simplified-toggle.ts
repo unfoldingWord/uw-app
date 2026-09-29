@@ -44,9 +44,7 @@ export default scenario(
     const literalOnly = buildBurrito({
       publisher: 'unfoldingWord',
       resource: 'qac_ult',
-      tag: 'v1',
       commit: 'c0ffee',
-      released: '2026-09-01T00:00:00Z',
       dateCreated: '2026-09-01T00:00:00Z',
       generator: { softwareName: 'ST-3', softwareVersion: '1' },
       language: { tag: 'qac', name: { en: 'Fixture language C' } },
