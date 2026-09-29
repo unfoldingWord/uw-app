@@ -55,6 +55,7 @@ export const shots: readonly Shot[] = [
   { name: 'transfer', path: '/transfer' },
   { name: 'transfer-send', path: '/transfer', press: 'Send', modes: leftToRight },
   { name: 'transfer-receive', path: '/transfer', press: 'Receive', modes: leftToRight },
+  { name: 'study-audio', path: '/study?reference=RUT%201:16', press: 'Play audio', modes: leftToRight },
   { name: 'study-word-links', path: '/study?reference=RUT%201:16', press: 'Word links', modes: leftToRight },
   { name: 'languages', path: '/languages' },
   { name: 'settings', path: '/settings' },

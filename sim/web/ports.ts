@@ -1,5 +1,5 @@
 import type { Db, DevicePlatform, Files, Http, HttpDownload, HttpRequest, Kv, Ports } from '@lib/ports';
-import { createMemoryAudio } from '@sim/adapters/audio';
+import { createMemoryAudio, type MemoryAudio } from '@sim/adapters/audio';
 import { createMemoryClock } from '@sim/adapters/clock';
 import { createMemoryFiles } from '@sim/adapters/files';
 import { createMemoryHttp, createMemoryNetwork, type MemoryNetwork } from '@sim/adapters/http';
@@ -21,12 +21,15 @@ const harnessPlatform: DevicePlatform = 'android';
 
 const harnessAppPackage = { path: 'app/unfoldingword.apk', bytes: 96 * 1024 };
 
+const harnessClipMs = 3 * 60 * 1000 + 12 * 1000;
+
+const audioExtensions: readonly string[] = ['mp3'];
+
 const mimeTypes: Readonly<Record<string, string>> = {
   jpg: 'image/jpeg',
   jpeg: 'image/jpeg',
   png: 'image/png',
   webp: 'image/webp',
-  mp3: 'audio/mpeg',
 };
 
 function variantOf(): string {
@@ -69,14 +72,26 @@ function servedFrom(image: DeviceImage, network: MemoryNetwork): void {
   }
 }
 
-async function restore(image: DeviceImage, files: Files, kv: MemoryKv, pictures: Map<string, string>) {
+function extensionOf(path: string): string {
+  return path.slice(path.lastIndexOf('.') + 1).toLowerCase();
+}
+
+async function restore(
+  image: DeviceImage,
+  files: Files,
+  kv: MemoryKv,
+  pictures: Map<string, string>,
+  audio: MemoryAudio,
+) {
   for (const directory of image.directories) {
     await files.mkdir(directory);
   }
   for (const file of image.files) {
     const bytes = decodeBytes(file.body);
     await files.writeBytes(file.path, bytes);
-    if (mimeTypes[file.path.slice(file.path.lastIndexOf('.') + 1).toLowerCase()] !== undefined) {
+    if (audioExtensions.includes(extensionOf(file.path))) {
+      audio.provide({ kind: 'file', path: file.path }, harnessClipMs);
+    } else if (mimeTypes[extensionOf(file.path)] !== undefined) {
       pictures.set(file.path, blobUrl(file.path, bytes));
     }
   }
@@ -171,13 +186,14 @@ export function createPlatformPorts(policy: HostPolicy): Ports {
   const network = createMemoryNetwork();
   const http = createMemoryHttp({ network, files });
   const pictures = new Map<string, string>();
+  const audio = createMemoryAudio({ clock });
   const image = loadImage(variantOf());
   const sql = lazyEngine(image.then((loaded) => openSqlEngine(decodeBytes(loaded.db), `/${sqlWasmPath}`)));
   const ready = Promise.all([image, sql.ready]).then(async ([loaded]) => {
     clock.set(loaded.at);
     locale.set(loaded.locale);
     servedFrom(loaded, network);
-    await restore(loaded, files, kv, pictures);
+    await restore(loaded, files, kv, pictures, audio);
   });
   const bus = createTransportBus();
   return {
@@ -188,7 +204,7 @@ export function createPlatformPorts(policy: HostPolicy): Ports {
     kv: gatedKv(ready, kv),
     http: gatedHttp(ready, http, policy),
     transport: bus.transport({ platform: harnessPlatform, appPackage: harnessAppPackage }),
-    audio: createMemoryAudio({ clock }),
+    audio,
     shareSheet: createMemoryShareSheet(),
     locale,
     picker: createMemoryPicker(),
