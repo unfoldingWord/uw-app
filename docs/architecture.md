@@ -61,7 +61,7 @@ Each is a deep module: small interface, tests at the interface, internals free t
 
 **Formation.** `tracks(language)`, `session(track, n)`, `groups()`, `create(group)`, `advance(group, step)`. A state machine over positions. Language fallback (plain stories when movements are absent, English movements alongside when asked) is decided here, once.
 
-**Transfer.** Sender: `offer(plan)` advertises under a short code, `run(transfer)` sends what the receiver accepts. Receiver: `discover()`, `connect(peer)` shows the offer, `accept(selection)` receives and verifies every archive and returns a peer session; then it is just `packs.install(fromPeer(session))`. Either side: `cancel()`, `current()`. A state machine over the Transport port, speaking a small versioned protocol (`src/lib/transfer/protocol.ts`). Carries burritos, and on Android the app package.
+**Transfer.** Sender: `offer(plan)` advertises under a short code, `run(transfer)` sends what the receiver accepts. Receiver: `discover()`, `connect(peer)` shows the offer, `accept(selection)` receives and verifies every archive and returns a peer session that hands Packs each archive as the file it was received into (`{ ok: true, path }`), never its bytes; then it is just `packs.install(fromPeer(session))`. Either side: `cancel()`, `current()`. A state machine over the Transport port, speaking a small versioned protocol (`src/lib/transfer/protocol.ts`). Carries burritos, and on Android the app package.
 
 **Share.** `passage(passage)`, `story(story)`, `audio(clip)`, `journal(report)`, each with the locale for its words. Builds payloads with provenance and the link from content the corpus already returned, hands them to ShareSheet.
 

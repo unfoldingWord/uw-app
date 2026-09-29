@@ -3,6 +3,7 @@ import { utf8 } from '@lib/burrito/files';
 import { languagePackId } from '@lib/domain/pack';
 import type { TransportLink } from '@lib/ports';
 import { decodeFrame, encodeFrame, type Message } from '@lib/transfer/protocol';
+import { fromPeer } from '@lib/packs/source';
 import { pairingCode } from '@lib/transfer/transfer';
 import { installFromCatalog } from './install';
 import { startOffer, transferBetween } from './transfer';
@@ -49,6 +50,41 @@ describe('Transfer at its interface', () => {
       expect(progress.length).toBeLessThanOrEqual(10);
     }
     expect(world.bus.delivered()).toBeGreaterThan(40 * 600);
+  });
+
+  it('hands each received archive to Packs as the file it was received into, not as bytes', async () => {
+    const world = createWorld();
+    const giver = world.device('giver', { platform: 'ios' });
+    await giver.start();
+    await installFromCatalog(giver, [languagePackId('qab')]);
+    const taker = world.device('taker', { platform: 'android' });
+    await taker.start();
+    const offered = await startOffer(giver, { language: 'qab' });
+    const sending = giver.kernel.transfer.run(offered.transfer);
+    const peer = (await taker.kernel.transfer.discover()).find((item) => item.code === offered.code);
+    expect(peer).toBeDefined();
+    if (peer === undefined) {
+      return;
+    }
+    expect((await taker.kernel.transfer.connect(peer)).ok).toBe(true);
+    const accepted = await taker.kernel.transfer.accept({});
+    await sending;
+    const session = accepted.ok ? accepted.session : undefined;
+    expect(session).toBeDefined();
+    if (session === undefined) {
+      return;
+    }
+    const [first] = session.offered();
+    expect(first).toBeDefined();
+    if (first === undefined) {
+      return;
+    }
+    const progress: number[] = [];
+    const receipt = await session.receive(first, (bytes) => progress.push(bytes));
+    expect(receipt.ok && 'path' in receipt && (await taker.adapters.files.exists(receipt.path))).toBe(true);
+    expect(receipt.ok && 'archive' in receipt).toBe(false);
+    expect(progress).toEqual([first.bytes]);
+    expect((await taker.kernel.packs.install(fromPeer(session))).ok).toBe(true);
   });
 
   it('refuses a plan it cannot offer, and a second transfer while one is open', async () => {

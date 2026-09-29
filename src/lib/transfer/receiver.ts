@@ -116,13 +116,13 @@ export function receivedSession(
   return {
     offered: () => offered,
     async receive(burrito: ReleaseRef, onProgress?: (bytes: number) => void) {
-      const path = archives.get(resourceKey(burrito));
+      const key = resourceKey(burrito);
+      const path = archives.get(key);
       if (path === undefined || !(await ports.files.exists(path))) {
         return { ok: false, code: 'files.not-found' };
       }
-      const archive = await ports.files.readBytes(path);
-      onProgress?.(archive.byteLength);
-      return { ok: true, archive };
+      onProgress?.(offered.find((item) => resourceKey(item) === key)?.bytes ?? 0);
+      return { ok: true, path };
     },
   };
 }
