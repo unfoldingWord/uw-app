@@ -124,6 +124,23 @@ export const layers: { name: string; files: string[]; ignores?: string[]; patter
       ],
     },
     {
+      name: 'migrations',
+      files: ['migrations/**', 'src/features/*/migrations/**'],
+      patterns: [
+        {
+          regex: '^(?!@lib/ports$)',
+          allowTypeImports: false,
+          message:
+            'A migration is data: its statements and the Migration type from @lib/ports, nothing else (AGENTS.md section 3).',
+        },
+        {
+          regex: '^@lib/ports$',
+          allowTypeImports: true,
+          message: 'A migration imports @lib/ports as a type only (AGENTS.md section 3).',
+        },
+      ],
+    },
+    {
       name: 'app',
       files: ['app/**'],
       patterns: [simFromApplication],

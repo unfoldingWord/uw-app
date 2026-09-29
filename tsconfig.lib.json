@@ -17,6 +17,6 @@
       "@lib/*": ["./src/lib/*"]
     }
   },
-  "include": ["src/lib/**/*.ts"],
+  "include": ["src/lib/**/*.ts", "migrations/**/*.ts"],
   "exclude": ["src/lib/**/*.test.ts"]
 }

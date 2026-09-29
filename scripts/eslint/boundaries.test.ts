@@ -35,6 +35,10 @@ describe('import boundaries (AGENTS.md rule 2)', () => {
     ['sim/world.ts', "import { http } from '@platform/http';\n"],
     ['sim/world.ts', "import { View } from 'react-native';\n"],
     ['app/index.tsx', "import { createWorld } from '@sim/world';\n"],
+    ['migrations/0002-groups.ts', "import { createKernel } from '@lib/kernel';\n"],
+    ['migrations/0002-groups.ts', "import { allowedHosts } from '@lib/network';\n"],
+    ['migrations/0002-groups.ts', "import { migrationsTable } from '@lib/ports';\n"],
+    ['src/features/home/migrations/0001-home.ts', "import { home } from '../service';\n"],
   ])('%s refuses %s', async (file, code) => {
     expect(await ruleIds(file, code)).toContain(restricted);
   });
@@ -59,6 +63,8 @@ describe('import boundaries (AGENTS.md rule 2)', () => {
     ['sim/world.ts', "import { createKernel } from '@lib/kernel';\n"],
     ['sim/world.ts', "import { home } from '@features/home/service';\n"],
     ['sim/world.ts', "import { readFileSync } from 'node:fs';\n"],
+    ['migrations/0002-groups.ts', "import type { Migration } from '@lib/ports';\n"],
+    ['src/features/home/migrations/0001-home.ts', "import type { Migration } from '@lib/ports';\n"],
   ])('%s allows %s', async (file, code) => {
     const ids = await ruleIds(file, code);
     expect(ids.filter((id) => id === restricted || id === leavesUnit)).toEqual([]);
