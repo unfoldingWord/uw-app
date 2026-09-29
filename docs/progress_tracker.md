@@ -3,6 +3,55 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 T7b Transfer and Share
+
+Node v22.22.2. Everything below ran in Node through Vitest, the sim and the checks; nothing ran on a phone,
+no radio was used, and no screen was rendered.
+
+### Observed red, then green
+
+| Test | Red | Green |
+|---|---|---|
+| SH-1, SH-2, SH-3 (transfer part), SH-4, SH-5, DX-2, DX-3 (transfer and share part), written before the modules were in `kernelModules` | `sim: 25 scenarios, 18 passed, 7 failed`: `Cannot read properties of undefined (reading 'offer')`, `(reading 'capabilities')`, `(reading 'passage')` | pass |
+| SH-1 against the first draft | `the omitted simplified text did not travel`: `availableTexts` is `[]` when one reading exists (ST-3), not `['literal']`; then `nothing of the transfer is left`, which counted the empty `transfer/` directory | assertions corrected; pass |
+| `moves a pack in many small chunks` in `sim/transfer.test.ts`, 600-byte link | timed out: the offer frame was larger than the link allows, the send failed, and the sender waited to drain a link it had not closed | messages over the limit travel as `part` frames; a failed side closes before it drains; pass |
+| DX-3 with `mintedIds` counting ids from `verbatim` events again (throwaway edit) | `a transfer and a share replay event for event`: divergence at index 5, the redone install took the transfer's id | pass after revert |
+| `refuses an archive whose digest does not match` with the md5 comparison removed from `src/lib/transfer/receiver.ts` (throwaway edit) | `1 failed` | pass after revert |
+
+`npm run verify` exit 0: `Test Files 39 passed`, `Tests 422 passed`; `owns: 9 owners, 16 tables, 10 created
+by migrations, one writer each`; `strings: 407 keys in 16 locales`, each complete; `5 checks, 0 pending, none
+failed`; `sim: 25 scenarios, 25 passed, 0 failed`; `trace: 51 Must requirements, 25 with a scenario, 1 with a
+test only, 25 unproven`; `contract: 20 fixture burritos, 0 failed` (live skipped, offline); `bundle: skipped`.
+
+### What later tasks must follow
+
+- The receiving half is two calls: `transfer.accept(selection)` returns a peer session once every archive is
+  in `transfer/incoming/` and its md5 matches, then `packs.install(fromPeer(session))`. The feature service
+  makes both calls; Transfer cleans `transfer/incoming/` when it observes that install end.
+- `transfersCompleted` now counts the receiving side only, so a transfer is counted once across two phones,
+  and `transfersByPlatformPair` splits the same count by `ios`/`android` pair (PRD 14). The privacy screen
+  copy (`privacy.count.transfersCompleted`) does not mention the split; product should confirm it.
+- The share link is one constant, `getTheAppLink = 'https://unfoldingword.org'` in
+  `src/lib/share/payload.ts`, until the short link domain is chosen (PRD 15, open).
+- The sim world's bus carries at most 4 KiB per chunk (`worldChunkBytes`), so every scenario transfer is
+  chunked; `createWorld({ maxChunkBytes })` sets another size.
+- The sim's Android devices report `app/unfoldingword.apk` (96 KiB) as the app package; a scenario writes the
+  bytes there before offering it.
+
+### Not verified
+
+- No radio: the Transport platform adapter is still the open proposal, so throughput, message framing on a
+  real stream, back pressure and link timeouts are unproven. `TransportLink.receive` has no timeout; a peer
+  that stalls without closing holds a transfer until the leader cancels.
+- The Android app package is saved to `transfer/app/unfoldingword.apk` with state `ready-to-install`;
+  handing it to the package installer is an OS intent outside the kernel, not written or tried.
+- A replay of a journal that received the app package shows no `receivedApp`, since the file is not in the
+  journal (named in `docs/replay.md`).
+- The archive the sender writes is proven to validate against the fixture rows only; no real go-rc2sb
+  release was re-zipped, since git.door43.org is blocked here.
+- `docs/content-contract.md` says the app writes a burrito for a share of a passage; Share sends text and
+  audio files, not burritos (SH-4). The sentence needs a product decision, not a code change.
+
 ## 2026-09-29 M6 merge of Strings (T7a) onto Catalog, Packs, Corpus and F1
 
 Node v22.22.2. Everything below ran in Node through Vitest, the sim and the checks; nothing ran on a phone
