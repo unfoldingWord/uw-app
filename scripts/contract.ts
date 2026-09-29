@@ -1,4 +1,5 @@
 import { readArchive } from '@lib/burrito/archive';
+import { describeLive } from './contract-describe';
 import { pinnedRows, type ContractRow, type RowId } from '@lib/burrito/flavors';
 import { readProvenance } from '@lib/burrito/metadata';
 import { validate, type ValidationReport } from '@lib/burrito/validate';
@@ -137,4 +138,5 @@ for (const outcome of outcomes) {
 }
 const failures = outcomes.filter((outcome) => outcome.failed).length;
 console.log(`contract: ${fixtureOutcomes.length} fixture burritos, ${failures} failed`);
+await describeLive();
 process.exitCode = failures === 0 ? 0 : 1;
