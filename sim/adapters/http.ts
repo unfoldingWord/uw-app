@@ -16,11 +16,18 @@ export type MemoryNetwork = {
 
 export type ScriptedOutcome = 'offline' | 'timeout' | { status: number };
 
+export type SentRequest = {
+  readonly method: string;
+  readonly url: string;
+  readonly headers: Readonly<Record<string, string>>;
+};
+
 export type MemoryHttp = Http & {
   setOnline(online: boolean): void;
   script(urlPrefix: string, outcome: ScriptedOutcome, times?: number): void;
   hold(urlPrefix: string): () => void;
   requests(): readonly string[];
+  sent(): readonly SentRequest[];
 };
 
 const progressChunk = 64 * 1024;
@@ -50,6 +57,7 @@ export function createMemoryHttp(options: {
   const hosts = options.hosts ?? allowedHosts;
   const scripts: { prefix: string; outcome: ScriptedOutcome; remaining: number }[] = [];
   const log: string[] = [];
+  const sentLog: SentRequest[] = [];
   const holds: { prefix: string; released: Promise<void> }[] = [];
   let online = true;
 
@@ -81,6 +89,7 @@ export function createMemoryHttp(options: {
 
   function respond(request: HttpRequest): HttpResponse {
     log.push(`${request.method ?? 'GET'} ${request.url}`);
+    sentLog.push({ method: request.method ?? 'GET', url: request.url, headers: { ...request.headers } });
     if (!isAllowedUrl(request.url, hosts)) {
       return { kind: 'refused', host: hostOf(request.url) };
     }
@@ -152,5 +161,6 @@ export function createMemoryHttp(options: {
       };
     },
     requests: () => log.slice(),
+    sent: () => sentLog.slice(),
   };
 }
