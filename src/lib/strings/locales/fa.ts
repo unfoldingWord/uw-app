@@ -377,6 +377,7 @@ export const fa: LocaleTable = {
   'privacy.count.appOpens': 'چند بار برنامه باز شد',
   'privacy.count.languagePackDownloads': 'چند بستهٔ زبان بارگیری شد، برای هر زبان',
   'privacy.count.transfersCompleted': 'چند فرستادن کامل شد',
+  'privacy.count.transfersByPlatformPair': 'چند فرستادن کامل شد، بر اساس نوع دو گوشی',
   'privacy.count.sharesSent': 'چند بار چیزی هم‌رسانی شد',
   'privacy.count.formationSessionsStarted': 'چند جلسهٔ شاگردسازی آغاز شد، برای هر زبان',
   'privacy.count.invitationTaps': 'چند بار روی دعوت به شراکت زده شد',
@@ -450,6 +451,7 @@ export const fa: LocaleTable = {
   'failure.transfer.declined': 'گوشی دیگر نپذیرفت. می‌توانید دوباره پیشنهاد کنید.',
   'failure.transfer.peer-lost':
     'گوشی دیگر از دسترس خارج شد. گوشی‌ها را نزدیک‌تر بیاورید و دوباره امتحان کنید.',
+  'failure.transfer.cancelled': 'انتقال متوقف شد. هیچ بخش ناقصی نگه داشته نشد.',
   'failure.audio.unavailable': 'صدا برای این مورد اکنون در دسترس نیست.',
   'failure.share.unavailable': 'هم‌رسانی اکنون روی این گوشی در دسترس نیست.',
   'failure.partners.invalid-feed':

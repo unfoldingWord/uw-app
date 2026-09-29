@@ -13,12 +13,14 @@ export type World = {
   devices(): readonly SimDevice[];
 };
 
-export type WorldOptions = { at?: number; utcOffsetMinutes?: number };
+export type WorldOptions = { at?: number; utcOffsetMinutes?: number; maxChunkBytes?: number };
+
+export const worldChunkBytes = 4096;
 
 export function createWorld(options: WorldOptions = {}): World {
   const clock = createMemoryClock(options);
   const network = createMemoryNetwork();
-  const bus = createTransportBus();
+  const bus = createTransportBus({ maxChunkBytes: options.maxChunkBytes ?? worldChunkBytes });
   const fixtures = serveFixtures(network);
   const devices: SimDevice[] = [];
   return {

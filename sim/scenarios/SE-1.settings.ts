@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { languagePackId } from '@lib/domain/pack';
+import { emptyTelemetry } from '@lib/telemetry/folds';
 import { scenario } from '../scenario';
 import { servicesOf } from '../services';
 
@@ -62,15 +63,7 @@ export default scenario(
 
     assert.deepEqual(
       settings.privacy().counts.map((count) => count.fold),
-      [
-        'appOpens',
-        'languagePackDownloads',
-        'transfersCompleted',
-        'sharesSent',
-        'formationSessionsStarted',
-        'invitationTaps',
-        'impactStoryOpens',
-      ],
+      Object.keys(emptyTelemetry),
       'the privacy screen lists exactly the folds that leave the device',
     );
     assert.deepEqual(

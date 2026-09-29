@@ -1,10 +1,15 @@
 import assert from 'node:assert/strict';
 import { readArchive, writeArchive } from '@lib/burrito/archive';
-import { fromUtf8, utf8 } from '@lib/burrito/files';
+import { fromUtf8, md5Hex, utf8 } from '@lib/burrito/files';
+import { validate } from '@lib/burrito/validate';
 import { languagePackId } from '@lib/domain/pack';
 import { fromFile, fromPeer } from '@lib/packs/source';
+import { decodeFrame, type Message } from '@lib/transfer/protocol';
+import { fixtureRows } from '../fixtures/rows';
+import { installFromCatalog } from '../install';
 import { fixturePeer } from '../peer';
 import { scenario } from '../scenario';
+import { transferBetween } from '../transfer';
 
 type Metadata = { identification: Record<string, unknown> } & Record<string, unknown>;
 
@@ -21,6 +26,24 @@ function rewritten(archive: Uint8Array, change: (metadata: Metadata) => void, ex
     files.set(extra, utf8('not listed in the metadata'));
   }
   return writeArchive(files, { root: 'burrito', mtime: new Date(2026, 8, 1) });
+}
+
+function joined(parts: readonly Uint8Array[]): Uint8Array {
+  const bytes = new Uint8Array(parts.reduce((sum, part) => sum + part.byteLength, 0));
+  let offset = 0;
+  for (const part of parts) {
+    bytes.set(part, offset);
+    offset += part.byteLength;
+  }
+  return bytes;
+}
+
+function carried(frames: readonly Uint8Array[]): Message[] {
+  return frames.map((frame) => {
+    const decoded = decodeFrame(frame);
+    assert.ok(decoded.ok, 'every frame on the link is a protocol message');
+    return decoded.message;
+  });
 }
 
 export default scenario(
@@ -148,5 +171,44 @@ export default scenario(
     const gone = await opened.kernel.packs.importFile('content://gone/qab_obs.zip');
     assert.equal(gone.ok, false);
     assert.equal(!gone.ok && gone.code, 'files.not-found');
+
+    const giver = world.device('giver', { platform: 'ios' });
+    await giver.start();
+    await installFromCatalog(giver, [languagePackId('qab')]);
+    const taker = world.device('taker', { platform: 'android' });
+    await taker.start();
+    const frames: Uint8Array[] = [];
+    const stopListening = world.bus.tap((frame) => frames.push(frame));
+    const moved = await transferBetween(giver, taker, { language: 'qab' });
+    stopListening();
+    assert.ok(moved.installed?.ok, 'a transfer installs through the same path as a download and a file');
+    const messages = carried(frames);
+    const plan = messages.find((message) => message.kind === 'plan');
+    assert.ok(plan?.kind === 'plan');
+    assert.deepEqual(
+      plan.items.map((item) => item.key),
+      ['unfoldingWord/qab_obs', 'unfoldingWord/qab_obs-sq'],
+    );
+    for (const [index, item] of plan.items.entries()) {
+      const chunks = messages.flatMap((message) =>
+        message.kind === 'chunk' && message.item === index ? [message] : [],
+      );
+      assert.deepEqual(
+        chunks.map((chunk) => chunk.seq),
+        chunks.map((_, seq) => seq),
+      );
+      const archive = joined(chunks.map((chunk) => chunk.body));
+      assert.equal(archive.byteLength, item.bytes);
+      const done = messages.find((message) => message.kind === 'done' && message.item === index);
+      assert.ok(done?.kind === 'done' && done.md5 === md5Hex(archive), 'each archive carries its digest');
+      const read = readArchive(archive);
+      assert.ok(read.ok, `${item.key} travels as a zip another burrito tool can open`);
+      const report = validate(read.files, { rows: fixtureRows });
+      assert.ok(report.ok, `${item.key} travels as a valid Scripture Burrito`);
+    }
+    const installedHere = taker.kernel.packs.installed()[0];
+    assert.equal(installedHere?.source, 'peer');
+    const where = (tree: readonly string[]) => tree.filter((path) => path.startsWith('packs/language/qab/'));
+    assert.deepEqual(where(taker.adapters.files.tree()), where(online.adapters.files.tree()));
   },
 );

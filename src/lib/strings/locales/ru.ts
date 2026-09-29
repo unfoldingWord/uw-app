@@ -427,6 +427,7 @@ export const ru: LocaleTable = {
   'privacy.count.appOpens': 'Сколько раз открывали приложение',
   'privacy.count.languagePackDownloads': 'Сколько языковых пакетов скачано, по языкам',
   'privacy.count.transfersCompleted': 'Сколько передач завершено',
+  'privacy.count.transfersByPlatformPair': 'Сколько передач завершено, по типам двух телефонов',
   'privacy.count.sharesSent': 'Сколько раз чем-то поделились',
   'privacy.count.formationSessionsStarted': 'Сколько встреч наставничества начато, по языкам',
   'privacy.count.invitationTaps': 'Сколько раз нажали на приглашение к партнёрству',
@@ -503,6 +504,7 @@ export const ru: LocaleTable = {
   'failure.transfer.unsupported': 'Этот телефон не может отправить само приложение. Ресурсы отправить можно.',
   'failure.transfer.declined': 'Другой телефон не принял. Можно предложить ещё раз.',
   'failure.transfer.peer-lost': 'Другой телефон вне зоны связи. Поднесите телефоны ближе и повторите.',
+  'failure.transfer.cancelled': 'Передача остановлена. Ничего незавершённого не сохранено.',
   'failure.audio.unavailable': 'Аудио для этого сейчас недоступно.',
   'failure.share.unavailable': 'Отправка сейчас недоступна на этом телефоне.',
   'failure.partners.invalid-feed':

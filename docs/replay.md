@@ -95,6 +95,19 @@ Every event type is a row in `eventSchemas` in `src/lib/domain/events.ts`. The r
   stays published, so the replay of an earlier refresh sees it. Install progress is kept out of the journal
   except for at most ten `PackInstallProgressed` events per install; byte counts live in
   `packs.installing()` and the snapshot.
+- **The other phone.** A receiving Transfer takes every archive into `transfer/incoming/` and verifies it
+  before it hands Packs a peer session, so a receiver's journal reads `TransferAccepted`, at most ten
+  `TransferProgressed`, `TransferCompleted`, and only then `PackInstallStarted` with source `peer`. Replay
+  appends the Transfer events as recorded and redoes the install from the fixtures, in the same order. A
+  transfer id is minted on the phone and appears only in `verbatim` events, so replay plays back only the ids
+  that a `redo` or `follows` event carries (`mintedIds` in `sim/replay.ts`); otherwise the first redone
+  install would take the transfer's id. The Transfer snapshot shows the last result, folded from the
+  Transfer events it observes, so it replays too. The app package an Android phone received is not in the
+  journal: its `receivedApp` fact comes from the file in `transfer/app/`, which a replay does not have, and
+  the replay names that divergence in the snapshot.
+- **A share.** `ShareSent` is `verbatim` and names the kind and the language, never the text. The journal
+  file a leader shares (`diagnostics/journal.json`, DX-2) is a journal export with the device snapshot beside
+  it under `snapshot`, so `npm run replay` reads it as it is.
 - **The world's weather.** A download that failed because the phone was offline fails again only if the replay
   world is offline too. A scenario that reproduces a field report scripts the world first, for example
   `device.adapters.http.script(url, 'offline')`, and then replays.

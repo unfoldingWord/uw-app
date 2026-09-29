@@ -365,6 +365,8 @@ export const my: LocaleTable = {
   'privacy.count.appOpens': 'အက်ပ်ကို ဖွင့်ခဲ့သည့် အကြိမ်ရေ',
   'privacy.count.languagePackDownloads': 'ဘာသာစကားအလိုက် ဒေါင်းလုဒ်လုပ်ခဲ့သော ဘာသာစကား ပက်ကေ့ချ် အရေအတွက်',
   'privacy.count.transfersCompleted': 'ပြီးဆုံးခဲ့သော ပို့ခြင်း အရေအတွက်',
+  'privacy.count.transfersByPlatformPair':
+    'ပြီးဆုံးခဲ့သော ပို့ခြင်း အရေအတွက်၊ ဖုန်းနှစ်လုံး၏ အမျိုးအစားအလိုက်',
   'privacy.count.sharesSent': 'မျှဝေခဲ့သည့် အကြိမ်ရေ',
   'privacy.count.formationSessionsStarted': 'ဘာသာစကားအလိုက် စတင်ခဲ့သော ပျိုးထောင်ခြင်း တွေ့ဆုံပွဲ အရေအတွက်',
   'privacy.count.invitationTaps': 'မိတ်ဖက်ဖိတ်ခေါ်ချက်ကို နှိပ်ခဲ့သည့် အကြိမ်ရေ',
@@ -443,6 +445,7 @@ export const my: LocaleTable = {
   'failure.transfer.declined': 'အခြားဖုန်းက လက်မခံပါ။ ထပ်ပေးကြည့်နိုင်ပါသည်။',
   'failure.transfer.peer-lost':
     'အခြားဖုန်းသည် အကွာအဝေး ပြင်ပသို့ ရောက်သွားပါသည်။ ဖုန်းများကို နီးနီးထားပြီး ထပ်စမ်းကြည့်ပါ။',
+  'failure.transfer.cancelled': 'လွှဲပြောင်းမှုကို ရပ်လိုက်သည်။ မပြီးဆုံးသေးသော အစိတ်အပိုင်း မသိမ်းထားပါ။',
   'failure.audio.unavailable': 'ဤအရာအတွက် အသံ ယခု မရနိုင်ပါ။',
   'failure.share.unavailable': 'ဤဖုန်းတွင် မျှဝေခြင်း ယခု မရနိုင်ပါ။',
   'failure.partners.invalid-feed':

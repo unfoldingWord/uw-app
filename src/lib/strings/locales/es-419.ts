@@ -393,6 +393,8 @@ export const es419: LocaleTable = {
   'privacy.count.appOpens': 'Cuántas veces se abrió la aplicación',
   'privacy.count.languagePackDownloads': 'Cuántos paquetes de idioma se descargaron, por idioma',
   'privacy.count.transfersCompleted': 'Cuántas transferencias terminaron',
+  'privacy.count.transfersByPlatformPair':
+    'Cuántas transferencias terminaron, según el tipo de cada teléfono',
   'privacy.count.sharesSent': 'Cuántas veces se compartió algo',
   'privacy.count.formationSessionsStarted': 'Cuántas sesiones de formación comenzaron, por idioma',
   'privacy.count.invitationTaps': 'Cuántas veces se tocó la invitación a colaborar',
@@ -472,6 +474,7 @@ export const es419: LocaleTable = {
   'failure.transfer.declined': 'El otro teléfono no aceptó. Puedes volver a ofrecerlo.',
   'failure.transfer.peer-lost':
     'El otro teléfono quedó fuera de alcance. Acerca los teléfonos e intenta de nuevo.',
+  'failure.transfer.cancelled': 'La transferencia se detuvo. No se guardó nada a medias.',
   'failure.audio.unavailable': 'El audio no está disponible para esto ahora.',
   'failure.share.unavailable': 'Compartir no está disponible en este teléfono ahora.',
   'failure.partners.invalid-feed':

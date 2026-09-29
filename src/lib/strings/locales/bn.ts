@@ -377,6 +377,7 @@ export const bn: LocaleTable = {
   'privacy.count.appOpens': 'অ্যাপটি কতবার খোলা হয়েছে',
   'privacy.count.languagePackDownloads': 'কতগুলো ভাষা প্যাক ডাউনলোড হয়েছে, ভাষা অনুযায়ী',
   'privacy.count.transfersCompleted': 'কতগুলো পাঠানো সম্পন্ন হয়েছে',
+  'privacy.count.transfersByPlatformPair': 'কতগুলো পাঠানো সম্পন্ন হয়েছে, দুই ফোনের ধরন অনুযায়ী',
   'privacy.count.sharesSent': 'কতবার কিছু শেয়ার করা হয়েছে',
   'privacy.count.formationSessionsStarted': 'শিষ্যত্বের কতগুলো সভা শুরু হয়েছে, ভাষা অনুযায়ী',
   'privacy.count.invitationTaps': 'অংশীদার হওয়ার আমন্ত্রণে কতবার ট্যাপ করা হয়েছে',
@@ -448,6 +449,7 @@ export const bn: LocaleTable = {
   'failure.transfer.unsupported': 'এই ফোন অ্যাপটি নিজেই পাঠাতে পারে না। উপকরণগুলো তবুও পাঠানো যাবে।',
   'failure.transfer.declined': 'অন্য ফোনটি গ্রহণ করেনি। আপনি আবার দিতে পারেন।',
   'failure.transfer.peer-lost': 'অন্য ফোনটি নাগালের বাইরে চলে গেছে। ফোন দুটি কাছে আনুন এবং আবার চেষ্টা করুন।',
+  'failure.transfer.cancelled': 'স্থানান্তর থামানো হয়েছে। অসম্পূর্ণ কিছুই রাখা হয়নি।',
   'failure.audio.unavailable': 'এটির জন্য এখন অডিও পাওয়া যাচ্ছে না।',
   'failure.share.unavailable': 'এই ফোনে এখন শেয়ার করা যাচ্ছে না।',
   'failure.partners.invalid-feed':

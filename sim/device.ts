@@ -45,7 +45,7 @@ export type SimDevice = {
 
 export type DeviceWorld = { clock: Clock; network: MemoryNetwork; bus: TransportBus };
 
-const simAppPackage: AppPackage = { path: 'app/unfoldingword.apk', bytes: 48 * 1024 * 1024 };
+export const simAppPackage: AppPackage = { path: 'app/unfoldingword.apk', bytes: 96 * 1024 };
 
 export function createSimDevice(name: string, world: DeviceWorld, options: DeviceOptions = {}): SimDevice {
   const platform = options.platform ?? 'android';

@@ -356,6 +356,7 @@ export const vi: LocaleTable = {
   'privacy.count.appOpens': 'Số lần ứng dụng được mở',
   'privacy.count.languagePackDownloads': 'Số gói ngôn ngữ đã tải, theo từng ngôn ngữ',
   'privacy.count.transfersCompleted': 'Số lần chuyển đã hoàn tất',
+  'privacy.count.transfersByPlatformPair': 'Số lần chuyển đã hoàn tất, theo loại của hai điện thoại',
   'privacy.count.sharesSent': 'Số lần chia sẻ đã gửi',
   'privacy.count.formationSessionsStarted': 'Số buổi đào tạo đã bắt đầu, theo từng ngôn ngữ',
   'privacy.count.invitationTaps': 'Số lần lời mời đồng hành được chạm',
@@ -428,6 +429,7 @@ export const vi: LocaleTable = {
   'failure.transfer.unsupported': 'Điện thoại này không gửi được chính ứng dụng. Vẫn có thể gửi tài nguyên.',
   'failure.transfer.declined': 'Điện thoại kia chưa chấp nhận. Bạn có thể gửi lời mời lại.',
   'failure.transfer.peer-lost': 'Điện thoại kia đã ra ngoài tầm. Hãy đưa hai điện thoại lại gần và thử lại.',
+  'failure.transfer.cancelled': 'Việc chuyển đã dừng lại. Không giữ lại phần nào dở dang.',
   'failure.audio.unavailable': 'Hiện chưa có âm thanh cho mục này.',
   'failure.share.unavailable': 'Hiện điện thoại này chưa thể chia sẻ.',
   'failure.partners.invalid-feed':

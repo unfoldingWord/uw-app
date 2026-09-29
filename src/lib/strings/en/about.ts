@@ -37,6 +37,7 @@ export const about = {
   'privacy.count.appOpens': 'How many times the app was opened',
   'privacy.count.languagePackDownloads': 'How many language packs were downloaded, per language',
   'privacy.count.transfersCompleted': 'How many transfers finished',
+  'privacy.count.transfersByPlatformPair': 'How many transfers finished, by the kind of each phone',
   'privacy.count.sharesSent': 'How many shares were sent',
   'privacy.count.formationSessionsStarted': 'How many formation sessions started, per language',
   'privacy.count.invitationTaps': 'How many times the partner invitation was tapped',

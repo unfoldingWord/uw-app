@@ -392,6 +392,8 @@ export const ptBR: LocaleTable = {
   'privacy.count.appOpens': 'Quantas vezes o aplicativo foi aberto',
   'privacy.count.languagePackDownloads': 'Quantos pacotes de idioma foram baixados, por idioma',
   'privacy.count.transfersCompleted': 'Quantas transferências terminaram',
+  'privacy.count.transfersByPlatformPair':
+    'Quantas transferências terminaram, conforme o tipo de cada telefone',
   'privacy.count.sharesSent': 'Quantos compartilhamentos foram enviados',
   'privacy.count.formationSessionsStarted': 'Quantos encontros de formação começaram, por idioma',
   'privacy.count.invitationTaps': 'Quantas vezes o convite de parceria foi tocado',
@@ -471,6 +473,7 @@ export const ptBR: LocaleTable = {
   'failure.transfer.declined': 'O outro celular não aceitou. Você pode oferecer de novo.',
   'failure.transfer.peer-lost':
     'O outro celular ficou fora de alcance. Aproxime os celulares e tente de novo.',
+  'failure.transfer.cancelled': 'A transferência foi interrompida. Nada pela metade foi mantido.',
   'failure.audio.unavailable': 'O áudio não está disponível para isto agora.',
   'failure.share.unavailable': 'Compartilhar não está disponível neste celular agora.',
   'failure.partners.invalid-feed':

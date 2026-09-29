@@ -449,6 +449,7 @@ export const ar: LocaleTable = {
   'privacy.count.appOpens': 'عدد مرات فتح التطبيق',
   'privacy.count.languagePackDownloads': 'عدد حزم اللغات المنزَّلة، لكل لغة',
   'privacy.count.transfersCompleted': 'عدد عمليات الإرسال المكتملة',
+  'privacy.count.transfersByPlatformPair': 'عدد عمليات الإرسال المكتملة، حسب نوعي الهاتفين',
   'privacy.count.sharesSent': 'عدد المشاركات المرسلة',
   'privacy.count.formationSessionsStarted': 'عدد لقاءات التلمذة التي بدأت، لكل لغة',
   'privacy.count.invitationTaps': 'عدد مرات لمس دعوة الشراكة',
@@ -518,6 +519,7 @@ export const ar: LocaleTable = {
   'failure.transfer.unsupported': 'لا يستطيع هذا الهاتف إرسال التطبيق نفسه. يمكن إرسال الموارد مع ذلك.',
   'failure.transfer.declined': 'لم يقبل الهاتف الآخر. يمكنك العرض مرة أخرى.',
   'failure.transfer.peer-lost': 'ابتعد الهاتف الآخر عن النطاق. قرِّب الهاتفين وحاول مرة أخرى.',
+  'failure.transfer.cancelled': 'توقف النقل. لم يُحتفظ بأي جزء ناقص.',
   'failure.audio.unavailable': 'الصوت غير متاح لهذا الآن.',
   'failure.share.unavailable': 'المشاركة غير متاحة على هذا الهاتف الآن.',
   'failure.partners.invalid-feed':

@@ -3,9 +3,11 @@ import { imagePackId, languagePackId } from '@lib/domain/pack';
 import { parseReference } from '@lib/domain/reference';
 import { stableJson } from '@lib/json';
 import { fromFile, fromPeer } from '@lib/packs/source';
+import { installFromCatalog } from '../install';
 import { fixturePeer } from '../peer';
 import { replayJournal } from '../replay';
 import { scenario } from '../scenario';
+import { transferBetween } from '../transfer';
 
 const hour = 60 * 60 * 1000;
 
@@ -113,6 +115,32 @@ export default scenario(
       rebuilt.device.adapters.files.tree().filter((path) => path.startsWith('packs/')),
       library.adapters.files.tree().filter((path) => path.startsWith('packs/')),
     );
+
+    const giver = world.device('giver', { platform: 'ios' });
+    await giver.start();
+    await installFromCatalog(giver, [languagePackId('qab')]);
+    const taker = world.device('taker', { platform: 'android' });
+    await taker.start();
+    const moved = await transferBetween(giver, taker, { language: 'qab' });
+    assert.ok(moved.installed?.ok);
+    const told = await taker.kernel.corpus.story(1, 'qab');
+    assert.ok(told);
+    assert.ok((await taker.kernel.share.story(told, { locale: 'en' })).ok);
+    await taker.restart();
+    const takerSnapshot = taker.kernel.snapshot();
+    const takerJournal = JSON.parse(JSON.stringify(taker.kernel.journal.export())) as unknown;
+    const takerReplay = await replayJournal(world, takerJournal, 'taker-replayed');
+    assert.ok(takerReplay.ok, takerReplay.ok ? '' : takerReplay.reason);
+    assert.deepEqual(takerReplay.divergence, [], 'a transfer and a share replay event for event');
+    assert.equal(stableJson(takerReplay.snapshot), stableJson(takerSnapshot));
+    assert.deepEqual(
+      takerReplay.device.kernel.packs.installed().map((pack) => [pack.pack, pack.source]),
+      [['language:qab', 'peer']],
+      'the sim world stands in for the peer with the same releases',
+    );
+    const takerCounts = takerReplay.device.kernel.telemetry.counts();
+    assert.equal(takerCounts.transfersCompleted, 1);
+    assert.equal(takerCounts.sharesSent, 1);
 
     const bounded = world.device('bounded', { journalLimit: 8 });
     await bounded.start();

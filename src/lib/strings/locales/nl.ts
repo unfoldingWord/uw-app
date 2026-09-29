@@ -384,6 +384,8 @@ export const nl: LocaleTable = {
   'privacy.count.appOpens': 'Hoe vaak de app is geopend',
   'privacy.count.languagePackDownloads': 'Hoeveel taalpakketten zijn gedownload, per taal',
   'privacy.count.transfersCompleted': 'Hoeveel keer overzetten is gelukt',
+  'privacy.count.transfersByPlatformPair':
+    'Hoeveel keer overzetten is gelukt, per soort van de twee telefoons',
   'privacy.count.sharesSent': 'Hoe vaak er iets is gedeeld',
   'privacy.count.formationSessionsStarted': 'Hoeveel vormingsbijeenkomsten zijn begonnen, per taal',
   'privacy.count.invitationTaps': 'Hoe vaak op de uitnodiging om partner te worden is getikt',
@@ -465,6 +467,7 @@ export const nl: LocaleTable = {
   'failure.transfer.declined': 'De andere telefoon accepteerde niet. Je kunt het opnieuw aanbieden.',
   'failure.transfer.peer-lost':
     'De andere telefoon is buiten bereik. Breng de telefoons dichterbij en probeer het opnieuw.',
+  'failure.transfer.cancelled': 'De overdracht is gestopt. Er is niets half bewaard.',
   'failure.audio.unavailable': 'Audio is hiervoor nu niet beschikbaar.',
   'failure.share.unavailable': 'Delen is nu niet beschikbaar op deze telefoon.',
   'failure.partners.invalid-feed':

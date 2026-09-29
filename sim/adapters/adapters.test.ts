@@ -242,6 +242,29 @@ describe('Transport memory adapter', () => {
     two.setAvailable(false);
     expect(await codeOf(two.discover(10))).toBe('transfer.unavailable');
   });
+
+  it('lets a scenario see every chunk on the bus and lose the link after a number of bytes', async () => {
+    const bus = createTransportBus();
+    const one = bus.transport({ platform: 'ios' });
+    const two = bus.transport({ platform: 'android' });
+    const advertisement = await one.advertise('7');
+    const [peer] = await two.discover(10);
+    if (peer === undefined) {
+      throw new Error('no peer');
+    }
+    const link = await two.connect(peer, 10);
+    const other = await advertisement.accept(10);
+    const seen: Uint8Array[] = [];
+    const stop = bus.tap((chunk) => seen.push(chunk));
+    bus.cutAfter(5);
+    await link.send(bytes('abc'));
+    expect(await codeOf(link.send(bytes('def')))).toBe('transfer.peer-lost');
+    expect(await other?.receive()).toEqual(bytes('abc'));
+    expect(await other?.receive()).toBeUndefined();
+    expect(seen).toEqual([bytes('abc')]);
+    stop();
+    expect(bus.delivered()).toBe(3);
+  });
 });
 
 describe('Audio memory adapter', () => {

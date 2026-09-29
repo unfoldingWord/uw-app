@@ -96,6 +96,7 @@ const privacyFolds: readonly (keyof Telemetry)[] = [
   'appOpens',
   'languagePackDownloads',
   'transfersCompleted',
+  'transfersByPlatformPair',
   'sharesSent',
   'formationSessionsStarted',
   'invitationTaps',
