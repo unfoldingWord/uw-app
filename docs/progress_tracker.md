@@ -3,6 +3,42 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 T2 domain, ports, memory adapters, journal, kernel, sim skeleton
+
+Node v22.22.2. Everything below ran in Node through the sim and Vitest; nothing ran on a phone.
+
+### Scenarios observed red, then green
+
+| Scenario | First red | Red against the behaviour | Green |
+|---|---|---|---|
+| `DX-1.journal-bounded-append-only` | Written before any implementation; `vitest run sim` failed to load `./scenario` (nothing existed yet) | With trimming disabled in `src/lib/journal/journal.ts`, `npm run sim -- DX-1` printed `FAIL ... Expected values to be strictly equal: 9 !== 8` on the journal size (the database still trimmed, so each restart reloaded 8 and appended a ninth) | `npm run sim -- all`: pass |
+| `DX-3.replay-rebuilds-snapshot` | Same run, same missing modules | With the playback clock removed from `sim/replay.ts`, `npm run sim -- DX-3` printed `FAIL ... Expected values to be strictly deep-equal`: every replayed event was stamped at the world's current time and the days of use collapsed to one | `npm run sim -- all`: pass |
+
+Both regressions were reverted and `npm run verify` returned green: 11 test files, 110 tests; `sim: 2
+scenarios, 2 passed, 0 failed`; `trace: 51 Must requirements, 2 proven, 49 unproven` (DX-1 and DX-3).
+
+`npm run replay -- journal.json` on a journal exported from a two-day sim device printed the rebuilt
+snapshot and `replay: the rebuilt journal matches the recorded one event for event` (exit 0). A document with
+the wrong format printed `is not a journal: not a unfoldingword-journal document of version 1` (exit 1).
+
+### Changed beyond the new files
+
+- `.gitignore` ignores `.claude/`: the untracked agent worktrees under it made `knip` report 184 unused files.
+- `knip.config.ts`: scenarios and migrations are entries, since they are loaded by discovery;
+  `ignoreExportsUsedInFile` so a type used by its own file's functions is not reported.
+- `tsconfig.lib.json` includes `migrations/**`, so migration files are checked with no DOM or Node types.
+- `scripts/eslint/boundaries.ts` gains a `migrations` layer (only `import type` from `@lib/ports`), with cases in
+  `boundaries.test.ts`; `docs/exceptions.md` records the sim loading migration files by path.
+
+### Not verified
+
+- No platform adapter exists yet, so nothing here ran against expo-sqlite, expo-file-system or a radio. The
+  memory Db runs on `node:sqlite`, which prints an experimental warning in Node 22.
+- Replay covers `AppOpened` and verbatim events end to end; `redo` handlers for the other events arrive with
+  the modules that own them (T4 to T8), under the contract in `docs/replay.md`.
+- Telemetry and days of use are folds over the retained journal, so they undercount once the journal has
+  dropped events (the default limit is 5000).
+
 ## 2026-09-29 T1 toolchain and checks
 
 Node v22.22.2, npm 10.9.7, Expo SDK 57.0.26 (current `latest` on npm). `npx expo install --check` could not
