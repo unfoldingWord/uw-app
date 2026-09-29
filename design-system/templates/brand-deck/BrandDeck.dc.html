@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Brand deck" description="A five-slide 1280×720 presentation in the brand's slide language: title, section divider, metrics, two-column and quote. Nunito Sans throughout, aurora ground, Ocean-black dividers." -->
+<helmet><script src="./ds-base.js"></script><style>@font-face{font-display:swap}body{margin:0}</style></helmet>
+<div style="background:#CBDBE2;display:grid;justify-items:center;gap:26px;padding:26px;font-family:var(--font-brand)">
+
+<section data-screen-label="01" style="width:1280px;height:720px;position:relative;overflow:hidden;background:var(--aurora-field);box-shadow:var(--shadow-float);color:var(--text-title)">
+<div style="position:absolute;inset:0;padding:88px 96px;display:flex;flex-direction:column;justify-content:center;gap:34px">
+<div style="font-weight:500;font-size:16px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-blue-text)">unfoldingWord · Design System</div>
+<h1 style="margin:0;font-family:var(--font-brand-display);font-weight:900;font-size:104px;line-height:.96;letter-spacing:-.03em">Generative<br>Glass</h1>
+<p style="margin:0;font-weight:400;font-size:26px;line-height:1.45;color:var(--text-body);max-width:760px;text-wrap:pretty">A liquid-glass design language: translucent surfaces over a soft aurora field, tuned to the unfoldingWord palette.</p>
+</div>
+<div style="position:absolute;left:96px;right:96px;bottom:52px;display:flex;align-items:center;justify-content:space-between;font-weight:500;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim)"><span>Generative Glass</span><span>April 2026</span></div>
+</section>
+
+<section data-screen-label="02" data-theme="dark" style="width:1280px;height:720px;position:relative;overflow:hidden;background:var(--studio-bg);box-shadow:var(--shadow-float);color:#fff">
+<div style="position:absolute;right:78px;top:54px;font-family:var(--font-brand-display);font-weight:900;font-size:280px;line-height:1;letter-spacing:-.04em;color:rgba(92,195,238,.16)">01</div>
+<div style="position:absolute;inset:0;padding:88px 96px;display:flex;flex-direction:column;justify-content:flex-end;gap:26px">
+<div style="font-weight:500;font-size:16px;letter-spacing:.16em;text-transform:uppercase;color:#5CC3EE">Section 01</div>
+<h2 style="margin:0;font-family:var(--font-brand-display);font-weight:900;font-size:88px;line-height:1.02;letter-spacing:-.025em">Foundations</h2>
+<p style="margin:0;font-weight:400;font-size:26px;line-height:1.45;color:#D9E8EF;max-width:640px;text-wrap:pretty">Colour, type, glass, depth and motion — the five decisions everything else inherits.</p>
+</div>
+<div style="position:absolute;left:96px;right:96px;bottom:52px;display:flex;align-items:center;justify-content:space-between;font-weight:500;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:#7B99A6"><span>Generative Glass</span><span>02</span></div>
+</section>
+
+<section data-screen-label="03" style="width:1280px;height:720px;position:relative;overflow:hidden;background:var(--aurora-field);box-shadow:var(--shadow-float);color:var(--text-title)">
+<div style="position:absolute;inset:0;padding:88px 96px;display:flex;flex-direction:column">
+<div style="font-weight:500;font-size:16px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-blue-text)">What is in the system</div>
+<h2 style="margin:20px 0 0;font-family:var(--font-brand-display);font-weight:900;font-size:66px;line-height:1.02;letter-spacing:-.025em;max-width:820px">Built once, inherited everywhere</h2>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:auto">
+<div style="padding:40px 36px 36px;display:grid;gap:14px;background:var(--glass-fill-2);backdrop-filter:blur(var(--blur-strong)) var(--sat-glass);-webkit-backdrop-filter:blur(var(--blur-strong)) var(--sat-glass);border:var(--border-glass);box-shadow:var(--shadow-card),var(--inner-top),var(--inner-edge);border-radius:var(--r-xl)">
+<div style="font-family:var(--font-brand-display);font-weight:900;font-size:82px;line-height:1;letter-spacing:-.035em;color:var(--accent-deep)">224</div>
+<div style="font-weight:500;font-size:17px;line-height:1.4;color:var(--text-muted)">Design tokens, from the glass fill ladder to the motion curves</div>
+</div>
+<div style="padding:40px 36px 36px;display:grid;gap:14px;background:var(--glass-fill-2);backdrop-filter:blur(var(--blur-strong)) var(--sat-glass);-webkit-backdrop-filter:blur(var(--blur-strong)) var(--sat-glass);border:var(--border-glass);box-shadow:var(--shadow-card),var(--inner-top),var(--inner-edge);border-radius:var(--r-xl)">
+<div style="font-family:var(--font-brand-display);font-weight:900;font-size:82px;line-height:1;letter-spacing:-.035em;color:var(--accent-deep)">21</div>
+<div style="font-weight:500;font-size:17px;line-height:1.4;color:var(--text-muted)">Components — ten core primitives, eleven in the example app</div>
+</div>
+<div style="padding:40px 36px 36px;display:grid;gap:14px;background:var(--glass-fill-2);backdrop-filter:blur(var(--blur-strong)) var(--sat-glass);-webkit-backdrop-filter:blur(var(--blur-strong)) var(--sat-glass);border:var(--border-glass);box-shadow:var(--shadow-card),var(--inner-top),var(--inner-edge);border-radius:var(--r-xl)">
+<div style="font-family:var(--font-brand-display);font-weight:900;font-size:82px;line-height:1;letter-spacing:-.035em;color:var(--accent-deep)">2</div>
+<div style="font-weight:500;font-size:17px;line-height:1.4;color:var(--text-muted)">Complete themes; components read aliases and go dark unchanged</div>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:96px;right:96px;bottom:52px;display:flex;align-items:center;justify-content:space-between;font-weight:500;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim)"><span>Generative Glass</span><span>03</span></div>
+</section>
+
+<section data-screen-label="04" style="width:1280px;height:720px;position:relative;overflow:hidden;background:var(--aurora-field);box-shadow:var(--shadow-float);color:var(--text-title)">
+<div style="position:absolute;inset:0;display:grid;grid-template-columns:1fr 512px">
+<div style="padding:88px 72px 88px 96px;display:flex;flex-direction:column;justify-content:center;gap:24px">
+<div style="font-weight:500;font-size:16px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-blue-text)">The material</div>
+<h2 style="margin:0;font-family:var(--font-brand-display);font-weight:900;font-size:56px;line-height:1.02;letter-spacing:-.008em;max-width:520px">Every surface is glass</h2>
+<div style="display:grid;gap:16px;margin-top:8px">
+<div style="display:flex;gap:14px;align-items:flex-start;font-weight:400;font-size:19px;line-height:1.5;color:var(--text-body)"><span style="width:9px;height:9px;border-radius:50%;background:var(--accent-blue);margin-top:8px;flex:none"></span><span>Four fill steps and five blur steps, always with saturate(160%).</span></div>
+<div style="display:flex;gap:14px;align-items:flex-start;font-weight:400;font-size:19px;line-height:1.5;color:var(--text-body)"><span style="width:9px;height:9px;border-radius:50%;background:var(--accent-blue);margin-top:8px;flex:none"></span><span>A 0.5px white hairline, an inner top light, and a three-layer Ocean shadow — all three, always.</span></div>
+<div style="display:flex;gap:14px;align-items:flex-start;font-weight:400;font-size:19px;line-height:1.5;color:var(--text-body)"><span style="width:9px;height:9px;border-radius:50%;background:var(--accent-blue);margin-top:8px;flex:none"></span><span>Blur only where a surface floats over content it does not own.</span></div>
+</div>
+</div>
+<div style="position:relative;overflow:hidden"><img src="../../assets/img/tokyo-night.png" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+</div>
+<div style="position:absolute;left:96px;bottom:52px;font-weight:500;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim)">Generative Glass</div>
+</section>
+
+<section data-screen-label="05" style="width:1280px;height:720px;position:relative;overflow:hidden;background:var(--aurora-field);box-shadow:var(--shadow-float);color:var(--text-title)">
+<div style="position:absolute;inset:0;padding:88px 96px;display:flex;flex-direction:column;justify-content:center">
+<blockquote style="margin:0;font-family:var(--font-brand-display);font-weight:900;font-size:60px;line-height:1.12;letter-spacing:-.025em;max-width:940px;text-wrap:pretty">The brand is not a layer on top of the glass. It is the glass.</blockquote>
+<div style="margin-top:40px;display:flex;align-items:center;gap:18px">
+<span style="width:46px;height:.5px;background:var(--accent-blue)"></span>
+<span style="font-weight:500;font-size:17px;letter-spacing:.04em;color:var(--text-muted)">Visual foundations, readme.md</span>
+</div>
+</div>
+<div style="position:absolute;left:96px;right:96px;bottom:52px;display:flex;align-items:center;justify-content:space-between;font-weight:500;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim)"><span>Generative Glass</span><span>05</span></div>
+</section>
+
+</div>
+</x-dc>
+</body>
+</html>

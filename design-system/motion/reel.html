@@ -1,0 +1,42 @@
+<!-- @dsCard group="Motion" viewport="1280x720" name="Motion reel" subtitle="The six-beat source flow as one continuous composition — rise, draw, dissolve" -->
+<!doctype html><html><head><meta charset="utf-8"><title>Generative Glass — motion reel</title>
+<link rel="stylesheet" href="../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../_ds_bundle.js"></script>
+<script>window.OM_SCENES = '[{"name":"Wake","dur":4,"desc":"The aurora settles and the morning greeting rises into place."},{"name":"Flight","dur":4.5,"desc":"The flight card lifts and the camera pushes in on its route arc."},{"name":"Ask","dur":4,"desc":"The card recedes into blur, the keyboard damps up, and the assistant answers."},{"name":"Branch","dur":5,"desc":"A filament draws downward, a destination card lands at its end, then two category tiles fork out."},{"name":"Spot","dur":4,"desc":"The chosen tile grows to fill the screen."},{"name":"Route","dur":5,"desc":"The screen turns to the Ocean-black map, roads wipe out from the puck, and the route list rises."},{"name":"Return","dur":2.5,"desc":"The map dissolves back to the bare morning field, matching the first frame."}]';</script>
+<script>window.OM_PLAYBACK = '{"mode":"loop"}';</script>
+<script>window.TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "motionEditor": true,
+  "captions": true,
+  "background": "studio"
+}/*EDITMODE-END*/;</script>
+<style>*{box-sizing:border-box}body{margin:0;background:var(--paper-300);display:grid;place-items:center;min-height:100vh;font-family:var(--font-core)}
+a{color:var(--link)}a:hover{color:var(--link-hover)}</style>
+</head><body><div id="root"></div>
+<script type="text/babel" src="./animations-v3.jsx"></script>
+<script type="text/babel" src="./tweaks-panel.jsx"></script>
+<script type="text/babel" src="./reel.jsx"></script>
+<script type="text/babel" data-presets="react">
+const {useTweaks:useTw,TweaksPanel:TwPanel,TweakSection:TwSection,TweakToggle:TwToggle,TweakRadio:TwRadio}=window;
+function App(){
+  const Stage=window.CompositionStage;
+  const [t,setTweak]=useTw(window.TWEAK_DEFAULTS);
+  return <>
+    <Stage width={1280} height={720} scenes={window.OM_SCENES} playback={window.OM_PLAYBACK}
+      bg={t.background==='ink'?'#04161F':'#CFDEE5'}>
+      <Reel captions={t.captions}/>
+    </Stage>
+    <TwPanel>
+      <TwSection label="Reel"/>
+      <TwToggle label="Captions" value={t.captions} onChange={v=>setTweak('captions',v)}/>
+      <TwRadio label="Backdrop" value={t.background} options={['studio','ink']}
+        onChange={v=>setTweak('background',v)}/>
+      <TwSection label="Editing"/>
+      <TwToggle label="Motion editor" value={t.motionEditor} onChange={v=>setTweak('motionEditor',v)}/>
+    </TwPanel>
+  </>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

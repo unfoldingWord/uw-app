@@ -1,0 +1,45 @@
+:root{
+  /* Fill ladder — 1 is barely there, 4 is an opaque-feeling sheet */
+  --glass-fill-1:rgba(255,255,255,.28);
+  --glass-fill-2:rgba(255,255,255,.46);
+  --glass-fill-3:rgba(255,255,255,.62);
+  --glass-fill-4:rgba(255,255,255,.78);
+  --glass-fill-tint:rgba(226,244,252,.58);
+  --glass-fill-night:rgba(11,34,46,.62);
+  --glass-fill-night-strong:rgba(4,22,31,.82);
+
+  /* Blur ladder */
+  --blur-sheer:8px; --blur-soft:16px; --blur-medium:24px; --blur-strong:40px; --blur-heavy:64px;
+  --sat-glass:saturate(160%); /* @kind other */
+
+  /* Hairline borders — always light, always sub-pixel-thin */
+  --border-glass:.5px solid rgba(255,255,255,.7); /* @kind other */
+  --border-glass-soft:.5px solid rgba(255,255,255,.45); /* @kind other */
+  --border-hairline:.5px solid rgba(1,66,99,.10); /* @kind other */
+  --border-night:.5px solid rgba(255,255,255,.10); /* @kind other */
+
+  /* Composed materials */
+  --material-card:var(--glass-fill-2); /* @kind other */
+  --material-raised:var(--glass-fill-3); /* @kind other */
+  --material-chip:var(--glass-fill-3); /* @kind other */
+  --material-night:var(--glass-fill-night); /* @kind other */
+
+  /* Edge refraction: a faint prismatic sheen on the top-left of large surfaces,
+     with an Inspire cast in the second highlight rather than plain white */
+  --refraction:linear-gradient(135deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,0) 38%,rgba(255,255,255,0) 62%,rgba(49,173,227,.30) 100%); /* @kind other */
+  /* Night panels need the sheen MORE than light ones — on a dark fill the top-left
+     highlight is most of what reads as glass — but at a fraction of the strength,
+     and with a whisper of an inner top light instead of the light theme's .75 line. */
+  --refraction-night:linear-gradient(135deg,rgba(255,255,255,.22) 0%,rgba(255,255,255,0) 42%,rgba(255,255,255,0) 64%,rgba(92,195,238,.16) 100%); /* @kind other */
+  --inner-top-night:inset 0 1px 0 rgba(255,255,255,.20); /* @kind other */
+  /* The ambient aurora field behind everything — brand-derived blobs, with Inspire
+     given the largest and strongest presence since it is the colour uW is known by */
+  --aurora-field:
+    radial-gradient(58% 38% at 20% 28%,rgba(147,211,243,.98) 0%,rgba(147,211,243,0) 72%),
+    radial-gradient(46% 30% at 78% 24%,rgba(245,211,160,.78) 0%,rgba(245,211,160,0) 72%),
+    radial-gradient(58% 38% at 62% 62%,rgba(160,198,228,.88) 0%,rgba(160,198,228,0) 72%),
+    radial-gradient(42% 28% at 30% 78%,rgba(247,231,194,.68) 0%,rgba(247,231,194,0) 74%),
+    radial-gradient(54% 38% at 88% 80%,rgba(150,214,236,.80) 0%,rgba(150,214,236,0) 74%),
+    linear-gradient(180deg,#EDF7FB 0%,#DAEAF1 100%); /* @kind other */
+  --studio-bg:radial-gradient(70% 55% at 50% 22%,#EAF4F8 0%,#DAE8EF 55%,#CBDCE6 100%); /* @kind other */
+}

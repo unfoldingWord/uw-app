@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="unfoldingWord app" description="A 390×844 working prototype of the unfoldingWord app per docs/PRD.md: onboarding, Home, Study (passage, catalog, article, search), Formation (tracks, groups, five-movement session), Languages dialog, transfer, About this library and Settings, in light and dark glass." -->
+<helmet><script src="./ds-base.js"></script><style>@keyframes gg-app-rise{from{opacity:0;transform:translateY(14px) scale(.96);filter:blur(8px)}to{opacity:1;transform:none;filter:blur(0)}}@keyframes gg-app-fade{from{opacity:0}to{opacity:1}}body{margin:0}button,input{font-family:inherit}::-webkit-scrollbar{display:none}[data-blur="reduced"] *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}</style></helmet>
+<div data-theme="{{ themeAttr }}" data-blur="{{ blurAttr }}" style="min-height:100vh;display:grid;place-items:center;background:var(--studio-bg,#DDE9ED);font-family:var(--font-core,'Inter Display','Inter',system-ui,-apple-system,BlinkMacSystemFont,sans-serif);padding:40px;color:var(--text-body,#014263)">
+<div style="width:390px;height:844px;border-radius:54px;flex:none;box-shadow:var(--shadow-float,0 30px 70px rgba(1,66,99,.24))">
+<div style="width:100%;height:100%;border-radius:54px;overflow:hidden;position:relative;background:var(--surface-app,#F4FAFB)">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.AuroraField" intensity="{{ auroraIntensity }}" style="position:absolute;inset:0;width:390px;height:844px" hint-size="390px,844px"></x-import>
+<div style="position:absolute;inset:0;display:flex;flex-direction:column">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.StatusBar" tone="{{ tone }}" hint-size="100%,32px"></x-import>
+
+<sc-if value="{{ isOnboarding }}" hint-placeholder-val="{{ true }}">
+<div style="flex:1;display:flex;flex-direction:column;padding:48px 18px 28px;animation:gg-app-rise 700ms cubic-bezier(.22,1,.36,1) both">
+<div style="align-self:flex-start;display:flex;align-items:center;padding:12px 18px;border-radius:999px;background:var(--glass-fill-2);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:var(--border-glass);box-shadow:var(--shadow-rest),var(--inner-top)"><sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><img src="../../assets/logo/logo-horizontal-color.png" alt="unfoldingWord" style="height:26px;width:auto;display:block"></sc-if><sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><img src="../../assets/logo/logo-horizontal-reversed.png" alt="unfoldingWord" style="height:26px;width:auto;display:block"></sc-if></div>
+<div style="flex:1"></div>
+<div style="font-weight:600;font-size:9px;line-height:1.2;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">Open Bible translation resources</div>
+<h1 style="margin:12px 0 0;font-weight:500;font-size:34px;line-height:1.12;letter-spacing:-.02em;color:var(--text-title);text-wrap:pretty">Every resource.<br>Every language.<br>One open door.</h1>
+<p style="margin:16px 0 0;font-weight:400;font-size:15px;line-height:1.45;color:var(--text-body);max-width:320px;text-wrap:pretty">Read, listen and share what the global church has built with unfoldingWord, in the languages you work in, online or off.</p>
+<div style="margin-top:28px"><input value="{{ nameDraft }}" onChange="{{ onName }}" placeholder="Your first name (optional)" style="width:100%;box-sizing:border-box;height:50px;padding:0 18px;border-radius:999px;border:var(--border-glass);background:var(--glass-fill-2);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);box-shadow:var(--inner-top);color:var(--text-title);font-size:15px;outline:none"><div style="margin:6px 18px 0;font-size:11px;line-height:1.3;color:var(--text-faint)">Stays on this phone. Used only to greet you.</div></div>
+<div style="margin-top:18px;display:grid;gap:10px">
+<button onClick="{{ goPickLanguage }}" style="height:56px;border:0;border-radius:999px;background:var(--surface-inverse);color:var(--text-on-inverse);font-weight:600;font-size:15px;line-height:1;cursor:pointer;box-shadow:var(--shadow-card)" style-active="transform:scale(.972)">Choose your language</button>
+<button onClick="{{ goHomeEnglish }}" style="height:52px;border:var(--border-glass);border-radius:999px;background:var(--glass-fill-2);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);color:var(--text-title);font-weight:500;font-size:15px;line-height:1;cursor:pointer;box-shadow:var(--shadow-rest),var(--inner-top)" style-active="transform:scale(.972)">Continue in English</button>
+</div>
+<div style="margin-top:18px;text-align:center;font-weight:400;font-size:12px;line-height:1.3;color:var(--text-faint)">Free. Openly licensed. No account needed.</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;min-height:0;animation:gg-app-fade 500ms ease both">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 18px 0">
+<button onClick="{{ goLanguages }}" style="display:flex;align-items:center;gap:8px;height:44px;padding:0 16px 0 12px;border:var(--border-glass);border-radius:999px;background:var(--glass-fill-3);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);box-shadow:var(--shadow-rest),var(--inner-top);color:var(--text-title);font-weight:500;font-size:13px;line-height:1;cursor:pointer" style-active="transform:scale(.972)">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="globe" size="{{ 16 }}" color="{{ iconColor }}" hint-size="16px,16px"></x-import>{{ langName }}
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="chevronDown" size="{{ 14 }}" color="{{ iconColor }}" hint-size="14px,14px"></x-import>
+</button>
+<div style="display:flex;gap:8px">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassIconButton" tone="{{ tone }}" label="Settings" size="{{ 44 }}" onClick="{{ goSettings }}" hint-size="44px,44px"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="settings" size="{{ 20 }}" color="{{ iconColor }}" hint-size="20px,20px"></x-import></x-import>
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassIconButton" tone="{{ tone }}" label="Switch theme" size="{{ 44 }}" onClick="{{ toggleTheme }}" hint-size="44px,44px"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="{{ themeIcon }}" size="{{ 20 }}" color="{{ iconColor }}" hint-size="20px,20px"></x-import></x-import>
+</div>
+</div>
+<div style="flex:1;min-height:0;overflow:auto;padding:0 18px">
+<div style="padding:28px 0 0"><div style="font-weight:400;font-size:12px;line-height:1.3;color:var(--text-dim)">Tue, Sep 29</div><h1 style="margin:6px 0 0;font-weight:500;font-size:28px;line-height:1.16;letter-spacing:-.02em;color:var(--text-title)">{{ greeting }}</h1></div>
+<div style="margin-top:22px;display:grid;gap:10px;animation:gg-app-rise 700ms cubic-bezier(.22,1,.36,1) both">
+<sc-if value="{{ downloadPending }}" hint-placeholder-val="{{ true }}">
+<div onClick="{{ goLanguages }}" style="padding:14px 18px;border-radius:22px;background:var(--glass-fill-2);backdrop-filter:blur(40px) saturate(160%);-webkit-backdrop-filter:blur(40px) saturate(160%);border:var(--border-glass);box-shadow:var(--shadow-rest),var(--inner-top);cursor:pointer">
+<div style="display:flex;align-items:center;justify-content:space-between"><div style="font-weight:600;font-size:9px;line-height:1.2;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">Downloading {{ langName }}</div><div style="font-weight:500;font-size:12px;color:var(--text-title)">{{ dlPct }}%</div></div>
+<svg width="100%" height="4" style="display:block;margin-top:10px"><rect width="100%" height="4" rx="2" fill="rgba(1,66,99,.12)"></rect><rect width="{{ dlWidth }}" height="4" rx="2" fill="var(--accent-blue)" style="transition:width 400ms linear"></rect></svg>
+<div style="margin-top:8px;font-size:12px;line-height:1.3;color:var(--text-body)">Language pack, {{ packSize }}. Stories, notes and words arrive first.</div>
+</div>
+</sc-if>
+<div onClick="{{ goStudy }}" style="position:relative;padding:18px;border-radius:28px;background:var(--glass-fill-2);backdrop-filter:blur(40px) saturate(160%);-webkit-backdrop-filter:blur(40px) saturate(160%);border:var(--border-glass);box-shadow:var(--shadow-card),var(--inner-top);cursor:pointer">
+<div style="font-weight:600;font-size:9px;line-height:1.2;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">Continue reading</div>
+<div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:8px">
+<div><div style="font-weight:600;font-size:19px;line-height:1.24;letter-spacing:-.015em;color:var(--text-title)">Ruth 1</div><div style="margin-top:4px;font-weight:400;font-size:13px;line-height:1.35;color:var(--text-body)">Bible text with notes · {{ langName }}</div></div>
+<button style="height:44px;padding:0 18px;border-radius:999px;border:0;background:var(--surface-inverse);color:var(--text-on-inverse);font-weight:600;font-size:13px;line-height:1;cursor:pointer" style-active="transform:scale(.972)">Read</button>
+</div>
+</div>
+<div onClick="{{ goSession }}" style="display:flex;gap:14px;align-items:center;padding:10px;border-radius:28px;background:var(--glass-fill-2);backdrop-filter:blur(40px) saturate(160%);-webkit-backdrop-filter:blur(40px) saturate(160%);border:var(--border-glass);box-shadow:var(--shadow-card),var(--inner-top);cursor:pointer">
+<div style="width:84px;height:84px;flex:none;border-radius:22px;background:linear-gradient(160deg,#014263 0%,#31ADE3 100%);display:grid;place-items:center;color:#fff;font-weight:600;font-size:9px;line-height:1.2;letter-spacing:.14em">STORY 4</div>
+<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:9px;line-height:1.2;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">Continue formation · {{ groupName }}</div><div style="margin-top:6px;font-weight:600;font-size:17px;line-height:1.3;letter-spacing:-.01em;color:var(--text-title)">God's covenant with Abraham</div><div style="margin-top:3px;font-weight:400;font-size:13px;line-height:1.35;color:var(--text-body)">Next: {{ nextMovement }}</div></div>
+<div style="width:44px;height:44px;margin-right:8px;border-radius:999px;background:var(--surface-inverse);color:var(--text-on-inverse);display:grid;place-items:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"></path></svg></div>
+</div>
+<sc-if value="{{ showPartner }}" hint-placeholder-val="{{ false }}">
+<div style="padding:10px;border-radius:28px;background:var(--glass-fill-2);backdrop-filter:blur(40px) saturate(160%);-webkit-backdrop-filter:blur(40px) saturate(160%);border:var(--border-glass);box-shadow:var(--shadow-card),var(--inner-top);font-family:var(--font-brand,'Nunito Sans',sans-serif)">
+<div style="position:relative;height:150px;border-radius:22px;overflow:hidden;background:linear-gradient(160deg,#5A3B1E 0%,#E59D33 100%)"><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,22,40,0) 30%,rgba(10,22,40,.92) 100%)"></div><div style="position:absolute;left:16px;right:16px;bottom:14px;color:#fff"><div style="font-weight:500;font-size:9px;letter-spacing:.14em;text-transform:uppercase;opacity:.85">Impact story · Chad</div><div style="margin-top:4px;font-weight:900;font-size:19px;line-height:1.24;font-family:var(--font-brand-display,'Nunito Sans',sans-serif)">Jeremiah and the Occult King</div></div></div>
+<p style="margin:14px 8px 0;font-size:13px;line-height:1.45;color:var(--text-body);text-wrap:pretty">When Jeremiah first heard the stories in Chadian Arabic, his church planting changed. Names in this story have been changed for security.</p>
+<p style="margin:10px 8px 0;font-size:13px;line-height:1.45;color:var(--text-title);text-wrap:pretty">Partners make resources like these free for leaders everywhere. You can help extend the reach into the unreached.</p>
+<div style="display:flex;gap:8px;margin:14px 8px 8px"><button onClick="{{ goAbout }}" style="flex:1;height:44px;border:0;border-radius:999px;background:var(--surface-inverse);color:var(--text-on-inverse);font-weight:600;font-size:13px;cursor:pointer;font-family:inherit" style-active="transform:scale(.972)">Partner with unfoldingWord</button><button onClick="{{ dismissPartner }}" style="height:44px;padding:0 16px;border:var(--border-hairline);border-radius:999px;background:transparent;color:var(--text-dim);font-weight:500;font-size:13px;cursor:pointer;font-family:inherit">Not now</button></div>
+</div>
+</sc-if>
+<sc-if value="{{ hasUpdate }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ goLanguages }}" style="display:flex;align-items:center;gap:12px;padding:12px 14px 12px 16px;border-radius:22px;background:var(--glass-fill-1);border:var(--border-glass-soft);cursor:pointer">
+<span style="width:8px;height:8px;border-radius:999px;background:var(--accent-warm);flex:none"></span>
+<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:13px;line-height:1.3;color:var(--text-title)">Notes have a newer release</div><div style="font-size:12px;line-height:1.3;color:var(--text-body)">v86 replaces v85, 34 MB. Update when you are ready.</div></div>
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="chevronRight" size="{{ 16 }}" color="{{ iconColor }}" hint-size="16px,16px"></x-import>
+</div>
+</sc-if>
+<div style="padding:4px 0 0;font-weight:600;font-size:9px;line-height:1.2;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">Saved</div>
+<sc-for list="{{ saved }}" as="s" hint-placeholder-count="3">
+<div onClick="{{ s.go }}" style="display:flex;align-items:center;gap:12px;padding:12px 14px 12px 12px;border-radius:18px;background:var(--glass-fill-1);border:var(--border-glass-soft);cursor:pointer">
+<div style="width:40px;height:40px;flex:none;border-radius:14px;background:var(--glass-fill-3);border:var(--border-glass-soft);display:grid;place-items:center"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="{{ s.icon }}" size="{{ 18 }}" color="{{ iconColor }}" hint-size="18px,18px"></x-import></div>
+<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14px;line-height:1.3;color:var(--text-title)">{{ s.title }}</div><div style="font-size:12px;line-height:1.3;color:var(--text-body)">{{ s.sub }}</div></div>
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="chevronRight" size="{{ 16 }}" color="{{ iconColor }}" hint-size="16px,16px"></x-import>
+</div>
+</sc-for>
+<div onClick="{{ goLanguages }}" style="display:flex;align-items:center;gap:10px;padding:14px 18px;border-radius:999px;background:var(--glass-fill-1);backdrop-filter:blur(16px) saturate(160%);-webkit-backdrop-filter:blur(16px) saturate(160%);border:var(--border-glass-soft);box-shadow:var(--shadow-rest);cursor:pointer">
+<span style="width:8px;height:8px;border-radius:999px;background:var(--accent-teal);box-shadow:0 0 12px rgba(112,201,204,.7)"></span>
+<span style="flex:1;font-weight:500;font-size:13px;line-height:1.35;color:var(--text-title)">{{ offlineLine }}</span>
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="chevronRight" size="{{ 16 }}" color="{{ iconColor }}" hint-size="16px,16px"></x-import>
+</div>
+</div>
+<div style="height:120px"></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isStudy }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;min-height:0;animation:gg-app-fade 500ms ease both">
+<div style="display:flex;align-items:center;gap:8px;padding:12px 18px 0">
+<button onClick="{{ goLanguages }}" style="display:flex;align-items:center;gap:6px;height:44px;padding:0 12px;border:var(--border-glass);border-radius:999px;background:var(--glass-fill-3);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);box-shadow:var(--shadow-rest),var(--inner-top);color:var(--text-title);font-weight:500;font-size:13px;cursor:pointer"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="globe" size="{{ 16 }}" color="{{ iconColor }}" hint-size="16px,16px"></x-import>{{ langCode }}</button>
+<div style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;height:44px;border:var(--border-glass);border-radius:999px;background:var(--glass-fill-3);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);box-shadow:var(--shadow-rest),var(--inner-top)">
+<button onClick="{{ prevChapter }}" style="width:36px;height:36px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="chevronLeft" size="{{ 16 }}" color="{{ iconColor }}" hint-size="16px,16px"></x-import></button>
+<span style="font-weight:600;font-size:15px;color:var(--text-title);min-width:70px;text-align:center">Ruth {{ chapter }}</span>
+<button onClick="{{ nextChapter }}" style="width:36px;height:36px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="chevronRight" size="{{ 16 }}" color="{{ iconColor }}" hint-size="16px,16px"></x-import></button>
+</div>
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassIconButton" tone="{{ tone }}" label="Search" size="{{ 44 }}" onClick="{{ goSearch }}" hint-size="44px,44px"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="search" size="{{ 18 }}" color="{{ iconColor }}" hint-size="18px,18px"></x-import></x-import>
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassIconButton" tone="{{ tone }}" label="Library" size="{{ 44 }}" onClick="{{ goCatalog }}" hint-size="44px,44px"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="layers" size="{{ 18 }}" color="{{ iconColor }}" hint-size="18px,18px"></x-import></x-import>
+</div>
+<div style="margin:12px 18px 0;display:flex;padding:4px;border-radius:999px;background:var(--glass-fill-1);border:var(--border-glass-soft)">
+<button onClick="{{ setClose }}" style="position:relative;flex:1;height:36px;border:0;border-radius:999px;background:transparent;color:var(--text-title);font-weight:500;font-size:13px;line-height:1;cursor:pointer"><sc-if value="{{ isClose }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:0;border-radius:999px;background:var(--glass-fill-4);box-shadow:var(--shadow-rest),var(--inner-top)"></span></sc-if><span style="position:relative">Close to the original</span></button>
+<button onClick="{{ setEveryday }}" style="position:relative;flex:1;height:36px;border:0;border-radius:999px;background:transparent;color:var(--text-title);font-weight:500;font-size:13px;line-height:1;cursor:pointer"><sc-if value="{{ isEveryday }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;inset:0;border-radius:999px;background:var(--glass-fill-4);box-shadow:var(--shadow-rest),var(--inner-top)"></span></sc-if><span style="position:relative">Everyday words</span></button>
+</div>
+<div style="flex:1;min-height:0;overflow:auto;padding:14px 18px 0">
+<sc-for list="{{ verses }}" as="v" hint-placeholder-count="5">
+<div onClick="{{ v.go }}" style="position:relative;display:flex;gap:12px;padding:10px 12px;margin:0 -12px;border-radius:14px;cursor:pointer">
+<sc-if value="{{ v.active }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;inset:0;border-radius:14px;background:var(--glass-fill-2)"></span></sc-if>
+<span style="position:relative;flex:none;width:18px;font-weight:600;font-size:11px;line-height:1.7;color:var(--text-faint);text-align:right">{{ v.n }}</span>
+<p style="position:relative;margin:0;font-weight:400;font-size:16px;line-height:1.55;letter-spacing:-.005em;color:var(--text-title);text-wrap:pretty">{{ v.text }}</p>
+</div>
+</sc-for>
+<div style="margin:8px 0 0;padding:12px 4px 0;border-top:var(--border-hairline);font-size:11px;line-height:1.4;color:var(--text-faint)">{{ textAttribution }}</div>
+<div style="height:16px"></div>
+</div>
+<div style="margin:0 10px;padding:12px 14px 0;border-radius:28px 28px 0 0;background:var(--glass-fill-3);backdrop-filter:blur(40px) saturate(160%);-webkit-backdrop-filter:blur(40px) saturate(160%);border:var(--border-glass);border-bottom:0;box-shadow:var(--shadow-card),var(--inner-top)">
+<div style="display:flex;align-items:center;gap:6px">
+<sc-for list="{{ stripTabs }}" as="t" hint-placeholder-count="3"><button onClick="{{ t.go }}" style="position:relative;height:32px;padding:0 12px;border:var(--border-hairline);border-radius:999px;background:transparent;color:var(--text-title);font-weight:500;font-size:12px;cursor:pointer"><sc-if value="{{ t.active }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;inset:-1px;border-radius:999px;background:var(--glass-fill-4);box-shadow:var(--inner-top)"></span></sc-if><span style="position:relative">{{ t.label }}</span></button></sc-for>
+<div style="flex:1"></div>
+<button onClick="{{ toggleBookmark }}" style="width:32px;height:32px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="bookmark" size="{{ 18 }}" color="{{ bookmarkColor }}" hint-size="18px,18px"></x-import></button>
+<button onClick="{{ goShare }}" style="width:32px;height:32px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="navigation" size="{{ 16 }}" color="{{ iconColor }}" hint-size="16px,16px"></x-import></button>
+</div>
+<div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between"><div style="font-weight:600;font-size:9px;line-height:1.2;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">{{ stripLabel }} · verse {{ verse }}</div><div style="display:flex;gap:6px"><sc-for list="{{ words }}" as="w" hint-placeholder-count="2"><button onClick="{{ w.go }}" style="padding:5px 9px;border-radius:999px;border:var(--border-hairline);background:transparent;font-weight:500;font-size:10px;line-height:1;color:var(--text-title);cursor:pointer">{{ w.label }}</button></sc-for></div></div>
+<p style="margin:8px 0 12px;font-weight:400;font-size:13px;line-height:1.45;color:var(--text-body);text-wrap:pretty">{{ stripBody }}</p>
+</div>
+<div style="margin:0 10px;padding:12px 14px 22px 12px;display:flex;align-items:center;gap:12px;background:var(--glass-fill-4);backdrop-filter:blur(40px) saturate(160%);-webkit-backdrop-filter:blur(40px) saturate(160%);border-top:var(--border-hairline)">
+<button onClick="{{ togglePlay }}" style="width:48px;height:48px;flex:none;border-radius:999px;border:0;background:var(--surface-inverse);color:var(--text-on-inverse);display:grid;place-items:center;cursor:pointer" style-active="transform:scale(.972)">
+<sc-if value="{{ playing }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"></rect><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"></rect></svg></sc-if>
+<sc-if value="{{ notPlaying }}" hint-placeholder-val="{{ true }}"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"></path></svg></sc-if>
+</button>
+<div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;font-weight:500;font-size:12px;line-height:1.3;color:var(--text-title)"><span>Ruth {{ chapter }} · audio · {{ audioState }}</span><span style="color:var(--text-dim)">{{ timeLabel }}</span></div><svg width="100%" height="4" style="display:block;margin-top:8px"><rect width="100%" height="4" rx="2" fill="var(--dot-ring-stroke,rgba(1,66,99,.14))"></rect><rect width="{{ progressPct }}" height="4" rx="2" fill="var(--accent-blue)" style="transition:width 250ms linear"></rect></svg></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isCatalog }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;min-height:0;animation:gg-app-fade 500ms ease both">
+<div style="display:flex;align-items:center;gap:10px;padding:12px 18px 0">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassIconButton" tone="{{ tone }}" label="Back" size="{{ 44 }}" onClick="{{ goBack }}" hint-size="44px,44px"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="chevronLeft" size="{{ 20 }}" color="{{ iconColor }}" hint-size="20px,20px"></x-import></x-import>
+<div style="flex:1"><div style="font-size:12px;line-height:1.3;color:var(--text-dim)">{{ langName }} · {{ resourceCount }} resources</div><h1 style="margin:2px 0 0;font-weight:500;font-size:24px;line-height:1.16;letter-spacing:-.02em;color:var(--text-title)">Library</h1></div>
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassIconButton" tone="{{ tone }}" label="About this library" size="{{ 44 }}" onClick="{{ goAbout }}" hint-size="44px,44px"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="sparkle" size="{{ 18 }}" color="{{ iconColor }}" hint-size="18px,18px"></x-import></x-import>
+</div>
+<div style="flex:1;min-height:0;overflow:auto;padding:16px 18px 0;display:grid;gap:8px;align-content:start">
+<sc-for list="{{ resources }}" as="r" hint-placeholder-count="6">
+<div onClick="{{ r.go }}" style="display:flex;align-items:center;gap:14px;padding:14px;border-radius:22px;background:var(--glass-fill-2);backdrop-filter:blur(40px) saturate(160%);-webkit-backdrop-filter:blur(40px) saturate(160%);border:var(--border-glass);box-shadow:var(--shadow-rest),var(--inner-top);cursor:pointer;animation:gg-app-rise 600ms cubic-bezier(.22,1,.36,1) both">
+<div style="width:48px;height:48px;flex:none;border-radius:14px;background:var(--glass-fill-3);border:var(--border-glass-soft);display:grid;place-items:center"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="{{ r.icon }}" size="{{ 20 }}" color="{{ iconColor }}" hint-size="20px,20px"></x-import></div>
+<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:15px;line-height:1.3;color:var(--text-title)">{{ r.title }}</div><div style="margin-top:2px;font-size:12px;line-height:1.35;color:var(--text-body);text-wrap:pretty">{{ r.sub }}</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;font-weight:500;font-size:10px;line-height:1;color:var(--text-dim)"><span style="padding:5px 8px;border-radius:999px;border:var(--border-hairline)">{{ r.count }}</span><span style="padding:5px 8px;border-radius:999px;border:var(--border-hairline)">{{ r.publisher }} · {{ r.version }}</span><sc-if value="{{ r.offline }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:4px;padding:5px 8px;border-radius:999px;border:var(--border-hairline)"><span style="width:6px;height:6px;border-radius:999px;background:var(--accent-teal)"></span>Offline</span></sc-if><sc-if value="{{ r.optional }}" hint-placeholder-val="{{ false }}"><span style="padding:5px 8px;border-radius:999px;border:var(--border-hairline)">Optional download · {{ r.size }}</span></sc-if></div>
+</div>
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="chevronRight" size="{{ 16 }}" color="{{ iconColor }}" hint-size="16px,16px"></x-import>
+</div>
+</sc-for>
+<div style="padding:8px 4px 0;font-size:12px;line-height:1.4;color:var(--text-faint);text-wrap:pretty">All content CC BY-SA 4.0, attributed to the organization that published it. unfoldingWord resources are listed first.</div>
+<div style="height:120px"></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isArticle }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;min-height:0;animation:gg-app-fade 500ms ease both">
+<div style="display:flex;align-items:center;gap:10px;padding:12px 18px 0">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassIconButton" tone="{{ tone }}" label="Back" size="{{ 44 }}" onClick="{{ goBack }}" hint-size="44px,44px"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="chevronLeft" size="{{ 20 }}" color="{{ iconColor }}" hint-size="20px,20px"></x-import></x-import>
+<div style="flex:1;text-align:center"><div style="font-weight:600;font-size:17px;line-height:1.2;color:var(--text-title)">{{ articleTitle }}</div><div style="font-size:12px;line-height:1.3;color:var(--text-dim)">{{ articleKind }} · {{ langName }}</div></div>
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassIconButton" tone="{{ tone }}" label="Save" size="{{ 44 }}" hint-size="44px,44px"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="bookmark" size="{{ 20 }}" color="{{ iconColor }}" hint-size="20px,20px"></x-import></x-import>
+</div>
+<div style="flex:1;min-height:0;overflow:auto;padding:18px 18px 0">
+<div style="padding:18px;border-radius:28px;background:var(--glass-fill-2);backdrop-filter:blur(40px) saturate(160%);-webkit-backdrop-filter:blur(40px) saturate(160%);border:var(--border-glass);box-shadow:var(--shadow-card),var(--inner-top);animation:gg-app-rise 600ms cubic-bezier(.22,1,.36,1) both">
+<div style="font-weight:600;font-size:9px;line-height:1.2;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">Definition</div>
+<sc-for list="{{ articleParas }}" as="p" hint-placeholder-count="3"><p style="margin:10px 0 0;font-size:15px;line-height:1.55;color:var(--text-title);text-wrap:pretty">{{ p }}</p></sc-for>
+<div style="margin-top:16px;font-weight:600;font-size:9px;line-height:1.2;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">Translation suggestions</div>
+<p style="margin:10px 0 0;font-size:15px;line-height:1.55;color:var(--text-title);text-wrap:pretty">Depending on the context, this could be translated as "binding agreement", "formal commitment" or "solemn promise". If your language has a word for a pact sealed with a ceremony, that word may fit here.</p>
+<div style="margin-top:16px;font-weight:600;font-size:9px;line-height:1.2;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">See also</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px"><sc-for list="{{ articleLinks }}" as="l" hint-placeholder-count="4"><button onClick="{{ l.go }}" style="height:32px;padding:0 12px;border-radius:999px;border:var(--border-hairline);background:transparent;color:var(--accent-deep);font-weight:500;font-size:12px;cursor:pointer">{{ l.label }}</button></sc-for></div>
+</div>
+<div style="padding:12px 4px 0;font-size:11px;line-height:1.4;color:var(--text-faint)">Translation Words · unfoldingWord · v86 · CC BY-SA 4.0</div>
+<div style="height:40px"></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSearch }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;min-height:0;animation:gg-app-fade 500ms ease both">
+<div style="display:flex;align-items:center;gap:10px;padding:12px 18px 0">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassIconButton" tone="{{ tone }}" label="Back" size="{{ 44 }}" onClick="{{ goBack }}" hint-size="44px,44px"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="chevronLeft" size="{{ 20 }}" color="{{ iconColor }}" hint-size="20px,20px"></x-import></x-import>
+<div style="flex:1"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassInput" placeholder="Reference or title, like Ruth 2 or covenant" height="{{ 44 }}" value="{{ searchQ }}" onChange="{{ onSearch }}" hint-size="100%,44px"></x-import></div>
+</div>
+<div style="flex:1;min-height:0;overflow:auto;padding:16px 18px 0;display:grid;gap:6px;align-content:start">
+<sc-for list="{{ searchResults }}" as="r" hint-placeholder-count="5">
+<div onClick="{{ r.go }}" style="display:flex;align-items:center;gap:12px;padding:12px 14px 12px 12px;border-radius:18px;background:var(--glass-fill-1);border:var(--border-glass-soft);cursor:pointer">
+<div style="width:40px;height:40px;flex:none;border-radius:14px;background:var(--glass-fill-3);border:var(--border-glass-soft);display:grid;place-items:center"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="{{ r.icon }}" size="{{ 18 }}" color="{{ iconColor }}" hint-size="18px,18px"></x-import></div>
+<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14px;line-height:1.3;color:var(--text-title)">{{ r.title }}</div><div style="font-size:12px;line-height:1.3;color:var(--text-body)">{{ r.sub }}</div></div>
+</div>
+</sc-for>
+<div onClick="{{ toggleIndex }}" style="margin-top:8px;display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:22px;background:var(--glass-fill-2);border:var(--border-glass);cursor:pointer">
+<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:13px;line-height:1.3;color:var(--text-title)">Search inside every downloaded text</div><div style="font-size:12px;line-height:1.35;color:var(--text-body)">Builds an index on this phone, about 18 MB for {{ langName }}.</div></div>
+<sc-if value="{{ indexOn }}" hint-placeholder-val="{{ false }}"><div style="position:relative;width:46px;height:28px;flex:none;border-radius:999px;background:#31ADE3"><span style="position:absolute;top:3px;left:21px;width:22px;height:22px;border-radius:999px;background:#fff;box-shadow:var(--shadow-rest)"></span></div></sc-if><sc-if value="{{ indexOff }}" hint-placeholder-val="{{ true }}"><div style="position:relative;width:46px;height:28px;flex:none;border-radius:999px;background:rgba(1,66,99,.18)"><span style="position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:999px;background:#fff;box-shadow:var(--shadow-rest)"></span></div></sc-if>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isFormation }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;min-height:0;animation:gg-app-fade 500ms ease both">
+<div style="padding:22px 18px 0;display:flex;align-items:flex-end;justify-content:space-between"><div><div style="font-size:12px;line-height:1.3;color:var(--text-dim)">{{ langName }} · {{ formationCoverage }}</div><h1 style="margin:6px 0 0;font-weight:500;font-size:28px;line-height:1.16;letter-spacing:-.02em;color:var(--text-title)">Formation</h1></div>
+<button onClick="{{ addGroup }}" style="display:flex;align-items:center;gap:6px;height:40px;padding:0 14px 0 10px;border:var(--border-glass);border-radius:999px;background:var(--glass-fill-3);color:var(--text-title);font-weight:500;font-size:13px;cursor:pointer;box-shadow:var(--shadow-rest),var(--inner-top)"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="plus" size="{{ 16 }}" color="{{ iconColor }}" hint-size="16px,16px"></x-import>Group</button></div>
+<div style="flex:1;min-height:0;overflow:auto;padding:18px 18px 0;display:grid;gap:10px;align-content:start">
+<div style="font-weight:600;font-size:9px;line-height:1.2;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">Your groups</div>
+<sc-for list="{{ groups }}" as="g" hint-placeholder-count="2">
+<div onClick="{{ g.go }}" style="display:flex;align-items:center;gap:14px;padding:14px;border-radius:22px;background:var(--glass-fill-2);backdrop-filter:blur(40px) saturate(160%);-webkit-backdrop-filter:blur(40px) saturate(160%);border:var(--border-glass);box-shadow:var(--shadow-rest),var(--inner-top);cursor:pointer">
+<div style="width:48px;height:48px;flex:none;border-radius:14px;background:var(--glass-fill-3);border:var(--border-glass-soft);display:grid;place-items:center"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="users" size="{{ 20 }}" color="{{ iconColor }}" hint-size="20px,20px"></x-import></div>
+<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:15px;line-height:1.3;color:var(--text-title)">{{ g.name }}</div><div style="font-size:12px;line-height:1.35;color:var(--text-body)">Story {{ g.story }} of 50 · next: {{ g.next }}</div><svg width="100%" height="4" style="display:block;margin-top:8px"><rect width="100%" height="4" rx="2" fill="rgba(1,66,99,.12)"></rect><rect width="{{ g.pct }}" height="4" rx="2" fill="var(--accent-blue)"></rect></svg></div>
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="chevronRight" size="{{ 16 }}" color="{{ iconColor }}" hint-size="16px,16px"></x-import>
+</div>
+</sc-for>
+<div style="margin-top:6px;font-weight:600;font-size:9px;line-height:1.2;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">Tracks</div>
+<div onClick="{{ goSession }}" style="padding:10px;border-radius:28px;background:var(--glass-fill-2);backdrop-filter:blur(40px) saturate(160%);-webkit-backdrop-filter:blur(40px) saturate(160%);border:var(--border-glass);box-shadow:var(--shadow-card),var(--inner-top);cursor:pointer">
+<div style="position:relative;height:140px;border-radius:22px;overflow:hidden;background:linear-gradient(160deg,#014263 0%,#1E7FB0 55%,#31ADE3 100%)"><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,22,40,0) 40%,rgba(10,22,40,.92) 100%)"></div><div style="position:absolute;left:16px;right:16px;bottom:14px;color:#fff"><div style="font-weight:600;font-size:9px;letter-spacing:.14em;text-transform:uppercase;opacity:.85">Foundations · 50 stories</div><div style="margin-top:4px;font-weight:600;font-size:19px;line-height:1.24;letter-spacing:-.015em">Open Bible Stories with the five movements</div></div></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 8px 6px"><div style="font-size:13px;line-height:1.35;color:var(--text-body)">Gather a group, press play, go deeper.</div><div style="font-weight:500;font-size:12px;color:var(--text-dim)">{{ foundationsState }}</div></div>
+</div>
+<div onClick="{{ goTraining }}" style="display:flex;align-items:center;gap:14px;padding:14px;border-radius:22px;background:var(--glass-fill-2);backdrop-filter:blur(40px) saturate(160%);-webkit-backdrop-filter:blur(40px) saturate(160%);border:var(--border-glass);box-shadow:var(--shadow-rest),var(--inner-top);cursor:pointer">
+<div style="width:48px;height:48px;flex:none;border-radius:14px;background:var(--glass-fill-3);border:var(--border-glass-soft);display:grid;place-items:center"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="compass" size="{{ 20 }}" color="{{ iconColor }}" hint-size="20px,20px"></x-import></div>
+<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:15px;line-height:1.3;color:var(--text-title)">Training</div><div style="font-size:12px;line-height:1.35;color:var(--text-body)">Translation Academy as a course. How to translate and check Scripture in your church.</div></div>
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="chevronRight" size="{{ 16 }}" color="{{ iconColor }}" hint-size="16px,16px"></x-import>
+</div>
+<div style="height:120px"></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSession }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;min-height:0;animation:gg-app-fade 500ms ease both">
+<div style="display:flex;align-items:center;gap:10px;padding:12px 18px 0">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassIconButton" tone="{{ tone }}" label="Back" size="{{ 44 }}" onClick="{{ goBack }}" hint-size="44px,44px"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="chevronLeft" size="{{ 20 }}" color="{{ iconColor }}" hint-size="20px,20px"></x-import></x-import>
+<div style="flex:1;text-align:center"><div style="font-weight:600;font-size:17px;line-height:1.2;color:var(--text-title)">Story 4 of 50</div><div style="font-size:12px;line-height:1.3;color:var(--text-dim)">{{ groupName }} · {{ langName }}</div></div>
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassIconButton" tone="{{ tone }}" label="Share" size="{{ 44 }}" onClick="{{ goShare }}" hint-size="44px,44px"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="navigation" size="{{ 18 }}" color="{{ iconColor }}" hint-size="18px,18px"></x-import></x-import>
+</div>
+<div style="flex:1;min-height:0;overflow:auto;padding:16px 18px 0">
+<sc-if value="{{ needsFallback }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ toggleEnglishMovements }}" style="display:flex;align-items:center;gap:12px;padding:12px 14px 12px 16px;margin-bottom:10px;border-radius:22px;background:var(--glass-fill-1);border:var(--border-glass-soft);cursor:pointer">
+<span style="width:8px;height:8px;border-radius:999px;background:var(--accent-warm);flex:none"></span>
+<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:13px;line-height:1.3;color:var(--text-title)">The five movements are not yet in {{ langName }}</div><div style="font-size:12px;line-height:1.3;color:var(--text-body)">{{ fallbackLine }}</div></div>
+<sc-if value="{{ enMovements }}" hint-placeholder-val="{{ false }}"><div style="position:relative;width:46px;height:28px;flex:none;border-radius:999px;background:#31ADE3"><span style="position:absolute;top:3px;left:21px;width:22px;height:22px;border-radius:999px;background:#fff;box-shadow:var(--shadow-rest)"></span></div></sc-if><sc-if value="{{ enMovementsOff }}" hint-placeholder-val="{{ true }}"><div style="position:relative;width:46px;height:28px;flex:none;border-radius:999px;background:rgba(1,66,99,.18)"><span style="position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:999px;background:#fff;box-shadow:var(--shadow-rest)"></span></div></sc-if>
+</div>
+</sc-if>
+<div style="padding:10px;border-radius:28px;background:var(--glass-fill-2);backdrop-filter:blur(40px) saturate(160%);-webkit-backdrop-filter:blur(40px) saturate(160%);border:var(--border-glass);box-shadow:var(--shadow-card),var(--inner-top);animation:gg-app-rise 600ms cubic-bezier(.22,1,.36,1) both">
+<div style="position:relative;height:190px;border-radius:22px;overflow:hidden;background:linear-gradient(160deg,#014263 0%,#1E7FB0 55%,#31ADE3 100%)">
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,22,40,0) 40%,rgba(10,22,40,.92) 100%)"></div>
+<div style="position:absolute;left:16px;right:16px;bottom:14px;color:#fff"><div style="font-weight:600;font-size:9px;line-height:1.2;letter-spacing:.14em;text-transform:uppercase;opacity:.85">Frame {{ frame }} of 9 · picture</div><div style="margin-top:4px;font-weight:600;font-size:19px;line-height:1.24;letter-spacing:-.015em">God's covenant with Abraham</div></div>
+</div>
+<p style="margin:14px 8px 4px;font-size:16px;line-height:1.55;color:var(--text-title);text-wrap:pretty">{{ frameText }}</p>
+<div style="display:flex;gap:4px;justify-content:center;padding:10px 0 4px"><sc-for list="{{ frameDots }}" as="d" hint-placeholder-count="9"><sc-if value="{{ d.current }}" hint-placeholder-val="{{ false }}"><span style="width:22px;height:5px;border-radius:3px;background:var(--accent-blue)"></span></sc-if><sc-if value="{{ d.done }}" hint-placeholder-val="{{ false }}"><span style="width:6px;height:5px;border-radius:3px;background:var(--accent-blue)"></span></sc-if><sc-if value="{{ d.todo }}" hint-placeholder-val="{{ true }}"><span style="width:6px;height:5px;border-radius:3px;background:var(--dot-ring-stroke,rgba(1,66,99,.16))"></span></sc-if></sc-for></div>
+</div>
+<div style="margin-top:14px;padding:18px;border-radius:28px;background:var(--glass-fill-1);border:var(--border-glass-soft)">
+<div style="font-weight:600;font-size:9px;line-height:1.2;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">Key idea</div>
+<p style="margin:8px 0 0;font-size:15px;line-height:1.5;color:var(--text-title);text-wrap:pretty">God chooses one family and promises to bless every nation through it.</p>
+<div style="margin-top:14px;font-weight:600;font-size:9px;line-height:1.2;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">Creedal verse</div>
+<p style="margin:8px 0 0;font-size:14px;line-height:1.5;color:var(--text-body);text-wrap:pretty">"I will make you a great nation, and I will bless you, and in you all the families of the earth will be blessed." Genesis 12:2-3</p>
+</div>
+<sc-if value="{{ showMovements }}" hint-placeholder-val="{{ true }}">
+<div style="margin-top:14px;padding:18px;border-radius:28px;background:var(--glass-fill-2);backdrop-filter:blur(40px) saturate(160%);-webkit-backdrop-filter:blur(40px) saturate(160%);border:var(--border-glass);box-shadow:var(--shadow-rest),var(--inner-top)">
+<div style="display:flex;align-items:center;justify-content:space-between"><div style="font-weight:600;font-size:9px;line-height:1.2;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">Talk about it · {{ movementSource }}</div></div>
+<div style="display:flex;gap:6px;margin-top:12px;overflow:auto;margin-right:-18px;padding-right:18px"><sc-for list="{{ movements }}" as="m" hint-placeholder-count="5"><button onClick="{{ m.go }}" style="position:relative;flex:none;height:32px;padding:0 12px;border:var(--border-hairline);border-radius:999px;background:transparent;color:var(--text-title);font-weight:500;font-size:12px;cursor:pointer"><sc-if value="{{ m.active }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;inset:-1px;border-radius:999px;background:var(--glass-fill-4);box-shadow:var(--inner-top)"></span></sc-if><span style="position:relative">{{ m.label }}</span></button></sc-for></div>
+<sc-for list="{{ movementQuestions }}" as="q" hint-placeholder-count="3"><p style="margin:12px 0 0;font-size:14px;line-height:1.45;color:var(--text-body);text-wrap:pretty">{{ q }}</p></sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ showPlainQuestions }}" hint-placeholder-val="{{ false }}">
+<div style="margin-top:14px;padding:18px;border-radius:28px;background:var(--glass-fill-2);border:var(--border-glass);box-shadow:var(--shadow-rest),var(--inner-top)">
+<div style="font-weight:600;font-size:9px;line-height:1.2;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">Talk about it · study questions</div>
+<sc-for list="{{ plainQuestions }}" as="q" hint-placeholder-count="3"><p style="margin:12px 0 0;font-size:14px;line-height:1.45;color:var(--text-body);text-wrap:pretty">{{ q }}</p></sc-for>
+</div>
+</sc-if>
+<div style="margin-top:14px;padding:18px;border-radius:28px;background:var(--glass-fill-1);border:var(--border-glass-soft)">
+<div style="font-weight:600;font-size:9px;line-height:1.2;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">Session notes · {{ groupName }}</div>
+<input value="{{ noteDraft }}" onChange="{{ onNote }}" placeholder="What did the group notice?" style="margin-top:10px;width:100%;box-sizing:border-box;height:44px;padding:0 16px;border-radius:999px;border:var(--border-hairline);background:transparent;color:var(--text-title);font-size:14px;outline:none">
+<div style="margin-top:6px;font-size:11px;color:var(--text-faint)">Stays on this phone with the group.</div>
+</div>
+<div style="height:16px"></div>
+</div>
+<div style="margin:0 10px;padding:12px 14px 22px;display:flex;align-items:center;gap:12px;background:var(--glass-fill-4);backdrop-filter:blur(40px) saturate(160%);-webkit-backdrop-filter:blur(40px) saturate(160%);border-top:var(--border-hairline);border-radius:28px 28px 0 0">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassIconButton" tone="{{ tone }}" label="Previous frame" size="{{ 44 }}" onClick="{{ prevFrame }}" hint-size="44px,44px"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="chevronLeft" size="{{ 20 }}" color="{{ iconColor }}" hint-size="20px,20px"></x-import></x-import>
+<button onClick="{{ toggleStory }}" style="flex:1;height:52px;border-radius:999px;border:0;background:var(--surface-inverse);color:var(--text-on-inverse);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;font-size:15px;line-height:1;cursor:pointer" style-active="transform:scale(.972)">
+<sc-if value="{{ storyPlaying }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"></rect><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"></rect></svg>Pause</sc-if>
+<sc-if value="{{ storyNotPlaying }}" hint-placeholder-val="{{ true }}"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"></path></svg>Play and discuss</sc-if>
+</button>
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassIconButton" tone="{{ tone }}" label="Next frame" size="{{ 44 }}" onClick="{{ nextFrame }}" hint-size="44px,44px"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="chevronRight" size="{{ 20 }}" color="{{ iconColor }}" hint-size="20px,20px"></x-import></x-import>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isLanguages }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;min-height:0;animation:gg-app-fade 500ms ease both">
+<div style="display:flex;align-items:center;gap:10px;padding:12px 18px 0">
+<sc-if value="{{ canBack }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassIconButton" tone="{{ tone }}" label="Back" size="{{ 44 }}" onClick="{{ goBack }}" hint-size="44px,44px"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="chevronLeft" size="{{ 20 }}" color="{{ iconColor }}" hint-size="20px,20px"></x-import></x-import></sc-if>
+<div style="flex:1"><div style="font-size:12px;line-height:1.3;color:var(--text-dim)">{{ languageCountLabel }}</div><h1 style="margin:2px 0 0;font-weight:500;font-size:24px;line-height:1.16;letter-spacing:-.02em;color:var(--text-title)">Languages</h1></div>
+<sc-if value="{{ canBack }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassIconButton" tone="{{ tone }}" label="Send to another phone" size="{{ 44 }}" onClick="{{ goTransfer }}" hint-size="44px,44px"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="navigation" size="{{ 18 }}" color="{{ iconColor }}" hint-size="18px,18px"></x-import></x-import></sc-if>
+</div>
+<div style="padding:16px 18px 0"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassInput" placeholder="Search languages" height="{{ 50 }}" value="{{ query }}" onChange="{{ onQuery }}" hint-size="100%,50px"></x-import></div>
+<div style="flex:1;min-height:0;overflow:auto;padding:12px 18px 0;display:grid;gap:6px;align-content:start">
+<sc-if value="{{ canBack }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;margin-bottom:6px;border-radius:22px;background:var(--glass-fill-2);border:var(--border-glass);box-shadow:var(--shadow-rest),var(--inner-top)">
+<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:13px;line-height:1.3;color:var(--text-title)">{{ storageUsed }} on this phone · {{ storageFree }} free</div><div style="font-size:12px;line-height:1.3;color:var(--text-body)">{{ storageDetail }}</div></div>
+<button onClick="{{ goTransfer }}" style="height:36px;padding:0 14px;border-radius:999px;border:0;background:var(--surface-inverse);color:var(--text-on-inverse);font-weight:600;font-size:12px;cursor:pointer">Send</button>
+</div>
+</sc-if>
+<sc-for list="{{ languages }}" as="l" hint-placeholder-count="8">
+<div onClick="{{ l.go }}" style="position:relative;display:flex;align-items:center;gap:12px;padding:12px 14px 12px 16px;border-radius:18px;background:var(--glass-fill-1);border:var(--border-glass-soft);cursor:pointer">
+<sc-if value="{{ l.active }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;border-radius:18px;background:var(--glass-fill-3);box-shadow:var(--inner-top)"></div></sc-if>
+<div style="position:relative;flex:1;min-width:0"><div style="font-weight:600;font-size:15px;line-height:1.3;color:var(--text-title)">{{ l.name }}</div><div style="font-size:12px;line-height:1.3;color:var(--text-body)">{{ l.en }} · {{ l.res }} resources · {{ l.size }}</div></div>
+<sc-if value="{{ l.offline }}" hint-placeholder-val="{{ false }}"><span style="position:relative;display:inline-flex;align-items:center;gap:4px;padding:5px 8px;border-radius:999px;border:var(--border-hairline);font-weight:500;font-size:10px;line-height:1;color:var(--text-dim)"><span style="width:6px;height:6px;border-radius:999px;background:var(--accent-teal)"></span>Offline</span></sc-if>
+<sc-if value="{{ l.active }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="check" size="{{ 18 }}" color="{{ iconColor }}" style="position:relative" hint-size="18px,18px"></x-import></sc-if>
+</div>
+</sc-for>
+<div style="padding:12px 4px 0;font-size:12px;line-height:1.4;color:var(--text-faint);text-wrap:pretty">14 of the app's 16 languages have production content today. Burmese and Dutch will appear as soon as they do.</div>
+<div style="height:120px"></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTransfer }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;min-height:0;animation:gg-app-fade 500ms ease both">
+<div style="display:flex;align-items:center;gap:10px;padding:12px 18px 0">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassIconButton" tone="{{ tone }}" label="Back" size="{{ 44 }}" onClick="{{ goBack }}" hint-size="44px,44px"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="chevronLeft" size="{{ 20 }}" color="{{ iconColor }}" hint-size="20px,20px"></x-import></x-import>
+<div style="flex:1"><div style="font-size:12px;line-height:1.3;color:var(--text-dim)">No internet needed</div><h1 style="margin:2px 0 0;font-weight:500;font-size:24px;line-height:1.16;letter-spacing:-.02em;color:var(--text-title)">Send to another phone</h1></div>
+</div>
+<div style="flex:1;min-height:0;overflow:auto;padding:16px 18px 0;display:grid;gap:6px;align-content:start">
+<div style="font-weight:600;font-size:9px;line-height:1.2;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);padding:0 0 4px">{{ langName }} · choose what goes</div>
+<sc-for list="{{ transferItems }}" as="t" hint-placeholder-count="6">
+<div onClick="{{ t.go }}" style="display:flex;align-items:center;gap:12px;padding:12px 14px 12px 16px;border-radius:18px;background:var(--glass-fill-1);border:var(--border-glass-soft);cursor:pointer">
+<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14px;line-height:1.3;color:var(--text-title)">{{ t.title }}</div><div style="font-size:12px;line-height:1.3;color:var(--text-body)">{{ t.size }}</div></div>
+<sc-if value="{{ t.on }}" hint-placeholder-val="{{ true }}"><div style="width:24px;height:24px;border-radius:999px;border:1.5px solid #31ADE3;background:#31ADE3;display:grid;place-items:center"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="check" size="{{ 14 }}" color="#fff" hint-size="14px,14px"></x-import></div></sc-if><sc-if value="{{ t.off }}" hint-placeholder-val="{{ false }}"><div style="width:24px;height:24px;border-radius:999px;border:1.5px solid rgba(1,66,99,.3);background:transparent"></div></sc-if>
+</div>
+</sc-for>
+<div style="margin-top:10px;padding:16px 18px;border-radius:22px;background:var(--glass-fill-2);border:var(--border-glass);box-shadow:var(--shadow-rest),var(--inner-top)">
+<div style="font-weight:600;font-size:13px;line-height:1.3;color:var(--text-title)">{{ transferTotal }} as a Scripture Burrito bundle</div>
+<div style="margin-top:4px;font-size:12px;line-height:1.4;color:var(--text-body);text-wrap:pretty">Works between iPhone and Android in both directions. On Android the app itself can travel too, so the other phone can install it without a store. Licence and attribution go with every item.</div>
+</div>
+<div style="height:120px"></div>
+</div>
+<div style="position:absolute;left:18px;right:18px;bottom:24px"><button onClick="{{ startTransfer }}" style="width:100%;height:56px;border:0;border-radius:999px;background:var(--surface-inverse);color:var(--text-on-inverse);font-weight:600;font-size:15px;cursor:pointer;box-shadow:var(--shadow-card)" style-active="transform:scale(.972)">{{ transferCta }}</button></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;min-height:0;animation:gg-app-fade 500ms ease both;font-family:var(--font-brand,'Nunito Sans',sans-serif)">
+<div style="display:flex;align-items:center;gap:10px;padding:12px 18px 0">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassIconButton" tone="{{ tone }}" label="Back" size="{{ 44 }}" onClick="{{ goBack }}" hint-size="44px,44px"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="chevronLeft" size="{{ 20 }}" color="{{ iconColor }}" hint-size="20px,20px"></x-import></x-import>
+<div style="flex:1"><div style="font-weight:500;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-blue)">About this library</div><h1 style="margin:2px 0 0;font-weight:900;font-size:24px;line-height:1.16;color:var(--text-title);font-family:var(--font-brand-display,'Nunito Sans',sans-serif)">What the church has built</h1></div>
+</div>
+<div style="flex:1;min-height:0;overflow:auto;padding:18px 18px 0;display:grid;gap:10px;align-content:start">
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+<sc-for list="{{ aboutStats }}" as="s" hint-placeholder-count="3"><div style="padding:14px;border-radius:18px;background:var(--glass-fill-2);border:var(--border-glass);box-shadow:var(--shadow-rest),var(--inner-top)"><div style="font-weight:900;font-size:24px;line-height:1;color:var(--text-title);font-family:var(--font-brand-display,'Nunito Sans',sans-serif)">{{ s.n }}</div><div style="margin-top:6px;font-size:11px;line-height:1.3;color:var(--text-body)">{{ s.label }}</div></div></sc-for>
+</div>
+<div style="padding:16px 18px;border-radius:22px;background:var(--glass-fill-1);border:var(--border-glass-soft)"><div style="font-weight:500;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-blue)">Published by</div><p style="margin:8px 0 0;font-size:14px;line-height:1.5;color:var(--text-body);text-wrap:pretty">unfoldingWord and gateway-language organizations across 14 languages. Every resource carries the name of the organization that made it, under CC BY-SA 4.0.</p></div>
+<div style="padding:10px;border-radius:28px;background:var(--glass-fill-2);backdrop-filter:blur(40px) saturate(160%);-webkit-backdrop-filter:blur(40px) saturate(160%);border:var(--border-glass);box-shadow:var(--shadow-card),var(--inner-top)">
+<div style="position:relative;height:150px;border-radius:22px;overflow:hidden;background:linear-gradient(160deg,#5A3B1E 0%,#E59D33 100%)"><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,22,40,0) 30%,rgba(10,22,40,.92) 100%)"></div><div style="position:absolute;left:16px;right:16px;bottom:14px;color:#fff"><div style="font-weight:500;font-size:9px;letter-spacing:.14em;text-transform:uppercase;opacity:.85">Impact story · Chad</div><div style="margin-top:4px;font-weight:900;font-size:19px;line-height:1.24;font-family:var(--font-brand-display,'Nunito Sans',sans-serif)">Jeremiah and the Occult King</div></div></div>
+<p style="margin:14px 8px 0;font-size:13px;line-height:1.45;color:var(--text-body);text-wrap:pretty">When Jeremiah first heard the stories in Chadian Arabic, his church planting changed. Names in this story have been changed for security.</p>
+<div style="margin:12px 8px 8px"><a href="https://unfoldingword.org/africa/when-jeremiah-first-heard-that-his-chadian-church-planting/" style="font-weight:500;font-size:13px;color:var(--accent-deep);text-decoration:none">Read the full story on unfoldingword.org</a></div>
+</div>
+<div style="padding:18px;border-radius:28px;background:var(--glass-fill-2);border:var(--border-glass);box-shadow:var(--shadow-rest),var(--inner-top)"><div style="font-weight:500;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-blue)">Partner</div><p style="margin:8px 0 0;font-size:14px;line-height:1.5;color:var(--text-title);text-wrap:pretty">These resources are free because partners make them so. You can help extend the reach into the unreached.</p><a href="https://unfoldingword.org/Give" style="display:flex;align-items:center;justify-content:center;margin-top:14px;height:48px;border-radius:999px;background:var(--surface-inverse);color:var(--text-on-inverse);font-weight:600;font-size:14px;text-decoration:none">Give at unfoldingword.org</a></div>
+<div style="font-weight:500;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-blue);padding:6px 0 0">What you may want next</div>
+<sc-for list="{{ aboutLinks }}" as="l" hint-placeholder-count="3"><a href="{{ l.href }}" style="display:flex;align-items:center;gap:12px;padding:12px 14px 12px 16px;border-radius:18px;background:var(--glass-fill-1);border:var(--border-glass-soft);text-decoration:none"><div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14px;line-height:1.3;color:var(--text-title)">{{ l.name }}</div><div style="font-size:12px;line-height:1.35;color:var(--text-body)">{{ l.sub }}</div></div><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="arrowUpRight" size="{{ 16 }}" color="{{ iconColor }}" hint-size="16px,16px"></x-import></a></sc-for>
+<div style="display:flex;justify-content:center;padding:18px 0 0"><sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><img src="../../assets/logo/logo-horizontal-color.png" alt="unfoldingWord" style="height:22px;width:auto;display:block;opacity:.9"></sc-if><sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><img src="../../assets/logo/logo-horizontal-reversed.png" alt="unfoldingWord" style="height:22px;width:auto;display:block;opacity:.9"></sc-if></div>
+<div style="height:40px"></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;min-height:0;animation:gg-app-fade 500ms ease both">
+<div style="display:flex;align-items:center;gap:10px;padding:12px 18px 0">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassIconButton" tone="{{ tone }}" label="Back" size="{{ 44 }}" onClick="{{ goBack }}" hint-size="44px,44px"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="chevronLeft" size="{{ 20 }}" color="{{ iconColor }}" hint-size="20px,20px"></x-import></x-import>
+<h1 style="flex:1;margin:0;font-weight:500;font-size:24px;line-height:1.16;letter-spacing:-.02em;color:var(--text-title)">Settings</h1>
+</div>
+<div style="flex:1;min-height:0;overflow:auto;padding:16px 18px 0;display:grid;gap:6px;align-content:start">
+<sc-for list="{{ settingsRows }}" as="r" hint-placeholder-count="7">
+<div onClick="{{ r.go }}" style="display:flex;align-items:center;gap:12px;padding:14px 14px 14px 16px;border-radius:18px;background:var(--glass-fill-1);border:var(--border-glass-soft);cursor:pointer">
+<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14px;line-height:1.3;color:var(--text-title)">{{ r.title }}</div><div style="font-size:12px;line-height:1.3;color:var(--text-body)">{{ r.sub }}</div></div>
+<sc-if value="{{ r.chevron }}" hint-placeholder-val="{{ true }}"><x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="chevronRight" size="{{ 16 }}" color="{{ iconColor }}" hint-size="16px,16px"></x-import></sc-if>
+<sc-if value="{{ r.value }}" hint-placeholder-val="{{ false }}"><span style="font-weight:500;font-size:13px;color:var(--text-dim)">{{ r.value }}</span></sc-if>
+</div>
+</sc-for>
+<div style="padding:12px 4px 0;font-size:12px;line-height:1.4;color:var(--text-faint);text-wrap:pretty">Nothing leaves this phone that you did not choose to send. The app counts opens, downloads, transfers and shares in aggregate, with no identifiers.</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isShare }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ goBack }}" style="position:absolute;inset:0;background:rgba(1,66,99,.28);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:gg-app-fade 300ms ease both"></div>
+<div style="position:absolute;left:10px;right:10px;bottom:0;padding:18px 18px 34px;border-radius:34px 34px 0 0;background:var(--glass-fill-4);backdrop-filter:blur(64px) saturate(160%);-webkit-backdrop-filter:blur(64px) saturate(160%);border:var(--border-glass);border-bottom:0;box-shadow:var(--shadow-float),var(--inner-top);animation:gg-app-rise 500ms cubic-bezier(.22,1,.36,1) both">
+<div style="font-weight:600;font-size:9px;line-height:1.2;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">Share {{ shareWhat }}</div>
+<div style="margin-top:6px;font-weight:600;font-size:17px;line-height:1.3;color:var(--text-title)">{{ shareTitle }}</div>
+<div style="margin-top:14px;display:grid;gap:8px">
+<button onClick="{{ goBack }}" style="height:52px;border:0;border-radius:999px;background:var(--surface-inverse);color:var(--text-on-inverse);font-weight:600;font-size:15px;cursor:pointer">Share as text</button>
+<button onClick="{{ goBack }}" style="height:52px;border:var(--border-glass);border-radius:999px;background:var(--glass-fill-2);color:var(--text-title);font-weight:500;font-size:15px;cursor:pointer">Share as audio</button>
+</div>
+<div style="margin-top:12px;text-align:center;font-size:11px;line-height:1.4;color:var(--text-faint)">Sent with its licence and attribution, and a short link to get the app.</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ showTabs }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:18px;right:18px;bottom:24px;display:flex;padding:6px;border-radius:999px;background:var(--glass-fill-3);backdrop-filter:blur(40px) saturate(160%);-webkit-backdrop-filter:blur(40px) saturate(160%);border:var(--border-glass);box-shadow:var(--shadow-float),var(--inner-top)">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
+<button onClick="{{ t.go }}" style="position:relative;flex:1;height:52px;border:0;border-radius:999px;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:var(--text-title);font-weight:500;font-size:10px;line-height:1" style-active="transform:scale(.972)">
+<sc-if value="{{ t.active }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;inset:0;border-radius:999px;background:var(--glass-fill-4);box-shadow:var(--shadow-rest),var(--inner-top);animation:gg-app-fade 300ms ease both"></span></sc-if>
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="{{ t.icon }}" size="{{ 20 }}" color="{{ iconColor }}" style="position:relative" hint-size="20px,20px"></x-import><span style="position:relative">{{ t.label }}</span>
+</button>
+</sc-for>
+</div>
+</sc-if>
+<div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:3px;background:var(--dot-ring-stroke,rgba(1,66,99,.30))"></div>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:470,&quot;height&quot;:924},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;'light'|'dark'&quot;,&quot;section&quot;:&quot;Appearance&quot;},&quot;reducedBlur&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Appearance&quot;},&quot;partnerRegionUS&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Prototype&quot;},&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;onboarding&quot;,&quot;home&quot;,&quot;study&quot;,&quot;catalog&quot;,&quot;article&quot;,&quot;search&quot;,&quot;formation&quot;,&quot;session&quot;,&quot;languages&quot;,&quot;transfer&quot;,&quot;about&quot;,&quot;settings&quot;],&quot;default&quot;:&quot;onboarding&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Prototype&quot;}}">
+class Component extends DCLogic {
+  static LANGS = [
+    {id:'en',code:'en',name:'English',en:'English',res:11,size:'54 MB',offline:true,core:true,fm:true},
+    {id:'es',code:'es',name:'Español',en:'Spanish, Latin America',res:10,size:'51 MB',offline:false,core:true},
+    {id:'hi',code:'hi',name:'हिन्दी',en:'Hindi',res:10,size:'58 MB',offline:false,core:true},
+    {id:'ru',code:'ru',name:'Русский',en:'Russian',res:10,size:'55 MB',offline:false,core:true},
+    {id:'ar',code:'ar',name:'العربية',en:'Arabic',res:9,size:'49 MB',offline:false,core:true},
+    {id:'id',code:'id',name:'Bahasa Indonesia',en:'Indonesian',res:11,size:'52 MB',offline:true,core:true,fm:true},
+    {id:'bn',code:'bn',name:'বাংলা',en:'Bengali',res:9,size:'57 MB',offline:false,core:true},
+    {id:'fa',code:'fa',name:'فارسی',en:'Farsi',res:9,size:'50 MB',offline:false,core:true},
+    {id:'fr',code:'fr',name:'Français',en:'French',res:2,size:'6 MB',offline:false},
+    {id:'zh',code:'zh',name:'中文',en:'Chinese, Simplified',res:2,size:'5 MB',offline:false},
+    {id:'sw',code:'sw',name:'Kiswahili',en:'Swahili',res:2,size:'6 MB',offline:true},
+    {id:'pt',code:'pt',name:'Português',en:'Portuguese, Brazil',res:2,size:'6 MB',offline:false},
+    {id:'ur',code:'ur',name:'اردو',en:'Urdu',res:1,size:'4 MB',offline:false},
+    {id:'vi',code:'vi',name:'Tiếng Việt',en:'Vietnamese',res:2,size:'5 MB',offline:false}
+  ];
+  static RESOURCES = [
+    {id:'ult',icon:'layers',title:'Bible, close to the original',sub:'Literal text aligned to the source, so notes land on the right words.',count:'66 books',publisher:'unfoldingWord',version:'v86',offline:true,go:'study'},
+    {id:'ust',icon:'layers',title:'Bible, everyday words',sub:'Simplified text for reading aloud and teaching.',count:'66 books',publisher:'unfoldingWord',version:'v86',offline:true,go:'study'},
+    {id:'tn',icon:'sparkle',title:'Notes',sub:'Help with hard passages, attached to each verse.',count:'66 books',publisher:'unfoldingWord',version:'v85',offline:true,go:'study'},
+    {id:'tw',icon:'search',title:'Words',sub:'Key terms and names explained, linked from the text.',count:'1,100 terms',publisher:'unfoldingWord',version:'v86',offline:true,go:'article'},
+    {id:'tq',icon:'check',title:'Questions',sub:'Check understanding after each passage.',count:'66 books',publisher:'unfoldingWord',version:'v86',offline:true,go:'study'},
+    {id:'ta',icon:'compass',title:'Academy',sub:'How to translate and check Scripture in your church.',count:'180 articles',publisher:'unfoldingWord',version:'v86',offline:false,go:'article'},
+    {id:'obs',icon:'grid',title:'Open Bible Stories',sub:'50 stories from creation to the church, with pictures. Audio is a separate download.',count:'50 stories',publisher:'unfoldingWord',version:'v9',offline:true,go:'session'},
+    {id:'uhb',icon:'globe',title:'Hebrew Old Testament',sub:'Plain text, outside the language pack.',count:'39 books',publisher:'unfoldingWord',version:'v2.1',offline:false,optional:true,size:'9 MB',go:'study'},
+    {id:'ugnt',icon:'globe',title:'Greek New Testament',sub:'Plain text, outside the language pack.',count:'27 books',publisher:'unfoldingWord',version:'v0.34',offline:false,optional:true,size:'4 MB',go:'study'}
+  ];
+  static VERSES = {
+    close:['Now it happened in the days when the judges ruled that there was a famine in the land. And a certain man from Bethlehem of Judah went to live in the fields of Moab, he and his wife and his two sons.','The name of the man was Elimelech, and the name of his wife was Naomi, and the names of his two sons were Mahlon and Chilion, Ephrathites from Bethlehem of Judah. They came into the fields of Moab and remained there.','Then Elimelech, the husband of Naomi, died, and she was left, she and her two sons.','They took for themselves Moabite wives. The name of the first was Orpah, and the name of the second was Ruth. And they lived there about ten years.','Then both Mahlon and Chilion also died, and the woman was left without her two children and without her husband.'],
+    everyday:['Long ago, when judges led Israel, there was a famine in the land. So a man from Bethlehem in Judah moved to the country of Moab with his wife and their two sons.','The man was Elimelech, his wife was Naomi, and their sons were Mahlon and Chilion. They were from the Ephrathah clan in Bethlehem. They settled in Moab.','Then Elimelech died, and Naomi was left alone with her two sons.','The sons married Moabite women named Orpah and Ruth. They lived in Moab for about ten years.','Then Mahlon and Chilion also died. Naomi had now lost both her sons and her husband.']
+  };
+  static NOTES = [
+    {note:'The judges were leaders God raised up to rescue and lead Israel before the nation had a king. Moab was the country east of the Dead Sea; Israelites and Moabites were often enemies, so moving there shows how severe the famine was.',words:['Judges','Moab'],q:'Why would a family from Bethlehem move to Moab?'},
+    {note:'Ephrathites here means people from the clan of Ephrathah, the old name for Bethlehem. Naming the whole family signals that each person will matter to the story.',words:['Bethlehem'],q:'Who are the members of this family?'},
+    {note:'In this culture a widow depended on her sons for food and protection. Naomi still has her sons, so her situation is hard but not yet desperate.',words:['Widow'],q:'What changed for Naomi when Elimelech died?'},
+    {note:'Marrying Moabite women was unusual for Israelites. The story does not condemn it here; it prepares the reader for Ruth, a foreigner who becomes part of God\'s people.',words:['Moabite','Ruth'],q:'Where did the sons find their wives?'},
+    {note:'Naomi is now a widow with no sons in a foreign land, with no one to provide for her. The rest of the book shows how God provides for her through Ruth.',words:['Widow','Provide'],q:'What has Naomi lost by the end of verse 5?'}
+  ];
+  static FRAMES = ['Many years after the flood, people again filled the earth, and they all spoke one language. They gathered to build a city with a tower that would reach the sky, to make a name for themselves.','God saw their pride. He changed their one language into many, so they could not understand each other, and he scattered them across the earth.','Hundreds of years later, God spoke to a man named Abram. He said, "Leave your country and your family and go to the land I will show you."','God said, "I will make you a great nation. I will bless you and make your name great, and through you all the peoples of the earth will be blessed."','Abram obeyed God. He took his wife Sarai, his servants and all he owned, and went to the land God showed him, the land of Canaan.','When Abram arrived, God said, "Look around you. All this land I will give to you and your descendants forever."','Abram and Sarai had no children, and they were growing old. Still, Abram trusted God and built an altar where he worshipped him.','One night God took Abram outside and told him to count the stars. God said, "Your descendants will be as many as these." Abram believed God.','God made a covenant with Abram. He promised him a son, more descendants than the stars, and the land of Canaan for his family forever.'];
+  static MOVEMENTS = [
+    {id:'obs',label:'Observation',q:['What did the people at Babel want, and what did God do?','What did God tell Abram to leave, and what did he promise?','Which promise in this story surprised you most?']},
+    {id:'tr',label:'Translation',q:['How would you say "bless" in your language so that it carries God\'s favor, not luck?','Is there a word for "covenant" that means more than a contract?','Read frame 4 aloud in your language. Does it sound like a promise?']},
+    {id:'dis',label:'Discourse',q:['The story moves from many peoples to one man. Why does it narrow like that?','What repeats across the frames, and what does the repetition do?']},
+    {id:'th',label:'Theological',q:['What does this story teach about how God chooses to work in the world?','How does God\'s promise to Abram reach your own community?']},
+    {id:'jo',label:'Journal',q:['Where is God asking you to trust a promise you cannot yet see?','Write one sentence you want to remember from this session.']}
+  ];
+  static PLAIN_Q = ['What did God promise Abram in this part of the story?','What did Abram give up to obey God, and what did he trust God for?','Who in your community needs to hear that God keeps his promises?'];
+  static ARTICLE = {title:'Covenant',kind:'Translation Words',paras:['A covenant is a formal, binding agreement between two parties that one or both must fulfill.','In the Bible, God made several covenants with his people. Some depended on the people keeping their part; others God promised to keep no matter what.','The covenant with Abraham promised land, descendants and a blessing for every nation. Its sign was circumcision.'],links:['Promise','Abraham','Bless','Genesis 12:1-3']};
+  state = {screen:this.props.startScreen || 'onboarding', prev:[], fromOnboarding:false, theme:null, lang:'id', nameDraft:'', name:'', chapter:1, verse:1, reading:'close', strip:'notes', bookmarked:false, playing:false, progress:.32, frame:4, movement:'obs', enMovements:false, storyPlaying:false, query:'', searchQ:'', indexOn:false, noteDraft:'', dl:.62, partnerDismissed:false, groups:[{name:'Tuesday group',story:4,mi:0},{name:'Youth leaders',story:1,mi:2}], groupIdx:0, transferOn:{ult:true,ust:false,tn:true,tw:true,tq:true,ta:false,obs:true}};
+  componentDidUpdate(p){
+    if(p.startScreen!==this.props.startScreen) this.setState({screen:this.props.startScreen||'onboarding',prev:[]});
+    if(p.theme!==this.props.theme) this.setState({theme:null});
+  }
+  componentDidMount(){ this.dlT=setInterval(()=>this.setState(s=>s.dl>=1?{dl:1}:{dl:Math.min(1,s.dl+.01)}),900); }
+  componentWillUnmount(){ clearInterval(this.t); clearInterval(this.st); clearInterval(this.dlT); }
+  go(screen,extra){ this.setState(s=>({screen,prev:[...s.prev,s.screen],...extra})); }
+  back(){ this.setState(s=>{ const prev=s.prev.slice(); const screen=prev.pop()||'home'; return {screen,prev,fromOnboarding:false}; }); }
+  togglePlay(){ this.setState(s=>({playing:!s.playing}),()=>{ clearInterval(this.t); if(this.state.playing) this.t=setInterval(()=>this.setState(s=>s.progress>=1?{progress:0,playing:false}:{progress:s.progress+.004}),250); }); }
+  toggleStory(){ this.setState(s=>({storyPlaying:!s.storyPlaying}),()=>{ clearInterval(this.st); if(this.state.storyPlaying) this.st=setInterval(()=>this.setState(s=>s.frame>=9?{storyPlaying:false}:{frame:s.frame+1}),6000); }); }
+  renderVals(){
+    const C=Component, s=this.state, p=this.props;
+    const theme=s.theme || p.theme || 'light', dark=theme==='dark';
+    const lang=C.LANGS.find(l=>l.id===s.lang) || C.LANGS[0];
+    const iconColor=dark?'#FFFFFF':'#1F4E60';
+    const q=s.query.trim().toLowerCase();
+    const langs=C.LANGS.filter(l=>!q || l.name.toLowerCase().includes(q) || l.en.toLowerCase().includes(q));
+    const tabScreens=['home','study','formation'];
+    const showTabs=tabScreens.includes(s.screen);
+    const secs=Math.round(252*s.progress), mm=Math.floor(secs/60), ss=String(secs%60).padStart(2,'0');
+    const goRes=r=>()=>this.go(r.go);
+    const resources=(lang.core?C.RESOURCES:C.RESOURCES.filter(r=>['obs','uhb','ugnt'].includes(r.id))).map(r=>({...r,go:goRes(r)}));
+    const group=s.groups[s.groupIdx];
+    const movement=C.MOVEMENTS.find(m=>m.id===s.movement)||C.MOVEMENTS[0];
+    const needsFallback=!lang.fm;
+    const showMovements=!needsFallback || s.enMovements;
+    const note=C.NOTES[s.verse-1];
+    const stripBodies={notes:note.note,words:note.words.join(', ')+'. Tap a term above to open its article.',questions:note.q};
+    const hour=new Date().getHours(), tod=hour<12?'morning':hour<18?'afternoon':'evening';
+    const sq=s.searchQ.trim().toLowerCase();
+    const searchAll=[{icon:'layers',title:'Ruth 2',sub:'Bible text · '+lang.name,go:()=>this.setState({screen:'study',chapter:2,prev:[]})},{icon:'search',title:'Covenant',sub:'Translation Words',go:()=>this.go('article')},{icon:'compass',title:'Checking a translation',sub:'Translation Academy',go:()=>this.go('article')},{icon:'grid',title:'Story 4 · God\'s covenant with Abraham',sub:'Open Bible Stories',go:()=>this.go('session')},{icon:'search',title:'Bless',sub:'Translation Words',go:()=>this.go('article')}];
+    const tItems=[{id:'ult',title:'Bible, close to the original',size:'19 MB'},{id:'ust',title:'Bible, everyday words',size:'21 MB'},{id:'tn',title:'Notes',size:'8 MB'},{id:'tw',title:'Words and word links',size:'3 MB'},{id:'tq',title:'Questions',size:'2 MB'},{id:'ta',title:'Academy',size:'4 MB'},{id:'obs',title:'Open Bible Stories with pictures',size:'31 MB'}];
+    const tSel=tItems.filter(t=>s.transferOn[t.id]); const tMB=tSel.reduce((a,t)=>a+parseInt(t.size),0);
+    const partnerOn=(p.partnerRegionUS ?? true) && !s.partnerDismissed;
+    return {
+      themeAttr:dark?'dark':undefined, blurAttr:p.reducedBlur?'reduced':undefined, tone:dark?'night':'light', iconColor, themeIcon:dark?'sun':'moon',
+      isLight:!dark, isDark:dark,
+      auroraIntensity:['study','session','article'].includes(s.screen)?.55:1,
+      isOnboarding:s.screen==='onboarding', isHome:s.screen==='home', isStudy:s.screen==='study', isCatalog:s.screen==='catalog', isArticle:s.screen==='article', isSearch:s.screen==='search', isFormation:s.screen==='formation', isSession:s.screen==='session', isLanguages:s.screen==='languages', isTransfer:s.screen==='transfer', isAbout:s.screen==='about', isSettings:s.screen==='settings', isShare:s.screen==='share',
+      showTabs,
+      langName:lang.name, langCode:lang.code.toUpperCase(), resourceCount:resources.length,
+      greeting:'Good '+tod+(s.name?',\u00a0'+s.name:''),
+      nameDraft:s.nameDraft, onName:e=>this.setState({nameDraft:e.target.value}),
+      downloadPending:s.dl<1, dlPct:Math.round(s.dl*100), dlWidth:Math.round(s.dl*100)+'%', packSize:lang.size,
+      hasUpdate:s.dl>=1 && lang.core, offlineLine:s.dl>=1?lang.res+' resources ready offline in '+lang.name:'Stories and notes already readable offline',
+      showPartner:partnerOn, dismissPartner:()=>this.setState({partnerDismissed:true}),
+      groupName:group.name, nextMovement:C.MOVEMENTS[group.mi].label,
+      saved:[{icon:'layers',title:'Ruth 1:16',sub:'Bible text · '+lang.name,go:()=>this.go('study')},{icon:'search',title:'Covenant',sub:'Translation Words',go:()=>this.go('article')},{icon:'grid',title:'Story 1 · The creation',sub:'Open Bible Stories',go:()=>this.go('session')}],
+      languageCountLabel:s.fromOnboarding?'Step 1 of 1':'14 languages · '+lang.name+' selected',
+      canBack:!s.fromOnboarding,
+      storageUsed:'112 MB', storageFree:'9.4 GB', storageDetail:'English 54 MB · Bahasa Indonesia 52 MB · Kiswahili 6 MB · story pictures 31 MB shared',
+      toggleTheme:()=>this.setState({theme:dark?'light':'dark'}),
+      goHomeEnglish:()=>this.setState({screen:'home',prev:[],fromOnboarding:false,lang:'en',name:s.nameDraft.trim(),dl:1}),
+      goPickLanguage:()=>this.go('languages',{fromOnboarding:true,name:s.nameDraft.trim()}),
+      goLanguages:()=>this.go('languages'), goCatalog:()=>this.go('catalog'), goSession:()=>this.go('session'), goStudy:()=>this.setState({screen:'study',prev:[]}),
+      goSearch:()=>this.go('search'), goAbout:()=>this.go('about'), goSettings:()=>this.go('settings'), goTransfer:()=>this.go('transfer'), goShare:()=>this.go('share'), goTraining:()=>this.go('article'),
+      goBack:()=>this.back(),
+      query:s.query, onQuery:e=>this.setState({query:e.target.value}),
+      languages:langs.map(l=>({...l,active:l.id===s.lang, go:()=>{ if(s.fromOnboarding) this.setState({lang:l.id,screen:'home',prev:[],fromOnboarding:false,dl:l.offline?1:.08}); else this.setState({lang:l.id,dl:l.offline?1:.08}); }})),
+      resources,
+      tabs:[{id:'home',icon:'compass',label:'Home'},{id:'study',icon:'layers',label:'Study'},{id:'formation',icon:'users',label:'Formation'}].map(t=>({...t,active:t.id===s.screen,go:()=>this.setState({screen:t.id,prev:[]})})),
+      chapter:s.chapter, prevChapter:()=>this.setState(st=>({chapter:Math.max(1,st.chapter-1),verse:1})), nextChapter:()=>this.setState(st=>({chapter:Math.min(4,st.chapter+1),verse:1})),
+      verse:s.verse,
+      setClose:()=>this.setState({reading:'close'}), setEveryday:()=>this.setState({reading:'everyday'}),
+      isClose:s.reading==='close', isEveryday:s.reading==='everyday',
+      verses:C.VERSES[s.reading].map((text,i)=>({n:i+1,text,active:s.verse===i+1,go:()=>this.setState({verse:i+1})})),
+      textAttribution:(s.reading==='close'?'Literal text':'Simplified text')+' · unfoldingWord · v86 · CC BY-SA 4.0',
+      stripTabs:[{id:'notes',label:'Notes'},{id:'words',label:'Words'},{id:'questions',label:'Questions'}].map(t=>({...t,active:t.id===s.strip,go:()=>this.setState({strip:t.id})})),
+      stripLabel:s.strip[0].toUpperCase()+s.strip.slice(1), stripBody:stripBodies[s.strip],
+      words:note.words.map(w=>({label:w,go:e=>{e.stopPropagation();this.go('article');}})),
+      toggleBookmark:()=>this.setState(st=>({bookmarked:!st.bookmarked})), bookmarkColor:s.bookmarked?'#31ADE3':iconColor,
+      playing:s.playing, notPlaying:!s.playing, togglePlay:()=>this.togglePlay(), audioState:lang.offline?'offline':'streaming',
+      progressPct:Math.round(s.progress*100)+'%', timeLabel:mm+':'+ss+' / 4:12',
+      articleTitle:C.ARTICLE.title, articleKind:C.ARTICLE.kind, articleParas:C.ARTICLE.paras,
+      articleLinks:C.ARTICLE.links.map(l=>({label:l,go:()=>l.includes(':')?this.setState({screen:'study',prev:[]}):this.setState({})})),
+      searchQ:s.searchQ, onSearch:e=>this.setState({searchQ:e.target.value}),
+      searchResults:searchAll.filter(r=>!sq||r.title.toLowerCase().includes(sq)||r.sub.toLowerCase().includes(sq)),
+      indexOn:s.indexOn, indexOff:!s.indexOn, toggleIndex:()=>this.setState(st=>({indexOn:!st.indexOn})),
+      formationCoverage:lang.fm?'five movements available':needsFallback&&lang.res>0?'stories with study questions':'stories',
+      foundationsState:group.story-1+' of 50 done',
+      groups:s.groups.map((g,i)=>({...g,next:C.MOVEMENTS[g.mi].label,pct:Math.round((g.story-1)/50*100)+'%',go:()=>this.setState({groupIdx:i,frame:1,movement:C.MOVEMENTS[g.mi].id},()=>this.go('session'))})),
+      addGroup:()=>this.setState(st=>({groups:[...st.groups,{name:'New group '+(st.groups.length+1),story:1,mi:0}]})),
+      needsFallback, showMovements, showPlainQuestions:needsFallback&&!s.enMovements,
+      fallbackLine:s.enMovements?'Showing the English movements alongside the '+lang.name+' story.':'Show the English movements alongside the story.',
+      toggleEnglishMovements:()=>this.setState(st=>({enMovements:!st.enMovements})), enMovements:s.enMovements, enMovementsOff:!s.enMovements,
+      movementSource:needsFallback?'English':lang.name,
+      movements:C.MOVEMENTS.map(m=>({...m,active:m.id===s.movement,go:()=>this.setState({movement:m.id})})), movementQuestions:movement.q, plainQuestions:C.PLAIN_Q,
+      noteDraft:s.noteDraft, onNote:e=>this.setState({noteDraft:e.target.value}),
+      frame:s.frame, frameText:C.FRAMES[s.frame-1],
+      frameDots:C.FRAMES.map((_,i)=>({current:i+1===s.frame,done:i+1<s.frame,todo:i+1>s.frame})),
+      storyPlaying:s.storyPlaying, storyNotPlaying:!s.storyPlaying, toggleStory:()=>this.toggleStory(),
+      prevFrame:()=>this.setState(st=>({frame:Math.max(1,st.frame-1)})), nextFrame:()=>this.setState(st=>({frame:Math.min(9,st.frame+1)})),
+      transferItems:tItems.map(t=>{const on=!!s.transferOn[t.id];return {...t,on,off:!on,go:()=>this.setState(st=>({transferOn:{...st.transferOn,[t.id]:!st.transferOn[t.id]}}))};}),
+      transferTotal:tSel.length+' of '+tItems.length+' resources · '+tMB+' MB', transferCta:'Find a nearby phone',
+      startTransfer:()=>this.back(),
+      aboutStats:[{n:'14',label:'languages'},{n:'322',label:'production releases'},{n:'9',label:'resource types'}],
+      aboutLinks:[{name:'translationCore',sub:'Check a translation against notes and words on a computer.',href:'https://www.translationcore.com'},{name:'BT Servant',sub:'Ask questions about a passage in a conversation.',href:'https://unfoldingword.org'},{name:'Foundations BT',sub:'Understand Bible translation with the Tano Story Series videos.',href:'https://foundationsbt.com'}],
+      settingsRows:[
+        {title:'App language',sub:'The language of buttons and labels, separate from what you read.',value:'English',go:()=>{}},
+        {title:'Theme',sub:'Light, dark or follow the phone.',value:dark?'Dark':'Light',go:()=>this.setState({theme:dark?'light':'dark'})},
+        {title:'First name',sub:'Used only in the greeting, only on this phone.',value:s.name||'Not set',go:()=>{}},
+        {title:'Search inside every text',sub:'Builds an index on this phone. About 18 MB per language.',value:s.indexOn?'On':'Off',go:()=>this.setState(st=>({indexOn:!st.indexOn}))},
+        {title:'Storage',sub:'112 MB used. See and remove language packs.',chevron:true,go:()=>this.go('languages')},
+        {title:'Licence and attribution',sub:'CC BY-SA 4.0 content, MIT app. Free because partners make it so.',chevron:true,go:()=>this.go('about')},
+        {title:'About this library',sub:'What the church has built, and how to partner.',chevron:true,go:()=>this.go('about')}
+      ],
+      shareWhat:s.prev[s.prev.length-1]==='session'?'story':'passage', shareTitle:s.prev[s.prev.length-1]==='session'?'Story 4 · God\'s covenant with Abraham':'Ruth '+s.chapter+':'+s.verse+' · '+lang.name
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+:root{
+  /* Multi-layered, high-diffusion shadows, tinted with Ocean rather than neutral
+     grey — glass casts a faintly blue shadow in this system. Never a single hard drop. */
+  --shadow-rest:0 1px 2px rgba(1,66,99,.05), 0 6px 18px rgba(1,66,99,.06);
+  --shadow-card:0 2px 6px rgba(1,66,99,.06), 0 14px 34px rgba(1,66,99,.10), 0 40px 80px rgba(1,66,99,.07);
+  --shadow-float:0 4px 10px rgba(1,66,99,.07), 0 22px 50px rgba(1,66,99,.12), 0 60px 120px rgba(1,66,99,.09);
+  --shadow-night:0 8px 24px rgba(2,14,20,.50), 0 30px 70px rgba(1,20,30,.40);
+  /* Focus and active glows are Inspire and Cultivate — the brand reaching through the glass */
+  --glow-focus:0 0 0 1px rgba(255,255,255,.7), 0 0 24px rgba(49,173,227,.45);
+  --glow-active:0 0 30px rgba(112,201,204,.45);
+  /* Inner light: the specular top edge every glass surface carries */
+  --inner-top:inset 0 1px 0 rgba(255,255,255,.75); /* @kind shadow */
+  --inner-edge:inset 0 0 0 .5px rgba(255,255,255,.55); /* @kind shadow */
+  --inner-bottom:inset 0 -1px 0 rgba(255,255,255,.28); /* @kind shadow */
+}

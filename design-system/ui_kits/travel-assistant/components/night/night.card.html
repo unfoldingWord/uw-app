@@ -1,0 +1,27 @@
+<!-- @dsCard group="Example app" viewport="700x360" name="Night surfaces" subtitle="Example-app dark surfaces: spot hero, map plate, route list, action bar" -->
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../../../_ds_bundle.js"></script>
+<style>*{box-sizing:border-box}body{margin:0;font-family:var(--font-core);background:var(--night-900);-webkit-font-smoothing:antialiased}body{min-height:100vh}#root{padding:18px;width:700px}.grp{display:flex;gap:14px;align-items:center;flex-wrap:wrap}</style>
+</head><body><div id="root"></div>
+<script type="text/babel">
+const {DotRing,Filament,GlassButton,GlassChip,GlassIconButton,GlassInput,GlassSurface,Icon,MapCanvas,NightActionBar,RouteList,SpotHero,AuroraField,Avatar,CategoryTile,DestinationCard,FlightCard,RouteArc,StatusBar,SuggestionPill,WeatherPill} = window.GenerativeGlassDesignSystem_830e44;
+
+function Card(){return <div style={{display:'flex',gap:14,alignItems:'stretch',height:324}}>
+ <SpotHero image="../../../../assets/img/tokyo-night.png" eyebrow="View spot" title="Tokyo at night" body="Neon streets, quiet temples, and the city that never fully sleeps." style={{width:176,flex:'none',borderRadius:'var(--r-xl)'}}/>
+ <MapCanvas style={{flex:1,minWidth:0,borderRadius:'var(--r-xl)'}} roads={['M8 12 L58 70','M0 118 L100 56','M52 47 L96 78','M20 150 L70 40']} user={{x:52,y:47}}
+   places={[{x:45,y:22,name:'Tokyo\nSkytree'},{x:53,y:57,name:'Senso-ji',accent:true},{x:22,y:66,name:'Ueno Park',muted:true,dot:5}]}/>
+ <div style={{display:'grid',gap:12,alignContent:'end',width:236,flex:'none'}}>
+  <RouteList items={[{name:'Senso-ji Temple',time:'30 min',active:true},{name:'Shibuya Crossing',time:'1h 20m'}]}/>
+  <NightActionBar>
+    <GlassIconButton tone="night" size={46} label="Back"><Icon name="chevronLeft" size={18}/></GlassIconButton>
+    <GlassButton variant="night" size="md" leading={<Icon name="navigation" size={16}/>}>Route</GlassButton>
+    <GlassIconButton tone="night" size={46} label="Add"><Icon name="plus" size={18}/></GlassIconButton>
+  </NightActionBar>
+ </div>
+</div>}
+ReactDOM.createRoot(document.getElementById('root')).render(<Card/>);
+</script></body></html>

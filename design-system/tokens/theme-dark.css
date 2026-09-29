@@ -1,0 +1,78 @@
+/* Dark theme — the night material from the map / spot screens, extended to the
+   whole system. Scope it by putting data-theme="dark" on <html> or any subtree:
+   every semantic alias below is re-pointed, so components written against the
+   light theme go dark without touching their markup.
+   Base palette tokens (--ink-*, --paper-*, --night-*) are never redefined. */
+[data-theme="dark"]{
+  /* Text */
+  /* Set against COMPOSITED backdrops, not the bare aurora. Stacked translucent
+     whites lift the ground a long way: card fill alone gives rgb(36,62,78), card +
+     row gives rgb(66,89,102). Values are chosen to clear 4.5:1 where each step is
+     actually used, so they run lighter than an inverted light ramp would suggest.
+     If you change a glass fill, re-measure these by compositing the ancestor
+     background stack over the aurora — never against a single flat colour. */
+  --text-title:#FFFFFF; --text-body:#E4EFF3; --text-muted:#E0EBF0; --text-dim:#C0D2DA; --text-faint:#9DB4BF;
+  --text-on-image:#FFFFFF; --text-on-night:#FFFFFF; --text-on-night-muted:var(--on-night-500);
+
+  /* Surfaces */
+  --surface-app:var(--night-900); --surface-card:var(--glass-fill-2); --surface-raised:var(--glass-fill-3);
+  --surface-night:var(--night-800); --surface-night-deep:var(--night-900);
+  --surface-solid:#0E2836; --surface-inverse:#FFFFFF; --text-on-inverse:var(--ink-900);
+
+  /* Glass — still glass, not paint. The ladder stays WHITE and translucent so the
+     dark aurora keeps bleeding through; only the alphas drop. A dark opaque fill
+     would kill the material, so the steps climb .05 → .20, never past a quarter. */
+  --glass-fill-1:rgba(255,255,255,.05);
+  --glass-fill-2:rgba(255,255,255,.09);
+  --glass-fill-3:rgba(255,255,255,.14);
+  --glass-fill-4:rgba(255,255,255,.20);
+  --glass-fill-tint:rgba(49,173,227,.12);
+  --glass-fill-night:rgba(255,255,255,.09);
+  --glass-fill-night-strong:rgba(255,255,255,.15);
+  --material-card:var(--glass-fill-2); --material-raised:var(--glass-fill-3); --material-chip:var(--glass-fill-3);
+
+  /* Edges — white hairlines drop to a whisper; there is no dark border anywhere */
+  --border-glass:.5px solid rgba(255,255,255,.28); /* @kind other */
+  --border-glass-soft:.5px solid rgba(255,255,255,.16); /* @kind other */
+  --border-hairline:.5px solid rgba(255,255,255,.10); /* @kind other */
+  --border-night:.5px solid rgba(255,255,255,.22); /* @kind other */
+  --inner-top:inset 0 1px 0 rgba(255,255,255,.26); /* @kind other */
+  --inner-edge:inset 0 0 0 .5px rgba(255,255,255,.14); /* @kind other */
+  --inner-bottom:inset 0 -1px 0 rgba(255,255,255,.10); /* @kind other */
+  /* The prismatic sheen stays legible — on dark it is most of what reads as glass */
+  --refraction:linear-gradient(135deg,rgba(255,255,255,.20) 0%,rgba(255,255,255,0) 38%,rgba(255,255,255,0) 62%,rgba(255,255,255,.10) 100%); /* @kind other */
+  --refraction-night:linear-gradient(135deg,rgba(255,255,255,.20) 0%,rgba(255,255,255,0) 42%,rgba(255,255,255,0) 64%,rgba(92,195,238,.14) 100%); /* @kind other */
+  --inner-top-night:inset 0 1px 0 rgba(255,255,255,.24); /* @kind other */
+
+  /* Depth — same three-layer construction, Ocean-black instead of neutral black */
+  --shadow-rest:0 1px 2px rgba(1,14,20,.36), 0 6px 18px rgba(1,14,20,.32);
+  --shadow-card:0 2px 6px rgba(1,14,20,.38), 0 14px 34px rgba(1,14,20,.42), 0 40px 80px rgba(1,14,20,.34);
+  --shadow-float:0 4px 10px rgba(1,14,20,.42), 0 22px 50px rgba(1,14,20,.46), 0 60px 120px rgba(1,14,20,.38);
+  --glow-focus:0 0 0 1px rgba(255,255,255,.22), 0 0 24px rgba(49,173,227,.48);
+  --glow-active:0 0 30px rgba(49,173,227,.40);
+
+  /* Accents — Inspire lifts to survive on near-black; Cultivate and Kindle hold */
+  --accent-blue:#5CC3EE; --accent-blue-soft:#93DBF4; --accent-deep:#2E8FBE;
+  /* Inspire lifts fine, but Kindle does NOT: on glass that has been lifted by a
+     stacked fill it lands near 2:1. The warm text step is a lighter tint of Kindle,
+     not Kindle itself. Fills still use --accent-warm. */
+  --accent-warm-text:#FFC97A; --accent-blue-text:var(--accent-blue);
+  /* Ocean is a fill/heading colour; on dark it sinks into lifted glass, so anything
+     that DRAWS with it (glyphs, deltas) uses the lifted Inspire instead. */
+  --accent-deep-text:var(--accent-blue);
+  --device-frame:linear-gradient(150deg,#3E4E57 0%,#141F27 22%,#4A5C66 48%,#0F1A21 78%,#33434B 100%); /* @kind other */
+  --filament-stroke:rgba(200,232,246,.62); --dot-ring-stroke:rgba(200,232,246,.40);
+  --link:var(--accent-blue); --link-hover:var(--accent-blue-soft);
+  --focus-ring:rgba(92,195,238,.42);
+
+  /* The aurora goes subterranean: brand hues at jewel weight over Ocean-black.
+     It has to stay bright enough to read THROUGH the glass above it. */
+  --aurora-field:
+    radial-gradient(52% 34% at 22% 30%,rgba(1,86,128,.70) 0%,rgba(1,86,128,0) 70%),
+    radial-gradient(56% 36% at 78% 22%,rgba(49,173,227,.62) 0%,rgba(49,173,227,0) 74%),
+    radial-gradient(58% 38% at 62% 62%,rgba(46,124,186,.54) 0%,rgba(46,124,186,0) 72%),
+    radial-gradient(42% 28% at 30% 78%,rgba(229,157,51,.26) 0%,rgba(229,157,51,0) 74%),
+    radial-gradient(50% 36% at 88% 82%,rgba(112,201,204,.34) 0%,rgba(112,201,204,0) 74%),
+    linear-gradient(180deg,#04161F 0%,#03131C 100%); /* @kind other */
+  --studio-bg:radial-gradient(70% 55% at 50% 22%,#0E2733 0%,#081A24 55%,#040F16 100%);
+}

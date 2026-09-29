@@ -1,0 +1,16 @@
+/* Shared slide chrome. Slides are BRAND surfaces, so they set in Nunito Sans throughout
+   (product UI stays on Inter). 1280×720; nothing here uses viewport units so the
+   same markup prints and exports at a fixed page box. */
+.slide{width:1280px;height:720px;position:relative;overflow:hidden;font-family:var(--font-brand);color:var(--text-title);-webkit-font-smoothing:antialiased;background:var(--aurora-field)}
+.slide.night{background:var(--studio-bg);color:#fff}
+.pad{position:absolute;inset:0;padding:88px 96px;display:flex;flex-direction:column}
+.eyebrow{font-weight:500;font-size:16px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-blue-text)}
+.slide.night .eyebrow{color:#5CC3EE}
+h1.t{margin:0;font-family:var(--font-brand-display);font-weight:900;font-size:104px;line-height:.96;letter-spacing:-.03em}
+h2.t{margin:0;font-family:var(--font-brand-display);font-weight:900;font-size:66px;line-height:1.02;letter-spacing:-.025em}
+.lede{margin:0;font-weight:400;font-size:26px;line-height:1.45;color:var(--text-body);max-width:760px;text-wrap:pretty}
+.slide.night .lede{color:#D9E8EF}
+.glass{background:var(--glass-fill-2);backdrop-filter:blur(var(--blur-strong)) var(--sat-glass);-webkit-backdrop-filter:blur(var(--blur-strong)) var(--sat-glass);border:var(--border-glass);box-shadow:var(--shadow-card),var(--inner-top),var(--inner-edge);border-radius:var(--r-xl)}
+.foot{position:absolute;left:96px;right:96px;bottom:52px;display:flex;align-items:center;justify-content:space-between;font-weight:500;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim)}
+.slide.night .foot{color:#7B99A6}
+.rule{height:.5px;background:var(--border-hairline-color,rgba(1,66,99,.14))}

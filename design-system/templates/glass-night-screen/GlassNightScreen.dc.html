@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Glass night screen" description="The dark twin of the Glass app screen: the same 390×844 layout under data-theme=dark — aurora backdrop over Ocean-black, floating header widgets, glass content cards and a composer." -->
+<helmet><script src="./ds-base.js"></script><style>@keyframes gg-tpl-rise{from{opacity:0;transform:translateY(14px) scale(.94);filter:blur(8px)}to{opacity:1;transform:none;filter:blur(0)}}body{margin:0}</style></helmet>
+<div data-theme="dark" style="min-height:100vh;display:grid;place-items:center;background:radial-gradient(70% 55% at 50% 22%,#0E2733 0%,#081A24 55%,#040F16 100%);font-family:'Inter Display','Inter',system-ui,-apple-system,BlinkMacSystemFont,sans-serif;padding:40px">
+<div style="width:390px;height:844px;border-radius:54px;padding:5px;flex:none;background:linear-gradient(150deg,#3E4E57 0%,#141F27 22%,#4A5C66 48%,#0F1A21 78%,#33434B 100%);box-shadow:0 2px 6px rgba(1,14,20,.42), 0 30px 70px rgba(1,14,20,.52), 0 90px 160px rgba(1,14,20,.42)">
+<div style="width:100%;height:100%;border-radius:46px;overflow:hidden;position:relative;background:#04161F">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.AuroraField" style="position:absolute;inset:0;width:390px;height:834px" hint-size="390px,834px"></x-import>
+<div style="position:absolute;inset:0">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.StatusBar" tone="night" hint-size="100%,32px"></x-import>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px 0">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.WeatherPill" temp="19°" hint-size="54px,54px"></x-import>
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Avatar" src="../../assets/img/avatar-amelia.png" size="{{ 54 }}" hint-size="54px,54px"></x-import>
+</div>
+<div style="padding:88px 18px 0">
+<div style="font:400 12px/1.3 inherit;color:#9DB4BF">Wed, Apr 23</div>
+<h1 style="margin:6px 0 0;font:500 28px/1.16 inherit;letter-spacing:-0.02em;color:#FFFFFF">Good evening,<br>Amelia</h1>
+</div>
+<div style="position:absolute;left:18px;right:18px;bottom:24px;display:grid;gap:10px;animation:gg-tpl-rise 700ms cubic-bezier(.22,1,.36,1) both">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.FlightCard" hint-size="100%,190px"></x-import>
+<div style="display:flex;gap:8px">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassInput" placeholder="Type a message" style="flex:1" hint-size="100%,58px"></x-import>
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassIconButton" tone="night" label="Voice input" size="{{ 58 }}" hint-size="58px,58px">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="mic" size="{{ 22 }}" color="#FFFFFF" hint-size="22px,22px"></x-import>
+</x-import>
+</div>
+</div>
+<div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:3px;background:rgba(255,255,255,.5)"></div>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+</body>
+</html>

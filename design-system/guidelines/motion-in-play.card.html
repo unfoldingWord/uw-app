@@ -1,0 +1,19 @@
+<!-- @dsCard group="Motion" viewport="700x210" name="Motion in play" subtitle="The four loops the system actually runs — rise, float, breathe, draw" -->
+<!doctype html><html><head><link rel="stylesheet" href="../styles.css"><style>*{box-sizing:border-box;margin:0}body{font-family:var(--font-core);background:var(--aurora-field);padding:20px;color:var(--text-title);-webkit-font-smoothing:antialiased;height:210px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;height:100%}
+.cell{display:grid;grid-template-rows:1fr auto auto;gap:6px;justify-items:center;align-items:center}
+.lb{font:var(--fw-medium) 9px/1.3 var(--font-core);color:var(--text-muted);letter-spacing:.02em}
+.hx{font:var(--fw-regular) 8px/1.3 var(--font-mono);color:var(--text-faint)}
+.card{width:92px;height:64px;border-radius:var(--r-lg);background:var(--glass-fill-2);backdrop-filter:blur(var(--blur-strong)) var(--sat-glass);-webkit-backdrop-filter:blur(var(--blur-strong)) var(--sat-glass);border:var(--border-glass);box-shadow:var(--shadow-card),var(--inner-top)}
+.rise{animation:gg-rise var(--dur-morph) var(--ease-liquid) infinite alternate}
+.float{animation:gg-float var(--float-cycle) var(--ease-liquid) infinite}
+.ring{width:64px;height:64px;border-radius:50%;border:1.5px dotted rgba(20,28,45,.35);animation:gg-breathe 4.5s var(--ease-liquid) infinite}
+.fil path{stroke-dasharray:120;--gg-dash:120;animation:gg-draw 2.2s var(--ease-flow) infinite}</style></head>
+<body>
+<div class="grid">
+<div class="cell"><div class="card rise"></div><div class="lb">gg-rise</div><div class="hx">1100ms · liquid</div></div>
+<div class="cell"><div class="card float"></div><div class="lb">gg-float</div><div class="hx">6s loop</div></div>
+<div class="cell"><div class="ring"></div><div class="lb">gg-breathe</div><div class="hx">4.5s loop</div></div>
+<div class="cell"><svg class="fil" width="92" height="64" viewBox="0 0 92 64"><path d="M46 2 V26 Q46 40 30 44 M46 26 Q46 40 62 44" fill="none" stroke="rgba(20,28,45,.45)" stroke-width="1" stroke-linecap="round"/></svg><div class="lb">gg-draw</div><div class="hx">2.2s · flow</div></div>
+</div>
+</body></html>

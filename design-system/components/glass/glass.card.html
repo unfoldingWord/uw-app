@@ -1,0 +1,35 @@
+<!-- @dsCard group="Components" viewport="700x300" name="Glass primitives" subtitle="Surface, buttons, input, chips, ring, filament" -->
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>*{box-sizing:border-box}body{margin:0;font-family:var(--font-core);background:var(--aurora-field);-webkit-font-smoothing:antialiased}body{min-height:100vh}#root{padding:18px;width:700px}.grp{display:flex;gap:14px;align-items:center;flex-wrap:wrap}</style>
+</head><body><div id="root"></div>
+<script type="text/babel">
+const {DotRing,Filament,GlassButton,GlassChip,GlassIconButton,GlassInput,GlassSurface,Icon,MapCanvas,NightActionBar,RouteList,SpotHero,AuroraField,Avatar,CategoryTile,DestinationCard,FlightCard,RouteArc,StatusBar,SuggestionPill,WeatherPill} = window.GenerativeGlassDesignSystem_830e44;
+
+function Card(){return <div style={{display:'grid',gap:14}}>
+  <div className="grp">
+    {[1,2,3,4].map(l=><GlassSurface key={l} level={l} radius="lg" style={{width:78,height:56,display:'grid',placeItems:'center',font:'var(--fw-medium) 10px/1 var(--font-core)',color:'var(--ink-500,var(--ink-700))'}}>L{l}</GlassSurface>)}
+    <GlassSurface tone="night" radius="lg" style={{width:78,height:56,display:'grid',placeItems:'center',font:'var(--fw-medium) 10px/1 var(--font-core)'}}>night</GlassSurface>
+    <DotRing size={78}><Icon name="plus" size={18} color="var(--ink-400)"/></DotRing>
+    <Filament height={56}/><Filament branch width={90} height={56}/>
+  </div>
+  <div className="grp">
+    <GlassButton variant="glass">Glass</GlassButton>
+    <GlassButton variant="solid">Open</GlassButton>
+    <GlassButton variant="dark" trailing={<Icon name="chevronRight" size={16}/>}>Send</GlassButton>
+    <GlassButton variant="night" leading={<Icon name="navigation" size={16}/>}>Route</GlassButton>
+    <GlassButton variant="quiet" size="sm">Quiet</GlassButton>
+    <GlassIconButton label="Mic" size={44}><Icon name="mic" size={19}/></GlassIconButton>
+    <GlassIconButton label="Send" size={44} tone="dark"><Icon name="chevronRight" size={19}/></GlassIconButton>
+    <GlassIconButton label="Add" size={44} tone="night"><Icon name="plus" size={19}/></GlassIconButton>
+    <GlassChip leading={<Icon name="moon" size={10}/>}>FY8722</GlassChip>
+    <GlassChip tone="night" size="sm">VIEW SPOT</GlassChip>
+  </div>
+  <GlassInput placeholder="Type a message" trailing={<Icon name="mic" size={18} color="var(--ink-400)"/>} style={{maxWidth:420}}/>
+</div>}
+ReactDOM.createRoot(document.getElementById('root')).render(<Card/>);
+</script></body></html>

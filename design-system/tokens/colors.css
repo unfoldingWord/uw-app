@@ -1,0 +1,47 @@
+:root{
+  /* unfoldingWord brand palette — the source of truth this system is tuned to.
+     Every hue below is derived from these five; nothing new is invented. */
+  --uw-inspire:#31ADE3; --uw-ocean:#014263; --uw-tech:#231F20; --uw-cultivate:#70C9CC; --uw-kindle:#E59D33;
+
+  /* Ink — text on light glass. Body copy is literally Ocean; the darker step is
+     Ocean deepened for titles. Pure black is never used on light surfaces. */
+  --ink-900:#052736; --ink-700:var(--uw-ocean); --ink-500:#4A7C93; --ink-400:#7099AC; --ink-300:#93B3C1; --ink-200:#B7CCD6;
+  /* Light neutrals — the studio environment, cooled toward Cultivate */
+  --paper-000:#FFFFFF; --paper-050:#F4FAFB; --paper-100:#E9F2F5; --paper-200:#DCE8EC; --paper-300:#CBDBE2; --paper-400:#B5CBD4;
+  /* Aurora — out-of-focus blobs that bleed through frosted surfaces. Each is a
+     brand colour at pastel weight, close enough to still read as itself:
+     sky and lavender from Inspire and Ocean, mint from Cultivate, peach and
+     lemon from Kindle. */
+  --aurora-lavender:#A9C4DC; --aurora-peach:#F5D3A0; --aurora-sky:#93D3F3; --aurora-lemon:#F7E7C2; --aurora-blush:#EBD3C4; --aurora-mint:#A8DFE0;
+  /* Accents — used sparingly, only for identity chips and live state */
+  --accent-blue:var(--uw-inspire); --accent-blue-soft:#7ACBEE; --accent-deep:var(--uw-ocean);
+  --accent-teal:var(--uw-cultivate); --accent-warm:var(--uw-kindle);
+  /* Text-safe accents. --accent-warm/-blue are FILL colours (dots, badges, glows);
+     as small text on light glass they land near 2:1. Use these whenever an accent
+     colours a glyph or a run of type. */
+  --accent-warm-text:#A8640F; --accent-blue-text:var(--accent-deep); --accent-deep-text:var(--accent-deep);
+  --accent-red:var(--accent-warm); /* deprecated alias — uW has no red; points at Kindle */
+  /* Dark — spot detail + map surfaces. Ocean carried all the way down to black. */
+  --night-000:#000000; --night-900:#04161F; --night-800:#0B222E; --night-700:#143240; --night-600:#214656;
+  --night-map:#03131C; --night-map-glow:#0A3A4E;
+  --on-night-900:#FFFFFF; --on-night-500:#9DB4BF; --on-night-400:#74909D;
+
+  /* Semantic aliases */
+  /* The muted/dim/faint text steps are deliberately NOT the raw ink ramp. The ink
+     values were measured off the source renders, where secondary copy sits as low as
+     1.9:1 on glass — fine in a motion piece, unreadable in a real UI. These are the
+     same hues pushed to >=4.5:1 on glass over the light aurora (~#E8F1F5), with the
+     three steps kept visibly apart. Use --ink-300/400 for hairlines and swatches,
+     never for text. */
+  --text-title:var(--ink-900); --text-body:var(--ink-700); --text-muted:#1F4E60; --text-dim:#2F6478; --text-faint:#427083;
+  --text-on-image:var(--paper-000); --text-on-night:var(--on-night-900); --text-on-night-muted:var(--on-night-500);
+  --surface-app:var(--paper-100); --surface-card:var(--glass-fill-2); --surface-raised:var(--glass-fill-3);
+  --surface-night:var(--night-800); --surface-night-deep:var(--night-900);
+  --surface-solid:var(--paper-000); --surface-inverse:var(--ink-900); --text-on-inverse:var(--paper-000);
+  --device-frame:linear-gradient(150deg,#EFF6F8 0%,#BFD0D8 22%,#E7F0F3 48%,#ADC3CD 78%,#E2EDF0 100%); /* @kind other */
+  /* Connector strokes — filaments, route arcs. Must flip with the theme: Ocean at
+     low alpha is invisible on the dark aurora. */
+  --filament-stroke:rgba(1,66,99,.38); --dot-ring-stroke:rgba(1,66,99,.26);
+  --link:var(--accent-deep); --link-hover:var(--accent-blue);
+  --focus-ring:rgba(49,173,227,.38);
+}

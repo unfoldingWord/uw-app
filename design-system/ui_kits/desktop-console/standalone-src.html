@@ -1,0 +1,72 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Desktop console</title>
+<link rel="stylesheet" href="./standalone-styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>*{box-sizing:border-box}body{margin:0;font-family:var(--font-core);background:var(--studio-bg);min-height:100vh;display:grid;place-items:center;-webkit-font-smoothing:antialiased}
+a{color:var(--link)}a:hover{color:var(--link-hover)}
+button{font-family:inherit}
+.win{width:1360px;height:840px;border-radius:var(--r-2xl);overflow:hidden;position:relative;box-shadow:var(--shadow-float);border:var(--border-glass-soft)}
+.chrome{position:absolute;top:0;left:0;right:0;height:38px;display:flex;align-items:center;gap:8px;padding:0 14px;z-index:2}
+.dot{width:11px;height:11px;border-radius:50%}
+.toggle{position:fixed;top:16px;right:18px;z-index:5;display:flex;gap:6}
+.toggle button{padding:7px 13px;border-radius:var(--r-pill);border:var(--border-glass);cursor:pointer;font:var(--fw-medium) 11px/1 var(--font-core);background:var(--glass-fill-2);color:var(--text-muted);backdrop-filter:blur(var(--blur-soft))}
+.toggle button[data-on="1"]{background:var(--surface-inverse);color:var(--text-on-inverse);border-color:transparent}</style>
+<template id="__bundler_thumbnail" data-bg-color="#0E2733">
+<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+<rect width="1200" height="800" fill="#0E2733"/>
+<rect x="360" y="300" width="480" height="200" rx="40" fill="#31ADE3" opacity="0.16"/>
+<rect x="140" y="230" width="200" height="340" rx="34" fill="#FFFFFF" opacity="0.14"/>
+<rect x="380" y="230" width="420" height="340" rx="34" fill="#FFFFFF" opacity="0.10"/>
+<rect x="840" y="230" width="220" height="340" rx="34" fill="#FFFFFF" opacity="0.14"/>
+<rect x="176" y="266" width="66" height="66" rx="20" fill="#31ADE3"/>
+</svg>
+</template>
+</head><body><div id="root"></div>
+<script type="text/babel" src="./Sidebar.jsx"></script>
+<script type="text/babel" src="./Topbar.jsx"></script>
+<script type="text/babel" src="./Workspace.jsx"></script>
+<script type="text/babel" src="./Inspector.jsx"></script>
+<script type="text/babel" data-presets="react">
+const {AuroraField} = window.GenerativeGlassDesignSystem_830e44;
+const ITEMS=[
+  {name:'Field recordings',meta:'Updated 12 minutes ago · 6 contributors',tag:'Active'},
+  {name:'Regional glossary',meta:'Updated 3 hours ago · 2 contributors',tag:'In review',tone:'warm'},
+  {name:'Reference imagery',meta:'Updated yesterday · 11 contributors',tag:'Active'},
+  {name:'Archived drafts',meta:'Updated 6 days ago · 1 contributor',tag:'Archived'},
+  {name:'Style corpus',meta:'Updated last week · 4 contributors',tag:'Active'}
+];
+function App(){
+  const [nav,setNav]=React.useState('Overview');
+  const [sel,setSel]=React.useState('Regional glossary');
+  const [dark,setDark]=React.useState(false);
+  React.useEffect(()=>{const r=document.documentElement;dark?r.setAttribute('data-theme','dark'):r.removeAttribute('data-theme')},[dark]);
+  const item=ITEMS.find(i=>i.name===sel)||null;
+  return <>
+    <div className="toggle">
+      <button data-on={dark?'0':'1'} onClick={()=>setDark(false)}>Light</button>
+      <button data-on={dark?'1':'0'} onClick={()=>setDark(true)}>Dark</button>
+    </div>
+    <div className="win">
+      <AuroraField style={{position:'absolute',inset:0}}/>
+      <div className="chrome">
+        <span className="dot" style={{background:'var(--accent-warm)'}}/>
+        <span className="dot" style={{background:'var(--accent-teal)'}}/>
+        <span className="dot" style={{background:'var(--accent-blue)'}}/>
+      </div>
+      <div style={{position:'absolute',inset:0,paddingTop:38,display:'flex',gap:16,padding:'46px 16px 16px'}}>
+        <Sidebar active={nav} onGo={setNav}/>
+        <div style={{flex:1,minWidth:0,display:'flex',flexDirection:'column',gap:16}}>
+          <Topbar title={nav} onNew={()=>setSel(null)}/>
+          <div style={{flex:1,minHeight:0,display:'flex',gap:16}}>
+            <Workspace items={ITEMS} active={sel} onPick={setSel}/>
+            <Inspector item={item} onClose={()=>setSel(null)}/>
+          </div>
+        </div>
+      </div>
+    </div>
+  </>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

@@ -1,0 +1,29 @@
+/* Generated for the standalone export only — not part of the system.
+   @import must come before any style rule, so the token files load first.
+   Trimmed font set: three Inter Display weights, so the export stays small when inlined. */
+@import url("../../tokens/colors.css");
+@import url("../../tokens/typography.css");
+@import url("../../tokens/spacing.css");
+@import url("../../tokens/radius.css");
+@import url("../../tokens/elevation.css");
+@import url("../../tokens/glass.css");
+@import url("../../tokens/motion.css");
+@import url("../../tokens/theme-dark.css");
+@import url("../../tokens/base.css");
+@font-face{font-family:'Inter Display';src:url("../../assets/fonts/InterDisplay-Regular.ttf") format("truetype");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Inter Display';src:url("../../assets/fonts/InterDisplay-Medium.ttf") format("truetype");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'Inter Display';src:url("../../assets/fonts/InterDisplay-SemiBold.ttf") format("truetype");font-weight:600;font-style:normal;font-display:swap}
+:root{
+  --font-core:"Inter Display","Inter",system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+  --font-text:"Inter","Inter Display",system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+  --font-numeric:"Inter Display",system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+  --font-mono:ui-monospace,"SF Mono",Menlo,monospace;
+  /* Brand voice type — Nunito Sans, for logo lockups, brand headlines and
+     marketing surfaces. Product UI stays on Inter; this is the exception, not
+     the default. No brand binary is inlined in this export: falls back to the
+     system font. */
+  --font-brand:"Nunito Sans","Montserrat",var(--font-core);
+  --font-brand-display:"Nunito Sans","Montserrat",var(--font-core);
+  --font-brand-serif:"PT Serif",Georgia,serif;
+}
+

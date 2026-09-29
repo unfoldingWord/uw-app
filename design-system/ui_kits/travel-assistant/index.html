@@ -1,0 +1,40 @@
+<!-- @dsCard group="Example app" viewport="900x980" name="Travel assistant app" subtitle="Six-screen click-through: home → flight → chat → branch → spot → map" -->
+<!doctype html><html><head><meta charset="utf-8"><title>Travel assistant</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>*{box-sizing:border-box}body{margin:0;font-family:var(--font-core);background:var(--studio-bg);min-height:100vh;display:grid;place-items:center;-webkit-font-smoothing:antialiased}
+a{color:var(--link)}a:hover{color:var(--link-hover)}
+#root{display:grid;justify-items:center;gap:22px;padding:34px}
+.nav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.nav button{padding:7px 14px;border-radius:var(--r-pill);border:var(--border-glass);cursor:pointer;font:var(--fw-medium) 11px/1 var(--font-core);letter-spacing:.02em;background:var(--glass-fill-2);color:var(--ink-500);backdrop-filter:blur(var(--blur-soft));transition:var(--t-hover)}
+.nav button[data-on="1"]{background:var(--surface-inverse);color:var(--text-on-inverse);border-color:transparent}
+.nav .sep{width:1px;align-self:stretch;margin:0 6px;background:var(--border-hairline-color,rgba(1,66,99,.14))}
+.nav button{color:var(--text-muted)}</style>
+</head><body><div id="root"></div>
+<script type="text/babel" src="./Shell.jsx"></script>
+<script type="text/babel" src="./HomeScreen.jsx"></script>
+<script type="text/babel" src="./FlightScreen.jsx"></script>
+<script type="text/babel" src="./ChatScreen.jsx"></script>
+<script type="text/babel" src="./BranchScreen.jsx"></script>
+<script type="text/babel" src="./SpotScreen.jsx"></script>
+<script type="text/babel" src="./MapScreen.jsx"></script>
+<script type="text/babel" data-presets="react">
+const SCREENS=[['home','Home',HomeScreen],['flight','Flight',FlightScreen],['chat','Chat',ChatScreen],['branch','Branch',BranchScreen],['spot','Spot',SpotScreen],['map','Map',MapScreen]];
+function App(){
+  const [s,setS]=React.useState('home');
+  const [dark,setDark]=React.useState(false);
+  React.useEffect(()=>{document.documentElement.toggleAttribute('data-theme',dark);if(dark)document.documentElement.setAttribute('data-theme','dark');else document.documentElement.removeAttribute('data-theme')},[dark]);
+  const go=k=>()=>setS(k);
+  const props={home:{onOpenFlight:go('flight'),onCompose:go('chat')},flight:{onNext:go('chat')},
+    chat:{onSend:go('branch')},branch:{onPick:go('spot')},spot:{onBack:go('branch'),onRoute:go('map')},map:{onBack:go('spot')}};
+  const [,,S]=SCREENS.find(x=>x[0]===s);
+  return <>
+    <div className="nav">{SCREENS.map(([k,l])=><button key={k} data-on={s===k?'1':'0'} onClick={go(k)}>{l}</button>)}<span className="sep"></span><button data-on={dark?'1':'0'} onClick={()=>setDark(v=>!v)}>Dark</button></div>
+    <Phone tone={s==='spot'||s==='map'?'night':'light'}><S {...props[s]}/></Phone>
+  </>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

@@ -1,0 +1,9 @@
+/* Base element styles. Only for what components cannot set inline —
+   ::placeholder in particular has no inline equivalent, so without this rule
+   every glass input falls back to the browser's dark grey and disappears on
+   the dark theme. */
+input::placeholder,textarea::placeholder{color:var(--text-muted);opacity:1}
+input:disabled::placeholder,textarea:disabled::placeholder{color:var(--text-dim)}
+a{color:var(--link);text-decoration-thickness:1px;text-underline-offset:2px;transition:var(--t-hover)}
+a:hover{color:var(--link-hover)}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}

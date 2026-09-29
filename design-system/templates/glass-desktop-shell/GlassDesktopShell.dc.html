@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Glass desktop shell" description="A 1360×840 desktop window: glass sidebar, toolbar with search, a content area and an inspector rail — the app-screen material at desktop density." -->
+<helmet><script src="./ds-base.js"></script><style>body{margin:0}</style></helmet>
+<div style="min-height:100vh;display:grid;place-items:center;background:var(--studio-bg);font-family:var(--font-core);padding:40px;-webkit-font-smoothing:antialiased">
+<div style="width:1360px;height:840px;border-radius:var(--r-2xl);overflow:hidden;position:relative;box-shadow:var(--shadow-float);border:var(--border-glass-soft)">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.AuroraField" style="position:absolute;inset:0" hint-size="100%,100%"></x-import>
+<div style="position:absolute;top:0;left:0;right:0;height:38px;display:flex;align-items:center;gap:8px;padding:0 14px;z-index:2">
+<span style="width:11px;height:11px;border-radius:50%;background:var(--accent-warm)"></span>
+<span style="width:11px;height:11px;border-radius:50%;background:var(--accent-teal)"></span>
+<span style="width:11px;height:11px;border-radius:50%;background:var(--accent-blue)"></span>
+</div>
+<div style="position:absolute;inset:0;display:flex;gap:16px;padding:46px 16px 16px">
+
+<div style="width:236px;flex:none;display:flex;flex-direction:column;padding:18px 14px;gap:22px;background:var(--glass-fill-2);backdrop-filter:blur(var(--blur-strong)) var(--sat-glass);-webkit-backdrop-filter:blur(var(--blur-strong)) var(--sat-glass);border:var(--border-glass);box-shadow:var(--shadow-card),var(--inner-top),var(--inner-edge);border-radius:var(--r-lg)">
+<div style="display:flex;align-items:center;gap:10px;padding:2px 8px">
+<span style="width:26px;height:26px;border-radius:8px;background:var(--accent-blue);display:grid;place-items:center;flex:none">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="sparkle" size="{{ 15 }}" color="#FFFFFF" stroke="{{ 2 }}" hint-size="15px,15px"></x-import>
+</span>
+<span style="font:var(--fw-semibold) 14px/1 var(--font-core);letter-spacing:-.01em;color:var(--text-title)">Workspace</span>
+</div>
+<nav style="display:grid;gap:2px">
+<span style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-md);border:.5px solid rgba(255,255,255,.7);background:var(--glass-fill-3);box-shadow:var(--shadow-rest),var(--inner-top);font:var(--fw-medium) 13px/1 var(--font-core);color:var(--text-title)">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="grid" size="{{ 16 }}" color="var(--accent-deep)" hint-size="16px,16px"></x-import>Overview</span>
+<span style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-md);font:var(--fw-regular) 13px/1 var(--font-core);color:var(--text-muted)">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="folder" size="{{ 16 }}" color="var(--text-dim)" hint-size="16px,16px"></x-import>Collections</span>
+<span style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-md);font:var(--fw-regular) 13px/1 var(--font-core);color:var(--text-muted)">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="layers" size="{{ 16 }}" color="var(--text-dim)" hint-size="16px,16px"></x-import>Sources</span>
+<span style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-md);font:var(--fw-regular) 13px/1 var(--font-core);color:var(--text-muted)">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="users" size="{{ 16 }}" color="var(--text-dim)" hint-size="16px,16px"></x-import>People</span>
+</nav>
+</div>
+
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:center;gap:12px">
+<div style="display:grid;gap:3px;margin-right:auto">
+<div style="font:var(--fw-medium) 9px/1 var(--font-core);letter-spacing:.12em;text-transform:uppercase;color:var(--accent-blue-text)">Workspace</div>
+<h1 style="margin:0;font:var(--fw-semibold) 24px/1.1 var(--font-core);letter-spacing:-.02em;color:var(--text-title)">Overview</h1>
+</div>
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassInput" placeholder="Search everything" height="{{ 40 }}" style="width:260px" hint-size="260px,40px"></x-import>
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassIconButton" size="{{ 40 }}" label="Filter" hint-size="40px,40px">
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.Icon" name="filter" size="{{ 17 }}" hint-size="17px,17px"></x-import>
+</x-import>
+<x-import component-from-global-scope="GenerativeGlassDesignSystem_830e44.GlassButton" variant="solid" size="md" hint-size="90px,40px">New</x-import>
+</div>
+
+<div style="flex:1;min-height:0;display:flex;gap:16px">
+<div style="flex:1;min-width:0;padding:18px;background:var(--glass-fill-2);backdrop-filter:blur(var(--blur-strong)) var(--sat-glass);-webkit-backdrop-filter:blur(var(--blur-strong)) var(--sat-glass);border:var(--border-glass);box-shadow:var(--shadow-card),var(--inner-top),var(--inner-edge);border-radius:var(--r-lg)">
+<div style="font:var(--fw-semibold) 14px/1 var(--font-core);letter-spacing:-.01em;color:var(--text-title)">Content area</div>
+<p style="margin:10px 0 0;font:var(--fw-regular) 13px/1.55 var(--font-core);color:var(--text-muted);max-width:460px">Replace this panel with the surface you are building — a table, a grid of cards, an editor. Keep it on one glass sheet rather than nesting glass inside glass.</p>
+</div>
+<div style="width:288px;flex:none;padding:18px;background:var(--glass-fill-2);backdrop-filter:blur(var(--blur-strong)) var(--sat-glass);-webkit-backdrop-filter:blur(var(--blur-strong)) var(--sat-glass);border:var(--border-glass);box-shadow:var(--shadow-card),var(--inner-top),var(--inner-edge);border-radius:var(--r-lg)">
+<div style="font:var(--fw-medium) 9px/1 var(--font-core);letter-spacing:.12em;text-transform:uppercase;color:var(--accent-blue-text)">Inspector</div>
+<div style="margin-top:7px;font:var(--fw-semibold) 18px/1.2 var(--font-core);letter-spacing:-.015em;color:var(--text-title)">Selection details</div>
+<p style="margin:12px 0 0;font:var(--fw-regular) 12px/1.5 var(--font-core);color:var(--text-dim)">The rail holds metadata and actions for whatever is selected on the left.</p>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</x-dc>
+</body>
+</html>

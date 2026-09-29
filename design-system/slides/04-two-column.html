@@ -1,0 +1,24 @@
+<!-- @dsCard group="Slides" viewport="1280x720" name="Two-column slide" subtitle="Copy against a full-bleed image well" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../styles.css"><link rel="stylesheet" href="./deck.css"><style>body{margin:0}
+.split{position:absolute;inset:0;display:grid;grid-template-columns:1fr 512px}
+.left{padding:88px 72px 88px 96px;display:flex;flex-direction:column;justify-content:center;gap:24px}
+.right{position:relative;overflow:hidden}
+.right img{width:100%;height:100%;object-fit:cover;display:block}
+.list{display:grid;gap:16px;margin-top:8px}
+.row{display:flex;gap:14px;align-items:flex-start;font-weight:400;font-size:19px;line-height:1.5;color:var(--text-body)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--accent-blue);margin-top:8px;flex:none}</style></head>
+<body><div class="slide" data-screen-label="04">
+<div class="split">
+<div class="left">
+<div class="eyebrow">The material</div>
+<h2 class="t" style="font-size:56px;letter-spacing:-.008em;max-width:520px">Every surface is glass</h2>
+<div class="list">
+<div class="row"><span class="dot"></span><span>Four fill steps and five blur steps, always with saturate(160%).</span></div>
+<div class="row"><span class="dot"></span><span>A 0.5px white hairline, an inner top light, and a three-layer Ocean shadow — all three, always.</span></div>
+<div class="row"><span class="dot"></span><span>Blur only where a surface floats over content it does not own.</span></div>
+</div>
+</div>
+<div class="right"><img src="../assets/img/tokyo-night.png" alt=""></div>
+</div>
+<div class="foot" style="right:auto"><span>Generative Glass</span></div>
+</div></body></html>
