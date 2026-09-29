@@ -8,12 +8,41 @@ import type {
   Story,
   TextChoice,
 } from '@lib/corpus/types';
+import { bookByCode, type Testament } from '@lib/domain/books';
 import { imagePackId, languagePackId, type PackId } from '@lib/domain/pack';
 import { formatReference, parseReference } from '@lib/domain/reference';
 import type { Kernel } from '@lib/kernel';
 import type { InstallOutcome } from '@lib/packs/types';
 import { libraryCards, type LibraryCard } from './library';
 import { studyWords, type StudyWords } from './strings';
+
+export type {
+  Article,
+  AudioClip,
+  Block,
+  FullTextHit,
+  Inline,
+  LinkTarget,
+  Note,
+  Passage,
+  Question,
+  TitleHit,
+  Verse,
+  WordLink,
+  WordSpan,
+} from '@lib/corpus/types';
+export type { LibraryCard } from './library';
+
+export type BookEntry = {
+  readonly code: string;
+  readonly name: string;
+  readonly testament: Testament;
+  readonly chapters: readonly number[];
+};
+
+export type OriginalChoice = { readonly language: string; readonly label: string };
+
+const originalLanguages: Readonly<Record<Testament, string>> = { old: 'hbo', new: 'el-x-koine' };
 
 export type TextChoiceView = {
   readonly text: TextChoice;
@@ -83,6 +112,9 @@ export type StudyService = {
   download(pack: PackId): Promise<InstallOutcome>;
   article(id: string): Promise<ArticleView>;
   story(number: number): Promise<StoryView>;
+  books(): Promise<readonly BookEntry[]>;
+  originalOf(book: string): OriginalChoice | undefined;
+  original(reference: string): Promise<Passage | undefined>;
   search(query: string): Promise<SearchView>;
   fullText(query: string): Promise<readonly FullTextHit[]>;
   saved(target: BookmarkTarget): Bookmark | undefined;
@@ -246,6 +278,61 @@ export function createStudyService(kernel: Kernel): StudyService {
       return story === undefined
         ? { state: 'missing', number }
         : { state: 'story', story, saved: bookmarks.find({ target: 'story', story: number, language }) };
+    },
+    async books() {
+      const language = preferences.contentLanguage();
+      if (language === undefined) {
+        return [];
+      }
+      const chapters = new Map<string, Set<number>>();
+      for (const text of (await corpus.contents(language)).texts) {
+        for (const book of text.books) {
+          const known = chapters.get(book.code) ?? new Set<number>();
+          book.chapters.forEach((chapter) => known.add(chapter));
+          chapters.set(book.code, known);
+        }
+      }
+      return [...chapters]
+        .flatMap(([code, found]) => {
+          const book = bookByCode(code);
+          return book === undefined ? [] : [{ book, found }];
+        })
+        .sort((left, right) => left.book.order - right.book.order)
+        .map(({ book, found }) => ({
+          code: book.code,
+          name: book.name,
+          testament: book.testament,
+          chapters: [...found].sort((left, right) => left - right),
+        }));
+    },
+    originalOf(code) {
+      const book = bookByCode(code);
+      if (book === undefined) {
+        return undefined;
+      }
+      const language = originalLanguages[book.testament];
+      if (!corpus.languages().includes(language)) {
+        return undefined;
+      }
+      const current = words();
+      return {
+        language,
+        label: current.t(book.testament === 'old' ? 'resource.hebrew' : 'resource.greek'),
+      };
+    },
+    async original(text) {
+      const parsed = parseReference(text);
+      if (!parsed.ok) {
+        return undefined;
+      }
+      const book = bookByCode(parsed.reference.book);
+      if (book === undefined) {
+        return undefined;
+      }
+      return corpus.passage(parsed.reference, {
+        language: originalLanguages[book.testament],
+        text: 'original',
+      });
     },
     async search(query) {
       const language = preferences.contentLanguage();
