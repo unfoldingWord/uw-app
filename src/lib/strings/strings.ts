@@ -9,6 +9,7 @@ import {
   type Locale,
 } from './locales';
 import { tables } from './locales/index';
+import { pluralCategory } from './plural';
 import {
   english,
   isPluralForms,
@@ -41,18 +42,6 @@ export type StringsApi = {
 };
 
 const placeholder = /\{(\w+)\}/g;
-
-const pluralRules = new Map<Locale, Intl.PluralRules>();
-
-function rulesFor(locale: Locale): Intl.PluralRules {
-  const known = pluralRules.get(locale);
-  if (known !== undefined) {
-    return known;
-  }
-  const created = new Intl.PluralRules(locale);
-  pluralRules.set(locale, created);
-  return created;
-}
 
 function interpolate(template: string, params: Readonly<Record<string, ParamValue>>): string {
   return template.replace(placeholder, (whole, name: string) => {
@@ -93,9 +82,7 @@ export function createStrings(localeTables: LocaleTables): StringsApi {
   ): string {
     const translated = formsIn(localeTables[locale], key);
     const forms = translated ?? formsIn(english, key);
-    const category = rulesFor(translated === undefined ? sourceLocale : locale).select(
-      count,
-    ) as PluralCategory;
+    const category = pluralCategory(translated === undefined ? sourceLocale : locale, count);
     const template = forms === undefined ? key : formFor(forms, category);
     return interpolate(template, { count: String(count), ...(params[0] ?? {}) });
   }

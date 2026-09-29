@@ -2,6 +2,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { failureCodes } from '@lib/domain/failures';
 import { locales } from '@lib/strings/locales';
+import { pluralCategoriesOf } from '@lib/strings/plural';
 import { tables } from '@lib/strings/locales/index';
 import type { Check, CheckOutcome } from './check.ts';
 import { scanSource, type ScanRules } from './strings-literals.ts';
@@ -29,10 +30,6 @@ function filesUnder(directory: string): string[] {
     .sort();
 }
 
-function pluralCategoriesOf(locale: string): string[] {
-  return new Intl.PluralRules(locale).resolvedOptions().pluralCategories.map(String);
-}
-
 function tableFindings(): string[] {
   const english: Table = tables.en;
   const findings: string[] = [];
@@ -43,7 +40,7 @@ function tableFindings(): string[] {
   }
   for (const locale of locales) {
     const table: Table = tables[locale];
-    findings.push(...auditTable(locale, table, english, pluralCategoriesOf(locale)));
+    findings.push(...auditTable(locale, table, english, [...pluralCategoriesOf(locale)]));
     for (const { key, text } of textsOf(table)) {
       findings.push(...copyFindings(locale, key, text));
     }

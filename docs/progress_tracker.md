@@ -3,6 +3,21 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 F2 fixes from review 2: Strings
+
+Node v22.22.2, in Node through Vitest and ESLint; nothing ran on a phone.
+
+| Test | Red | Green |
+|---|---|---|
+| `scripts/checks/plural.test.ts`, written before `src/lib/strings/plural.ts` | `Cannot find package '@lib/strings/plural'` | 32 passed: each of the sixteen locales picks the same category as Node's `Intl.PluralRules` over 0 to 2,399, round millions and six decimals, and lists the same categories |
+| `src/lib refuses ... new Intl.PluralRules(locale)` (two cases moved from "allows" in `scripts/eslint/boundaries.test.ts`) | `expected false to be true` for both | pass, after the `PluralRules` allowance left `scripts/eslint/lib-globals.ts` |
+
+- `Strings.plural` selects the category from the CLDR rules held as data, so Hermes needs no `Intl`.
+  `npm run checks` asks each locale for the categories of the same table.
+- `ru` and `ar` Formation words and `ru` `movement.discourse` changed; the `es-419`, `fr` and `pt-BR` `many`
+  forms were reviewed and kept. Reasons in `docs/strings-review.md`.
+- Not verified: Hermes itself (no phone run); the new words by a native speaker.
+
 ## 2026-09-29 T6 Formation
 
 Node v22.22.2. Everything below ran in Node through Vitest, the sim and the checks; nothing ran on a phone
