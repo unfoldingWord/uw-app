@@ -55,8 +55,13 @@ export function parseReference(text: string): ParsedReference {
   if (book === undefined) {
     return { ok: false, problem: 'book' };
   }
-  const start: Point =
-    verse === undefined ? { chapter: Number(chapter) } : { chapter: Number(chapter), verse: Number(verse) };
+  const versesOnly =
+    book.chapters === 1 && verse === undefined && endSecond === undefined && Number(chapter) > 1;
+  const start: Point = versesOnly
+    ? { chapter: 1, verse: Number(chapter) }
+    : verse === undefined
+      ? { chapter: Number(chapter) }
+      : { chapter: Number(chapter), verse: Number(verse) };
   const end = endPoint(start, numberOrUndefined(endFirst), numberOrUndefined(endSecond));
   const problem = problemWith(book, start, end);
   if (problem !== undefined) {

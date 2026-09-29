@@ -98,6 +98,18 @@ _Avoid_: progress (that is a number derived from position), bookmark
 Moving a pack from one phone to another with no network, inside the app.
 _Avoid_: sync, send (that is Share), P2P, beam
 
+**Peer**:
+Another device running the app, found nearby over the Transport port, that a transfer is made with.
+_Avoid_: client, partner (that is a supporter), node
+
+**Advertisement**:
+A device making itself findable to peers for a transfer, under a short code shown on its screen.
+_Avoid_: broadcast, beacon, hosting
+
+**Link**:
+An open connection between two peers over the Transport port, carrying the bytes of one transfer. In code, `TransportLink`.
+_Avoid_: socket, channel, session (that is formation)
+
 **Offer**:
 What a sender puts on the table in a transfer: the resources selected and their sizes. The receiver accepts an offer.
 _Avoid_: manifest, plan

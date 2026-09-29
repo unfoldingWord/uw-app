@@ -59,6 +59,14 @@ describe('references', () => {
     });
     expect(parsed('Genesis 1-3')).toEqual({ book: 'GEN', start: { chapter: 1 }, end: { chapter: 3 } });
     expect(parsed('1 Samuel 17:4')).toEqual({ book: '1SA', start: { chapter: 17, verse: 4 } });
+    expect(parsed('Jude 5')).toEqual({ book: 'JUD', start: { chapter: 1, verse: 5 } });
+    expect(parsed('3 John 4-8')).toEqual({
+      book: '3JN',
+      start: { chapter: 1, verse: 4 },
+      end: { chapter: 1, verse: 8 },
+    });
+    expect(parsed('JUD 1')).toEqual({ book: 'JUD', start: { chapter: 1 } });
+    expect(parsed('Jude 1:5')).toEqual({ book: 'JUD', start: { chapter: 1, verse: 5 } });
     expect(parsed('  Psalm 119:105 ')).toEqual({ book: 'PSA', start: { chapter: 119, verse: 105 } });
   });
 

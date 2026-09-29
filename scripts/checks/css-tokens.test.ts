@@ -45,6 +45,17 @@ describe('parseTokenCss', () => {
     ]);
   });
 
+  it('refuses an at-rule it does not read, so no token hides inside one', () => {
+    expect(() => parseTokenCss(['@media (prefers-color-scheme:dark){:root{--a:2px}}'])).toThrow(
+      /unrecognized at-rule @media \(prefers-color-scheme:dark\)/,
+    );
+    expect(() => parseTokenCss(['@supports (display:grid){:root{--a:2px}}'])).toThrow(/unrecognized at-rule/);
+    expect(() => parseTokenCss(["@import url('more.css');\n:root{--a:1px}"])).toThrow(
+      /unrecognized at-rule @import/,
+    );
+    expect(() => parseTokenCss([':root{--a:1px}\n@layer base;'])).toThrow(/unrecognized at-rule @layer/);
+  });
+
   it('refuses a token declared twice with different values', () => {
     expect(() => parseTokenCss([':root{--a:1px}', ':root{--a:2px}'])).toThrow(/declared twice/);
   });

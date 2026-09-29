@@ -110,10 +110,34 @@ function assign(target: Record<string, string>, source: Record<string, string>, 
   }
 }
 
+const reducedMotionQuery = '@media (prefers-reduced-motion:reduce)';
+
+const atStatement = /(^|[;}])\s*(@[a-z-]+[^{;}]*);/g;
+
+function refuseAtStatements(css: string): void {
+  const found = [...css.matchAll(atStatement)].map((match) => match[2]?.trim());
+  if (found.length > 0) {
+    throw new Error(
+      `unrecognized at-rule ${found[0] ?? ''}; the tokens check reads only @font-face, @keyframes and ${reducedMotionQuery}`,
+    );
+  }
+}
+
+function isKnownAtRule(selector: string): boolean {
+  return selector === '@font-face' || selector.startsWith('@keyframes ') || selector === reducedMotionQuery;
+}
+
 export function parseTokenCss(files: string[]): TokenCss {
   const parsed: TokenCss = { root: {}, dark: {}, reducedMotion: {}, keyframes: {}, fontFaces: [] };
   for (const file of files) {
-    for (const block of topLevelBlocks(stripComments(file))) {
+    const css = stripComments(file);
+    refuseAtStatements(css.replace(/\{[^{}]*\}/g, '{}'));
+    for (const block of topLevelBlocks(css)) {
+      if (block.selector.startsWith('@') && !isKnownAtRule(block.selector)) {
+        throw new Error(
+          `unrecognized at-rule ${block.selector}; the tokens check reads only @font-face, @keyframes and ${reducedMotionQuery}`,
+        );
+      }
       if (block.selector === ':root') {
         assign(parsed.root, customProperties(block.body), ':root');
       } else if (block.selector === '[data-theme="dark"]') {
@@ -122,7 +146,7 @@ export function parseTokenCss(files: string[]): TokenCss {
         parsed.fontFaces.push(fontFace(block.body));
       } else if (block.selector.startsWith('@keyframes ')) {
         parsed.keyframes[block.selector.slice('@keyframes '.length)] = normalizeCssValue(block.body);
-      } else if (block.selector === '@media (prefers-reduced-motion:reduce)') {
+      } else if (block.selector === reducedMotionQuery) {
         for (const inner of topLevelBlocks(block.body)) {
           if (inner.selector === ':root') {
             assign(parsed.reducedMotion, customProperties(inner.body), 'prefers-reduced-motion');
