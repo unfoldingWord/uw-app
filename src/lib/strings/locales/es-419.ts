@@ -478,4 +478,11 @@ export const es419: LocaleTable = {
     'Las historias de impacto llegaron en un formato que la aplicación no puede leer. Se siguen mostrando las que están en este teléfono.',
   'failure.unexpected':
     'Algo no funcionó. Intenta de nuevo o comparte el diagnóstico para que alguien te ayude.',
+  'study.helps.showResponse': 'Mostrar la respuesta',
+  'study.helps.hideResponse': 'Ocultar la respuesta',
+  'study.noLanguage': 'Elige un idioma para empezar a leer.',
+  'study.noLanguage.action': 'Elegir un idioma',
+  'library.download': 'Descargar {resource}',
+  'library.onPhone': 'En este teléfono',
+  'search.fullText.inSettings': 'Actívalo en Ajustes. El índice se queda en este teléfono.',
 };

@@ -456,4 +456,11 @@ export const ur: LocaleTable = {
     'اثر کی کہانیاں ایسی شکل میں آئیں جو ایپ پڑھ نہیں سکتی۔ اس فون پر موجود کہانیاں دکھائی دیتی رہیں گی۔',
   'failure.unexpected':
     'کچھ کام نہیں کیا۔ دوبارہ کوشش کریں، یا تشخیصی معلومات شیئر کریں تاکہ کوئی مدد کر سکے۔',
+  'study.helps.showResponse': 'جواب دکھائیں',
+  'study.helps.hideResponse': 'جواب چھپائیں',
+  'study.noLanguage': 'پڑھنا شروع کرنے کے لیے ایک زبان منتخب کریں۔',
+  'study.noLanguage.action': 'زبان منتخب کریں',
+  'library.download': '{resource} ڈاؤن لوڈ کریں',
+  'library.onPhone': 'اس فون پر',
+  'search.fullText.inSettings': 'اسے ترتیبات میں آن کریں۔ فہرست اسی فون پر رہتی ہے۔',
 };

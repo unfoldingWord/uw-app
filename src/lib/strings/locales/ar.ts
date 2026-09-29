@@ -523,4 +523,11 @@ export const ar: LocaleTable = {
   'failure.partners.invalid-feed':
     'وصلت قصص الأثر بشكل لا يستطيع التطبيق قراءته. ما زالت القصص الموجودة على هذا الهاتف ظاهرة.',
   'failure.unexpected': 'لم ينجح أمر ما. حاول مرة أخرى، أو شارك بيانات التشخيص ليتمكن أحد من مساعدتك.',
+  'study.helps.showResponse': 'اعرض الإجابة',
+  'study.helps.hideResponse': 'أخفِ الإجابة',
+  'study.noLanguage': 'اختر لغة لتبدأ القراءة.',
+  'study.noLanguage.action': 'اختر لغة',
+  'library.download': 'تنزيل {resource}',
+  'library.onPhone': 'على هذا الهاتف',
+  'search.fullText.inSettings': 'فعِّله من الإعدادات. يبقى الفهرس على هذا الهاتف.',
 };

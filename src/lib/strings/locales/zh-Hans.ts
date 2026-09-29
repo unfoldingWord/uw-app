@@ -420,4 +420,11 @@ export const zhHans: LocaleTable = {
   'failure.share.unavailable': '这部手机目前无法分享。',
   'failure.partners.invalid-feed': '影响故事的格式无法被应用读取。这部手机上已有的故事仍会显示。',
   'failure.unexpected': '有些操作没有成功。请重试，或分享诊断信息，以便有人帮助你。',
+  'study.helps.showResponse': '显示答案',
+  'study.helps.hideResponse': '隐藏答案',
+  'study.noLanguage': '选择一种语言，开始阅读。',
+  'study.noLanguage.action': '选择语言',
+  'library.download': '下载{resource}',
+  'library.onPhone': '在这部手机上',
+  'search.fullText.inSettings': '在设置中开启。索引保存在这部手机上。',
 };

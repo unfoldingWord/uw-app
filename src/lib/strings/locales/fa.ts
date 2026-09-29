@@ -456,4 +456,11 @@ export const fa: LocaleTable = {
     'داستان‌های اثرگذاری به شکلی رسیدند که برنامه نمی‌تواند بخواند. داستان‌های روی این گوشی همچنان نشان داده می‌شوند.',
   'failure.unexpected':
     'کاری انجام نشد. دوباره امتحان کنید، یا اطلاعات عیب‌یابی را هم‌رسانی کنید تا کسی کمک کند.',
+  'study.helps.showResponse': 'نمایش پاسخ',
+  'study.helps.hideResponse': 'پنهان کردن پاسخ',
+  'study.noLanguage': 'برای شروع خواندن، یک زبان انتخاب کنید.',
+  'study.noLanguage.action': 'انتخاب زبان',
+  'library.download': 'بارگیری {resource}',
+  'library.onPhone': 'روی این گوشی',
+  'search.fullText.inSettings': 'آن را در تنظیمات روشن کنید. نمایه روی این گوشی می‌ماند.',
 };

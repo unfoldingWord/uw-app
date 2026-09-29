@@ -457,4 +457,11 @@ export const hi: LocaleTable = {
   'failure.partners.invalid-feed':
     'प्रभाव की कहानियाँ ऐसे रूप में आईं जिसे ऐप पढ़ नहीं सकता। इस फ़ोन पर मौजूद कहानियाँ दिखती रहेंगी।',
   'failure.unexpected': 'कुछ काम नहीं किया। फिर कोशिश करें, या निदान साझा करें ताकि कोई मदद कर सके।',
+  'study.helps.showResponse': 'उत्तर दिखाएँ',
+  'study.helps.hideResponse': 'उत्तर छिपाएँ',
+  'study.noLanguage': 'पढ़ना शुरू करने के लिए एक भाषा चुनें।',
+  'study.noLanguage.action': 'एक भाषा चुनें',
+  'library.download': '{resource} डाउनलोड करें',
+  'library.onPhone': 'इस फ़ोन पर',
+  'search.fullText.inSettings': 'इसे सेटिंग्स में चालू करें। अनुक्रमणिका इसी फ़ोन पर रहती है।',
 };

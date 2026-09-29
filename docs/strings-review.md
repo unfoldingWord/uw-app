@@ -35,6 +35,10 @@ Change a value in place; set it to `null` to fall back to English for that key w
   `impact.securityNote`, `resource.wordLinks` and `resource.wordLinks.about`. `impact.securityNote` is a
   placeholder until comms supplies the website's security note (`docs/impact-stories.md`); a story that carries
   its own note shows that note instead.
+- **Drafted in T11.** Seven keys were added with the Study screens and drafted in every locale at once:
+  `study.helps.showResponse`, `study.helps.hideResponse`, `study.noLanguage`, `study.noLanguage.action`,
+  `library.download`, `library.onPhone` and `search.fullText.inSettings`. `library.download` interpolates a
+  resource title such as "Greek New Testament"; check the verb agrees with it where the language inflects.
 - **Search examples.** `search.placeholder` and `search.empty` use Ruth 2 and covenant as examples; the book
   name and the word should be the ones a reader in that language would type.
 

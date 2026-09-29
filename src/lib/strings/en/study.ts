@@ -97,4 +97,11 @@ export const study = {
   'search.fullText.detail': 'Builds an index on this phone, about {size} for {language}.',
   'search.fullText.building': 'Building the index',
   'search.fullText.on': 'Search inside every downloaded text is on.',
+  'study.helps.showResponse': 'Show the answer',
+  'study.helps.hideResponse': 'Hide the answer',
+  'study.noLanguage': 'Choose a language to start reading.',
+  'study.noLanguage.action': 'Choose a language',
+  'library.download': 'Download {resource}',
+  'library.onPhone': 'On this phone',
+  'search.fullText.inSettings': 'Turn it on in Settings. The index stays on this phone.',
 } as const;
