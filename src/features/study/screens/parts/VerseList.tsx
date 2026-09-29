@@ -18,6 +18,7 @@ export type VerseListProps = {
 
 type RowProps = {
   verse: Verse;
+  title: string | undefined;
   active: boolean;
   highlighted: ReadonlySet<number>;
   text: TextStyle;
@@ -25,12 +26,20 @@ type RowProps = {
   onSelect: (verse: VerseKey) => void;
 };
 
-const VerseRow = memo(function VerseRow({ verse, active, highlighted, text, label, onSelect }: RowProps) {
+const VerseRow = memo(function VerseRow({
+  verse,
+  title,
+  active,
+  highlighted,
+  text,
+  label,
+  onSelect,
+}: RowProps) {
   const theme = useTheme();
   const number =
     verse.through === undefined ? String(verse.verse) : `${String(verse.verse)}-${String(verse.through)}`;
   const mark = { backgroundColor: theme.color.glassFillTint, color: theme.color.accentDeepText };
-  return (
+  const row = (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
@@ -65,6 +74,28 @@ const VerseRow = memo(function VerseRow({ verse, active, highlighted, text, labe
       </Text>
     </Pressable>
   );
+  if (title === undefined) {
+    return row;
+  }
+  return (
+    <>
+      <Text
+        selectable
+        accessibilityRole="header"
+        style={[
+          text,
+          {
+            color: theme.color.textBody,
+            paddingTop: theme.space.sp5,
+            paddingHorizontal: theme.space.sp6,
+          },
+        ]}
+      >
+        {title}
+      </Text>
+      {row}
+    </>
+  );
 });
 
 export function VerseList({
@@ -80,6 +111,10 @@ export function VerseList({
   const list = useRef<FlatList<Verse>>(null);
   const direction: Direction = passage.text.direction;
   const verses = passage.text.verses;
+  const titles = useMemo(
+    () => new Map(passage.text.titles.map((item) => [item.chapter, item.text])),
+    [passage.text.titles],
+  );
   const text = useMemo(() => {
     const base = theme.text.body;
     const size = theme.fontSize.fsSubtitle;
@@ -112,6 +147,7 @@ export function VerseList({
         return (
           <VerseRow
             verse={item}
+            title={item.verse === 1 ? titles.get(item.chapter) : undefined}
             active={active}
             highlighted={active ? highlighted : emptySet}
             text={text}
