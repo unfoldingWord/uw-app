@@ -1,9 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import { failureCodeOf, failureCodes, isFailureCode } from './failures';
 import { isLanguageTag } from './language';
-import { audioPackId, imagePackId, isPackId, languagePackId, originalPackId } from './pack';
+import { admittedRows } from '../burrito/flavors';
+import {
+  audioPackId,
+  imagePackId,
+  isPackId,
+  languagePackId,
+  originalPackId,
+  packDirectory,
+  packIdOf,
+  packKindOf,
+  resourceRows,
+} from './pack';
 import { isProvenance, sameRelease, type Provenance } from './provenance';
-import { releaseKey } from './release';
+import { archiveUrlOf, releaseKey, resourceKey } from './release';
 
 const provenance: Provenance = {
   publisher: 'unfoldingWord',
@@ -48,8 +59,29 @@ describe('packs, releases and languages', () => {
     expect(isPackId('bundle:qaa')).toBe(false);
   });
 
-  it('keys a release by publisher, language, resource and tag', () => {
-    expect(releaseKey(provenance)).toBe('unfoldingWord/en_ult@v86');
+  it('keys a release by publisher, resource and tag, and derives its burrito archive', () => {
+    const release = { publisher: 'unfoldingWord', resource: 'en_ult', language: 'en', tag: 'v86' };
+    expect(releaseKey(release)).toBe('unfoldingWord/en_ult@v86');
+    expect(resourceKey(release)).toBe('unfoldingWord/en_ult');
+    expect(archiveUrlOf(release)).toBe('https://git.door43.org/unfoldingWord/en_ult/sb/v86.zip');
+  });
+
+  it('puts every row in one kind of pack, and gives each pack one directory', () => {
+    expect(packKindOf('text', 'qaa')).toBe('language');
+    expect(packKindOf('text', 'hbo')).toBe('original');
+    expect(packKindOf('stories', 'qaa')).toBe('language');
+    expect(packKindOf('images', 'zxx')).toBe('image');
+    expect(packKindOf('audio', 'qaa')).toBe('audio');
+    expect(packIdOf('language', 'qaa', 'qaa_ult')).toBe('language:qaa');
+    expect(packIdOf('audio', 'qaa', 'qaa_ult-audio')).toBe('audio:qaa:qaa_ult-audio');
+    expect(packIdOf('original', 'hbo', 'hbo_uhb')).toBe('original:hbo');
+    expect(packIdOf('image', 'zxx', 'obs-images')).toBe(imagePackId);
+    expect(packDirectory('language:qaa')).toBe('packs/language/qaa');
+    expect(packDirectory('audio:qaa:qaa_ult-audio')).toBe('packs/audio/qaa/qaa_ult-audio');
+  });
+
+  it('names the same rows as the burrito contract', () => {
+    expect([...resourceRows].sort()).toEqual(admittedRows.map((row) => row.id).sort());
   });
 
   it('accepts language tags and refuses free text', () => {

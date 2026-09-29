@@ -60,15 +60,19 @@ describe('events (DX-1 nothing identifies the leader)', () => {
         expect(validate(text)).toBe(false);
       }
     }
-    for (const type of Object.keys(eventSchemas) as EventType[]) {
-      const specs: Readonly<Record<string, unknown>> = eventSchemas[type].payload;
-      for (const spec of Object.values(specs)) {
-        if (typeof spec === 'string') {
-          expect(Object.keys(fieldValidators)).toContain(spec.replace(/\?$/, ''));
-        } else {
-          for (const text of typedByALeader) {
-            expect(spec).not.toContain(text);
-          }
+    const scalarSpecs = (Object.keys(eventSchemas) as EventType[]).flatMap((type) =>
+      Object.values(eventSchemas[type].payload as Readonly<Record<string, unknown>>).flatMap((spec) =>
+        typeof spec === 'object' && spec !== null && 'list' in spec
+          ? Object.values(spec.list as Readonly<Record<string, unknown>>)
+          : [spec],
+      ),
+    );
+    for (const spec of scalarSpecs) {
+      if (typeof spec === 'string') {
+        expect(Object.keys(fieldValidators)).toContain(spec.replace(/\?$/, ''));
+      } else {
+        for (const text of typedByALeader) {
+          expect(spec).not.toContain(text);
         }
       }
     }
@@ -127,6 +131,42 @@ describe('events (DX-1 nothing identifies the leader)', () => {
     expect(searchKinds).toContain('fulltext');
     expect(shareKinds).toContain('journal');
     expect(bookmarkTargets).toEqual(['passage', 'article', 'story']);
+  });
+
+  it('checks every item of a list field against its record, and bounds the list', () => {
+    const burrito = {
+      root: 'packs/language/qaa/unfoldingWord/qaa_ult',
+      row: 'text',
+      publisher: 'unfoldingWord',
+      resource: 'qaa_ult',
+      language: 'qaa',
+      tag: 'v1',
+      commit: 'ca519c4d',
+      bytes: 10,
+    };
+    const installed = (burritos: unknown) => ({
+      type: 'PackInstalled',
+      at: 1,
+      payload: {
+        install: 'id-1',
+        pack: 'language:qaa',
+        kind: 'language',
+        source: 'catalog',
+        language: 'qaa',
+        resources: 1,
+        bytes: 10,
+        burritos,
+      },
+    });
+    expect(checkEvent(installed([burrito])).ok).toBe(true);
+    expect(checkEvent(installed([])).ok).toBe(true);
+    expect(checkEvent(installed([{ ...burrito, title: 'Fixture Literal Text' }])).ok).toBe(false);
+    expect(checkEvent(installed([{ ...burrito, row: 'bundle' }])).ok).toBe(false);
+    expect(checkEvent(installed(burrito)).ok).toBe(false);
+    expect(checkEvent(installed(Array.from({ length: 65 }, () => burrito))).ok).toBe(false);
+    expect(checkEvent(installed([burrito]).payload)).toMatchObject({ ok: false });
+    const refused = checkEvent(installed(['qaa_ult']));
+    expect(refused).toEqual({ ok: false, reason: 'PackInstalled.burritos is not a valid list' });
   });
 
   it('turns a recorded event back into the input that produced it', () => {

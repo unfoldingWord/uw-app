@@ -1,11 +1,15 @@
 import { fieldValidators, type FieldKind, type FieldTypes } from './fields';
-import { packKinds, packSources } from './pack';
+import { packKinds, packSources, resourceRows } from './pack';
 
 export const replayClasses = ['redo', 'follows', 'verbatim'] as const;
 
 export type ReplayClass = (typeof replayClasses)[number];
 
-type FieldSpec = FieldKind | `${FieldKind}?` | readonly string[];
+type ScalarSpec = FieldKind | `${FieldKind}?` | readonly string[];
+
+type ListSpec = { readonly list: Readonly<Record<string, ScalarSpec>>; readonly max: number };
+
+type FieldSpec = ScalarSpec | ListSpec;
 
 type EventSchema = { readonly replay: ReplayClass; readonly payload: Readonly<Record<string, FieldSpec>> };
 
@@ -28,13 +32,45 @@ export const shareKinds = ['passage', 'story', 'audio', 'journal'] as const;
 
 export const bookmarkTargets = ['passage', 'article', 'story'] as const;
 
+export const maximumPackBurritos = 64;
+
+const releaseRefSpec = {
+  list: { publisher: 'publisher', resource: 'resource', language: 'language', tag: 'tag' },
+  max: maximumPackBurritos,
+} as const;
+
+const installedBurritoSpec = {
+  list: {
+    root: 'token',
+    row: resourceRows,
+    publisher: 'publisher',
+    resource: 'resource',
+    language: 'language',
+    tag: 'tag',
+    commit: 'token',
+    bytes: 'bytes',
+  },
+  max: maximumPackBurritos,
+} as const;
+
 export const eventSchemas = {
   AppOpened: { replay: 'redo', payload: { day: 'day' } },
   CatalogRefreshStarted: { replay: 'redo', payload: {} },
   CatalogRefreshed: { replay: 'follows', payload: { languages: 'count', releases: 'count' } },
   PackInstallStarted: {
     replay: 'redo',
-    payload: { install: 'id', pack: 'pack', kind: packKinds, source: packSources, language: 'language?' },
+    payload: {
+      install: 'id',
+      pack: 'pack',
+      kind: packKinds,
+      source: packSources,
+      language: 'language?',
+      releases: releaseRefSpec,
+    },
+  },
+  PackInstallProgressed: {
+    replay: 'follows',
+    payload: { install: 'id', resources: 'count', total: 'count', bytes: 'bytes' },
   },
   PackInstalled: {
     replay: 'follows',
@@ -46,6 +82,7 @@ export const eventSchemas = {
       language: 'language?',
       resources: 'count',
       bytes: 'bytes',
+      burritos: installedBurritoSpec,
     },
   },
   PackFailed: { replay: 'follows', payload: { install: 'id', pack: 'pack', code: 'code' } },
@@ -99,7 +136,7 @@ type Schemas = typeof eventSchemas;
 
 export type EventType = keyof Schemas;
 
-type TypeOf<S> = S extends readonly (infer L)[]
+type ScalarOf<S> = S extends readonly (infer L)[]
   ? L
   : S extends `${infer K}?`
     ? K extends FieldKind
@@ -115,9 +152,11 @@ type OptionalFields<P> = { [K in keyof P as P[K] extends `${string}?` ? K : neve
 
 type Flatten<T> = { readonly [K in keyof T]: T[K] };
 
-export type PayloadOf<T extends EventType> = Flatten<
-  RequiredFields<Schemas[T]['payload']> & OptionalFields<Schemas[T]['payload']>
->;
+type RecordOf<P> = Flatten<RequiredFields<P> & OptionalFields<P>>;
+
+type TypeOf<S> = S extends { readonly list: infer P } ? readonly RecordOf<P>[] : ScalarOf<S>;
+
+export type PayloadOf<T extends EventType> = RecordOf<Schemas[T]['payload']>;
 
 export type EventOf<T extends EventType> = {
   readonly type: T;
@@ -147,7 +186,30 @@ export function replayClassOf(type: EventType): ReplayClass {
   return eventSchemas[type].replay;
 }
 
+function isListSpec(spec: FieldSpec): spec is ListSpec {
+  return typeof spec === 'object' && 'list' in spec;
+}
+
+function recordProblem(specs: Readonly<Record<string, FieldSpec>>, value: unknown): string | undefined {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return '';
+  }
+  const unknownField = Object.keys(value).find((field) => !(field in specs));
+  if (unknownField !== undefined) {
+    return unknownField;
+  }
+  const record = value as Record<string, unknown>;
+  return Object.entries(specs).find(([field, spec]) => fieldProblem(spec, record[field]))?.[0];
+}
+
 function fieldProblem(spec: FieldSpec, value: unknown): boolean {
+  if (isListSpec(spec)) {
+    return (
+      !Array.isArray(value) ||
+      value.length > spec.max ||
+      value.some((item) => recordProblem(spec.list, item) !== undefined)
+    );
+  }
   if (typeof spec !== 'string') {
     return !spec.includes(value as string);
   }
@@ -168,9 +230,13 @@ export function payloadProblem(type: EventType, payload: unknown): string | unde
   if (unknownField !== undefined) {
     return `${type} has no field ${unknownField}`;
   }
-  const record = payload as Record<string, unknown>;
-  const badField = Object.entries(specs).find(([field, spec]) => fieldProblem(spec, record[field]));
-  return badField === undefined ? undefined : `${type}.${badField[0]} is not a valid ${String(badField[1])}`;
+  const badField = recordProblem(specs, payload);
+  if (badField === undefined) {
+    return undefined;
+  }
+  const spec = specs[badField];
+  const described = spec !== undefined && isListSpec(spec) ? 'list' : String(spec);
+  return `${type}.${badField} is not a valid ${described}`;
 }
 
 export function checkEvent(value: unknown): EventCheck {
