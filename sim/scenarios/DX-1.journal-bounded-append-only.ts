@@ -1,5 +1,9 @@
 import assert from 'node:assert/strict';
 import { parseJournalExport } from '@lib/journal/export';
+import { createJournal } from '@lib/journal/journal';
+import { createMemoryClock } from '../adapters/clock';
+import { createMemoryDb } from '../adapters/db';
+import { migrations } from '../migrations';
 import { scenario } from '../scenario';
 
 const limit = 8;
@@ -9,7 +13,7 @@ export default scenario(
   'DX-1',
   'the journal is bounded and append-only, records failures with a code, and identifies no one',
   async (world) => {
-    const device = world.device('phone', {
+    const device = world.device('kitale-field-device', {
       journalLimit: limit,
       locale: { tag: 'en-US', region: 'US', timeZone: 'America/Chicago', rtl: false },
     });
@@ -58,8 +62,30 @@ export default scenario(
     const exported = JSON.stringify(device.kernel.journal.export());
     const parsed = parseJournalExport(JSON.parse(exported));
     assert.ok(parsed.ok, parsed.ok ? '' : parsed.reason);
-    for (const identifying of ['America/Chicago', '"US"', 'en-US', 'phone']) {
+    for (const identifying of ['America/Chicago', '"US"', 'en-US', 'kitale']) {
       assert.ok(!exported.includes(identifying), `the journal carries ${identifying}`);
     }
+
+    const db = createMemoryDb();
+    for (const statement of migrations.flatMap((migration) => migration.statements)) {
+      await db.exec(statement);
+    }
+    const journal = createJournal({ db, clock: createMemoryClock() });
+    await journal.load();
+    const typed = [
+      { type: 'PreferenceChanged', payload: { key: 'home.name', value: 'Jesse' } },
+      { type: 'Failure', payload: { code: 'unexpected', context: { leader: 'Jesse.Griffin' } } },
+      { type: 'GroupCreated', payload: { group: 'Jesse-Tuesday-Group' } },
+    ];
+    for (const attempt of typed) {
+      assert.equal(await journal.append(JSON.parse(JSON.stringify(attempt)) as never), undefined);
+    }
+    assert.ok(await journal.append({ type: 'PreferenceChanged', payload: { key: 'home.name' } }));
+    const kept = JSON.stringify(journal.export());
+    assert.ok(!kept.includes('Jesse'), 'a typed name never enters the journal');
+    assert.deepEqual(
+      journal.read().map((entry) => entry.type),
+      ['Failure', 'Failure', 'Failure', 'PreferenceChanged'],
+    );
   },
 );

@@ -8,6 +8,8 @@ export type Clock = {
   dayOf(at: number): string;
 };
 
+export type DayClock = Pick<Clock, 'dayOf'>;
+
 export type Ids = {
   next(): string;
 };
@@ -17,7 +19,9 @@ export type FileEntry = { name: string; kind: 'file' | 'directory'; bytes: numbe
 export type Files = {
   readBytes(path: string): Promise<Uint8Array>;
   readText(path: string): Promise<string>;
+  readRange(path: string, offset: number, length: number): Promise<Uint8Array>;
   writeBytes(path: string, data: Uint8Array): Promise<void>;
+  appendBytes(path: string, data: Uint8Array): Promise<void>;
   writeText(path: string, text: string): Promise<void>;
   list(path: string): Promise<readonly FileEntry[]>;
   exists(path: string): Promise<boolean>;
@@ -25,24 +29,25 @@ export type Files = {
   mkdir(path: string): Promise<void>;
   rename(from: string, to: string): Promise<void>;
   remove(path: string): Promise<void>;
+  adopt(external: string, path: string): Promise<number>;
   freeSpace(): Promise<number>;
 };
 
 export type SqlValue = string | number | null | Uint8Array;
 
-export type Row = Readonly<Record<string, SqlValue>>;
+export type DbRow = Readonly<Record<string, SqlValue>>;
 
 export type RunResult = { changes: number; lastInsertRowId: number };
 
-export type DbSession = {
+export type DbTransaction = {
   exec(sql: string): Promise<void>;
   run(sql: string, params?: readonly SqlValue[]): Promise<RunResult>;
-  all(sql: string, params?: readonly SqlValue[]): Promise<readonly Row[]>;
-  get(sql: string, params?: readonly SqlValue[]): Promise<Row | undefined>;
+  all(sql: string, params?: readonly SqlValue[]): Promise<readonly DbRow[]>;
+  get(sql: string, params?: readonly SqlValue[]): Promise<DbRow | undefined>;
 };
 
-export type Db = DbSession & {
-  transaction<T>(work: (session: DbSession) => Promise<T>): Promise<T>;
+export type Db = DbTransaction & {
+  transaction<T>(work: (session: DbTransaction) => Promise<T>): Promise<T>;
 };
 
 export type Migration = { id: string; statements: readonly string[] };
@@ -58,25 +63,46 @@ export type HttpMethod = 'GET' | 'HEAD';
 
 export type HttpProgress = (receivedBytes: number, totalBytes: number | undefined) => void;
 
+export type HttpCancel = {
+  readonly cancelled: boolean;
+  onCancel(listener: () => void): void;
+};
+
 export type HttpRequest = {
   url: string;
   method?: HttpMethod;
   timeoutMs: number;
   headers?: Readonly<Record<string, string>>;
   onProgress?: HttpProgress;
+  cancel?: HttpCancel;
 };
 
-export type HttpDownload = HttpRequest & { to: string };
+export type HttpDownload = HttpRequest & { to: string; resumeFrom?: number };
 
 export type HttpUnreachable =
-  { kind: 'offline' } | { kind: 'timeout' } | { kind: 'refused'; host: string | undefined };
+  | { kind: 'offline' }
+  | { kind: 'timeout' }
+  | { kind: 'cancelled' }
+  | { kind: 'refused'; host: string | undefined };
 
 export type HttpResponse =
-  | { kind: 'response'; status: number; headers: Readonly<Record<string, string>>; body: Uint8Array }
+  | {
+      kind: 'response';
+      url: string;
+      status: number;
+      headers: Readonly<Record<string, string>>;
+      body: Uint8Array;
+    }
   | HttpUnreachable;
 
 export type HttpDownloaded =
-  | { kind: 'response'; status: number; headers: Readonly<Record<string, string>>; bytes: number }
+  | {
+      kind: 'response';
+      url: string;
+      status: number;
+      headers: Readonly<Record<string, string>>;
+      bytes: number;
+    }
   | HttpUnreachable;
 
 export type Http = {

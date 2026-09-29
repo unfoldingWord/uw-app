@@ -2,7 +2,8 @@ import { fromUtf8 } from '../burrito/files';
 import type { FailureCode, FailureContext } from '../domain/failures';
 import { door43 } from '../domain/release';
 import { defineModule } from '../module';
-import type { HttpResponse, Ports } from '../ports';
+import type { ModulePorts } from '../module';
+import type { HttpResponse } from '../ports';
 import { readInstalledPacks } from '../packs/store';
 import { languagesOf, releasesIn, searchLanguages } from './languages';
 import { compareReleases, normalizePage, uniqueReleases } from './normalize';
@@ -38,6 +39,8 @@ function unreachable(response: Exclude<HttpResponse, { kind: 'response' }>): Fet
       return { ok: false, code: 'http.timeout', context: { step: 'catalog' } };
     case 'refused':
       return { ok: false, code: 'http.host-refused', context: { step: 'catalog' } };
+    case 'cancelled':
+      return { ok: false, code: 'http.cancelled', context: { step: 'catalog' } };
   }
 }
 
@@ -53,7 +56,7 @@ function pageUrl(page: number): string {
   return page === 1 ? catalogSearchUrl : `${catalogSearchUrl}&page=${page}`;
 }
 
-async function fetchCatalog(ports: Ports): Promise<Fetched> {
+async function fetchCatalog(ports: ModulePorts): Promise<Fetched> {
   const releases: CatalogRelease[] = [];
   let entries = 0;
   for (let page = 1; page <= maximumPages; page += 1) {

@@ -1,4 +1,4 @@
-import { admittedRows, rowFor, type ListedIngredient, type Row } from './flavors';
+import { admittedRows, rowFor, type ListedIngredient, type ContractRow } from './flavors';
 import { fromUtf8, ingredientsDirectory, md5Hex, metadataPath, type BurritoFiles } from './files';
 import { isRecord, type BurritoMetadata, type IngredientEntry } from './metadata';
 
@@ -15,7 +15,12 @@ type InvalidRule =
   | 'licence';
 
 export type ValidationReport =
-  | { readonly ok: true; readonly kind: 'valid'; readonly row: Row; readonly metadata: BurritoMetadata }
+  | {
+      readonly ok: true;
+      readonly kind: 'valid';
+      readonly row: ContractRow;
+      readonly metadata: BurritoMetadata;
+    }
   | {
       readonly ok: false;
       readonly kind: 'ignored';
@@ -31,7 +36,7 @@ export type ValidationReport =
       readonly message: string;
     };
 
-export type ValidateOptions = { readonly rows?: readonly Row[] };
+export type ValidateOptions = { readonly rows?: readonly ContractRow[] };
 
 export const burritoFormat = 'scripture burrito';
 

@@ -1,5 +1,5 @@
 import type { DeviceSnapshot, RedoOutcome } from '@lib/compose';
-import { eventSchemas, type DomainEvent } from '@lib/domain/events';
+import { idsOf, inputOf, type DomainEvent } from '@lib/domain/events';
 import type { JournalEntry } from '@lib/journal/entry';
 import { parseJournalExport } from '@lib/journal/export';
 import { stableJson } from '@lib/json';
@@ -26,13 +26,8 @@ const shownDivergences = 10;
 export function mintedIds(events: readonly DomainEvent[]): readonly string[] {
   const seen = new Set<string>();
   for (const event of events) {
-    const specs: Readonly<Record<string, unknown>> = eventSchemas[event.type].payload;
-    const payload = event.payload as Readonly<Record<string, unknown>>;
-    for (const [field, spec] of Object.entries(specs)) {
-      const value = payload[field];
-      if ((spec === 'id' || spec === 'id?') && typeof value === 'string') {
-        seen.add(value);
-      }
+    for (const id of idsOf(inputOf(event))) {
+      seen.add(id);
     }
   }
   return [...seen];
@@ -62,9 +57,10 @@ export async function replayJournal(world: World, document: unknown, name = 'rep
   if (!parsed.ok) {
     return { ok: false, reason: parsed.reason };
   }
-  const { events, limit, dropped } = parsed.journal;
+  const { events, limit, dropped, baseline } = parsed.journal;
   const device = world.device(name, {
     journalLimit: limit,
+    resume: { seq: (events[0]?.seq ?? 1) - 1, dropped, baseline },
     clock: createPlaybackClock(events, world.clock),
     ids: createPlaybackIds(mintedIds(events), createMemoryIds('replay')),
   });

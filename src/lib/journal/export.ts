@@ -1,15 +1,19 @@
 import { checkEvent } from '../domain/events';
+import type { JsonValue } from '../json';
 import type { JournalEntry } from './entry';
 
 export const journalFormat = 'unfoldingword-journal';
 
-export const journalVersion = 1;
+export const journalVersion = 2;
+
+export type JournalBaseline = Readonly<Record<string, JsonValue>>;
 
 export type JournalExport = {
   format: typeof journalFormat;
   version: typeof journalVersion;
   limit: number;
   dropped: number;
+  baseline: JournalBaseline;
   events: readonly JournalEntry[];
 };
 
@@ -17,6 +21,10 @@ export type ParsedJournal = { ok: true; journal: JournalExport } | { ok: false; 
 
 function isCount(value: unknown): value is number {
   return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
+}
+
+function isBaseline(value: unknown): value is JournalBaseline {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 function parseEntries(values: readonly unknown[]): JournalEntry[] | string {
@@ -46,6 +54,9 @@ export function parseJournalExport(value: unknown): ParsedJournal {
   if (!isCount(record.limit) || record.limit < 1 || !isCount(record.dropped)) {
     return { ok: false, reason: 'the journal has no limit or dropped count' };
   }
+  if (!isBaseline(record.baseline)) {
+    return { ok: false, reason: 'the journal has no baseline for the events it dropped' };
+  }
   if (!Array.isArray(record.events)) {
     return { ok: false, reason: 'the journal has no events' };
   }
@@ -60,6 +71,7 @@ export function parseJournalExport(value: unknown): ParsedJournal {
       version: journalVersion,
       limit: record.limit,
       dropped: record.dropped,
+      baseline: record.baseline,
       events,
     },
   };

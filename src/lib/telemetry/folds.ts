@@ -1,4 +1,6 @@
 import type { DomainEvent } from '../domain/events';
+import type { JsonValue } from '../json';
+import { compareText } from '../order';
 
 export type PerLanguage = Readonly<Record<string, number>>;
 
@@ -54,16 +56,83 @@ export function telemetryStep(counts: Telemetry, event: DomainEvent): Telemetry 
   }
 }
 
+export type TelemetryBaseline = { counts: Telemetry; days: readonly string[] };
+
+export const emptyBaseline: TelemetryBaseline = Object.freeze({
+  counts: emptyTelemetry,
+  days: Object.freeze([]),
+});
+
+const countFields = [
+  'appOpens',
+  'transfersCompleted',
+  'sharesSent',
+  'invitationTaps',
+  'impactStoryOpens',
+] as const;
+
+function isCount(value: unknown): value is number {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
+}
+
+function isRecord(value: unknown): value is Readonly<Record<string, unknown>> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function perLanguageOf(value: unknown): PerLanguage | undefined {
+  if (!isRecord(value) || !Object.values(value).every(isCount)) {
+    return undefined;
+  }
+  return value as PerLanguage;
+}
+
+function countsOf(value: unknown): Telemetry | undefined {
+  if (!isRecord(value) || !countFields.every((field) => isCount(value[field]))) {
+    return undefined;
+  }
+  const languagePackDownloads = perLanguageOf(value.languagePackDownloads);
+  const formationSessionsStarted = perLanguageOf(value.formationSessionsStarted);
+  if (languagePackDownloads === undefined || formationSessionsStarted === undefined) {
+    return undefined;
+  }
+  const counts: Record<string, unknown> = { languagePackDownloads, formationSessionsStarted };
+  for (const field of countFields) {
+    counts[field] = value[field];
+  }
+  return counts as Telemetry;
+}
+
+export function baselineOf(value: JsonValue | undefined): TelemetryBaseline {
+  if (!isRecord(value)) {
+    return emptyBaseline;
+  }
+  const counts = countsOf(value.counts);
+  const days = value.days;
+  if (counts === undefined || !Array.isArray(days) || !days.every((day) => typeof day === 'string')) {
+    return emptyBaseline;
+  }
+  return { counts, days: days as readonly string[] };
+}
+
+function withDay(days: readonly string[], event: DomainEvent): readonly string[] {
+  if (event.type !== 'AppOpened' || days.includes(event.payload.day)) {
+    return days;
+  }
+  return [...days, event.payload.day].sort(compareText);
+}
+
+export function stepBaseline(state: TelemetryBaseline, event: DomainEvent): TelemetryBaseline {
+  return { counts: telemetryStep(state.counts, event), days: withDay(state.days, event) };
+}
+
+export function foldFrom(baseline: TelemetryBaseline, events: readonly DomainEvent[]): TelemetryBaseline {
+  return events.reduce(stepBaseline, baseline);
+}
+
 export function foldTelemetry(events: readonly DomainEvent[]): Telemetry {
-  return events.reduce(telemetryStep, emptyTelemetry);
+  return foldFrom(emptyBaseline, events).counts;
 }
 
 export function foldDaysOfUse(events: readonly DomainEvent[]): readonly string[] {
-  const days = new Set<string>();
-  for (const event of events) {
-    if (event.type === 'AppOpened') {
-      days.add(event.payload.day);
-    }
-  }
-  return [...days].sort();
+  return foldFrom(emptyBaseline, events).days;
 }

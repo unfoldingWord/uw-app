@@ -68,5 +68,26 @@ export default scenario(
       rebuilt.device.adapters.files.tree().filter((path) => path.startsWith('packs/')),
       library.adapters.files.tree().filter((path) => path.startsWith('packs/')),
     );
+
+    const bounded = world.device('bounded', { journalLimit: 8 });
+    await bounded.start();
+    for (let day = 0; day < 5; day += 1) {
+      world.clock.advance(24 * hour);
+      await bounded.restart();
+    }
+    await bounded.kernel.catalog.refresh();
+    await bounded.kernel.packs.installFromCatalog(languagePackId('qab'));
+    const kept = bounded.kernel.journal.stats();
+    assert.ok(kept.dropped > 0, 'the bounded device has dropped events');
+    const boundedExport = JSON.parse(JSON.stringify(bounded.kernel.journal.export())) as unknown;
+    const boundedReplay = await replayJournal(world, boundedExport, 'bounded-replayed');
+    assert.ok(boundedReplay.ok, boundedReplay.ok ? '' : boundedReplay.reason);
+    assert.equal(boundedReplay.dropped, kept.dropped);
+    assert.deepEqual(boundedReplay.divergence, []);
+    assert.equal(stableJson(boundedReplay.snapshot), stableJson(bounded.kernel.snapshot()));
+    assert.deepEqual(boundedReplay.device.kernel.telemetry.counts(), bounded.kernel.telemetry.counts());
+    assert.equal(bounded.kernel.telemetry.counts().appOpens, 6);
+    assert.equal(bounded.kernel.telemetry.daysOfUse().length, 6);
+    assert.deepEqual(bounded.kernel.telemetry.counts().languagePackDownloads, { qab: 1 });
   },
 );

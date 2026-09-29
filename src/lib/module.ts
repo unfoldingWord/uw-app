@@ -1,13 +1,16 @@
-import type { EventOf, EventType } from './domain/events';
+import type { DomainEvent, EventOf, EventType } from './domain/events';
 import type { JournalEntry } from './journal/entry';
 import type { EventDraft } from './journal/journal';
 import type { JsonValue } from './json';
-import type { Ports } from './ports';
+import type { DayClock, Ports } from './ports';
+
+export type ModulePorts = Omit<Ports, 'clock'> & { clock: DayClock };
 
 export type ModuleContext = {
-  ports: Ports;
+  ports: ModulePorts;
   emit(draft: EventDraft): Promise<JournalEntry | undefined>;
   events(since?: number): readonly JournalEntry[];
+  baseline(): JsonValue;
 };
 
 export type RedoHandlers = { readonly [T in EventType]?: (event: EventOf<T>) => Promise<void> };
@@ -15,7 +18,7 @@ export type RedoHandlers = { readonly [T in EventType]?: (event: EventOf<T>) => 
 export type ModuleInstance<Api> = {
   api: Api;
   start?(): Promise<void>;
-  observe?(entry: JournalEntry): void;
+  observe?(entry: JournalEntry): void | Promise<void>;
   snapshot?(): JsonValue;
   redo?: RedoHandlers;
 };
@@ -26,9 +29,15 @@ export type Owns = {
   keys: readonly string[];
 };
 
+export type Checkpoint = {
+  initial: JsonValue;
+  step(state: JsonValue, event: DomainEvent): JsonValue;
+};
+
 export type KernelModule<Api> = {
   events: readonly EventType[];
   owns: Owns;
+  checkpoint?: Checkpoint;
   create(context: ModuleContext): ModuleInstance<Api>;
 };
 

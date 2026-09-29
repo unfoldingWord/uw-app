@@ -1,20 +1,20 @@
 import { packKinds, packSources, resourceRows, type PackId } from '../domain/pack';
-import type { DbSession, Row } from '../ports';
+import type { DbTransaction, DbRow } from '../ports';
 import type { InstalledBurrito, InstalledPack } from './types';
 
 export const packTables = ['packs', 'pack_burritos'] as const;
 
-function textOf(row: Row, column: string): string {
+function textOf(row: DbRow, column: string): string {
   const value = row[column];
   return typeof value === 'string' ? value : '';
 }
 
-function numberOf(row: Row, column: string): number {
+function numberOf(row: DbRow, column: string): number {
   const value = row[column];
   return typeof value === 'number' ? value : 0;
 }
 
-function burritoOf(row: Row): InstalledBurrito | undefined {
+function burritoOf(row: DbRow): InstalledBurrito | undefined {
   const resourceRow = resourceRows.find((item) => item === row.resource_row);
   if (resourceRow === undefined) {
     return undefined;
@@ -36,7 +36,7 @@ function burritoOf(row: Row): InstalledBurrito | undefined {
   };
 }
 
-export async function readInstalledPacks(db: DbSession): Promise<InstalledPack[]> {
+export async function readInstalledPacks(db: DbTransaction): Promise<InstalledPack[]> {
   const packRows = await db.all('SELECT pack, kind, language, source, bytes FROM packs ORDER BY pack');
   const burritoRows = await db.all(
     'SELECT pack, publisher, resource, language, tag, commit_sha, released, resource_row, root, title, licence, bytes FROM pack_burritos ORDER BY pack, publisher, resource',
@@ -61,7 +61,7 @@ export async function readInstalledPacks(db: DbSession): Promise<InstalledPack[]
   });
 }
 
-export async function writeInstalledPack(session: DbSession, pack: InstalledPack): Promise<void> {
+export async function writeInstalledPack(session: DbTransaction, pack: InstalledPack): Promise<void> {
   await deleteInstalledPack(session, pack.pack);
   await session.run('INSERT INTO packs (pack, kind, language, source, bytes) VALUES (?, ?, ?, ?, ?)', [
     pack.pack,
@@ -92,7 +92,7 @@ export async function writeInstalledPack(session: DbSession, pack: InstalledPack
   }
 }
 
-export async function deleteInstalledPack(session: DbSession, pack: PackId): Promise<void> {
+export async function deleteInstalledPack(session: DbTransaction, pack: PackId): Promise<void> {
   await session.run('DELETE FROM pack_burritos WHERE pack = ?', [pack]);
   await session.run('DELETE FROM packs WHERE pack = ?', [pack]);
 }

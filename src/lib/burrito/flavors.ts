@@ -22,7 +22,7 @@ export type ListedIngredient = {
 
 type RowMismatch = { readonly path: string; readonly message: string };
 
-export type Row = {
+export type ContractRow = {
   readonly id: RowId;
   readonly status: RowStatus;
   readonly resource: string;
@@ -191,7 +191,7 @@ function storyImages(ingredients: readonly ListedIngredient[]): RowMismatch | un
   return undefined;
 }
 
-export const pinnedRows: readonly Row[] = [
+export const pinnedRows: readonly ContractRow[] = [
   {
     id: 'text',
     status: 'pinned',
@@ -257,7 +257,7 @@ export const pinnedRows: readonly Row[] = [
   },
 ];
 
-const provisionalRows: readonly Row[] = [
+const provisionalRows: readonly ContractRow[] = [
   {
     id: 'formation',
     status: 'provisional',
@@ -287,14 +287,14 @@ const provisionalRows: readonly Row[] = [
   },
 ];
 
-export const admittedRows: readonly Row[] = [...pinnedRows, ...provisionalRows];
+export const admittedRows: readonly ContractRow[] = [...pinnedRows, ...provisionalRows];
 
 export function rowFor(
-  rows: readonly Row[],
+  rows: readonly ContractRow[],
   flavorType: string,
   flavor: string,
   ingredients: readonly ListedIngredient[],
-): Row | undefined {
+): ContractRow | undefined {
   return rows.find(
     (row) => row.flavorType === flavorType && row.flavors.includes(flavor) && row.appliesTo(ingredients),
   );

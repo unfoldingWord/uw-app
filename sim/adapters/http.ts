@@ -5,6 +5,7 @@ export type Route = {
   status?: number;
   body: Uint8Array | string;
   headers?: Readonly<Record<string, string>>;
+  redirect?: string;
 };
 
 export type MemoryNetwork = {
@@ -52,8 +53,21 @@ export function createMemoryHttp(options: {
   const holds: { prefix: string; released: Promise<void> }[] = [];
   let online = true;
 
-  async function held(url: string): Promise<void> {
-    await Promise.all(holds.filter((item) => url.startsWith(item.prefix)).map((item) => item.released));
+  async function held(request: HttpRequest): Promise<void> {
+    const waiting = holds.filter((item) => request.url.startsWith(item.prefix)).map((item) => item.released);
+    if (waiting.length === 0) {
+      return;
+    }
+    const cancelled = new Promise<void>((resolve) => request.cancel?.onCancel(resolve));
+    await Promise.race([Promise.all(waiting), cancelled]);
+  }
+
+  function landing(url: string): { url: string; route: Route | undefined } {
+    const route = options.network.lookup(url);
+    if (route?.redirect === undefined) {
+      return { url, route };
+    }
+    return { url: route.redirect, route: options.network.lookup(route.redirect) };
   }
 
   function scripted(url: string): ScriptedOutcome | undefined {
@@ -73,11 +87,14 @@ export function createMemoryHttp(options: {
     if (!online) {
       return { kind: 'offline' };
     }
+    if (request.cancel?.cancelled) {
+      return { kind: 'cancelled' };
+    }
     const outcome = scripted(request.url);
     if (outcome === 'offline' || outcome === 'timeout') {
       return { kind: outcome };
     }
-    const route = options.network.lookup(request.url);
+    const { url, route } = landing(request.url);
     const status = outcome?.status ?? route?.status ?? (route === undefined ? 404 : 200);
     const body = request.method === 'HEAD' || route === undefined ? new Uint8Array() : bytesOf(route.body);
     const headers = { 'content-length': String(body.byteLength), ...route?.headers };
@@ -85,28 +102,34 @@ export function createMemoryHttp(options: {
       request.onProgress?.(received, body.byteLength);
     }
     request.onProgress?.(body.byteLength, body.byteLength);
-    return { kind: 'response', status, headers, body };
+    return { kind: 'response', url, status, headers, body };
   }
 
   return {
     request: async (request) => {
-      await held(request.url);
+      await held(request);
       return respond(request);
     },
     download: async (request) => {
-      await held(request.url);
+      await held(request);
       const response = respond(request);
       if (response.kind !== 'response') {
         return response;
       }
-      if (response.status >= 200 && response.status < 300) {
-        await options.files.writeBytes(request.to, response.body);
+      const from = request.resumeFrom ?? 0;
+      const ok = response.status >= 200 && response.status < 300;
+      const body = from > 0 && ok ? response.body.slice(from) : response.body;
+      if (ok && from > 0) {
+        await options.files.appendBytes(request.to, body);
+      } else if (ok) {
+        await options.files.writeBytes(request.to, body);
       }
       return {
         kind: 'response',
-        status: response.status,
+        url: response.url,
+        status: from > 0 && ok ? 206 : response.status,
         headers: response.headers,
-        bytes: response.body.byteLength,
+        bytes: body.byteLength,
       };
     },
     online: async () => online,

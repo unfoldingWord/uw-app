@@ -137,14 +137,18 @@ describe('journal interface (DX-1)', () => {
     const parsed = parseJournalExport(document);
     expect(parsed.ok && parsed.journal.format).toBe(journalFormat);
     expect(
+      parseJournalExport({ format: journalFormat, version: 1, limit: 1, dropped: 0, events: [] }).ok,
+    ).toBe(false);
+    expect(
       parseJournalExport({ format: journalFormat, version: 2, limit: 1, dropped: 0, events: [] }).ok,
     ).toBe(false);
     expect(
       parseJournalExport({
         format: journalFormat,
-        version: 1,
+        version: 2,
         limit: 5,
         dropped: 0,
+        baseline: {},
         events: [
           { seq: 2, type: 'InvitationShown', at: 1, payload: {} },
           { seq: 2, type: 'InvitationShown', at: 1, payload: {} },
@@ -156,8 +160,8 @@ describe('journal interface (DX-1)', () => {
 
 describe('kernel composition', () => {
   it('lists its modules in one place, with the tables it owns', () => {
-    expect(Object.keys(kernelModules)).toEqual(expect.arrayContaining(['telemetry', 'catalog', 'packs']));
-    expect(coreOwns.tables).toEqual(['schema_migrations', 'journal', 'journal_state']);
+    expect(Object.keys(kernelModules)).toEqual(['telemetry', 'catalog', 'packs']);
+    expect(coreOwns.tables).toEqual(['schema_migrations', 'journal', 'journal_state', 'journal_baseline']);
   });
 
   it('gives every table a migration creates exactly one owner, and every directory one owner', () => {
@@ -248,16 +252,17 @@ describe('replay (DX-3)', () => {
   it('refuses a document that is not a journal', async () => {
     expect(await replayJournal(createWorld(), { hello: 'world' })).toEqual({
       ok: false,
-      reason: 'not a unfoldingword-journal document of version 1',
+      reason: 'not a unfoldingword-journal document of version 2',
     });
   });
 
   it('reports where a rebuilt journal diverges from the recorded one', async () => {
     const result = await replayJournal(createWorld(), {
       format: journalFormat,
-      version: 1,
+      version: 2,
       limit: 10,
       dropped: 0,
+      baseline: {},
       events: [
         { seq: 1, type: 'AppOpened', at: 10, payload: { day: '2026-01-05' } },
         { seq: 2, type: 'StoryOpened', at: 20, payload: { story: 4, language: 'qaa' } },

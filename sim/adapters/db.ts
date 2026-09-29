@@ -1,5 +1,5 @@
 import { DatabaseSync, type SQLInputValue } from 'node:sqlite';
-import type { Db, DbSession, Row, SqlValue } from '@lib/ports';
+import type { Db, DbTransaction, DbRow, SqlValue } from '@lib/ports';
 import { portError } from './errors';
 
 export type MemoryDb = Db & {
@@ -10,8 +10,8 @@ export type MemoryDb = Db & {
 
 const writeStatement = /^\s*(insert|update|delete|replace|create|drop|alter)\b/i;
 
-function toRow(value: unknown): Row {
-  return value as Row;
+function toRow(value: unknown): DbRow {
+  return value as DbRow;
 }
 
 function inputs(params: readonly SqlValue[]): SQLInputValue[] {
@@ -29,7 +29,7 @@ export function createMemoryDb(): MemoryDb {
     }
   }
 
-  const session: DbSession = {
+  const session: DbTransaction = {
     exec: async (sql) => {
       guard(sql);
       database.exec(sql);

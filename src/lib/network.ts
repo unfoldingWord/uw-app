@@ -1,4 +1,8 @@
-export const allowedHosts: readonly string[] = Object.freeze(['git.door43.org', 'unfoldingword.org']);
+export const allowedHosts: readonly string[] = Object.freeze([
+  'git.door43.org',
+  'cdn.door43.org',
+  'unfoldingword.org',
+]);
 
 const httpsUrl = /^https:\/\/([a-z0-9.-]+)(?::443)?(?:[/?#]|$)/i;
 

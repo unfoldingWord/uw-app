@@ -15,7 +15,8 @@ import {
 import { archiveUrlOf, refOf, resourceKey, type ReleaseRef } from '../domain/release';
 import type { JournalEntry } from '../journal/entry';
 import type { EventDraft } from '../journal/journal';
-import type { HttpDownloaded, Ports } from '../ports';
+import type { ModulePorts } from '../module';
+import type { HttpDownloaded } from '../ports';
 import { validate } from '../burrito/validate';
 import { checkBurrito, packRows, type CheckedBurrito } from './burrito';
 import type { CatalogChoice, PackPlan, PackSource } from './source';
@@ -51,7 +52,7 @@ class InstallFailure extends Error {
 }
 
 export type InstallerContext = {
-  ports: Ports;
+  ports: ModulePorts;
   emit(draft: EventDraft): Promise<JournalEntry | undefined>;
   installed(): ReadonlyMap<PackId, InstalledPack>;
   commit(pack: InstalledPack): void;
@@ -66,6 +67,8 @@ function downloadProblem(outcome: HttpDownloaded): FailureCode | undefined {
       return 'http.timeout';
     case 'refused':
       return 'http.host-refused';
+    case 'cancelled':
+      return 'http.cancelled';
     case 'response':
       return outcome.status >= 200 && outcome.status < 300 ? undefined : 'http.status';
   }
@@ -76,7 +79,7 @@ function opened(archive: Uint8Array): Opened {
   return read.ok ? { ok: true, files: read.files } : { ok: false, code: 'pack.invalid-burrito' };
 }
 
-export function catalogOffer(ports: Ports, choice: CatalogChoice): Offer {
+export function catalogOffer(ports: ModulePorts, choice: CatalogChoice): Offer {
   return {
     ref: refOf(choice),
     row: choice.row,
@@ -103,7 +106,7 @@ export function catalogOffer(ports: Ports, choice: CatalogChoice): Offer {
   };
 }
 
-async function fileOffer(ports: Ports, path: string): Promise<Resolution> {
+async function fileOffer(ports: ModulePorts, path: string): Promise<Resolution> {
   let archive: Uint8Array;
   try {
     archive = await ports.files.readBytes(path);
@@ -129,7 +132,7 @@ async function fileOffer(ports: Ports, path: string): Promise<Resolution> {
   return { ok: true, resolved: { kind: 'file', offers: [offer], announce: true } };
 }
 
-export async function resolveSource(ports: Ports, source: PackSource): Promise<Resolution> {
+export async function resolveSource(ports: ModulePorts, source: PackSource): Promise<Resolution> {
   switch (source.kind) {
     case 'catalog':
       return {

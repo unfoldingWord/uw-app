@@ -1,17 +1,33 @@
-import { inputOf, replayClassOf, type DomainEvent, type EventType } from './domain/events';
+import {
+  idsOf,
+  inputOf,
+  replayClassOf,
+  type DomainEvent,
+  type EventInput,
+  type EventType,
+} from './domain/events';
+import { failureCodeOf } from './domain/failures';
 import { allowlistedHttp } from './guard';
 import type { JournalEntry, JournalStats } from './journal/entry';
-import type { JournalExport } from './journal/export';
-import { createJournal, journalTables, type EventDraft } from './journal/journal';
+import type { JournalBaseline, JournalExport } from './journal/export';
+import {
+  createJournal,
+  journalTables,
+  type EventDraft,
+  type JournalCheckpoint,
+  type JournalResume,
+} from './journal/journal';
 import { canonical, type JsonValue } from './json';
 import { migrationsTable, runMigrations } from './migrate';
-import type { KernelModule, ModuleInstance, Owns } from './module';
-import type { Migration, Ports } from './ports';
+import type { KernelModule, ModuleInstance, ModulePorts, Owns } from './module';
+import type { Ids, Migration, Ports } from './ports';
+import { allowlistedAudio, scopedDb, scopedFiles, scopedHttp, scopedKv, type Scope } from './scope';
 
 export type KernelOptions = {
   migrations: readonly Migration[];
   journalLimit?: number;
   tailSize?: number;
+  resume?: JournalResume;
 };
 
 export type JournalView = {
@@ -28,7 +44,7 @@ export type DeviceSnapshot = {
 
 export type RedoOutcome = 'redone' | 'appended' | 'skipped' | 'restart' | 'unhandled';
 
-export type KernelCore = {
+export type KernelControls = {
   journal: JournalView;
   start(): Promise<void>;
   snapshot(): DeviceSnapshot;
@@ -41,7 +57,7 @@ export type ModuleSet = Readonly<Record<string, AnyModule>>;
 
 type ApiOf<M> = M extends KernelModule<infer Api> ? Api : never;
 
-export type ComposedKernel<M extends ModuleSet> = { readonly [K in keyof M]: ApiOf<M[K]> } & KernelCore;
+export type ComposedKernel<M extends ModuleSet> = { readonly [K in keyof M]: ApiOf<M[K]> } & KernelControls;
 
 const reservedNames: ReadonlySet<string> = new Set(['journal', 'start', 'snapshot', 'redo']);
 
@@ -72,6 +88,68 @@ function eventOwners(modules: ModuleSet): ReadonlyMap<EventType, string> {
   return owners;
 }
 
+function checkpointOf(modules: ModuleSet): JournalCheckpoint {
+  const folds = Object.entries(modules).flatMap(([name, module]) =>
+    module.checkpoint === undefined ? [] : [{ name, checkpoint: module.checkpoint }],
+  );
+  return {
+    initial: Object.fromEntries(folds.map(({ name, checkpoint }) => [name, checkpoint.initial])),
+    step: (state, event) =>
+      Object.fromEntries(
+        folds.map(({ name, checkpoint }) => [
+          name,
+          checkpoint.step(state[name] ?? checkpoint.initial, event),
+        ]),
+      ),
+  };
+}
+
+type MintLedger = { ids: Ids; announce(input: EventInput): void };
+
+function mintLedger(module: string, ids: Ids): MintLedger {
+  let unannounced: string | undefined;
+  return {
+    ids: {
+      next() {
+        if (unannounced !== undefined) {
+          throw new Error(`${module} minted a second id before an event carried ${unannounced}`);
+        }
+        const id = ids.next();
+        unannounced = id;
+        return id;
+      },
+    },
+    announce(input) {
+      if (unannounced === undefined) {
+        return;
+      }
+      if (!idsOf(input).includes(unannounced)) {
+        throw new Error(`${module} emitted ${input.type} before an event carried the id it minted`);
+      }
+      unannounced = undefined;
+    },
+  };
+}
+
+function modulePorts(ports: Ports, scope: Scope, ids: Ids): ModulePorts {
+  return {
+    clock: { dayOf: (at) => ports.clock.dayOf(at) },
+    ids,
+    files: scopedFiles(scope, ports.files),
+    db: scopedDb(scope, ports.db),
+    kv: scopedKv(scope, ports.kv),
+    http: scopedHttp(scope, allowlistedHttp(ports.http)),
+    transport: ports.transport,
+    audio: allowlistedAudio(ports.audio),
+    shareSheet: ports.shareSheet,
+    locale: ports.locale,
+  };
+}
+
+function isObserverFailure(entry: JournalEntry): boolean {
+  return entry.type === 'Failure' && entry.payload.context.observer !== undefined;
+}
+
 export function composeKernel<M extends ModuleSet>(
   ports: Ports,
   modules: M,
@@ -79,30 +157,71 @@ export function composeKernel<M extends ModuleSet>(
 ): ComposedKernel<M> {
   const owners = eventOwners(modules);
   const instances = new Map<string, ModuleInstance<unknown>>();
+  const checkpoints = new Map(Object.entries(modules).map(([name, module]) => [name, module.checkpoint]));
+
+  async function react(entry: JournalEntry): Promise<void> {
+    const reactions = [...instances.entries()].flatMap(([name, instance]) => {
+      if (instance.observe === undefined) {
+        return [];
+      }
+      try {
+        return [{ name, settled: Promise.resolve(instance.observe(entry)) }];
+      } catch (error) {
+        return [{ name, settled: Promise.reject(error) }];
+      }
+    });
+    const outcomes = await Promise.allSettled(reactions.map((reaction) => reaction.settled));
+    for (const [index, outcome] of outcomes.entries()) {
+      const observer = reactions[index]?.name;
+      if (outcome.status === 'fulfilled' || observer === undefined || isObserverFailure(entry)) {
+        continue;
+      }
+      await journal.append({
+        type: 'Failure',
+        payload: {
+          code: 'kernel.observer-failed',
+          context: { observer, type: entry.type, cause: failureCodeOf(outcome.reason) },
+        },
+      });
+    }
+  }
+
   const journal = createJournal({
     db: ports.db,
     clock: ports.clock,
+    checkpoint: checkpointOf(modules),
     ...(options.journalLimit === undefined ? {} : { limit: options.journalLimit }),
-    onEntry: (entry) => {
-      for (const instance of instances.values()) {
-        instance.observe?.(entry);
-      }
-    },
+    ...(options.resume === undefined ? {} : { resume: options.resume }),
+    onEntry: react,
   });
-  const guardedPorts: Ports = { ...ports, http: allowlistedHttp(ports.http) };
   const tailSize = options.tailSize ?? defaultTailSize;
   let started = false;
 
   for (const [name, module] of Object.entries(modules)) {
+    const ledger = mintLedger(name, ports.ids);
+    const scope: Scope = { module: name, ...module.owns };
     const emit = (draft: EventDraft): Promise<JournalEntry | undefined> =>
       journal.append((at) => {
         const input = typeof draft === 'function' ? draft(at) : draft;
         if (input.type !== 'Failure' && owners.get(input.type) !== name) {
           throw new Error(`${name} emitted ${input.type}, which it does not own`);
         }
+        ledger.announce(input);
         return input;
       });
-    instances.set(name, module.create({ ports: guardedPorts, emit, events: (since) => journal.read(since) }));
+    const baseline = (): JsonValue => {
+      const state: JournalBaseline = journal.baseline();
+      return state[name] ?? checkpoints.get(name)?.initial ?? null;
+    };
+    instances.set(
+      name,
+      module.create({
+        ports: modulePorts(ports, scope, ledger.ids),
+        emit,
+        events: (since) => journal.read(since),
+        baseline,
+      }),
+    );
   }
 
   const view: JournalView = {
@@ -136,7 +255,7 @@ export function composeKernel<M extends ModuleSet>(
     return 'redone';
   }
 
-  const core: KernelCore = {
+  const controls: KernelControls = {
     journal: view,
     async start() {
       if (started) {
@@ -148,7 +267,10 @@ export function composeKernel<M extends ModuleSet>(
       if (!migrated.ok) {
         await journal.append({
           type: 'Failure',
-          payload: { code: 'db.migration-failed', context: { migration: migrated.failed } },
+          payload: {
+            code: 'db.migration-failed',
+            context: migrated.failed === undefined ? {} : { migration: migrated.failed },
+          },
         });
       }
       for (const instance of instances.values()) {
@@ -171,5 +293,5 @@ export function composeKernel<M extends ModuleSet>(
   };
 
   const apis = Object.fromEntries([...instances.entries()].map(([name, instance]) => [name, instance.api]));
-  return Object.freeze({ ...apis, ...core }) as ComposedKernel<M>;
+  return Object.freeze({ ...apis, ...controls }) as ComposedKernel<M>;
 }

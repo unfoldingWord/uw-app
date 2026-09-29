@@ -1,4 +1,4 @@
-import { admittedRows, type Row } from '../burrito/flavors';
+import { admittedRows, type ContractRow } from '../burrito/flavors';
 import { metadataPath, type BurritoFiles } from '../burrito/files';
 import { readProvenance, type BurritoMetadata } from '../burrito/metadata';
 import { validate } from '../burrito/validate';
@@ -8,7 +8,7 @@ import { resourceRows, type ResourceRow } from '../domain/pack';
 import type { Provenance } from '../domain/provenance';
 import type { CatalogChoice } from './source';
 
-export const packRows: readonly Row[] = admittedRows;
+export const packRows: readonly ContractRow[] = admittedRows;
 
 export const unrecordedCommit = 'unrecorded';
 

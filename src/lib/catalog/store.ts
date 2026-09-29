@@ -1,5 +1,5 @@
 import { packKinds, resourceRows, type PackKind, type ResourceRow } from '../domain/pack';
-import type { DbSession, Row, SqlValue } from '../ports';
+import type { DbTransaction, DbRow, SqlValue } from '../ports';
 import type { CatalogRelease } from './types';
 
 export const catalogTables = ['catalog_releases'] as const;
@@ -42,7 +42,7 @@ function valuesOf(release: CatalogRelease): SqlValue[] {
   ];
 }
 
-function textOf(row: Row, column: string): string {
+function textOf(row: DbRow, column: string): string {
   const value = row[column];
   return typeof value === 'string' ? value : '';
 }
@@ -51,7 +51,7 @@ function oneOf<T extends string>(values: readonly T[], value: unknown): T | unde
   return values.find((item) => item === value);
 }
 
-function releaseOf(row: Row): CatalogRelease {
+function releaseOf(row: DbRow): CatalogRelease {
   const bytes = row.bytes;
   return {
     publisher: textOf(row, 'publisher'),
@@ -72,13 +72,13 @@ function releaseOf(row: Row): CatalogRelease {
   };
 }
 
-export async function readCatalogReleases(db: DbSession): Promise<CatalogRelease[]> {
+export async function readCatalogReleases(db: DbTransaction): Promise<CatalogRelease[]> {
   const rows = await db.all(`SELECT ${columns.join(', ')} FROM catalog_releases ORDER BY position`);
   return rows.map(releaseOf);
 }
 
 export async function replaceCatalogReleases(
-  session: DbSession,
+  session: DbTransaction,
   releases: readonly CatalogRelease[],
 ): Promise<void> {
   await session.run('DELETE FROM catalog_releases');

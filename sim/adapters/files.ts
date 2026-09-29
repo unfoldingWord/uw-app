@@ -5,6 +5,7 @@ export type MemoryFiles = Files & {
   setCapacity(bytes: number): void;
   failWrites(fail: boolean): void;
   failRename(targetPrefix: string, times?: number): void;
+  offerExternal(external: string, data: Uint8Array): void;
   tree(): readonly string[];
 };
 
@@ -29,6 +30,7 @@ function within(path: string, directory: string): boolean {
 
 export function createMemoryFiles(options: { capacity?: number } = {}): MemoryFiles {
   const files = new Map<string, Uint8Array>();
+  const external = new Map<string, Uint8Array>();
   const directories = new Set<string>(['']);
   let capacity = options.capacity ?? defaultCapacity;
   let failing = false;
@@ -127,7 +129,25 @@ export function createMemoryFiles(options: { capacity?: number } = {}): MemoryFi
   return {
     readBytes: async (path) => read(path),
     readText: async (path) => new TextDecoder().decode(read(path)),
+    readRange: async (path, offset, length) => {
+      if (!Number.isSafeInteger(offset) || !Number.isSafeInteger(length) || offset < 0 || length < 0) {
+        throw portError('files.io', `${offset}+${length} is not a range of ${path}`);
+      }
+      return read(path).slice(offset, offset + length);
+    },
     writeBytes: async (path, data) => write(path, data),
+    appendBytes: async (path, data) => {
+      const target = normalize(path);
+      const current = files.get(target);
+      if (current === undefined) {
+        write(target, data);
+        return;
+      }
+      const joined = new Uint8Array(current.byteLength + data.byteLength);
+      joined.set(current);
+      joined.set(data, current.byteLength);
+      write(target, joined);
+    },
     writeText: async (path, text) => write(path, new TextEncoder().encode(text)),
     list: async (path) => {
       const target = normalize(path);
@@ -183,7 +203,18 @@ export function createMemoryFiles(options: { capacity?: number } = {}): MemoryFi
       }
       removeTree(target);
     },
+    adopt: async (uri, path) => {
+      const data = external.get(uri);
+      if (data === undefined) {
+        throw portError('files.not-found', `${uri} was not handed to the app`);
+      }
+      write(path, data);
+      return data.byteLength;
+    },
     freeSpace: async () => Math.max(0, capacity - used()),
+    offerExternal: (uri, data) => {
+      external.set(uri, data.slice());
+    },
     setCapacity: (bytes) => {
       capacity = bytes;
     },

@@ -1,5 +1,5 @@
 import { defineModule, ownsNothing } from '../module';
-import { foldDaysOfUse, foldTelemetry, type Telemetry } from './folds';
+import { baselineOf, emptyBaseline, foldFrom, stepBaseline, type Telemetry } from './folds';
 
 export type TelemetryApi = {
   counts(): Telemetry;
@@ -9,14 +9,22 @@ export type TelemetryApi = {
 export const telemetryModule = defineModule<TelemetryApi>({
   events: [],
   owns: ownsNothing,
+  checkpoint: {
+    initial: emptyBaseline,
+    step: (state, event) => stepBaseline(baselineOf(state), event),
+  },
   create(context) {
+    const current = () => foldFrom(baselineOf(context.baseline()), context.events());
     const api: TelemetryApi = {
-      counts: () => foldTelemetry(context.events()),
-      daysOfUse: () => foldDaysOfUse(context.events()),
+      counts: () => current().counts,
+      daysOfUse: () => current().days,
     };
     return {
       api,
-      snapshot: () => ({ counts: api.counts(), daysOfUse: api.daysOfUse() }),
+      snapshot: () => {
+        const { counts, days } = current();
+        return { counts, daysOfUse: days };
+      },
     };
   },
 });
