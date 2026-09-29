@@ -63,6 +63,19 @@ function isModuleOrType(node: ts.Node): boolean {
   );
 }
 
+const lookups: ReadonlySet<string> = new Set(['t', 'plural']);
+
+function isStringKey(node: ts.Node): boolean {
+  const parent = node.parent as ts.Node | undefined;
+  return (
+    parent !== undefined &&
+    ts.isCallExpression(parent) &&
+    parent.arguments[0] === node &&
+    ts.isPropertyAccessExpression(parent.expression) &&
+    lookups.has(parent.expression.name.text)
+  );
+}
+
 function copyPropName(attribute: ts.JsxAttribute): string | undefined {
   const name = attribute.name;
   const text = ts.isIdentifier(name) ? name.text : `${name.namespace.text}:${name.name.text}`;
@@ -101,7 +114,7 @@ export function scanSource(file: string, source: string, rules: ScanRules): Lite
       for (const literal of literals) {
         flag(literal, literalText(literal) ?? '');
       }
-    } else if (rules.prose && !isModuleOrType(node)) {
+    } else if (rules.prose && !isModuleOrType(node) && !isStringKey(node)) {
       const text = literalText(node);
       if (text !== undefined && prose.test(text)) {
         flag(node, text);

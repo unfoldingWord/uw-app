@@ -65,14 +65,41 @@ export type LicenceView = {
   readonly onPhone: readonly LicenceRow[];
 };
 
+export type ImpactStoryView = {
+  readonly slug: string;
+  readonly title: string;
+  readonly body: readonly string[];
+  readonly link: string;
+  readonly overline: string;
+  readonly readMore: string;
+  readonly securityNote: string;
+};
+
 export type AboutService = {
   words(): AboutWords;
   summary(): AboutSummary;
   links(): readonly AboutLink[];
   licence(): LicenceView;
+  story(slug: string): ImpactStoryView | undefined;
+  openStory(slug: string): Promise<ImpactStoryView | undefined>;
 };
 
 const unfoldingWord = 'unfoldingWord';
+
+function storyView(words: AboutWords, story: ImpactStory | undefined): ImpactStoryView | undefined {
+  if (story === undefined) {
+    return undefined;
+  }
+  return {
+    slug: story.slug,
+    title: story.title,
+    body: story.body,
+    link: story.link,
+    overline: words.t('invitation.overline'),
+    readMore: words.t('invitation.readMore'),
+    securityNote: story.securityNote ?? words.t('impact.securityNote'),
+  };
+}
 
 function typeTitle(words: AboutWords, type: ResourceType): string {
   switch (type) {
@@ -121,6 +148,8 @@ export function createAboutService(kernel: Kernel): AboutService {
 
   return {
     words,
+    story: (slug) => storyView(words(), kernel.partners.story(slug)),
+    openStory: async (slug) => storyView(words(), await kernel.partners.open(slug)),
     links: () => linksOf(words()),
     summary() {
       const current = words();

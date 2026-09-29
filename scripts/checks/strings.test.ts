@@ -94,6 +94,21 @@ describe('literal copy scan', () => {
     ]);
   });
 
+  it('reads the key handed to words.t or words.plural as a key, not as copy', () => {
+    const keyed = [
+      'export function Screen({ words, code }: Props) {',
+      "  const title = words.t('session.fallback.title', { language: 'qaa' });",
+      '  const failure = words.t(`failure.${code}`);',
+      "  const count = words.plural('formation.foundations.count', 3);",
+      "  const stray = format('Read it now');",
+      '  return <Line>{title}</Line>;',
+      '}',
+    ].join('\n');
+    expect(scanSource('Screen.tsx', keyed, { prose: true })).toEqual([
+      { file: 'Screen.tsx', line: 5, text: 'Read it now' },
+    ]);
+  });
+
   it('leaves prose outside JSX alone where only JSX is scanned, and ignores module names and ids', () => {
     expect(scanSource('Shared.tsx', screen, { prose: false }).map((finding) => finding.text)).toEqual([
       'Read now',

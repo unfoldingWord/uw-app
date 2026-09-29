@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { languagePackId } from '@lib/domain/pack';
 import { installFromCatalog } from '../install';
 import { scenario } from '../scenario';
+import { servicesOf } from '../services';
 
 export default scenario(
   'FO-5',
@@ -28,7 +29,20 @@ export default scenario(
       english: { state: 'needs-download', language: 'en', pack: 'language:en' },
     });
 
-    await installFromCatalog(device, [languagePackId('en')]);
+    const service = servicesOf(device).formation;
+    device.adapters.http.setOnline(false);
+    assert.deepEqual(
+      await service.download('language:en'),
+      { ok: false, code: 'http.offline' },
+      'offline, the download says why in place',
+    );
+    device.adapters.http.setOnline(true);
+    assert.deepEqual(
+      await service.download('language:en'),
+      { ok: true },
+      'the session offers the English pack in one tap',
+    );
+    assert.equal(service.languageName('en'), 'English');
     const alongside = await formation.session('foundations', 1, 'qab', { englishAlongside: true });
     assert.ok(alongside && alongside.track === 'foundations');
     assert.equal(alongside.story.language, 'qab', 'the story stays in the local language');
