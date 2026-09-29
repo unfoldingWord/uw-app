@@ -14,6 +14,7 @@ import { createTransportBus } from './transport';
 
 const fixtureUrl = 'https://git.door43.org/unfoldingWord/qaa_ult/sb/v1.zip';
 const escapingUrl = 'https://git.door43.org/unfoldingWord/qaa_ult/sb/escape.zip';
+const contractClip = { kind: 'file', path: 'contract/clip.mp3' } as const;
 const fixtureBody = new TextEncoder().encode('a burrito archive of some length');
 
 function memorySubject(index: number): ContractSubject {
@@ -22,6 +23,8 @@ function memorySubject(index: number): ContractSubject {
   const network = createMemoryNetwork();
   network.serve(fixtureUrl, { body: fixtureBody });
   network.serve(escapingUrl, { body: '', redirect: 'https://tracker.example/landing' });
+  const audio = createMemoryAudio({ clock });
+  audio.provide(contractClip, 30_000);
   const ports: Ports = {
     clock,
     ids: createMemoryIds(),
@@ -30,7 +33,7 @@ function memorySubject(index: number): ContractSubject {
     kv: createMemoryKv(),
     http: createMemoryHttp({ network, files }),
     transport: createTransportBus().transport({ platform: 'ios' }),
-    audio: createMemoryAudio({ clock }),
+    audio,
     shareSheet: createMemoryShareSheet(),
     locale: createMemoryLocale(),
   };
@@ -45,6 +48,7 @@ function memorySubject(index: number): ContractSubject {
       return uri;
     },
     http: { url: fixtureUrl, body: fixtureBody, redirectsOffAllowlist: escapingUrl },
+    audio: contractClip,
   };
 }
 

@@ -174,6 +174,7 @@ describe('kernel composition', () => {
       'transfer',
       'share',
       'media',
+      'player',
     ]);
     expect(coreOwns.tables).toEqual(['schema_migrations', 'journal', 'journal_state', 'journal_baseline']);
   });

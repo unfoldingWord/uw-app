@@ -5,6 +5,7 @@ import { mediaModule } from './media/media';
 import type { Ports } from './ports';
 import { catalogModule } from './catalog/catalog';
 import { packsModule } from './packs/packs';
+import { playerModule } from './player/player';
 import { shareModule } from './share/share';
 import { stringsModule } from './strings/strings';
 import { telemetryModule } from './telemetry/telemetry';
@@ -28,6 +29,7 @@ export const kernelModules = {
   transfer: transferModule,
   share: shareModule,
   media: mediaModule,
+  player: playerModule,
 } as const;
 
 export type Kernel = ComposedKernel<typeof kernelModules>;

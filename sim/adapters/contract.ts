@@ -1,6 +1,6 @@
 import { failureCodeOf } from '@lib/domain/failures';
 import { allowlistedHttp } from '@lib/guard';
-import type { Ports } from '@lib/ports';
+import type { AudioSource, Ports } from '@lib/ports';
 
 export type HttpFixture = {
   url: string;
@@ -13,6 +13,7 @@ export type ContractSubject = {
   scratch: string;
   offerExternal(data: Uint8Array): Promise<string>;
   http?: HttpFixture;
+  audio?: AudioSource;
 };
 
 export type ContractCase = {
@@ -353,6 +354,29 @@ const deviceCases: ContractCase[] = [
         'audio.unavailable',
         'missing file',
       );
+    },
+  },
+  {
+    port: 'audio',
+    name: 'loads one source, plays, pauses, seeks within its length and unloads',
+    async run({ ports: { audio }, audio: source }) {
+      if (source === undefined) {
+        return;
+      }
+      const ready = await audio.load(source);
+      same([ready.state, ready.positionMs], ['ready', 0], 'ready at the start once loaded');
+      check(ready.durationMs > 0, 'a loaded source has a length');
+      await audio.play();
+      same(audio.status().state, 'playing', 'playing');
+      await audio.pause();
+      same(audio.status().state, 'paused', 'paused');
+      await audio.seek(ready.durationMs + 60_000);
+      check(audio.status().positionMs <= ready.durationMs, 'a seek past the end stops at the end');
+      await audio.seek(0);
+      same(audio.status().positionMs, 0, 'a seek to the start');
+      await audio.unload();
+      same(audio.status().state, 'idle', 'idle once unloaded');
+      same(await codeOf(audio.seek(0)), 'audio.unavailable', 'seek once unloaded');
     },
   },
   {

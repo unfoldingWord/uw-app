@@ -152,6 +152,10 @@ _Avoid_: mock, stub, implementation (when the seam is the topic)
 The address a screen renders a picture from: a story frame image in a pack or a cached impact story image, given by the kernel's media module for a file on the device. A web address is never loaded as a picture.
 _Avoid_: image URL, picture link, remote image
 
+**Player**:
+The kernel's one audio player. It plays one audio clip at a time, a chapter of an Audio Pack or a story's audio, from its file on the device or from an allowlisted stream, and reports idle, loading, playing, paused, ended or failed with a code. Only a failure enters the journal; the position never does.
+_Avoid_: media player, audio engine, track
+
 **Event**:
 A typed record of something that happened in the kernel. Modules communicate and the journal is written in events.
 _Avoid_: log line, message, action
