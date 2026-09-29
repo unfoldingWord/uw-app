@@ -126,7 +126,7 @@ const internalNames = /\b(ULT|UST|GLT|GST|RC|Resource Container)\b/u;
 export function copyFindings(locale: string, key: string, text: string): string[] {
   const where = `${locale}: ${key}`;
   const findings: string[] = [];
-  if (/[!¡]/u.test(text)) {
+  if (/[!¡！]/u.test(text)) {
     findings.push(`${where} has an exclamation mark`);
   }
   if (emoji.test(text)) {
