@@ -1,12 +1,31 @@
 import type { LocalizedText } from '../burrito/metadata';
 import type { CorpusKind, Reading, TextChoice } from './types';
 
-export const literalTextCodes: readonly string[] = ['ult', 'ulb', 'glt', 'rlob', 'irv', 'ayt'];
+export const literalTextCodes: readonly string[] = [
+  'ult',
+  'ulb',
+  'glt',
+  'tpl',
+  'rlob',
+  'irv',
+  'ayt',
+  'avd',
+  'bsb',
+];
 
-export const simplifiedTextCodes: readonly string[] = ['ust', 'udb', 'gst', 'rsob', 'ueb'];
+export const simplifiedTextCodes: readonly string[] = [
+  'ust',
+  'udb',
+  'gst',
+  'rsob',
+  'ueb',
+  'arst',
+  'nav',
+  't4t',
+];
 
 const simplifiedNames =
-  /simplif|dynamic|easy|plain|everyday|sencill|facile|fácil|упрощ|простой|sederhana|mudah|dễ hiểu|giản|简|簡|आसान|সরল|آسان|ساده|مبسط|rahisi|eenvoudig/iu;
+  /simplif|\bsimple\b|dynamic|easy|plain|everyday|sencill|facile|fácil|упрощ|простой|sederhana|mudah|dễ hiểu|giản|简|簡|आसान|সরল|آسان|ساده|مبسط|rahisi|eenvoudig/iu;
 
 export type TextIdentification = { readonly abbreviation: LocalizedText; readonly name: LocalizedText };
 

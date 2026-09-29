@@ -41,6 +41,26 @@ describe('literal or simplified, from the resource and its burrito (ST-3)', () =
   });
 });
 
+describe('the Bible texts in the tc-ready catalog (CI run 36618141715)', () => {
+  it.each([
+    ['ar_avd', 'ar', {}, 'literal'],
+    ['ar_arst', 'ar', {}, 'simplified'],
+    ['ar_nav', 'ar', {}, 'simplified'],
+    ['en_bsb', 'en', {}, 'literal'],
+    ['en_t4t', 'en', {}, 'simplified'],
+    ['es-419_tpl', 'es-419', { en: 'TPL' }, 'literal'],
+    ['es-419_xyz', 'es-419', { en: 'GST' }, 'simplified'],
+  ] as const)('%s (%s) reads as expected', (resource, language, abbreviation, reading) => {
+    expect(readingOfText(resource, language, { abbreviation, name: {} })).toBe(reading);
+  });
+
+  it('reads "Texto Puente Simple" by its name as simplified', () => {
+    expect(
+      readingOfText('xx_bible', 'es-419', { abbreviation: {}, name: { en: 'Texto Puente Simple' } }),
+    ).toBe('simplified');
+  });
+});
+
 describe('study helps, apart from translation helps', () => {
   it.each([
     ['en_sn', 'en', true],
