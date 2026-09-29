@@ -64,7 +64,9 @@ describe('events (DX-1 nothing identifies the leader)', () => {
       Object.values(eventSchemas[type].payload as Readonly<Record<string, unknown>>).flatMap((spec) =>
         typeof spec === 'object' && spec !== null && 'list' in spec
           ? Object.values(spec.list as Readonly<Record<string, unknown>>)
-          : [spec],
+          : typeof spec === 'object' && spec !== null && 'optional' in spec
+            ? [spec.optional]
+            : [spec],
       ),
     );
     for (const spec of scalarSpecs) {
@@ -174,6 +176,20 @@ describe('events (DX-1 nothing identifies the leader)', () => {
     expect(searchKinds).toContain('fulltext');
     expect(shareKinds).toContain('journal');
     expect(bookmarkTargets).toEqual(['passage', 'article', 'story']);
+  });
+
+  it('takes an optional literal only from its list (a Training position has no movement)', () => {
+    const position = { group: 'id-000001', track: 'training', session: 2 };
+    expect(checkEvent({ type: 'PositionChanged', at: 1, payload: position }).ok).toBe(true);
+    expect(
+      checkEvent({ type: 'PositionChanged', at: 1, payload: { ...position, movement: 'journal' } }).ok,
+    ).toBe(true);
+    expect(
+      checkEvent({ type: 'PositionChanged', at: 1, payload: { ...position, movement: 'drafting' } }).ok,
+    ).toBe(false);
+    expect(
+      checkEvent({ type: 'PositionChanged', at: 1, payload: { ...position, movement: 'Tuesday group' } }).ok,
+    ).toBe(false);
   });
 
   it('checks every item of a list field against its record, and bounds the list', () => {

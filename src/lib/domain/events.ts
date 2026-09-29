@@ -6,7 +6,9 @@ export const replayClasses = ['redo', 'follows', 'verbatim'] as const;
 
 export type ReplayClass = (typeof replayClasses)[number];
 
-type ScalarSpec = FieldKind | `${FieldKind}?` | readonly string[];
+type OptionalLiterals = { readonly optional: readonly string[] };
+
+type ScalarSpec = FieldKind | `${FieldKind}?` | readonly string[] | OptionalLiterals;
 
 type ListSpec = { readonly list: Readonly<Record<string, ScalarSpec>>; readonly max: number };
 
@@ -34,16 +36,15 @@ function failureRefinement(payload: PayloadRecord): string | undefined {
 
 export const tracks = ['foundations', 'training', 'topics'] as const;
 
-export const movements = [
+export const sessionMovements = [
   'observation',
   'translation',
   'discourse',
   'theological',
   'journal',
-  'drafting',
-  'checking',
-  'conclusion',
 ] as const;
+
+export const movements = [...sessionMovements, 'drafting', 'checking', 'conclusion'] as const;
 
 export const searchKinds = ['reference', 'title', 'fulltext'] as const;
 
@@ -125,6 +126,12 @@ export const eventSchemas = {
   },
   SessionCompleted: { replay: 'follows', payload: { group: 'id', track: tracks, session: 'count' } },
   SessionNoteSaved: { replay: 'redo', payload: { group: 'id', track: tracks, session: 'count' } },
+  GroupActivated: { replay: 'redo', payload: { group: 'id' } },
+  PositionChanged: {
+    replay: 'redo',
+    payload: { group: 'id', track: tracks, session: 'count', movement: { optional: sessionMovements } },
+  },
+  LessonCompleted: { replay: 'redo', payload: { group: 'id', session: 'count' } },
   TransferOffered: { replay: 'verbatim', payload: { transfer: 'id', resources: 'count', bytes: 'bytes' } },
   TransferAccepted: { replay: 'verbatim', payload: { transfer: 'id' } },
   TransferProgressed: { replay: 'verbatim', payload: { transfer: 'id', bytes: 'bytes', total: 'bytes' } },
@@ -161,17 +168,21 @@ export type EventType = keyof Schemas;
 
 type ScalarOf<S> = S extends readonly (infer L)[]
   ? L
-  : S extends `${infer K}?`
-    ? K extends FieldKind
-      ? FieldTypes[K]
-      : never
-    : S extends FieldKind
-      ? FieldTypes[S]
-      : never;
+  : S extends { readonly optional: readonly (infer O)[] }
+    ? O
+    : S extends `${infer K}?`
+      ? K extends FieldKind
+        ? FieldTypes[K]
+        : never
+      : S extends FieldKind
+        ? FieldTypes[S]
+        : never;
 
-type RequiredFields<P> = { [K in keyof P as P[K] extends `${string}?` ? never : K]: TypeOf<P[K]> };
+type Optional = `${string}?` | OptionalLiterals;
 
-type OptionalFields<P> = { [K in keyof P as P[K] extends `${string}?` ? K : never]?: TypeOf<P[K]> };
+type RequiredFields<P> = { [K in keyof P as P[K] extends Optional ? never : K]: TypeOf<P[K]> };
+
+type OptionalFields<P> = { [K in keyof P as P[K] extends Optional ? K : never]?: TypeOf<P[K]> };
 
 type Flatten<T> = { readonly [K in keyof T]: T[K] };
 
@@ -213,6 +224,10 @@ function isListSpec(spec: FieldSpec): spec is ListSpec {
   return typeof spec === 'object' && 'list' in spec;
 }
 
+function isOptionalLiterals(spec: FieldSpec): spec is OptionalLiterals {
+  return typeof spec === 'object' && 'optional' in spec;
+}
+
 function recordProblem(specs: Readonly<Record<string, FieldSpec>>, value: unknown): string | undefined {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     return '';
@@ -232,6 +247,9 @@ function fieldProblem(spec: FieldSpec, value: unknown): boolean {
       value.length > spec.max ||
       value.some((item) => recordProblem(spec.list, item) !== undefined)
     );
+  }
+  if (isOptionalLiterals(spec)) {
+    return value !== undefined && !spec.optional.includes(value as string);
   }
   if (typeof spec !== 'string') {
     return !spec.includes(value as string);
