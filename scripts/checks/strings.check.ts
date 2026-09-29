@@ -56,12 +56,16 @@ function englishKeyOf(text: string): string | undefined {
 }
 
 function literalFindings(): { findings: string[]; files: number } {
+  const tableKeys: ReadonlySet<string> = new Set(Object.keys(tables.en));
   const findings: string[] = [];
   let files = 0;
   for (const root of scannedRoots) {
     for (const path of filesUnder(root.directory)) {
       files += 1;
-      const found = scanSource(path, readFileSync(join(repositoryRoot, path), 'utf8'), root.rules(path));
+      const found = scanSource(path, readFileSync(join(repositoryRoot, path), 'utf8'), {
+        ...root.rules(path),
+        keys: tableKeys,
+      });
       for (const finding of found) {
         const key = englishKeyOf(finding.text);
         const advice = key === undefined ? 'add it to src/lib/strings' : `use ${key}`;

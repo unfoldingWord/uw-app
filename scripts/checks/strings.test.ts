@@ -106,4 +106,16 @@ describe('literal copy scan', () => {
       }),
     ).toEqual([]);
   });
+
+  it('reads a string table key as a key, not as copy, where the table is known', () => {
+    const keyed = [
+      "const tabs = { notes: 'study.helps.notes' } as const;",
+      "const label = words.t(open ? 'study.helps.hideResponse' : 'study.helps.showResponse');",
+      "const other = 'not.a key';",
+    ].join('\n');
+    const keys = new Set(['study.helps.notes', 'study.helps.hideResponse', 'study.helps.showResponse']);
+    expect(scanSource('Keyed.tsx', keyed, { prose: true, keys }).map((finding) => finding.text)).toEqual([
+      'not.a key',
+    ]);
+  });
 });
