@@ -3,14 +3,26 @@ import { isProvenance, type Provenance } from '../domain/provenance';
 import type { Db, DbTransaction, DbRow } from '../ports';
 import type { CorpusKind, Direction, IndexStatus, TitleKind } from './types';
 
-export const fullTextTable = 'corpus_fulltext';
+export const tokenizers = ['words', 'trigram'] as const;
+
+export type Tokenizer = (typeof tokenizers)[number];
+
+export const fullTextTables: Readonly<Record<Tokenizer, string>> = {
+  words: 'corpus_fulltext',
+  trigram: 'corpus_fulltext_trigram',
+};
+
+const shadowTables = ['data', 'idx', 'content', 'docsize', 'config'];
 
 export const corpusTables: readonly string[] = [
   'corpus_burritos',
   'corpus_titles',
   'corpus_indexes',
-  fullTextTable,
-  ...['data', 'idx', 'content', 'docsize', 'config'].map((shadow) => `${fullTextTable}_${shadow}`),
+  'corpus_index_wanted',
+  ...Object.values(fullTextTables).flatMap((table) => [
+    table,
+    ...shadowTables.map((shadow) => `${table}_${shadow}`),
+  ]),
 ];
 
 export type Entry = {
@@ -34,7 +46,11 @@ export type TitleRow = {
   readonly title: string;
 };
 
-export type IndexRow = IndexStatus & { readonly language: string };
+export type IndexRow = IndexStatus & {
+  readonly language: string;
+  readonly tokenizer: Tokenizer;
+  readonly generation: number;
+};
 
 function text(row: DbRow, column: string): string {
   const value = row[column];
@@ -94,13 +110,29 @@ export async function loadTitles(db: Db): Promise<TitleRow[]> {
 }
 
 export async function loadIndexes(db: Db): Promise<IndexRow[]> {
-  const rows = await db.all('SELECT language, entries, bytes FROM corpus_indexes ORDER BY language');
+  const rows = await db.all(
+    'SELECT language, entries, bytes, tokenizer, generation FROM corpus_indexes ORDER BY language',
+  );
   return rows.map((row) => ({
     language: text(row, 'language'),
     built: true,
     entries: count(row, 'entries'),
     bytes: count(row, 'bytes'),
+    tokenizer: tokenizers.find((item) => item === text(row, 'tokenizer')) ?? 'words',
+    generation: count(row, 'generation'),
   }));
+}
+
+export async function loadWanted(db: Db): Promise<string[]> {
+  const rows = await db.all('SELECT language FROM corpus_index_wanted ORDER BY language');
+  return rows.map((row) => text(row, 'language'));
+}
+
+export async function setWanted(session: DbTransaction, language: string, wanted: boolean): Promise<void> {
+  await session.run('DELETE FROM corpus_index_wanted WHERE language = ?', [language]);
+  if (wanted) {
+    await session.run('INSERT INTO corpus_index_wanted (language) VALUES (?)', [language]);
+  }
 }
 
 export async function removeRoot(session: DbTransaction, root: string): Promise<void> {
@@ -138,6 +170,8 @@ export async function saveEntry(
 }
 
 export async function clearIndex(session: DbTransaction, language: string): Promise<void> {
-  await session.run(`DELETE FROM ${fullTextTable} WHERE language = ?`, [language]);
+  for (const table of Object.values(fullTextTables)) {
+    await session.run(`DELETE FROM ${table} WHERE language = ?`, [language]);
+  }
   await session.run('DELETE FROM corpus_indexes WHERE language = ?', [language]);
 }

@@ -2,7 +2,8 @@ import { failureCodeOf } from '../domain/failures';
 import { formatReference, type Reference } from '../domain/reference';
 import type { JsonValue } from '../json';
 import { defineModule } from '../module';
-import { buildIndex, estimateIndex, searchIndex } from './fulltext';
+import { estimateIndex, indexedKinds, searchIndex } from './fulltext';
+import { createIndexing } from './indexing';
 import { analyze, type Analysis } from './ingest';
 import { createLibrary, type Library } from './library';
 import { contentsOf } from './contents';
@@ -13,16 +14,7 @@ import { canonical, referenceQuery, titleHits } from './search';
 import { openBurrito } from './source';
 import { readInstalledPacks } from '../packs/store';
 import type { InstalledPack } from '../packs/types';
-import {
-  clearIndex,
-  corpusTables,
-  type Entry,
-  loadEntries,
-  loadIndexes,
-  loadTitles,
-  removeRoot,
-  saveEntry,
-} from './tables';
+import { corpusTables, loadEntries, loadTitles, removeRoot, saveEntry, type Entry } from './tables';
 import type {
   Article,
   Contents,
@@ -53,8 +45,10 @@ export type CorpusApi = {
   movementStories(language: string): Promise<readonly number[]>;
   search(query: string, language: string): Promise<SearchResults>;
   index(language: string): IndexStatus;
+  indexWanted(language: string): boolean;
   indexCost(language: string): Promise<IndexCost>;
   reindex(language: string): Promise<IndexStatus>;
+  dropIndex(language: string): Promise<void>;
   fullText(query: string, language: string): Promise<FullTextHit[]>;
 };
 
@@ -125,11 +119,21 @@ function unreadable(root: string): Error {
 }
 
 export const corpusModule = defineModule<CorpusApi>({
-  events: ['PassageOpened', 'ArticleOpened', 'StoryOpened', 'SearchRun', 'IndexStarted', 'IndexBuilt'],
+  events: [
+    'PassageOpened',
+    'ArticleOpened',
+    'StoryOpened',
+    'SearchRun',
+    'IndexStarted',
+    'IndexBuilt',
+    'IndexDropped',
+  ],
   owns: { tables: corpusTables, directories: [], keys: [] },
   create(context) {
     const { files, db } = context.ports;
     const library = createLibrary(files);
+    const indexing = createIndexing({ library, db, emit: context.emit });
+    const reading = new Set<Promise<unknown>>();
     let work: Promise<unknown> = Promise.resolve();
 
     const serial = <T>(task: () => Promise<T>): Promise<T> => {
@@ -137,19 +141,6 @@ export const corpusModule = defineModule<CorpusApi>({
       work = result.catch(() => undefined);
       return result;
     };
-
-    const settled = (): Promise<unknown> => work;
-
-    const forgetIndex = async (languages: readonly string[]): Promise<void> => {
-      for (const language of new Set(languages)) {
-        if (library.index(language).built) {
-          await db.transaction((session) => clearIndex(session, language));
-          library.setIndex({ language, built: false });
-        }
-      }
-    };
-
-    const reading = new Set<Promise<unknown>>();
 
     const read = <T>(task: () => Promise<T>): Promise<T> => {
       const running = task();
@@ -169,6 +160,9 @@ export const corpusModule = defineModule<CorpusApi>({
     const entriesOf = (pack: string): readonly Entry[] =>
       library.all().filter((entry) => entry.pack === pack);
 
+    const indexedLanguages = (entries: readonly Entry[]): string[] =>
+      entries.filter((entry) => indexedKinds.includes(entry.kind)).map((entry) => entry.language);
+
     const dropPack = async (pack: string): Promise<void> => {
       const entries = entriesOf(pack);
       await readsSettled();
@@ -179,7 +173,7 @@ export const corpusModule = defineModule<CorpusApi>({
       });
       library.remove(entries.map((entry) => entry.root));
       await readsSettled();
-      await forgetIndex(entries.map((entry) => entry.language));
+      await indexing.refresh(indexedLanguages(entries));
     };
 
     const analyses = async (source: CorpusSource, known: ReadonlySet<string>): Promise<Analysis[]> => {
@@ -216,7 +210,7 @@ export const corpusModule = defineModule<CorpusApi>({
         found.flatMap((analysis) => analysis.titles),
       );
       await readsSettled();
-      await forgetIndex([...gone, ...found.map((analysis) => analysis.entry)].map((entry) => entry.language));
+      await indexing.refresh(indexedLanguages([...gone, ...found.map((analysis) => analysis.entry)]));
     };
 
     const ingestNow = async (source: CorpusSource): Promise<void> => {
@@ -248,9 +242,9 @@ export const corpusModule = defineModule<CorpusApi>({
       } catch {
         return;
       }
-      const wanted = new Map(installed.map((pack) => [pack.pack, pack]));
+      const present = new Set(installed.map((pack) => pack.pack));
       for (const pack of new Set(library.all().map((entry) => entry.pack))) {
-        if (!wanted.has(pack)) {
+        if (!present.has(pack)) {
           await dropPack(pack);
         }
       }
@@ -264,27 +258,12 @@ export const corpusModule = defineModule<CorpusApi>({
       }
     };
 
-    const reindex = (language: string): Promise<IndexStatus> =>
-      serial(async () => {
-        await context.emit({ type: 'IndexStarted', payload: { language } });
-        const row = await buildIndex(library, db, language);
-        library.setIndex(row);
-        await context.emit({
-          type: 'IndexBuilt',
-          payload: { language, entries: row.entries, bytes: row.bytes },
-        });
-        return library.index(language);
-      });
-
     const api: CorpusApi = {
       ingest,
       drop: (pack) => serial(() => dropPack(pack)),
       languages: () => contentLanguages(library),
       summary: (language) => summarize(library, language),
-      contents: (language) =>
-        read(async () => {
-          return contentsOf(library, language);
-        }),
+      contents: (language) => read(() => contentsOf(library, language)),
       passage: (reference, options) =>
         read(async () => {
           const passage = await assemblePassage(library, reference, options);
@@ -312,10 +291,7 @@ export const corpusModule = defineModule<CorpusApi>({
           }
           return story;
         }),
-      movements: (story, language) =>
-        read(async () => {
-          return assembleMovements(library, story, language);
-        }),
+      movements: (story, language) => read(() => assembleMovements(library, story, language)),
       movementStories: (language) =>
         read(async () => {
           const [entry] = library.of(language, ['movements']);
@@ -340,17 +316,19 @@ export const corpusModule = defineModule<CorpusApi>({
           return { titles };
         }),
       index: (language) => library.index(language),
-      indexCost: async (language) => {
-        await settled();
-        return estimateIndex(library, language);
-      },
-      reindex,
-      fullText: async (query, language) => {
-        await settled();
-        const hits = await searchIndex(library, db, query, language);
-        await context.emit({ type: 'SearchRun', payload: { kind: 'fulltext', language, hits: hits.length } });
-        return hits;
-      },
+      indexWanted: (language) => indexing.wanted(language),
+      indexCost: async (language) => estimateIndex(library, language),
+      reindex: (language) => indexing.reindex(language),
+      dropIndex: (language) => indexing.drop(language),
+      fullText: (query, language) =>
+        read(async () => {
+          const hits = await searchIndex(library, db, query, language);
+          await context.emit({
+            type: 'SearchRun',
+            payload: { kind: 'fulltext', language, hits: hits.length },
+          });
+          return hits;
+        }),
     };
 
     return {
@@ -358,9 +336,7 @@ export const corpusModule = defineModule<CorpusApi>({
       async start() {
         const entries = await loadEntries(db);
         library.put(entries, await loadTitles(db));
-        for (const row of await loadIndexes(db)) {
-          library.setIndex(row);
-        }
+        await indexing.start();
         await reconcile();
       },
       observe(entry) {
@@ -383,7 +359,10 @@ export const corpusModule = defineModule<CorpusApi>({
       },
       redo: {
         IndexStarted: async (event) => {
-          await reindex(event.payload.language);
+          await indexing.reindex(event.payload.language);
+        },
+        IndexDropped: async (event) => {
+          await indexing.drop(event.payload.language);
         },
       },
     };

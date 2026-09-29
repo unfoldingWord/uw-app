@@ -116,6 +116,7 @@ export const eventSchemas = {
   SearchRun: { replay: 'verbatim', payload: { kind: searchKinds, language: 'language', hits: 'count' } },
   IndexStarted: { replay: 'redo', payload: { language: 'language' } },
   IndexBuilt: { replay: 'follows', payload: { language: 'language', entries: 'count', bytes: 'bytes' } },
+  IndexDropped: { replay: 'redo', payload: { language: 'language' } },
   GroupCreated: { replay: 'redo', payload: { group: 'id' } },
   GroupRenamed: { replay: 'redo', payload: { group: 'id' } },
   GroupDeleted: { replay: 'redo', payload: { group: 'id' } },

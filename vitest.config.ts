@@ -23,6 +23,7 @@ export default defineConfig({
   resolve: { alias },
   test: {
     environment: 'node',
+    execArgv: ['--expose-gc'],
     include: ['src/**/*.test.{ts,tsx}', 'sim/**/*.test.ts', 'scripts/**/*.test.ts', 'tests/**/*.test.ts'],
   },
 });

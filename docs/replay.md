@@ -55,7 +55,11 @@ Every event type is a row in `eventSchemas` in `src/lib/domain/events.ts`. The r
    `Failure` may be emitted by any module. `owns` lists its tables, directories and preference keys.
 2. **A `redo` command emits its root event first**, before anything that can fail, and then only `follows`
    events. A command that can fail before it has a result has a started event (`PackInstallStarted`,
-   `CatalogRefreshStarted`, `IndexStarted`) as its root.
+   `CatalogRefreshStarted`, `IndexStarted`) as its root. Work a module does on its own in reaction to an
+   event is part of that reaction and emits only `follows` events: when a pack with text arrives or leaves
+   for a language whose full-text index is wanted, Corpus rebuilds the index inside its `PackInstalled` or
+   `PackRemoved` reaction and emits `IndexBuilt` with no `IndexStarted`, so the redone install emits it again
+   at the same place in the journal.
 3. **The redo handler uses only the recorded payload.** If a command needs a value that the journal may not
    hold, such as text a leader typed, the redo supplies a neutral stand-in and the snapshot must not show the
    difference. This is why a snapshot shows that a first name is set, never the name.

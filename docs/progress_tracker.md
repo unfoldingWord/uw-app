@@ -3,6 +3,50 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 F2 fixes from review 2: Corpus memory and full-text search
+
+Node v22.22.2 (SQLite 3.51.2 in `node:sqlite`), in Node through Vitest and the sim. expo-sqlite bundles
+SQLite 3.50.3 (`node_modules/expo-sqlite/vendor/sqlite3/sqlite3.h`), and 3.49.1 in its SQLCipher build;
+the trigram tokenizer needs 3.34 and its `remove_diacritics` option 3.45, so both qualify. Not run on a
+phone.
+
+| Test | Red | Green |
+|---|---|---|
+| `sim/corpus-memory.test.ts` (vitest now runs with `--expose-gc`): a 22 MB aligned text of eight books, heap after `gc()` | `opening 8 books kept 49 MB against 8 MB for one` (limit 4 times one book) | 8 MB for one book, 18 MB for all eight, 18 MB after building the index |
+| ST-9 extended: `indexWanted`, `dropIndex`, the cost read from nothing, a passage opening while the index builds, an audio pack leaving the index alone, a text update rebuilding it with `IndexBuilt` only, a removal keeping the wish and a reinstall building again, and Chinese words of two, three and four characters found mid-sentence | `corpus.indexWanted is not a function` | pass |
+| `src/lib/corpus/source.test.ts`: `tokenizerFor` picks trigrams for `zh`, `zh-tw` and text with almost no spaces | no export | pass |
+
+The ordering assertion in ST-9 (`IndexStarted`, `PassageOpened`, `IndexBuilt`) was not run against the old
+code; that the old code put `PassageOpened` after `IndexBuilt` (reads waited on the queue the build ran in)
+is read from the code.
+
+Decisions:
+
+- Parse caches: book-scoped values (a USFM book, a book's notes, word links or questions) live in one LRU
+  of at most 4 entries and 32 MB of source bytes (always keeping the newest); everything else in an LRU of
+  256. Inference, not measured on a real pack: at the review probe's 3.5 heap bytes per aligned USFM byte
+  (47 MB for a 13.4 MB Psalms), the book cache is bounded near 110 MB, and a Psalms passage with its helps
+  (roughly 18 MB of source, estimated) stays cached whole. Titles by language and the title index for links are memoized and rebuilt on change.
+- The index is built book by book, parsed outside the caches, and written in batches of 100 rows, each
+  its own transaction with one multi-row insert, so the platform database lock is released between
+  batches. Builds run on their own queue; reads never wait for them.
+- Each language's index has a generation. A build writes a new generation beside the old one, then in one
+  transaction removes every other generation and records the new one, so search never sees a half-built
+  index, and a crash mid-build leaves the old one (the stray rows go at the next build).
+- Two FTS5 tables: `corpus_fulltext` (`unicode61 remove_diacritics 2`) and `corpus_fulltext_trigram`
+  (`trigram remove_diacritics 1`). A language is indexed by trigrams when its base code is one of a list of
+  languages written without spaces (Chinese varieties, Japanese, Thai, Lao, Khmer, Burmese, Tibetan,
+  Dzongkha, Yi, Shan, Tai Dam), or when the first hundred entries hold fewer than one space per fifty
+  letters. A query term shorter than three characters in a trigram index is matched with `LIKE` (a scan
+  of that language's rows); longer terms go through `MATCH`.
+- The wish for an index is a fact Corpus keeps: `corpus_index_wanted`, set by `reindex` and cleared by
+  `dropIndex` (event `IndexDropped`, redo). `indexWanted(language)` exposes it. Migration
+  `0101-corpus-fulltext` drops the old index (its table had no generation column) and keeps the wish, so
+  an index built before this change is rebuilt on the next text install or `reindex`, not on start.
+- The storage cost is estimated from the byte sizes Corpus already holds: verses from the books in scope
+  (26 a chapter) capped by bytes over 120, text capped at 400 bytes a verse, times 3 for words or 6 for
+  trigrams, plus 96 bytes an entry. The fixture's built index stayed under the estimate.
+
 ## 2026-09-29 F2 fixes from review 2: Packs installs by streaming, one directory per install
 
 Node v22.22.2, in Node through Vitest and the sim; nothing ran against expo-file-system.
