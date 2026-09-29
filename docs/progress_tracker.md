@@ -133,6 +133,56 @@ scenario, 1 with a test only, 38 unproven`; `contract: 20 fixture burritos, 0 fa
   CONTEXT.md word. The architecture doc needs a human edit.
 - Device discovery by reserved filename (stores, services, migrations) will need Metro's `require.context`
   in `src/platform`, which the static-import lint rule leaves open there; not yet written.
+## 2026-09-29 T7a strings
+
+Node v22.22.2 (ICU 78.2). Everything below ran in Node through Vitest and `npm run checks`; nothing ran on a
+phone, and no screen exists yet to render a string.
+
+### The strings check, observed red once
+
+One throwaway run broke each rule at once: `common.close` deleted from `es-419.ts`, `{language}` renamed
+`{idioma}` there, the `many` form of `home.download.ready` removed, `state.upToDate` in English rewritten as
+`Everything is up to date — unfoldingword & more!`, and a throwaway `src/features/red/screens/RedScreen.tsx`
+holding JSX text, a literal `accessibilityLabel` and a prose constant. `npm run checks` printed:
+
+```
+FAIL     strings: Every locale lists every key, the copy follows the voice rules, and no literal copy in app/, src/features/ or src/shared/ bypasses the string table
+         en: state.upToDate has an exclamation mark
+         en: state.upToDate has an em dash
+         en: state.upToDate writes unfoldingword; the name is unfoldingWord
+         en: state.upToDate uses &; spell out and
+         es-419: common.close is missing; write a translation or null
+         es-419: state.notDownloaded.action uses {idioma}, which English does not
+         es-419: home.download.ready needs the plural forms many
+         src/features/red/screens/RedScreen.tsx:2 has the literal "Choose your language"; use onboarding.choose
+         src/features/red/screens/RedScreen.tsx:2 has the literal "Try this now"; add it to src/lib/strings
+         src/features/red/screens/RedScreen.tsx:4 has the literal "Continue in English"; use onboarding.english
+```
+
+The first version of the scan crashed on that run (`node.parent` is undefined on the source file); fixed before
+the run above. The throwaways were reverted and the check returned
+`pass strings: 402 keys in 16 locales (... every locale 402/402); 33 screen and shared files hold no literal copy`.
+A missing failure-code string is refused by the type of `src/lib/strings/en/failures.ts` before the check runs.
+
+Tests at the interface were observed red by two throwaway edits, reverted: the English fallback removed from
+`t` (`expected 'nav.study' to be 'Study'`) and `es` mapped to `en` in `resolveLocale`
+(`expected 'en' to be 'es-419'`).
+
+`npm run verify` then returned green (exit 0): 24 test files, 255 tests; `5 checks, 3 pending, none failed`;
+`sim: 12 scenarios, 12 passed, 0 failed`; `trace: 51 Must requirements, 13 proven, 38 unproven`;
+`contract: 20 fixture burritos, 0 failed` (live skipped, offline).
+
+### Not verified
+
+- All fifteen translations are machine-authored and unreviewed; `docs/strings-review.md` lists what needs a
+  native speaker. Complete means every key has a value, not that the value is right.
+- Plural selection uses `Intl.PluralRules`. Hermes' documented Intl coverage does not list `PluralRules`
+  (inference from its documentation, not run on a device); if it is absent on the phone, the platform layer
+  must install a polyfill such as `@formatjs/intl-pluralrules` before the kernel starts, or `plural` throws.
+- The check's plural categories come from Node's ICU; a different ICU on a device could select a category the
+  table does not carry, in which case `plural` uses the `other` form.
+- No RTL layout, Nastaliq line height or Burmese shaping was rendered.
+- No screen calls the table yet, so which keys are unused is not checked.
 
 ## 2026-09-29 T4 catalog and packs
 

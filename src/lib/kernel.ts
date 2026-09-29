@@ -3,6 +3,7 @@ import { corpusModule } from './corpus/corpus';
 import type { Ports } from './ports';
 import { catalogModule } from './catalog/catalog';
 import { packsModule } from './packs/packs';
+import { stringsModule } from './strings/strings';
 import { telemetryModule } from './telemetry/telemetry';
 
 export const kernelModules = {
@@ -10,6 +11,7 @@ export const kernelModules = {
   catalog: catalogModule,
   packs: packsModule,
   corpus: corpusModule,
+  strings: stringsModule,
 } as const;
 
 export type Kernel = ComposedKernel<typeof kernelModules>;
