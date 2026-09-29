@@ -26,9 +26,6 @@
     "bundle": "tsx scripts/bundle.ts"
   },
   "dependencies": {
-    "@formatjs/intl-getcanonicallocales": "^3.2.12",
-    "@formatjs/intl-locale": "^5.3.12",
-    "@formatjs/intl-pluralrules": "^6.3.15",
     "@noble/hashes": "^2.4.0",
     "expo": "~57.0.26",
     "expo-audio": "~57.0.5",

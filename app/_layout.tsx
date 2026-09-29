@@ -1,4 +1,3 @@
-import '@platform/intl';
 import Stack from 'expo-router/stack';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useColorScheme } from 'react-native';
