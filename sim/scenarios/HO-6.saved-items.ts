@@ -4,7 +4,7 @@ import { servicesOf } from '../services';
 
 export default scenario(
   'HO-6',
-  'Home lists saved passages, articles and stories, newest first, with what kind each is',
+  'Home lists saved passages, articles and stories, newest first, with what kind each is, and each opens where it was saved',
   async (world) => {
     const phone = world.device('phone');
     await phone.start();
@@ -30,6 +30,21 @@ export default scenario(
         ['passage', 'Bible text · Fixture A'],
       ],
     );
+    assert.deepEqual(
+      saved.map((item) => item.href),
+      [
+        '/study/story/2',
+        '/study/article/ta/translate/figs-idiom',
+        '/study/article/tw/bible/kt/god',
+        '/study?reference=RUT%201%3A1',
+      ],
+      'a story, an article and a passage each open their own place in Study',
+    );
+    const passageHref = saved.at(-1)?.href ?? '';
+    const reference = new URL(passageHref, 'https://app.invalid').searchParams.get('reference');
+    assert.equal(reference, 'RUT 1:1');
+    const opened = await services.study.passage(reference ?? '');
+    assert.equal(opened.state === 'passage' && opened.view.reference, 'RUT 1:1');
     const [first] = saved;
     assert.ok(first !== undefined);
     assert.equal(await services.home.removeSaved(first.bookmark.id), true);

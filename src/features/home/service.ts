@@ -29,6 +29,7 @@ export type FormationCard = {
   readonly groupName: string;
   readonly position: Position;
   readonly title: string;
+  readonly href: string;
 };
 
 export type DownloadView =
@@ -65,7 +66,12 @@ export type DownloadView =
 
 export type SavedKind = 'passage' | 'word' | 'academy' | 'story';
 
-export type SavedItem = { readonly bookmark: Bookmark; readonly kind: SavedKind; readonly detail: string };
+export type SavedItem = {
+  readonly bookmark: Bookmark;
+  readonly kind: SavedKind;
+  readonly detail: string;
+  readonly href: string;
+};
 
 export type InvitationWords = {
   readonly overline: string;
@@ -141,17 +147,29 @@ function greetingText(words: HomeWords, part: DayPart, name: string | undefined)
   }
 }
 
-function savedOf(kernel: Kernel, words: HomeWords, bookmark: Bookmark): SavedItem {
-  const language = autonymOf(kernel, bookmark.language);
+function bookmarkHref(bookmark: Bookmark): string {
   switch (bookmark.target) {
     case 'passage':
-      return { bookmark, kind: 'passage', detail: words.t('home.saved.passage', { language }) };
+      return `/study?reference=${encodeURIComponent(bookmark.reference)}`;
     case 'story':
-      return { bookmark, kind: 'story', detail: words.t('home.saved.story', { language }) };
+      return `/study/story/${String(bookmark.story)}`;
+    case 'article':
+      return `/study/article/${bookmark.article.split('/').map(encodeURIComponent).join('/')}`;
+  }
+}
+
+function savedOf(kernel: Kernel, words: HomeWords, bookmark: Bookmark): SavedItem {
+  const language = autonymOf(kernel, bookmark.language);
+  const href = bookmarkHref(bookmark);
+  switch (bookmark.target) {
+    case 'passage':
+      return { bookmark, kind: 'passage', detail: words.t('home.saved.passage', { language }), href };
+    case 'story':
+      return { bookmark, kind: 'story', detail: words.t('home.saved.story', { language }), href };
     case 'article':
       return bookmark.article.startsWith('ta/')
-        ? { bookmark, kind: 'academy', detail: words.t('home.saved.academy', { language }) }
-        : { bookmark, kind: 'word', detail: words.t('home.saved.word', { language }) };
+        ? { bookmark, kind: 'academy', detail: words.t('home.saved.academy', { language }), href }
+        : { bookmark, kind: 'word', detail: words.t('home.saved.word', { language }), href };
   }
 }
 
@@ -253,7 +271,13 @@ export function createHomeService(kernel: Kernel): HomeService {
       const next = await kernel.formation.next(group.id, language);
       return next === undefined
         ? undefined
-        : { group: next.group, groupName: group.name, position: next.position, title: next.title };
+        : {
+            group: next.group,
+            groupName: group.name,
+            position: next.position,
+            title: next.title,
+            href: `/formation/session/${next.position.track}/${String(next.position.session)}`,
+          };
     },
     download,
     async completeDownload() {

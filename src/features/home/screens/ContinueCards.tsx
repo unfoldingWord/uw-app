@@ -46,7 +46,7 @@ export function ContinueReading({ card, autonym, onOpen }: ContinueReadingProps)
   );
 }
 
-export type ContinueFormationProps = { card: FormationCard | undefined; onOpen: () => void };
+export type ContinueFormationProps = { card: FormationCard | undefined; onOpen: (href: string) => void };
 
 export function ContinueFormation({ card, onOpen }: ContinueFormationProps) {
   const home = useService(createHomeService);
@@ -59,7 +59,7 @@ export function ContinueFormation({ card, onOpen }: ContinueFormationProps) {
         title={words.t('nav.formation')}
         body={words.t('home.formation.empty')}
         action={
-          <GlassButton variant="glass" size="sm" onPress={onOpen}>
+          <GlassButton variant="glass" size="sm" onPress={() => onOpen('/formation')}>
             {words.t('common.open')}
           </GlassButton>
         }
@@ -72,7 +72,7 @@ export function ContinueFormation({ card, onOpen }: ContinueFormationProps) {
       padding="tight"
       press={{
         accessibilityLabel: words.t('common.joined', { first: action, second: card.title }),
-        onPress: onOpen,
+        onPress: () => onOpen(card.href),
       }}
     >
       <View style={[styles.line, { gap: theme.space.sp7 }]}>

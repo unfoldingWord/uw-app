@@ -121,14 +121,11 @@ export default function HomeScreen() {
         onOpen={() => router.push('/study')}
       />
       {formation.value === undefined ? null : (
-        <ContinueFormation card={formation.value.card} onOpen={() => router.push('/formation')} />
+        <ContinueFormation card={formation.value.card} onOpen={(href) => router.push(href)} />
       )}
       <InvitationCard />
       {updates.value === undefined ? null : <WhatsNew items={updates.value} onUpdated={download.reload} />}
-      <SavedList
-        items={home.saved()}
-        onOpen={(id) => router.push({ pathname: '/study', params: { bookmark: id } })}
-      />
+      <SavedList items={home.saved()} onOpen={(item) => router.push(item.href)} />
     </ScreenScaffold>
   );
 }

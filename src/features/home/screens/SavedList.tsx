@@ -24,7 +24,7 @@ function titleOf(words: HomeWords, item: SavedItem): string {
   }
 }
 
-export type SavedListProps = { items: readonly SavedItem[]; onOpen: (id: string) => void };
+export type SavedListProps = { items: readonly SavedItem[]; onOpen: (item: SavedItem) => void };
 
 export function SavedList({ items, onOpen }: SavedListProps) {
   const home = useService(createHomeService);
@@ -45,7 +45,7 @@ export function SavedList({ items, onOpen }: SavedListProps) {
               detail={item.detail}
               press={{
                 accessibilityLabel: words.t('common.joined', { first: title, second: item.detail }),
-                onPress: () => onOpen(item.bookmark.id),
+                onPress: () => onOpen(item),
               }}
               trailing={
                 <GlassButton

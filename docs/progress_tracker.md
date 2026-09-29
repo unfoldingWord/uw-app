@@ -3,6 +3,19 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 G1 buildable gaps from the scope audit (HO-4, HO-6, ST-10, PA-6, PA-2, PRD 9, 11 and 12)
+
+Everything below ran in Node (the sim, Vitest and the checks); nothing ran on a phone.
+
+- HO-6 and ST-10, red first: the extended `HO-6` scenario failed (`+ actual - expected`, `href` undefined on
+  every saved item). Home's `saved()` now gives each item an `href`: a passage opens
+  `/study?reference=<reference>` (Study already reads `reference` and opens that chapter at that verse), an
+  article `/study/article/<id>`, a story `/study/story/<number>`. The scenario reads the reference back out
+  of the href and opens it through the Study service. `routes` check: every target served.
+- HO-4, red first: the extended `HO-4` scenario failed (the card had no `href`). The Continue formation card
+  opens `/formation/session/<track>/<number>` for the active group's next session; with no group it still
+  opens the Formation tab.
+
 ## 2026-09-29 I1 import a burrito file on the phone (SH-3)
 
 Proposal `docs/proposals/2026-09-29-file-import.md`, exception recorded in `docs/exceptions.md` (rule 4) in
