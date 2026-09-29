@@ -438,4 +438,11 @@ export const vi: LocaleTable = {
   'failure.partners.invalid-feed':
     'Các câu chuyện tác động đến ở dạng mà ứng dụng không đọc được. Các câu chuyện đã có trên điện thoại này vẫn hiển thị.',
   'failure.unexpected': 'Có điều gì đó chưa hoạt động. Hãy thử lại, hoặc chia sẻ chẩn đoán để có người giúp.',
+  'study.helps.showResponse': 'Hiện câu trả lời',
+  'study.helps.hideResponse': 'Ẩn câu trả lời',
+  'study.noLanguage': 'Hãy chọn một ngôn ngữ để bắt đầu đọc.',
+  'study.noLanguage.action': 'Chọn ngôn ngữ',
+  'library.download': 'Tải {resource}',
+  'library.onPhone': 'Trên điện thoại này',
+  'search.fullText.inSettings': 'Bật trong Cài đặt. Chỉ mục nằm trên điện thoại này.',
 };

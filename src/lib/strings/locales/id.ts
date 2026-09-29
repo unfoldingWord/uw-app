@@ -448,4 +448,11 @@ export const id: LocaleTable = {
     'Kisah dampak datang dalam bentuk yang tidak dapat dibaca aplikasi. Kisah yang ada di ponsel ini tetap tampil.',
   'failure.unexpected':
     'Ada yang tidak berjalan. Coba lagi, atau bagikan diagnostik supaya ada yang bisa membantu.',
+  'study.helps.showResponse': 'Tampilkan jawaban',
+  'study.helps.hideResponse': 'Sembunyikan jawaban',
+  'study.noLanguage': 'Pilih bahasa untuk mulai membaca.',
+  'study.noLanguage.action': 'Pilih bahasa',
+  'library.download': 'Unduh {resource}',
+  'library.onPhone': 'Di ponsel ini',
+  'search.fullText.inSettings': 'Aktifkan di Pengaturan. Indeksnya tetap di ponsel ini.',
 };

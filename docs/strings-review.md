@@ -42,6 +42,10 @@ Change a value in place; set it to `null` to fall back to English for that key w
 - **Drafted with the Transfer, Share and diagnostics services.** `transfer.code`, `transfer.code.hint` and
   `transfer.nothing`. The code is the four digits both phones show while they pair; the word for it should be
   the one people use for a short number read aloud, not a password or a PIN.
+- **Drafted in T11.** Seven keys were added with the Study screens and drafted in every locale at once:
+  `study.helps.showResponse`, `study.helps.hideResponse`, `study.noLanguage`, `study.noLanguage.action`,
+  `library.download`, `library.onPhone` and `search.fullText.inSettings`. `library.download` interpolates a
+  resource title such as "Greek New Testament"; check the verb agrees with it where the language inflects.
 - **Search examples.** `search.placeholder` and `search.empty` use Ruth 2 and covenant as examples; the book
   name and the word should be the ones a reader in that language would type.
 

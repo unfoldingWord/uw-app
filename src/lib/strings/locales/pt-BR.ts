@@ -483,4 +483,11 @@ export const ptBR: LocaleTable = {
     'As histórias de impacto chegaram em um formato que o aplicativo não consegue ler. As que estão neste celular continuam aparecendo.',
   'failure.unexpected':
     'Algo não funcionou. Tente de novo ou compartilhe o diagnóstico para alguém poder ajudar.',
+  'study.helps.showResponse': 'Mostrar a resposta',
+  'study.helps.hideResponse': 'Ocultar a resposta',
+  'study.noLanguage': 'Escolha um idioma para começar a ler.',
+  'study.noLanguage.action': 'Escolher um idioma',
+  'library.download': 'Baixar {resource}',
+  'library.onPhone': 'Neste celular',
+  'search.fullText.inSettings': 'Ative nas Configurações. O índice fica neste celular.',
 };

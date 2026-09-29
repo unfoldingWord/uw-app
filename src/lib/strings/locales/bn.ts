@@ -459,4 +459,11 @@ export const bn: LocaleTable = {
     'প্রভাবের গল্পগুলো এমনভাবে এসেছে যা অ্যাপ পড়তে পারে না। এই ফোনে থাকা গল্পগুলো দেখা যাবে।',
   'failure.unexpected':
     'কিছু একটা কাজ করেনি। আবার চেষ্টা করুন, অথবা ডায়াগনস্টিক শেয়ার করুন যাতে কেউ সাহায্য করতে পারে।',
+  'study.helps.showResponse': 'উত্তর দেখুন',
+  'study.helps.hideResponse': 'উত্তর লুকান',
+  'study.noLanguage': 'পড়া শুরু করতে একটি ভাষা বেছে নিন।',
+  'study.noLanguage.action': 'একটি ভাষা বেছে নিন',
+  'library.download': '{resource} ডাউনলোড করুন',
+  'library.onPhone': 'এই ফোনে',
+  'search.fullText.inSettings': 'সেটিংসে এটি চালু করুন। সূচিটি এই ফোনেই থাকে।',
 };

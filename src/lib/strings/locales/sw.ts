@@ -466,4 +466,11 @@ export const sw: LocaleTable = {
     'Hadithi za matokeo zimefika kwa namna ambayo programu haiwezi kusoma. Zilizo kwenye simu hii bado zinaonekana.',
   'failure.unexpected':
     'Kuna kitu hakikufanya kazi. Jaribu tena, au shiriki uchunguzi ili mtu aweze kusaidia.',
+  'study.helps.showResponse': 'Onyesha jibu',
+  'study.helps.hideResponse': 'Ficha jibu',
+  'study.noLanguage': 'Chagua lugha ili uanze kusoma.',
+  'study.noLanguage.action': 'Chagua lugha',
+  'library.download': 'Pakua {resource}',
+  'library.onPhone': 'Kwenye simu hii',
+  'search.fullText.inSettings': 'Iwashe katika Mipangilio. Faharasa inabaki kwenye simu hii.',
 };

@@ -476,4 +476,11 @@ export const nl: LocaleTable = {
   'failure.partners.invalid-feed':
     'De verhalen van impact kwamen binnen in een vorm die de app niet kan lezen. De verhalen op deze telefoon blijven zichtbaar.',
   'failure.unexpected': 'Iets werkte niet. Probeer het opnieuw, of deel de diagnose zodat iemand kan helpen.',
+  'study.helps.showResponse': 'Toon het antwoord',
+  'study.helps.hideResponse': 'Verberg het antwoord',
+  'study.noLanguage': 'Kies een taal om te beginnen met lezen.',
+  'study.noLanguage.action': 'Kies een taal',
+  'library.download': '{resource} downloaden',
+  'library.onPhone': 'Op deze telefoon',
+  'search.fullText.inSettings': 'Zet het aan in Instellingen. De index blijft op deze telefoon.',
 };

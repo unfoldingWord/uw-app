@@ -73,6 +73,10 @@ and iOS through Metro; none was rendered, on a phone or through react-native-web
 
 Node v22.22.2. Everything below ran in Node through ESLint, TypeScript, Vitest, the checks, the sim and the
 Metro bundle for Android and iOS. No screen was rendered: nothing ran on a phone, a simulator or a browser.
+## 2026-09-29 T11 Study screens
+
+Node v22.22.2. Everything below ran in Node through Vitest, the checks, the sim and the Metro bundle; no
+screen was rendered, on a phone or in a browser.
 
 ### Observed red, then green
 
@@ -194,6 +198,28 @@ test only, 25 unproven`; `contract: 20 fixture burritos, 0 failed` (live skipped
   on this branch (T11 and T13).
 - `Linking.openURL` for Give and the full story, `Intl.DateTimeFormat` on Hermes, and `Stack.Protected`
   redirects were not run on a device.
+| `sim/study-service.test.ts`, written before the service change | `TypeError: services.study.originalOf is not a function` | 2 passed |
+| `reads a string table key as a key, not as copy` in `scripts/checks/strings.test.ts` | `expected [ 'study.helps.notes', …(3) ] to deeply equal [ 'not.a key' ]` | 8 passed |
+| `npm run checks` with the screens, before the scan change | `FAIL strings`: 96 findings, every one a dotted key such as `study.nav.next` | `87 screen and shared files hold no literal copy` |
+
+### Decisions
+
+- Routes: `/study` (tab, optional `reference`), `/study/library`, `/study/search`, `/study/article/<id...>`
+  (catch-all, so article ids keep their slashes), `/study/story/<number>`. Share pushes
+  `/share?kind=passage&ref=<reference>&language=<code>`, a route no task has built yet.
+- The study service gains `books()`, `originalOf(book)` and `original(reference)`; the original-language
+  text is a third reading choice, labelled with the Hebrew or Greek resource name, shown only once installed.
+- Playback is not wired: no kernel module drives the Audio port. Proposal
+  `docs/proposals/2026-09-29-audio-player.md`; until then the play control is disabled with the
+  `failure.audio.unavailable` hint, and the download action works.
+- Book names in the picker are the domain's English names, the same ones the passage carries.
+
+### Not verified
+
+- Nothing was rendered: light, dark and reduced-blur, 360 px width, dynamic type, RTL passages (Hebrew,
+  Arabic, Urdu, Farsi), the Android blur target and the book picker modal are unseen.
+- `textAlign: 'auto'` with `writingDirection` and the `direction` style for right-to-left passages is an
+  inference about iOS and Android behaviour.
 
 ## 2026-09-29 T8 Feature services, preference owners and the partner invitation
 

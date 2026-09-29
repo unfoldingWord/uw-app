@@ -513,4 +513,11 @@ export const ru: LocaleTable = {
   'failure.partners.invalid-feed':
     'Истории перемен пришли в виде, который приложение не может прочитать. Истории на этом телефоне по-прежнему видны.',
   'failure.unexpected': 'Что-то не сработало. Повторите или поделитесь диагностикой, чтобы вам могли помочь.',
+  'study.helps.showResponse': 'Показать ответ',
+  'study.helps.hideResponse': 'Скрыть ответ',
+  'study.noLanguage': 'Выберите язык, чтобы начать чтение.',
+  'study.noLanguage.action': 'Выбрать язык',
+  'library.download': 'Скачать: {resource}',
+  'library.onPhone': 'На этом телефоне',
+  'search.fullText.inSettings': 'Включите это в настройках. Указатель остаётся на этом телефоне.',
 };

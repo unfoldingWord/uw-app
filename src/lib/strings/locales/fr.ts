@@ -499,4 +499,11 @@ export const fr: LocaleTable = {
     'Les histoires d’impact sont arrivées sous une forme que l’application ne peut pas lire. Celles qui sont sur ce téléphone restent affichées.',
   'failure.unexpected':
     'Quelque chose n’a pas fonctionné. Réessayez, ou partagez le diagnostic pour qu’on puisse vous aider.',
+  'study.helps.showResponse': 'Afficher la réponse',
+  'study.helps.hideResponse': 'Masquer la réponse',
+  'study.noLanguage': 'Choisissez une langue pour commencer à lire.',
+  'study.noLanguage.action': 'Choisir une langue',
+  'library.download': 'Télécharger {resource}',
+  'library.onPhone': 'Sur ce téléphone',
+  'search.fullText.inSettings': 'Activez-la dans Réglages. L’index reste sur ce téléphone.',
 };
