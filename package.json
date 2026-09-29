@@ -21,8 +21,9 @@
     "test": "vitest run",
     "knip": "knip",
     "checks": "tsx scripts/checks/cli.ts",
-    "verify": "npm run check && npm run typecheck && npm run test && npm run knip && npm run checks && npm run sim -- all && npm run trace && npm run contract",
-    "fixtures": "tsx sim/fixtures/build.ts"
+    "verify": "npm run check && npm run typecheck && npm run test && npm run knip && npm run checks && npm run sim -- all && npm run trace && npm run contract && npm run bundle",
+    "fixtures": "tsx sim/fixtures/build.ts",
+    "bundle": "tsx scripts/bundle.ts"
   },
   "dependencies": {
     "@noble/hashes": "^2.4.0",
