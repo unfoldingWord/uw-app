@@ -23,7 +23,10 @@ Every event type is a row in `eventSchemas` in `src/lib/domain/events.ts`. The r
   `src/lib/domain/fields.ts`) or a closed list of literals. The TypeScript types come from this row, and the
   journal refuses any event that does not match it. No kind accepts text with spaces, so nothing a leader typed,
   such as a first name, a group name, a note or a search query, can enter the journal (DX-1). A name or a note is
-  recorded as the id of what it belongs to, never as its text.
+  recorded as the id of what it belongs to, never as its text. A field may also be a bounded list of records,
+  `{ list: { field: kind, ... }, max }`, whose every field is one of the same kinds: `PackInstallStarted.releases`
+  and `PackInstalled.burritos` are lists, so a title or a licence statement, which hold spaces, stay out of the
+  journal and are read from the burrito's `metadata.json` instead.
 - **replay**: one of three classes.
 
 | Class | Meaning | What replay does |
@@ -61,6 +64,15 @@ Every event type is a row in `eventSchemas` in `src/lib/domain/events.ts`. The r
 - **Content bytes.** A pack installed from a peer or a file is not in the journal. `PackInstallStarted` is
   `redo` for every source, and in replay the sim world stands in for the peer or the file by serving the same
   release from its fixtures. Transfer events are `verbatim` for the same reason: the other phone is not there.
+  Concretely, `PackInstallStarted` records the target pack and the releases chosen (publisher, resource,
+  language, tag), and its redo downloads each from its `sb/{tag}.zip` address, which the sim world serves, while
+  keeping the recorded source. `ImportReceived` is `verbatim`, so a file import replays as the recorded
+  `ImportReceived` followed by the redone install. A burrito the fixtures do not hold, such as a local release
+  imported from a file, fails in replay with `http.status` and the replay names that divergence. A newer release
+  published during the recording (`world.fixtures.publish`) must be published in the replay world too, and it
+  stays published, so the replay of an earlier refresh sees it. Install progress is kept out of the journal
+  except for at most ten `PackInstallProgressed` events per install; byte counts live in
+  `packs.installing()` and the snapshot.
 - **The world's weather.** A download that failed because the phone was offline fails again only if the replay
   world is offline too. A scenario that reproduces a field report scripts the world first, for example
   `device.adapters.http.script(url, 'offline')`, and then replays.

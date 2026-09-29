@@ -3,6 +3,71 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 T4 catalog and packs
+
+Node v22.22.2. Everything below ran in Node through the sim and Vitest; nothing ran on a phone.
+
+### Scenarios observed red, then green
+
+The Catalog and Packs internals were drafted before the scenarios were run, so the first red run was against
+the kernel with `catalog` and `packs` left out of `kernelModules`: `sim: 12 scenarios, 1 passed, 11 failed`,
+each with `Cannot read properties of undefined (reading 'refresh')` (LA-1: `reading 'languages'`). Each
+scenario was then observed red against the behaviour it guards, by a throwaway edit reverted before the green run:
+
+| Scenario | Regression | Observed |
+|---|---|---|
+| `LA-2.language-pack-all-text` | `comparePublishers` sorts publishers plainly | `FAIL ... unfoldingWord is listed first` (`Door43-Catalog` came first) |
+| `LA-2`, `LA-6`, `LA-7` | First draft left `packs/.staging/` and `packs/.old/` behind | `FAIL ... nothing is left staged`; fixed by clearing both after every install |
+| `LA-6.storage-sizes-remove` | First draft listed storage in install order | `FAIL ... Expected values to be strictly deep-equal` (`language:qaa` before `image:obs`) |
+| `LA-7.update-opt-in-atomic` | `swapIn` does not move the old pack back when the move of staging fails | `FAIL ... files.not-found: packs/language/qaa/unfoldingWord/qaa_tn/ingredients/tn_RUT.tsv does not exist` |
+| `LA-7.update-opt-in-atomic` | `recoverPacks` never restores `packs/.old/{id}` | `FAIL ... a pack moved aside when the app stopped is restored on start` |
+| `DX-3.replay-rebuilds-snapshot` | No redo handler for `PackInstallStarted` | `FAIL ... Expected values to be strictly deep-equal` on the divergence list |
+| `SH-3.import-burrito-file` | Every file under `ingredients/` kept, listed or not | `FAIL ... a file the metadata does not list is not installed` |
+
+Tests at the interfaces also found one defect: two quick calls to `installFromCatalog` both installed the whole
+pack, because what was missing was decided before the install queue (`sim/packs.test.ts`, "serializes
+installs", received `install: "id-000002"`). The decision now happens inside the queue.
+
+`npm run verify` then returned green (exit 0): 22 test files, 234 tests; `5 checks, 4 pending, none failed`;
+`sim: 12 scenarios, 12 passed, 0 failed`; `trace: 51 Must requirements, 13 proven, 38 unproven`;
+`contract: 20 fixture burritos, 0 failed` (live skipped, offline).
+
+### Changed beyond the new files
+
+- `sim/adapters/files.ts`: `rename` now refuses an existing target, as expo-file-system's move does, and
+  `failRename(prefix)` scripts one refused rename. The pack swap moves the current pack to `packs/.old/`, moves
+  staging in, and deletes the old copy; on start, a pack missing from `packs/` with a copy under `packs/.old/`
+  is restored, staging and `.old` are removed, and a pack directory the database never recorded is removed.
+  Only the adapter's own test relied on replace-on-rename.
+- `sim/adapters/http.ts`: `hold(prefix)` keeps matching requests waiting until released (ON-2 progress).
+- `sim/world.ts` serves every fixture route by default; `world.fixtures.publish(publisher, resource, tag)`
+  serves a newer release and a catalog that lists it (HO-8, LA-7). `sim/fixtures/archive.ts` is split out of
+  `generate.ts` so `publish` builds an archive with the same function as `npm run fixtures`; the fixtures test
+  still rebuilds the checked-in bytes exactly.
+- `sim/peer.ts` is a fixture `PeerSession` standing in for T7's Transport.
+- `src/lib/domain/events.ts`: a bounded list-of-records field kind; `PackInstallStarted.releases`,
+  `PackInstalled.burritos`, and `PackInstallProgressed` (follows, at most ten per install).
+- `src/lib/domain/release.ts`: `releaseKey` is `{publisher}/{resource}@{tag}`, since a resource is the DCS
+  name, which already carries the language (`qaa_ult`); nothing called it before.
+- `eslint.config.ts` and `.prettierignore` ignore `.claude/`: the parallel T5 worktree's files turned lint red.
+- `scripts/checks/owns.check.ts` still pending for T8; kernel modules are checked by a test in
+  `sim/kernel.test.ts` (every created table has one owner, no table or directory claimed twice).
+
+### Not verified
+
+- Nothing ran against expo-file-system, expo-sqlite or the network. The swap assumes the platform move fails
+  on an existing target and that `mkdir` is idempotent with intermediates; T9's adapters must hold to that.
+- The DCS catalog's paging: the module follows `page=2..` while `X-Total-Count` says there are more, which is
+  how Gitea pages; whether `catalog/search` without `limit` returns every entry is unverified from here.
+- Whether go-rc2sb writes the tag in `identification.primary.dcs`: for catalog installs the catalog entry is
+  the provenance authority, so a burrito without it still installs; a file or peer burrito without it is refused.
+- The catalog carries no size, so `bytes` on a catalog release is always undefined and the free-space check
+  before writing only applies to peer and file sources; a full disk during a download fails as `pack.no-space`.
+- A crash after the swap but before the database write leaves new files under an old row; start does not
+  reconcile the two.
+- English names come from a table in `src/lib/catalog/languageNames.ts`, because Hermes has no
+  `Intl.DisplayNames` (inference from Hermes' documented Intl coverage, not run on a device).
+
 ## 2026-09-29 T2 domain, ports, memory adapters, journal, kernel, sim skeleton
 
 Node v22.22.2. Everything below ran in Node through the sim and Vitest; nothing ran on a phone.
