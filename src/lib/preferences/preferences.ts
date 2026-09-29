@@ -23,7 +23,7 @@ export type PreferencesApi = {
   onChange(listener: (key: PreferenceKey) => void): () => void;
 };
 
-export const preferencesOwns = Object.freeze({
+const preferencesOwns = Object.freeze({
   tables: [],
   directories: [],
   keys: [...preferenceKeys, lastPassagePrefix],

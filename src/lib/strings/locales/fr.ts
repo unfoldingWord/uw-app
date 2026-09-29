@@ -507,4 +507,5 @@ export const fr: LocaleTable = {
   'study.frame.picture': 'Illustration de l’image {number}',
   'transfer.app.ready':
     'L’application est arrivée sur ce téléphone ({size}) et elle est prête à être installée.',
+  'failure.boot': 'L’application n’a pas pu se préparer sur ce téléphone. Réessayez dans un instant.',
 };

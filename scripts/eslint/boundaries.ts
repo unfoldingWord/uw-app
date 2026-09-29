@@ -20,7 +20,7 @@ const simFromApplication: RestrictedPattern = {
   message: 'Application code never imports the sim; the sim drives the application (AGENTS.md rule 2).',
 };
 
-export const deviceModules = [
+const deviceModules = [
   'expo-file-system',
   'expo-sqlite',
   'expo-audio',
@@ -79,7 +79,7 @@ const reactNativeDeviceApis: RestrictedPattern = {
   message: 'Application code reaches a device API only through a port (AGENTS.md rule 2).',
 };
 
-export const renderingModules = ['expo-blur', 'expo-haptics', 'expo-font', 'expo-glass-effect'];
+const renderingModules = ['expo-blur', 'expo-haptics', 'expo-font', 'expo-glass-effect'];
 
 const renderingApis: RestrictedPattern = {
   regex: `^(${renderingModules.map(escaped).join('|')})(/.*)?$`,

@@ -469,4 +469,5 @@ export const fa: LocaleTable = {
   'search.fullText.inSettings': 'آن را در تنظیمات روشن کنید. نمایه روی این گوشی می‌ماند.',
   'study.frame.picture': 'تصویر صحنهٔ {number}',
   'transfer.app.ready': 'برنامه به این گوشی رسید ({size}) و آمادهٔ نصب است.',
+  'failure.boot': 'برنامه نتوانست روی این گوشی آماده شود. کمی بعد دوباره امتحان کنید.',
 };

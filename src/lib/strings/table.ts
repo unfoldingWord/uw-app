@@ -1,8 +1,6 @@
 import { en } from './en/index';
 
-export const pluralCategories = ['zero', 'one', 'two', 'few', 'many', 'other'] as const;
-
-export type PluralCategory = (typeof pluralCategories)[number];
+export type PluralCategory = 'zero' | 'one' | 'two' | 'few' | 'many' | 'other';
 
 export type PluralForms = { readonly other: string } & {
   readonly [C in Exclude<PluralCategory, 'other'>]?: string;

@@ -17,15 +17,15 @@ import {
   type ImpactStory,
 } from './stories';
 
-export const partnersDirectory = 'partners';
+const partnersDirectory = 'partners';
 
 export const impactImagesDirectory = `${partnersDirectory}/images`;
 
 const stagingDirectory = `${partnersDirectory}/staging`;
 
-export const invitationKey = 'partners.invitation';
+const invitationKey = 'partners.invitation';
 
-export const storiesKey = 'partners.stories';
+const storiesKey = 'partners.stories';
 
 export type { Invitation } from './schedule';
 

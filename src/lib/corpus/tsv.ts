@@ -35,7 +35,7 @@ export type QuestionRow = {
   readonly response: string;
 };
 
-export function unescapeCell(text: string): string {
+function unescapeCell(text: string): string {
   return text
     .replace(/<br\s*\/?>/gi, '\n')
     .replace(/\\n/g, '\n')

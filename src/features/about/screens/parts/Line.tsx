@@ -40,7 +40,7 @@ function colorOf(theme: Theme, tone: Tone): string {
   }
 }
 
-export const brandHeadingWeight = 900;
+const brandHeadingWeight = 900;
 
 function brandWeight(theme: Theme, role: TextRole): number {
   switch (role) {

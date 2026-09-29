@@ -50,7 +50,7 @@ export type TransferApi = {
   receivedApp(): ReceivedApp | undefined;
 };
 
-export const discoverTimeoutMs = 10 * 1000;
+const discoverTimeoutMs = 10 * 1000;
 
 export function pairingCode(transfer: string): string {
   const value = Number.parseInt(md5Hex(utf8(transfer)).slice(0, 8), 16) % 10_000;

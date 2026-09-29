@@ -52,7 +52,7 @@ export type BurritoFacts = {
   text(key: string): string | undefined;
 };
 
-export function factsOf(files: BurritoFiles): BurritoFacts {
+function factsOf(files: BurritoFiles): BurritoFacts {
   return {
     metadata: files.get(metadataPath),
     fact: (key) => {
@@ -68,7 +68,7 @@ export function factsOf(files: BurritoFiles): BurritoFacts {
 
 export const burritoFormat = 'scripture burrito';
 
-export const burritoVersion = /^1\.0\.\d+$/;
+const burritoVersion = /^1\.0\.\d+$/;
 
 const md5Pattern = /^[0-9a-f]{32}$/;
 

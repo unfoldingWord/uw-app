@@ -25,7 +25,7 @@ export type PackId = string;
 
 export const imagePackId: PackId = 'image:obs';
 
-export const originalLanguages: readonly string[] = Object.freeze(['hbo', 'el-x-koine', 'grc']);
+const originalLanguages: readonly string[] = Object.freeze(['hbo', 'el-x-koine', 'grc']);
 
 export const packsDirectory = 'packs';
 

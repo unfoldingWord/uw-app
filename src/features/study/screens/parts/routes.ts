@@ -16,7 +16,7 @@ export function articleHref(id: string): Href {
   return `/study/article/${id.split('/').map(encodeURIComponent).join('/')}`;
 }
 
-export function storyHref(story: number): Href {
+function storyHref(story: number): Href {
   return `/study/story/${String(story)}`;
 }
 

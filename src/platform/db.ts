@@ -1,7 +1,7 @@
 import { openDatabaseAsync, type SQLiteDatabase } from 'expo-sqlite';
 import type { Db, DbRow, DbTransaction, SqlValue } from '@lib/ports';
 
-export const deviceDatabaseName = 'uw.db';
+const deviceDatabaseName = 'uw.db';
 
 export function createPlatformDb(name: string = deviceDatabaseName): Db {
   let opened: Promise<SQLiteDatabase> | undefined;

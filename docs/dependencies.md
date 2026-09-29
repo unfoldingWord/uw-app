@@ -32,6 +32,8 @@ list. Versions live in `package.json`; the lock file is committed.
 | expo-audio | ~57.0.5 | A hand-written player; the Audio adapter streams an allowlisted URL or plays a downloaded file |
 | expo-sharing | ~57.0.22 | A hand-written Android share intent for files; the ShareSheet adapter shares an audio file on Android (text and iOS files go through React Native's `Share`) |
 | expo-localization | ~57.0.2 | Reading the device locale by hand; the Locale adapter's tag, region, time zone and direction |
+| expo-splash-screen | ~57.0.9 | A hand-written launch storyboard and Android 12 splash theme; the logo mark on paper (night in dark mode) until the kernel has started or failed, so the root layout never shows a blank frame |
+| expo-system-ui | ~57.0.4 | Setting the Android root view background and night mode by hand; required for `userInterfaceStyle: automatic` to follow the system theme on Android |
 
 ## Development
 

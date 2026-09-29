@@ -15,7 +15,7 @@ const config: KnipConfig = {
     ...sharedLibraryBarrels,
     ...featureTemplate,
   ],
-  ignoreExportsUsedInFile: true,
+  ignoreExportsUsedInFile: { type: true, interface: true },
   ignore: ['design-system/**'],
 };
 

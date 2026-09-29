@@ -17,7 +17,7 @@ import type {
   TrainingSession,
 } from './types';
 
-export const englishLanguage = 'en';
+const englishLanguage = 'en';
 
 const closingSections: readonly MovementSectionId[] = ['drafting', 'checking', 'conclusion'];
 

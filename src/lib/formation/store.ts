@@ -5,7 +5,7 @@ import type { Group, Position, Track } from './types';
 
 export const formationTables: readonly string[] = ['formation_groups', 'formation_notes', 'formation_state'];
 
-export const activeKey = 'active';
+const activeKey = 'active';
 
 export type GroupRow = Group & { readonly ordinal: number; readonly started?: string };
 

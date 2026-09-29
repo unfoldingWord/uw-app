@@ -490,4 +490,5 @@ export const ptBR: LocaleTable = {
   'search.fullText.inSettings': 'Ative nas Configurações. O índice fica neste celular.',
   'study.frame.picture': 'Imagem do quadro {number}',
   'transfer.app.ready': 'O aplicativo chegou a este celular ({size}) e está pronto para instalar.',
+  'failure.boot': 'O aplicativo não conseguiu se preparar neste celular. Tente de novo daqui a pouco.',
 };

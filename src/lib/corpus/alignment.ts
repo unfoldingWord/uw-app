@@ -8,7 +8,7 @@ const allOccurrences = -1;
 
 type SourceWord = { readonly word: string; readonly occurrence: number; readonly key: string };
 
-export function normalizeWord(text: string): string {
+function normalizeWord(text: string): string {
   return text.normalize('NFC').replace(ignoredMarks, '').toLowerCase();
 }
 

@@ -6,11 +6,11 @@ import { messageOf, portError } from './errors';
 
 export type PlatformShareSheetOptions = { platform: DevicePlatform; uriOf(path: string): string };
 
-export function provenanceLine(provenance: Provenance): string {
+function provenanceLine(provenance: Provenance): string {
   return `${provenance.title} · ${provenance.publisher}/${provenance.resource} ${provenance.tag} · ${provenance.licence}`;
 }
 
-export function withProvenance(payload: SharePayload): string {
+function withProvenance(payload: SharePayload): string {
   const missing = payload.provenance.map(provenanceLine).filter((line) => !payload.text.includes(line));
   return [payload.text, ...missing].filter((part) => part !== '').join('\n');
 }

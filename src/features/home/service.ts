@@ -155,7 +155,7 @@ function savedOf(kernel: Kernel, words: HomeWords, bookmark: Bookmark): SavedIte
   }
 }
 
-export function invitationWords(words: HomeWords, story: ImpactStory): InvitationWords {
+function invitationWords(words: HomeWords, story: ImpactStory): InvitationWords {
   return {
     overline: words.t('invitation.overline'),
     body: words.t('invitation.body'),

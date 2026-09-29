@@ -46,7 +46,7 @@ const usfmMimeTypes: ReadonlySet<string> = new Set([mimeTypes.usfm, 'text/x-usfm
 
 const usfmExtension = /\.u?sfm$/i;
 
-export const wordsPayloadDirectory = 'payload/';
+const wordsPayloadDirectory = 'payload/';
 
 const wordsRepositoryCode = 'tw';
 

@@ -11,7 +11,7 @@ import { createPlatformLocale } from './locale';
 import { createPlatformShareSheet } from './share-sheet';
 import { createPlatformTransport } from './transport';
 
-export function devicePlatform(): DevicePlatform {
+function devicePlatform(): DevicePlatform {
   return Platform.OS === 'ios' ? 'ios' : 'android';
 }
 

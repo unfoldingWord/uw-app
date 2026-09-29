@@ -473,4 +473,5 @@ export const sw: LocaleTable = {
   'search.fullText.inSettings': 'Iwashe katika Mipangilio. Faharasa inabaki kwenye simu hii.',
   'study.frame.picture': 'Mchoro wa picha ya {number}',
   'transfer.app.ready': 'Programu imefika kwenye simu hii ({size}) na iko tayari kusakinishwa.',
+  'failure.boot': 'Programu haikuweza kujiandaa kwenye simu hii. Jaribu tena baada ya muda mfupi.',
 };

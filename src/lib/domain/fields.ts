@@ -57,7 +57,7 @@ function isWholeNumber(value: unknown): value is number {
   return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
 }
 
-export function isMintedId(value: unknown): value is string {
+function isMintedId(value: unknown): value is string {
   return isString(value) && patterns.id.test(value);
 }
 

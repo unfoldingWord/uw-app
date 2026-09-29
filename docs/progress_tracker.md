@@ -81,6 +81,64 @@ fixtures and on test burritos copied from the captured shapes.
 - Not verified: anything against real data (the next CI run is the check); the ingest smoke end to end, which
   cannot run here; that a catalog `commit_sha` always equals the burrito's `revision` (inference: both come from
   the tag's commit; catalog installs do not depend on it, peer and file imports do).
+## 2026-09-29 T13 Release wiring
+
+Node v22.22.2, Expo SDK 57, offline (`EXPO_OFFLINE=1`). Nothing ran on a phone, a simulator or a browser, and
+no EAS build or GitHub release ran.
+
+- `app.config.ts` (loaded by Expo's own loader with `"type": "module"`; `npx expo config --type public`,
+  `--type prebuild` and `--type introspect` all exit 0 offline). `CI=1 npx expo prebuild --no-install --clean`
+  finished, and the generated projects were read, then deleted: `AndroidManifest.xml` requests only
+  `INTERNET`, `VIBRATE` and `MODIFY_AUDIO_SETTINGS`, marks the 14 refused permissions `tools:node="remove"`
+  and sets `android:allowBackup="false"`; `Info.plist` has no usage description, no background mode and
+  `NSAllowsArbitraryLoads` false; `PrivacyInfo.xcprivacy` carries the config's four API reasons, no tracking
+  and no collected data. The debug-only manifest React Native adds still requests `SYSTEM_ALERT_WINDOW` for
+  the developer menu; release builds do not (inference from Android's manifest merge priorities, not built).
+- Icons: `npm run icons` (`scripts/icons/`, a PNG reader and writer over `node:zlib`, no new dependency)
+  draws `assets/icon.png`, the adaptive foreground and monochrome layers and the splash mark from
+  `design-system/assets/logo/logo-mark-color.png` and `design-system/tokens/colors.css`. Viewed as images;
+  not seen on a launcher.
+- New check `permissions` (`scripts/checks/permissions.check.ts`, logic in `permissions.ts`, tests in
+  `permissions.test.ts`). New dependencies `expo-splash-screen` and `expo-system-ui`, in
+  `docs/dependencies.md`.
+- `eas.json` (development, preview APK, production bundle; a submit profile with no credentials) and
+  `.github/workflows/release.yml` (tag `v*`: verify, EAS preview build, APK attached to the release). Neither
+  has run: there is no Expo account token here.
+- Boot: `createBoot` (`src/shared/kernel/boot.ts`) and `BootFailure` (`src/shared/ui`); the root layout keeps
+  the launch screen until the kernel starts or fails. `failure.boot` in all 16 locales. Exception recorded.
+- knip: `ignoreExportsUsedInFile` now covers types and interfaces only; 61 value exports used only in their
+  own file were unexported (each grepped across `src`, `sim`, `scripts`, `app`, `migrations` and `tests`; the
+  only other matches were separate definitions with the same name), and `pluralCategories` became a type.
+- AGENTS.md rule 1: "New string" now names `src/lib/strings/en/` and `src/lib/strings/locales/` instead of
+  the missing `src/lib/strings.ts`. A doc-only correction, `docs/proposals/2026-09-29-agents-strings-path.md`.
+- Proposal `docs/proposals/2026-09-29-backup-exclusion.md`: expo-file-system 57 and expo-sqlite 57 have no
+  way to exclude a path from iCloud backup (grepped for `isExcludedFromBackup`: nothing), and both keep their
+  data under `Documents`.
+- `docs/release-checklist.md` maps PRD section 13 to evidence; README gains status, cockpit, device and
+  release sections.
+
+### Observed red, then green
+
+| Test | Red | Green |
+|---|---|---|
+| `npm run checks` with the first `app.config.ts` | `FAIL permissions`: `Info.plist allows arbitrary loads` (the Expo template's default) | `NSAllowsArbitraryLoads: false`, `NSAllowsLocalNetworking: true` for Metro in debug |
+| Same, with plain `'expo-audio'` and no `allowBackup` or `blockedPermissions` (throwaway) | 22 findings, among them `requests android.permission.RECORD_AUDIO`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK`, `READ_EXTERNAL_STORAGE`, `SYSTEM_ALERT_WINDOW`, `allowBackup is not "false"`, `Info.plist carries NSMicrophoneUsageDescription`, `background modes audio` | `pass permissions: Android requests INTERNET, VIBRATE, MODIFY_AUDIO_SETTINGS; 14 refused permissions blocked; allowBackup false; no iOS usage description, background mode or entitlement` |
+| `boot.test.ts` with the rejection handler removed (throwaway) | 3 failed: `promise rejected "Error: db.io" instead of resolving` | 4 passed |
+
+`npm run verify` exit 0: see the tail in the T13 report; `Test Files 56 passed`, `Tests 597 passed`, `7 checks, 0 pending, none failed`,
+`sim: 52 scenarios, 52 passed`, `trace: 51 Must requirements, 50 with a scenario, 1 proven by a test`,
+`bundle android: pass`, `bundle ios: pass`.
+
+### Not verified
+
+- No EAS build, no store upload, no GitHub release, no workflow run.
+- The failure screen and the launch screen were never rendered; a real `kernel.start()` rejection on a phone
+  was never provoked.
+- The icons on an iOS home screen and an Android launcher (masks, monochrome themed icons), and the splash in
+  dark mode.
+- That `CFBundleLocalizations` with `ExpoLocalization_supportsRTL` flips the layout on iOS for ar, ur and fa.
+- The privacy manifest reasons against what the bundled pods actually call; App Store Connect's check will say.
+
 ## 2026-09-29 U1 Transfer, Share and diagnostics screens, and pictures from the device
 
 Node v22.22.2. Everything below ran in Node through ESLint, TypeScript, Vitest, the checks, the sim and the

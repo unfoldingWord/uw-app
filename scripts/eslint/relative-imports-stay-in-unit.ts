@@ -6,7 +6,7 @@ type SourceNode = { type: string; value?: unknown; range?: [number, number] };
 
 const dotSegment = /(^|\/)\.{1,2}(\/|$)|\/\/|\/$/;
 
-export function hasDotSegment(specifier: string): boolean {
+function hasDotSegment(specifier: string): boolean {
   return !specifier.startsWith('.') && dotSegment.test(specifier);
 }
 

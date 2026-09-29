@@ -180,7 +180,7 @@ function catalogEntry(release: FixtureRelease, index: number) {
   };
 }
 
-export const catalogLastUpdated = '2026-09-29T19:17:00Z';
+const catalogLastUpdated = '2026-09-29T19:17:00Z';
 
 export function catalogSearch(releases: readonly FixtureRelease[]) {
   return { ok: true, data: releases.map(catalogEntry), last_updated: catalogLastUpdated };

@@ -98,3 +98,7 @@ Dates are formatted by the screen layer with the platform's date formatting, and
 
 - `study.frame.picture`: the accessible name of a story picture in the Study reader. Each locale copies its own `session.frame.picture`, so the two readers name a picture the same way; review them together.
 - `transfer.app.ready`: shown on the receiving phone when the app itself arrived, with its size. Drafted by an AI agent in fifteen locales. It must not promise that the phone installs the app on its own: handing the file to the system installer is not built yet.
+
+## Added with the release wiring (T13)
+
+- `failure.boot`: the one line shown when the app could not start its library on the phone (the database or the files would not open), above Try again (`common.retry`). The kernel has not started, so the line is chosen from the phone's own language, not the app setting. Drafted by an AI agent in fifteen locales; it must stay calm and must not suggest anything was lost.

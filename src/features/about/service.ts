@@ -4,11 +4,11 @@ import type { Kernel } from '@lib/kernel';
 import type { ImpactStory } from '@lib/partners/stories';
 import { aboutWords, type AboutWords } from './strings';
 
-export const translationCoreUrl = 'https://www.translationcore.com';
+const translationCoreUrl = 'https://www.translationcore.com';
 
-export const btServantUrl = 'https://unfoldingword.org';
+const btServantUrl = 'https://unfoldingword.org';
 
-export const foundationsBtUrl = 'https://foundationsbt.com';
+const foundationsBtUrl = 'https://foundationsbt.com';
 
 export type AboutStat = { readonly value: number; readonly label: string };
 

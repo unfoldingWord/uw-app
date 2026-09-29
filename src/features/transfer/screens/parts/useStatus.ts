@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StatusView, TransferService } from '../../service';
 
-export const statusPollMs = 500;
+const statusPollMs = 500;
 
 export function useStatus(service: TransferService, active: boolean): StatusView | undefined {
   const [status, setStatus] = useState<StatusView | undefined>(undefined);

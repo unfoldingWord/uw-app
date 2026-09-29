@@ -48,7 +48,7 @@ function storyHelpsKind(reader: BurritoReader): CorpusKind {
   return storyHelpsFlavors.wordLinks.some((name) => name === flavor) ? 'storyWordLinks' : 'storyNotes';
 }
 
-export function kindOf(pack: string, burrito: CorpusBurrito, reader: BurritoReader): CorpusKind {
+function kindOf(pack: string, burrito: CorpusBurrito, reader: BurritoReader): CorpusKind {
   switch (burrito.row) {
     case 'text':
       return textKind(pack, burrito, reader);

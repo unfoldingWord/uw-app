@@ -13,7 +13,7 @@ const scriptRanges: readonly (readonly [Script, RegExp])[] = [
 
 const urduLanguages: readonly string[] = ['ur'];
 
-export function scriptOf(language: string, sample: string): Script | undefined {
+function scriptOf(language: string, sample: string): Script | undefined {
   const found = scriptRanges.find(([, range]) => range.test(sample))?.[0];
   if (found === 'arabic' && urduLanguages.includes(language.split('-')[0] ?? language)) {
     return 'urdu';

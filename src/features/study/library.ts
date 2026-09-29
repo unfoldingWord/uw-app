@@ -5,7 +5,7 @@ import type { PackId } from '@lib/domain/pack';
 import type { InstalledPack, InstallProgress } from '@lib/packs/types';
 import type { StudyWords } from './strings';
 
-export const cardTypes = resourceTypes;
+const cardTypes = resourceTypes;
 
 export type CardType = ResourceType;
 

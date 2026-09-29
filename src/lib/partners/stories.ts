@@ -1,7 +1,7 @@
 import { fieldValidators } from '../domain/fields';
 import { hostOf, isAllowedUrl } from '../network';
 
-export const unfoldingWordSite = 'https://unfoldingword.org';
+const unfoldingWordSite = 'https://unfoldingword.org';
 
 export const giveUrl = `${unfoldingWordSite}/Give`;
 

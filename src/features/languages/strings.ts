@@ -10,7 +10,7 @@ export type LanguagesWords = Words<AreaKey<StringKey>, AreaKey<PluralKey>> & { s
 
 const sizeUnits = ['B', 'KB', 'MB', 'GB', 'TB'] as const;
 
-export function sizeIn(locale: string, bytes: number): string {
+function sizeIn(locale: string, bytes: number): string {
   let value = Math.max(0, bytes);
   let unit = 0;
   while (value >= 1000 && unit < sizeUnits.length - 1) {

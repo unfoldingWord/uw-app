@@ -9,7 +9,7 @@ export type VerseHelps = {
   readonly questions: readonly Question[];
 };
 
-export function covers(reference: string, at: VerseKey): boolean {
+function covers(reference: string, at: VerseKey): boolean {
   const parsed = parseReference(reference);
   if (!parsed.ok) {
     return false;
