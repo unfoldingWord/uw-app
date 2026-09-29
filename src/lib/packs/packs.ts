@@ -1,3 +1,4 @@
+import { compareText } from '../order';
 import { readCatalogReleases } from '../catalog/store';
 import type { CatalogRelease } from '../catalog/types';
 import { failureCodeOf } from '../domain/failures';
@@ -75,7 +76,7 @@ export const packsModule = defineModule<PacksApi>({
     });
 
     const sortedPacks = (): InstalledPack[] =>
-      [...installed.values()].sort((left, right) => left.pack.localeCompare(right.pack));
+      [...installed.values()].sort((left, right) => compareText(left.pack, right.pack));
 
     const catalogReleases = (): Promise<CatalogRelease[]> => readCatalogReleases(ports.db);
 

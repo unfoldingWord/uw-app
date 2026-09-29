@@ -1,3 +1,4 @@
+import { compareText } from '../order';
 import { englishNameOf } from './languageNames';
 import { compareReleases } from './normalize';
 import type { CatalogLanguage, CatalogRelease } from './types';
@@ -27,7 +28,7 @@ export function languagesOf(
     })
     .sort(
       (left, right) =>
-        left.englishName.localeCompare(right.englishName) || left.language.localeCompare(right.language),
+        compareText(left.englishName, right.englishName) || compareText(left.language, right.language),
     );
 }
 

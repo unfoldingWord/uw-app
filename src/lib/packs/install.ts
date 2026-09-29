@@ -1,3 +1,4 @@
+import { compareText } from '../order';
 import { readArchive } from '../burrito/archive';
 import type { BurritoFiles } from '../burrito/files';
 import { failureCodeOf, type FailureCode } from '../domain/failures';
@@ -316,7 +317,7 @@ export function createInstaller(context: InstallerContext): Installer {
       }
     }
     const burritos = [...kept, ...added].sort((left, right) =>
-      resourceKey(left.provenance).localeCompare(resourceKey(right.provenance)),
+      compareText(resourceKey(left.provenance), resourceKey(right.provenance)),
     );
     await verify(stage, burritos);
     await swapIn(files, stage, target.pack);

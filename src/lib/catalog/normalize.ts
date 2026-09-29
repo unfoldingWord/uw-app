@@ -1,3 +1,4 @@
+import { compareText } from '../order';
 import { fieldValidators } from '../domain/fields';
 import { packIdOf, packKindOf } from '../domain/pack';
 import { archiveUrlOf, resourceKey } from '../domain/release';
@@ -105,14 +106,14 @@ export function comparePublishers(left: string, right: string): number {
   if (right === leadingPublisher) {
     return 1;
   }
-  const folded = left.toLowerCase().localeCompare(right.toLowerCase());
-  return folded === 0 ? left.localeCompare(right) : folded;
+  const folded = compareText(left.toLowerCase(), right.toLowerCase());
+  return folded === 0 ? compareText(left, right) : folded;
 }
 
 export function compareReleases(left: CatalogRelease, right: CatalogRelease): number {
   return (
     comparePublishers(left.publisher, right.publisher) ||
-    left.resource.localeCompare(right.resource) ||
-    left.tag.localeCompare(right.tag)
+    compareText(left.resource, right.resource) ||
+    compareText(left.tag, right.tag)
   );
 }

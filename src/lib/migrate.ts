@@ -1,3 +1,4 @@
+import { compareText } from './order';
 import type { Db, Migration } from './ports';
 
 export const migrationsTable = 'schema_migrations';
@@ -5,7 +6,7 @@ export const migrationsTable = 'schema_migrations';
 export type MigrationOutcome = { ok: true; applied: readonly string[] } | { ok: false; failed: string };
 
 export async function runMigrations(db: Db, migrations: readonly Migration[]): Promise<MigrationOutcome> {
-  const ordered = [...migrations].sort((left, right) => left.id.localeCompare(right.id));
+  const ordered = [...migrations].sort((left, right) => compareText(left.id, right.id));
   const applied: string[] = [];
   let current = migrationsTable;
   try {

@@ -4,25 +4,30 @@ import { unitOf } from './units.ts';
 
 type SourceNode = { type: string; value?: unknown; range?: [number, number] };
 
+const dotSegment = /(^|\/)\.{1,2}(\/|$)|\/\/|\/$/;
+
+export function hasDotSegment(specifier: string): boolean {
+  return !specifier.startsWith('.') && dotSegment.test(specifier);
+}
+
 export const relativeImportsStayInUnit: Rule.RuleModule = {
   meta: {
     type: 'problem',
     docs: {
       description:
-        'A relative import never leaves its unit, so every cross-unit import is an alias the boundary rules can see.',
+        'A relative import never leaves its unit, and an alias or package path never walks with . or .., so every cross-unit import is an alias the boundary rules can see.',
     },
     messages: {
       leavesUnit:
         "'{{specifier}}' leaves {{unit}}. Import across units by alias (@lib, @features, @shared, @platform, @sim) so the boundaries in AGENTS.md rule 2 apply.",
+      dotSegment:
+        "'{{specifier}}' walks with a . or .. segment after an alias or package name, which hides where it lands from the boundary rules (AGENTS.md rule 2). Name the target by its own alias.",
     },
     schema: [],
   },
   create(context) {
     const unit = unitOf(context.cwd, context.filename);
-    if (unit === undefined) {
-      return {};
-    }
-    const unitRoot = resolve(context.cwd, ...unit.split('/'));
+    const unitRoot = unit === undefined ? undefined : resolve(context.cwd, ...unit.split('/'));
     const directory = dirname(context.filename);
 
     function check(node: Rule.Node, source: SourceNode | null | undefined): void {
@@ -30,7 +35,11 @@ export const relativeImportsStayInUnit: Rule.RuleModule = {
         return;
       }
       const specifier = source.value;
-      if (!specifier.startsWith('.')) {
+      if (hasDotSegment(specifier)) {
+        context.report({ node, messageId: 'dotSegment', data: { specifier } });
+        return;
+      }
+      if (!specifier.startsWith('.') || unit === undefined || unitRoot === undefined) {
         return;
       }
       const target = resolve(directory, specifier);

@@ -39,6 +39,24 @@ describe('import boundaries (AGENTS.md rule 2)', () => {
     ['migrations/0002-groups.ts', "import { allowedHosts } from '@lib/network';\n"],
     ['migrations/0002-groups.ts', "import { migrationsTable } from '@lib/ports';\n"],
     ['src/features/home/migrations/0001-home.ts', "import { home } from '../service';\n"],
+    ['src/features/home/service.ts', "import { File } from 'expo-file-system';\n"],
+    ['src/features/home/service.ts', "import { openDatabaseSync } from 'expo-sqlite';\n"],
+    ['src/features/home/service.ts', "import { BlurView } from 'expo-blur';\n"],
+    ['src/features/home/screens/HomeScreen.tsx', "import { shareAsync } from 'expo-sharing';\n"],
+    ['src/shared/theme/theme.ts', "import { createAudioPlayer } from 'expo-audio';\n"],
+    ['src/shared/theme/theme.ts', "import { getLocales } from 'expo-localization';\n"],
+    ['src/shared/theme/theme.ts', "import { BlurView } from 'expo-blur';\n"],
+    ['src/shared/theme/theme.ts', "import font from '@design-system/assets/fonts/Inter-Regular.ttf';\n"],
+    ['src/shared/fonts/assets.ts', "import tokens from '@design-system/tokens/colors.css';\n"],
+    ['src/lib/corpus/corpus.ts', "import font from '@design-system/assets/fonts/Inter-Regular.ttf';\n"],
+    ['app/index.tsx', "import { createKernel } from '@lib/kernel';\n"],
+    ['app/index.tsx', "import { home } from '@features/home/service';\n"],
+    ['app/index.tsx', "import { files } from '@platform/files';\n"],
+    ['app/(tabs)/_layout.tsx', "import { createKernel } from '@lib/kernel';\n"],
+    ['app/(tabs)/_layout.tsx', "import { files } from '@platform/files';\n"],
+    ['app/_layout.tsx', "import { File } from 'expo-file-system';\n"],
+    ['app/_layout.tsx', "import type { Ports } from '@lib/ports';\n"],
+    ['app/_layout.tsx', "import { bookmarks } from '@features/home/store';\n"],
   ])('%s refuses %s', async (file, code) => {
     expect(await ruleIds(file, code)).toContain(restricted);
   });
@@ -50,6 +68,12 @@ describe('import boundaries (AGENTS.md rule 2)', () => {
     ['src/shared/theme/theme.ts', "export { home } from '../../features/home/service';\n"],
     ['src/platform/files.ts', "import { createKernel } from '../lib/kernel';\n"],
     ['sim/world.ts', "import { bookmarks } from '../src/features/home/store';\n"],
+    ['src/lib/corpus/corpus.ts', "import { home } from '@lib/../features/home/service';\n"],
+    ['src/features/home/service.ts', "import { study } from '@features/home/../study/service';\n"],
+    ['src/features/home/screens/HomeScreen.tsx', "import { kernel } from '@lib/domain/../kernel';\n"],
+    ['src/shared/theme/theme.ts', "export * from '@shared/./../features/home/service';\n"],
+    ['app/index.tsx', "export { default } from '@features/home/screens/../store';\n"],
+    ['sim/world.ts', "import { files } from '@lib/../platform/files';\n"],
   ])('%s refuses the relative path %s', async (file, code) => {
     expect(await ruleIds(file, code)).toContain(leavesUnit);
   });
@@ -65,9 +89,47 @@ describe('import boundaries (AGENTS.md rule 2)', () => {
     ['sim/world.ts', "import { readFileSync } from 'node:fs';\n"],
     ['migrations/0002-groups.ts', "import type { Migration } from '@lib/ports';\n"],
     ['src/features/home/migrations/0001-home.ts', "import type { Migration } from '@lib/ports';\n"],
+    ['src/shared/glass/GlassSurface.tsx', "import { BlurView } from 'expo-blur';\n"],
+    ['src/shared/fonts/assets.ts', "import font from '@design-system/assets/fonts/Inter-Regular.ttf';\n"],
+    ['app/index.tsx', "export { default } from '@features/home/screens/HomeScreen';\n"],
+    ['app/(tabs)/_layout.tsx', "import { Tabs } from 'expo-router';\n"],
+    ['app/_layout.tsx', "import { createKernel } from '@lib/kernel';\n"],
+    ['app/_layout.tsx', "import { platformPorts } from '@platform/ports';\n"],
+    ['app/_layout.tsx', "import { GlassSurface } from '@shared/glass';\n"],
+    ['src/platform/files.ts', "import { File } from 'expo-file-system';\n"],
+    ['src/lib/burrito/files.ts', "import { md5 } from '@noble/hashes/legacy.js';\n"],
   ])('%s allows %s', async (file, code) => {
     const ids = await ruleIds(file, code);
     expect(ids.filter((id) => id === restricted || id === leavesUnit)).toEqual([]);
+  });
+});
+
+describe('static imports only (AGENTS.md rule 2)', () => {
+  it.each([
+    ['src/lib/corpus/corpus.ts', "export const load = () => import('@features/home/service');\n"],
+    ['src/features/home/service.ts', "export const load = () => import('expo-file-system');\n"],
+    ['src/shared/theme/theme.ts', 'export const load = (name: string) => import(name);\n'],
+    ['app/index.tsx', "export const load = () => import('@lib/kernel');\n"],
+    ['migrations/0002-groups.ts', "export const load = () => import('@lib/kernel');\n"],
+    ['src/features/home/service.ts', "export const files = require('expo-file-system');\n"],
+    ['src/features/home/service.ts', "export type Home = import('@features/study/service').Study;\n"],
+  ])('%s refuses %s', async (file, code) => {
+    expect(await ruleIds(file, code)).toContain('no-restricted-syntax');
+  });
+
+  it('lets the sim and scripts discover files by path', async () => {
+    const ids = await ruleIds('sim/scenario.ts', 'export const load = (path: string) => import(path);\n');
+    expect(ids).not.toContain('no-restricted-syntax');
+  });
+});
+
+describe('network only through the Http port (AGENTS.md section 10)', () => {
+  it.each([
+    ['src/features/home/service.ts', "export const get = () => fetch('https://example.org');\n"],
+    ['src/shared/theme/theme.ts', 'export const x = new XMLHttpRequest();\n'],
+    ['app/index.tsx', "export const s = new WebSocket('wss://example.org');\n"],
+  ])('%s refuses %s', async (file, code) => {
+    expect(await ruleIds(file, code)).toContain('no-restricted-globals');
   });
 });
 
@@ -79,9 +141,42 @@ describe('lib purity (AGENTS.md rule 2)', () => {
     'export const id = () => crypto.randomUUID();\n',
     'export const title = () => document.title;\n',
     "export const say = () => console.log('x');\n",
+    "export const day = () => new Intl.DateTimeFormat('en').format(0);\n",
+    'export const sort = (a: string, b: string) => new Intl.Collator().compare(a, b);\n',
+    'export const intl = Intl;\n',
+    "export const zone = Intl['DateTimeFormat'];\n",
+    'export const order = (a: string, b: string) => a.localeCompare(b);\n',
+    'export const shown = (n: number) => n.toLocaleString();\n',
+    "export const host = Function('return this')();\n",
+    "export const host = (0, eval)('this');\n",
+    'export const later = (work: () => void) => queueMicrotask(work);\n',
+    'export const where = import.meta.url;\n',
+    'const m = Math;\nexport const roll = () => m.random();\n',
+    'const { random } = Math;\nexport const roll = () => random();\n',
+    "export const roll = () => Math['random']();\n",
+    'export const ref = new WeakRef({});\n',
   ])('src/lib refuses %s', async (code) => {
     const ids = await ruleIds('src/lib/clock.ts', code);
-    expect(ids.some((id) => id === 'no-restricted-globals' || id === 'no-restricted-properties')).toBe(true);
+    expect(
+      ids.some((id) =>
+        [
+          'no-restricted-globals',
+          'no-restricted-properties',
+          'no-restricted-syntax',
+          'no-eval',
+          'no-new-func',
+          'no-implied-eval',
+        ].includes(id),
+      ),
+    ).toBe(true);
+  });
+
+  it.each([
+    'export const plural = (locale: string, n: number) => new Intl.PluralRules(locale).select(n);\n',
+    'export const rules = (locale: string): Intl.PluralRules => new Intl.PluralRules(locale);\n',
+    'export const floor = (n: number) => Math.floor(n);\n',
+  ])('src/lib allows %s', async (code) => {
+    expect(await ruleIds('src/lib/clock.ts', code)).toEqual([]);
   });
 });
 
@@ -92,6 +187,10 @@ describe('code carries no comments (AGENTS.md section 10)', () => {
     '// @ts-ignore\nexport const a: number = 1;\n',
   ])('refuses %j', async (code) => {
     expect(await ruleIds('src/lib/a.ts', code)).toContain('uw/no-comments');
+  });
+
+  it.each(['src/lib/a.mts', 'sim/a.cts', 'app/a.jsx'])('reaches %s', async (file) => {
+    expect(await ruleIds(file, 'export const a = 1;\n// why\n')).toContain('uw/no-comments');
   });
 
   it('cannot be switched off inline', async () => {

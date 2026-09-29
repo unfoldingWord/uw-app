@@ -2,8 +2,17 @@ import js from '@eslint/js';
 import type { Linter } from 'eslint';
 import { defineConfig } from 'eslint/config';
 import tseslint from 'typescript-eslint';
-import { layers } from './scripts/eslint/boundaries.ts';
-import { libRestrictedGlobals, libRestrictedProperties } from './scripts/eslint/lib-globals.ts';
+import {
+  applicationNetworkGlobals,
+  applicationSources,
+  layers,
+  moduleLoadingSyntax,
+} from './scripts/eslint/boundaries.ts';
+import {
+  libRestrictedGlobals,
+  libRestrictedProperties,
+  libRestrictedSyntax,
+} from './scripts/eslint/lib-globals.ts';
 import { uwPlugin } from './scripts/eslint/plugin.ts';
 
 export default defineConfig(
@@ -31,7 +40,7 @@ export default defineConfig(
   js.configs.recommended,
   tseslint.configs.strict,
   {
-    files: ['**/*.{ts,tsx,js,mjs,cjs}'],
+    files: ['**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs}'],
     plugins: { uw: uwPlugin },
     rules: {
       'uw/no-comments': 'error',
@@ -59,11 +68,29 @@ export default defineConfig(
     },
   })),
   {
+    name: 'uw/static-imports',
+    files: applicationSources,
+    rules: {
+      'no-restricted-syntax': ['error', ...moduleLoadingSyntax],
+    },
+  },
+  {
+    name: 'uw/network-through-http-port',
+    files: ['src/features/**', 'src/shared/**', 'app/**'],
+    rules: {
+      'no-restricted-globals': ['error', ...applicationNetworkGlobals],
+    },
+  },
+  {
     name: 'uw/lib-purity',
     files: ['src/lib/**'],
     rules: {
+      'no-eval': ['error', { allowIndirect: false }],
+      'no-new-func': 'error',
+      'no-implied-eval': 'error',
       'no-restricted-globals': ['error', ...libRestrictedGlobals],
       'no-restricted-properties': ['error', ...libRestrictedProperties],
+      'no-restricted-syntax': ['error', ...moduleLoadingSyntax, ...libRestrictedSyntax],
     },
   },
 );
