@@ -17,6 +17,7 @@ export const failureCodes = [
   'pack.no-space',
   'pack.checksum-mismatch',
   'pack.invalid-burrito',
+  'corpus.unreadable',
   'transfer.unavailable',
   'transfer.unsupported',
   'transfer.declined',

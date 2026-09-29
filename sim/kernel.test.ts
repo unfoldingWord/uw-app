@@ -156,7 +156,7 @@ describe('journal interface (DX-1)', () => {
 
 describe('kernel composition', () => {
   it('lists its modules in one place, with the tables it owns', () => {
-    expect(Object.keys(kernelModules)).toEqual(['telemetry']);
+    expect(Object.keys(kernelModules)).toEqual(['telemetry', 'corpus']);
     expect(coreOwns.tables).toEqual(['schema_migrations', 'journal', 'journal_state']);
   });
 
@@ -242,14 +242,14 @@ describe('replay (DX-3)', () => {
       dropped: 0,
       events: [
         { seq: 1, type: 'AppOpened', at: 10, payload: { day: '2026-01-05' } },
-        { seq: 2, type: 'StoryOpened', at: 20, payload: { story: 4, language: 'qaa' } },
+        { seq: 2, type: 'InvitationShown', at: 20, payload: {} },
       ],
     });
     expect(result.ok && result.outcomes).toEqual({ restart: 1, unhandled: 1 });
     expect(result.ok && result.divergence).toEqual([
       {
         index: 1,
-        recorded: '{"at":20,"payload":{"language":"qaa","story":4},"type":"StoryOpened"}',
+        recorded: '{"at":20,"payload":{},"type":"InvitationShown"}',
         replayed: 'nothing',
       },
     ]);
