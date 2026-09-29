@@ -3,6 +3,44 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 I1 import a burrito file on the phone (SH-3)
+
+Proposal `docs/proposals/2026-09-29-file-import.md`, exception recorded in `docs/exceptions.md` (rule 4) in
+the same commit. Everything below ran in Node or in `expo config` and `expo export`; nothing ran on a phone.
+
+- Red first: the extended `SH-3` scenario failed with `languages.importFile is not a function` before the
+  service and Packs changes; the new `permissions.test.ts` case lists seven findings for a registration that
+  admits `file` URIs, a `public.data` document type, in-place opening and file sharing.
+- Picker port (`src/lib/ports.ts`): `pickArchive(): Promise<{ uri } | undefined>`. Platform adapter
+  `src/platform/picker.ts` over `expo-document-picker` ~57.0.3 (`application/zip`, `application/octet-stream`,
+  copied to the cache); memory adapter `sim/adapters/picker.ts` scripted with a file, a cancel or a failure.
+  `compose.ts` passes it to modules unchanged. No port contract case: a real pick needs a person.
+- Packs `importPicked()`: a cancel returns `undefined` and journals nothing; a failed pick is a `Failure`
+  (step `file`); a file goes through `importFile(uri)`. The Files platform adapter's `adopt` now deletes the
+  handed copy when it lies in the cache (the picker's copy) or `Documents/Inbox` (iOS "Open in"), never a
+  file the leader owns.
+- Languages service `importFile()`, `importOpened(uri)` and `openedName(uri)`; the Languages modal shows a
+  "From a file" section with "Import from a file", the failure in place under it, and, when another app
+  opened a `.zip` in the app, a card at the top that asks before installing.
+- `app.config.ts`: `CFBundleDocumentTypes` for `public.zip-archive` (`LSSupportsOpeningDocumentsInPlace`
+  stays false) and a `VIEW` intent filter for `application/zip` and `application/octet-stream` over `content`.
+  `app/+native-intent.ts` re-exports `redirectSystemPath`, which sends a `file://` or `content://` URL to
+  `/languages?opened=<uri>`. The `permissions` check now also refuses an intent filter scheme other than the
+  app scheme and `content`, a document type other than `public.zip-archive`, in-place opening and file
+  sharing, and fails if the `.zip` registration disappears on either platform.
+- `EXPO_OFFLINE=1 npx expo config --type introspect --json`: MainActivity carries the new filter
+  (`android.intent.action.VIEW`, `DEFAULT`, `content` with both MIME types) beside the launcher and the
+  `unfoldingword` scheme; Info.plist carries the document type; entitlements `{}`; Android requests
+  INTERNET, VIBRATE and MODIFY_AUDIO_SETTINGS with the 14 refused permissions removed, as before.
+  `expo-document-picker`'s own Android manifest adds only a `<queries>` entry for `OPEN_DOCUMENT`.
+- Six string keys in all 16 locales, drafted by an AI agent (`docs/strings-review.md`); no new failure code.
+- `npm run verify`: green (637 tests, 52 scenarios, 7 checks, trace 0 unproven, contract 21 fixture burritos,
+  both bundles). An Android `expo export` contains `redirectSystemPath` and the document picker module.
+- Not verified: any of it on a phone (the picker, Open in from Files on iOS, a file manager or chat app on
+  Android, the Inbox and cache cleanup), the screen in light, dark and reduced blur, RTL, and whether Expo
+  Router hands a cold-start `content://` URL to `+native-intent` exactly as the source reads. Android `SEND`
+  is not registered (see the proposal). A file opened before onboarding is finished is dropped.
+
 ## 2026-09-29 Front matter listed without a scope: CI run 36629971685
 
 Source: GitHub Actions run 36629971685 (real Door43 data) failed two lines, all 18 other live rows passing:
