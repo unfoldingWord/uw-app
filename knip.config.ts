@@ -9,7 +9,15 @@ const dependenciesAwaitingFirstImport = [
 ];
 
 const config: KnipConfig = {
-  entry: ['scripts/*.ts', 'scripts/*/cli.ts', 'scripts/checks/*.check.ts'],
+  entry: [
+    'scripts/*.ts',
+    'scripts/*/cli.ts',
+    'scripts/checks/*.check.ts',
+    'sim/scenarios/*.ts',
+    'migrations/*.ts',
+    'src/features/*/migrations/*.ts',
+  ],
+  ignoreExportsUsedInFile: true,
   ignore: ['design-system/**'],
   ignoreDependencies: dependenciesAwaitingFirstImport,
 };
