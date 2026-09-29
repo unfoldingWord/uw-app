@@ -124,6 +124,75 @@ test only, 30 unproven`; `contract: 20 fixture burritos, 0 failed` (live skipped
   `src/lib/corpus/corpus.ts`, not tested for a crash): a crash between them leaves the pack out of the corpus
   until it is installed again. Async reads wait for a pending ingest; the synchronous `summary()`,
   `languages()` and snapshot could see the gap, which no test exercises.
+## 2026-09-29 T9b platform adapters and the composition root
+
+Node v22.22.2. Everything below ran in Node through Vitest, lint, typecheck and `expo export`. **Nothing ran on a
+phone**: every platform adapter is typechecked and bundled, none has executed. Device run pending.
+
+### What ran
+
+- `src/platform/`: one adapter per port (clock, ids, files, db, kv, http, audio, share-sheet, locale, transport),
+  `createPlatformPorts(policy)`, `discoverMigrations()` and `reducedBlurByDefault()`. `app/_layout.tsx` creates
+  the kernel once with them, starts it, and provides it through `KernelProvider` in `src/shared/kernel`.
+- `npm run bundle` with `app/_layout.tsx` and no route file: `bundle android: pass, Android Bundled 12078ms
+  node_modules/expo-router/entry.js (1425 modules)`, `bundle ios: pass, iOS Bundled 11945ms ... (1291 modules)`.
+  An unminified `expo export --platform android --no-bytecode` holds all four migration ids and
+  `CREATE TABLE packs`, so `require.context` found `migrations/` on the device path, plus `redirect:'manual'`,
+  `credentials:'omit'`, `BEGIN IMMEDIATE` and `uw-preferences.db`.
+- `sim/adapters/contract.ts`, the port contract: 16 cases over Files, Db (with FTS5), Kv, Http, Clock, Ids,
+  Locale, Audio and Transport, framework-free so a device harness can run it against `createPlatformPorts`.
+  `sim/adapters/contract.test.ts` runs it against the memory adapters: pass. Observed red once: with the memory
+  `readRange` throwing past the end of a file, "reads ranges clamped to the end ..." failed; restored. The
+  second test replaces `rename` with one that overwrites and sees exactly the rename case fail.
+- `src/platform/discover.test.ts`: migrations from both reserved locations in code-point order; refuses a
+  non-migration, a mismatched id and a repeated id.
+- Lint: with the `app root` layer back to `^@lib/(?!kernel$)`, `boundaries.test.ts` failed "app/_layout.tsx
+  allows import { isAllowedUrl } from '@lib/network'" and `eslint app/_layout.tsx` reported the import; restored.
+
+`npm run verify` then returned green (exit 0): 28 test files, 336 tests; `5 checks, 2 pending, none failed`;
+`sim: 12 scenarios, 12 passed, 0 failed`; `trace: 51 Must requirements, 12 with a scenario, 1 with a test
+only, 38 unproven`; `contract: 20 fixture burritos, 0 failed` (live skipped, offline); bundle both platforms
+pass.
+
+### Decisions later tasks follow
+
+- **How a screen reaches its service.** A feature's `service.ts` exports `createXService(kernel: Kernel)`, pure
+  over the kernel, which the sim can call directly. A screen calls `useService(createXService)` from
+  `@shared/kernel`, which builds the service once per kernel and caches it. Nothing lists services;
+  `src/features/_template/` shows the shape.
+- **Reduced blur.** On by default on Android before API 31 (no RenderEffect blur before Android 12), off
+  otherwise; `reducedBlurByDefault()` in `src/platform/display.ts`. No device model or identifier is read. The
+  leader's override and the theme override enter through the root layout's `Appearance` value when T8's Home
+  store holds them.
+- **Http.** Redirects are followed by hand (`redirect: 'manual'`, at most five hops), each hop checked against
+  the allowlist before it is requested; `url` in the response is the last hop. `timeoutMs` is an idle timeout,
+  reset on every hop and chunk, so a large download is not cut off while bytes arrive. No cookies are sent
+  (`credentials: 'omit'`). A thrown fetch is `offline` unless the adapter timed it out or it was cancelled. A
+  download streams to Files in 1 MiB appends; `resumeFrom` sends `Range` and, when the server answers 200
+  anyway, skips the bytes already on disk, so the result is 206 either way, as in the memory adapter.
+- **Files** live under `Paths.document/device/`, so SQLite's own directory is never listed. **Db** is one
+  connection with the memory adapter's queue, so a transaction is never interleaved; FTS5 is compiled into
+  expo-sqlite by default on both platforms (`expo.sqlite.enableFTS` unset). **Kv** is `expo-sqlite/kv-store`
+  in its own database file, so preferences need no MMKV.
+- **ShareSheet** appends one line per provenance (`title · publisher/resource tag · licence`) that the text does
+  not already carry.
+
+### Not verified
+
+- No adapter has run. On a phone, run `runPortContract` from `sim/adapters/contract.ts` against
+  `createPlatformPorts` with an `http` fixture on `git.door43.org`, and record it here. In particular unverified:
+  expo-file-system `move` onto a free path for a directory, `FileHandle` offsets, `adopt` from an Android
+  `content://` URI, `Paths.availableDiskSpace`; expo/fetch manual redirects returning the 3xx with its
+  `Location` on both platforms, body streaming, and `Range`; expo-sqlite blobs and FTS5 in a release build;
+  expo-audio load and end events.
+- Android file shares go through expo-sharing, which carries no text, so an audio file shared on Android has no
+  provenance line (SH-5). iOS shares the file and the text together. Open for the Share task.
+- expo-file-system's Android manifest merges `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` (max SDK 32);
+  PRD section 7 allows storage only as the platform requires, so T13's `app.config` should block both unless
+  file import needs them. expo-network adds `ACCESS_NETWORK_STATE` and `ACCESS_WIFI_STATE`; expo-audio adds
+  `MODIFY_AUDIO_SETTINGS`. No location permission is added by any of them.
+- Transport is unavailable on phones until `docs/proposals/2026-09-29-transport-radio.md` is decided.
+- The template screen and the root layout were not rendered, in light, dark or reduced blur.
 
 ## 2026-09-29 F1 foundation review fixes
 
