@@ -112,8 +112,10 @@ async function describeCatalog(): Promise<Entry[]> {
     }
   }
   print('catalog total', { entries: all.length });
-  for (const entry of all) {
-    print('catalog item', summaryOf(entry));
+  if (process.env['CONTRACT_DESCRIBE'] === 'full') {
+    for (const entry of all) {
+      print('catalog item', summaryOf(entry));
+    }
   }
   return all;
 }
@@ -330,7 +332,8 @@ async function describeSample(sample: Sample, entries: readonly Entry[]): Promis
 }
 
 export async function describeLive(): Promise<void> {
-  if (process.env['CONTRACT_DESCRIBE'] !== '1') {
+  const mode = process.env['CONTRACT_DESCRIBE'];
+  if (mode !== '1' && mode !== 'full') {
     return;
   }
   try {
