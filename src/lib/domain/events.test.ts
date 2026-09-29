@@ -30,7 +30,7 @@ describe('events (DX-1 nothing identifies the leader)', () => {
       checkEvent({
         type: 'BookmarkAdded',
         at: 3,
-        payload: { bookmark: 'id-000001', target: 'passage', reference: 'JHN 3:16' },
+        payload: { bookmark: 'id-000001', target: 'passage', reference: 'JHN 3:16', language: 'qaa' },
       }).ok,
     ).toBe(true);
   });

@@ -97,6 +97,7 @@ export const ur: LocaleTable = {
   'invitation.action': 'unfoldingWord کے شراکت دار بنیں',
   'invitation.dismiss': 'ابھی نہیں',
   'invitation.readMore': 'پوری کہانی unfoldingword.org پر پڑھیں',
+  'impact.securityNote': 'حفاظت کے لیے اس کہانی کے نام بدل دیے گئے ہیں۔',
   'study.text.literal': 'اصل کے قریب',
   'study.text.simplified': 'روزمرہ کے الفاظ',
   'study.text.choice': 'منتخب کریں کہ بائبل کا متن کیسے پڑھا جائے',
@@ -152,6 +153,8 @@ export const ur: LocaleTable = {
   'resource.simplified.about': 'بلند آواز میں پڑھنے اور سکھانے کے لیے آسان متن۔',
   'resource.notes': 'نوٹس',
   'resource.notes.about': 'مشکل حصوں میں مدد، ہر آیت سے جڑی ہوئی۔',
+  'resource.wordLinks': 'الفاظ کے روابط',
+  'resource.wordLinks.about': 'متن کے الفاظ، الفاظ میں اپنے اندراج سے جڑے ہوئے۔',
   'resource.words': 'الفاظ',
   'resource.words.about': 'اہم اصطلاحات اور ناموں کی وضاحت، متن سے جڑی ہوئی۔',
   'resource.questions': 'سوالات',
@@ -390,6 +393,8 @@ export const ur: LocaleTable = {
   'settings.appLanguage.partial': 'اس زبان میں کچھ الفاظ ابھی بھی انگریزی میں نظر آتے ہیں۔',
   'settings.theme': 'تھیم',
   'settings.theme.about': 'ہلکی، گہری یا فون کے مطابق۔',
+  'settings.reducedBlur': 'دھندلاہٹ کم کریں',
+  'settings.reducedBlur.about': 'سادہ شیشہ، جو پرانے فون پر ہلکا چلتا ہے۔',
   'settings.firstName': 'پہلا نام',
   'settings.firstName.about': 'صرف سلام میں، صرف اس فون پر استعمال ہوتا ہے۔',
   'settings.fullText': 'ہر متن کے اندر تلاش کریں',
@@ -447,6 +452,8 @@ export const ur: LocaleTable = {
   'failure.transfer.peer-lost': 'دوسرا فون پہنچ سے باہر ہو گیا۔ فون قریب لائیں اور دوبارہ کوشش کریں۔',
   'failure.audio.unavailable': 'اس کے لیے ابھی آڈیو دستیاب نہیں ہے۔',
   'failure.share.unavailable': 'اس فون پر ابھی شیئر کرنا دستیاب نہیں ہے۔',
+  'failure.partners.invalid-feed':
+    'اثر کی کہانیاں ایسی شکل میں آئیں جو ایپ پڑھ نہیں سکتی۔ اس فون پر موجود کہانیاں دکھائی دیتی رہیں گی۔',
   'failure.unexpected':
     'کچھ کام نہیں کیا۔ دوبارہ کوشش کریں، یا تشخیصی معلومات شیئر کریں تاکہ کوئی مدد کر سکے۔',
 };

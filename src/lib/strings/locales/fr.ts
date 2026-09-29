@@ -99,6 +99,7 @@ export const fr: LocaleTable = {
   'invitation.action': 'Devenir partenaire d’unfoldingWord',
   'invitation.dismiss': 'Pas maintenant',
   'invitation.readMore': 'Lire l’histoire complète sur unfoldingword.org',
+  'impact.securityNote': 'Les noms de cette histoire ont été changés par sécurité.',
   'study.text.literal': 'Proche de l’original',
   'study.text.simplified': 'Mots de tous les jours',
   'study.text.choice': 'Choisissez comment se lit le texte biblique',
@@ -156,6 +157,8 @@ export const fr: LocaleTable = {
   'resource.simplified.about': 'Texte simple pour lire à voix haute et enseigner.',
   'resource.notes': 'Notes',
   'resource.notes.about': 'De l’aide pour les passages difficiles, attachée à chaque verset.',
+  'resource.wordLinks': 'Liens de mots',
+  'resource.wordLinks.about': 'Des mots du texte reliés à leur article dans Mots.',
   'resource.words': 'Mots',
   'resource.words.about': 'Termes clés et noms expliqués, reliés depuis le texte.',
   'resource.questions': 'Questions',
@@ -418,6 +421,8 @@ export const fr: LocaleTable = {
   'settings.appLanguage.partial': 'Dans cette langue, certains mots s’affichent encore en anglais.',
   'settings.theme': 'Thème',
   'settings.theme.about': 'Clair, sombre ou comme le téléphone.',
+  'settings.reducedBlur': 'Réduire le flou',
+  'settings.reducedBlur.about': 'Un verre plus simple, plus léger pour les téléphones anciens.',
   'settings.firstName': 'Prénom',
   'settings.firstName.about': 'Utilisé seulement dans la salutation, seulement sur ce téléphone.',
   'settings.fullText': 'Rechercher dans tous les textes',
@@ -484,6 +489,8 @@ export const fr: LocaleTable = {
     'L’autre téléphone est hors de portée. Rapprochez les téléphones et réessayez.',
   'failure.audio.unavailable': 'L’audio n’est pas disponible pour ceci pour le moment.',
   'failure.share.unavailable': 'Le partage n’est pas disponible sur ce téléphone pour le moment.',
+  'failure.partners.invalid-feed':
+    'Les histoires d’impact sont arrivées sous une forme que l’application ne peut pas lire. Celles qui sont sur ce téléphone restent affichées.',
   'failure.unexpected':
     'Quelque chose n’a pas fonctionné. Réessayez, ou partagez le diagnostic pour qu’on puisse vous aider.',
 };

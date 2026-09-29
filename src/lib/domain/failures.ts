@@ -32,6 +32,7 @@ export const failureCodes = [
   'transfer.peer-lost',
   'audio.unavailable',
   'share.unavailable',
+  'partners.invalid-feed',
   'unexpected',
 ] as const;
 
@@ -51,6 +52,7 @@ export const failureSteps = [
   'transfer',
   'share',
   'audio',
+  'impact-stories',
 ] as const;
 
 export type FailureStep = (typeof failureSteps)[number];

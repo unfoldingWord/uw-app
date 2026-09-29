@@ -54,6 +54,8 @@ export const study = {
   'resource.simplified.about': 'Simplified text for reading aloud and teaching.',
   'resource.notes': 'Notes',
   'resource.notes.about': 'Help with hard passages, attached to each verse.',
+  'resource.wordLinks': 'Word links',
+  'resource.wordLinks.about': 'Words in the text linked to their entries in Words.',
   'resource.words': 'Words',
   'resource.words.about': 'Key terms and names explained, linked from the text.',
   'resource.questions': 'Questions',

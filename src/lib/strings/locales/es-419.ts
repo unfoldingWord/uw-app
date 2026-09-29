@@ -99,6 +99,7 @@ export const es419: LocaleTable = {
   'invitation.action': 'Colabora con unfoldingWord',
   'invitation.dismiss': 'Ahora no',
   'invitation.readMore': 'Lee la historia completa en unfoldingword.org',
+  'impact.securityNote': 'Los nombres de esta historia se cambiaron por seguridad.',
   'study.text.literal': 'Cercano al original',
   'study.text.simplified': 'Palabras de todos los días',
   'study.text.choice': 'Elige cómo se lee el texto bíblico',
@@ -157,6 +158,8 @@ export const es419: LocaleTable = {
   'resource.simplified.about': 'Texto sencillo para leer en voz alta y enseñar.',
   'resource.notes': 'Notas',
   'resource.notes.about': 'Ayuda con los pasajes difíciles, junto a cada versículo.',
+  'resource.wordLinks': 'Enlaces de palabras',
+  'resource.wordLinks.about': 'Palabras del texto enlazadas con su entrada en Palabras.',
   'resource.words': 'Palabras',
   'resource.words.about': 'Términos clave y nombres explicados, enlazados desde el texto.',
   'resource.questions': 'Preguntas',
@@ -405,6 +408,8 @@ export const es419: LocaleTable = {
   'settings.appLanguage.partial': 'En este idioma algunas palabras todavía aparecen en inglés.',
   'settings.theme': 'Tema',
   'settings.theme.about': 'Claro, oscuro o igual que el teléfono.',
+  'settings.reducedBlur': 'Reducir el desenfoque',
+  'settings.reducedBlur.about': 'Un vidrio más simple que funciona mejor en teléfonos antiguos.',
   'settings.firstName': 'Nombre',
   'settings.firstName.about': 'Se usa solo en el saludo, solo en este teléfono.',
   'settings.fullText': 'Buscar dentro de todos los textos',
@@ -469,6 +474,8 @@ export const es419: LocaleTable = {
     'El otro teléfono quedó fuera de alcance. Acerca los teléfonos e intenta de nuevo.',
   'failure.audio.unavailable': 'El audio no está disponible para esto ahora.',
   'failure.share.unavailable': 'Compartir no está disponible en este teléfono ahora.',
+  'failure.partners.invalid-feed':
+    'Las historias de impacto llegaron en un formato que la aplicación no puede leer. Se siguen mostrando las que están en este teléfono.',
   'failure.unexpected':
     'Algo no funcionó. Intenta de nuevo o comparte el diagnóstico para que alguien te ayude.',
 };

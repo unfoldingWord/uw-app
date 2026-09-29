@@ -105,6 +105,7 @@ export const ar: LocaleTable = {
   'invitation.action': 'كن شريكًا مع unfoldingWord',
   'invitation.dismiss': 'ليس الآن',
   'invitation.readMore': 'اقرأ القصة كاملة على unfoldingword.org',
+  'impact.securityNote': 'غُيّرت الأسماء في هذه القصة حفاظًا على السلامة.',
   'study.text.literal': 'قريب من الأصل',
   'study.text.simplified': 'كلمات يومية',
   'study.text.choice': 'اختر كيف يُقرأ نص الكتاب المقدس',
@@ -185,6 +186,8 @@ export const ar: LocaleTable = {
   'resource.simplified.about': 'نص مبسَّط للقراءة بصوت عالٍ وللتعليم.',
   'resource.notes': 'الملاحظات',
   'resource.notes.about': 'مساعدة في المقاطع الصعبة، مرتبطة بكل آية.',
+  'resource.wordLinks': 'روابط الكلمات',
+  'resource.wordLinks.about': 'كلمات من النص مربوطة بمدخلها في الكلمات.',
   'resource.words': 'الكلمات',
   'resource.words.about': 'شرح المصطلحات والأسماء الرئيسية، مع روابط من النص.',
   'resource.questions': 'الأسئلة',
@@ -459,6 +462,8 @@ export const ar: LocaleTable = {
   'settings.appLanguage.partial': 'في هذه اللغة ما زالت بعض الكلمات تظهر بالإنجليزية.',
   'settings.theme': 'المظهر',
   'settings.theme.about': 'فاتح أو داكن أو مثل الهاتف.',
+  'settings.reducedBlur': 'تقليل التمويه',
+  'settings.reducedBlur.about': 'زجاج أبسط يعمل بخفة على الهواتف القديمة.',
   'settings.firstName': 'الاسم الأول',
   'settings.firstName.about': 'يُستخدم في التحية فقط، وعلى هذا الهاتف فقط.',
   'settings.fullText': 'البحث داخل كل النصوص',
@@ -515,5 +520,7 @@ export const ar: LocaleTable = {
   'failure.transfer.peer-lost': 'ابتعد الهاتف الآخر عن النطاق. قرِّب الهاتفين وحاول مرة أخرى.',
   'failure.audio.unavailable': 'الصوت غير متاح لهذا الآن.',
   'failure.share.unavailable': 'المشاركة غير متاحة على هذا الهاتف الآن.',
+  'failure.partners.invalid-feed':
+    'وصلت قصص الأثر بشكل لا يستطيع التطبيق قراءته. ما زالت القصص الموجودة على هذا الهاتف ظاهرة.',
   'failure.unexpected': 'لم ينجح أمر ما. حاول مرة أخرى، أو شارك بيانات التشخيص ليتمكن أحد من مساعدتك.',
 };

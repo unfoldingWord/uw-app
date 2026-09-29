@@ -97,6 +97,7 @@ export const nl: LocaleTable = {
   'invitation.action': 'Word partner van unfoldingWord',
   'invitation.dismiss': 'Niet nu',
   'invitation.readMore': 'Lees het hele verhaal op unfoldingword.org',
+  'impact.securityNote': 'De namen in dit verhaal zijn om veiligheidsredenen veranderd.',
   'study.text.literal': 'Dicht bij het origineel',
   'study.text.simplified': 'Gewone woorden',
   'study.text.choice': 'Kies hoe de bijbeltekst leest',
@@ -153,6 +154,8 @@ export const nl: LocaleTable = {
   'resource.simplified.about': 'Eenvoudige tekst om voor te lezen en mee te onderwijzen.',
   'resource.notes': 'Aantekeningen',
   'resource.notes.about': 'Hulp bij moeilijke passages, bij elk vers.',
+  'resource.wordLinks': 'Woordkoppelingen',
+  'resource.wordLinks.about': 'Woorden in de tekst gekoppeld aan hun artikel in Woorden.',
   'resource.words': 'Woorden',
   'resource.words.about': 'Kernbegrippen en namen uitgelegd, gekoppeld vanuit de tekst.',
   'resource.questions': 'Vragen',
@@ -397,6 +400,8 @@ export const nl: LocaleTable = {
   'settings.appLanguage.partial': 'In deze taal staan sommige woorden nog in het Engels.',
   'settings.theme': 'Thema',
   'settings.theme.about': 'Licht, donker of zoals de telefoon.',
+  'settings.reducedBlur': 'Minder vervaging',
+  'settings.reducedBlur.about': 'Eenvoudiger glas dat lichter werkt op oudere telefoons.',
   'settings.firstName': 'Voornaam',
   'settings.firstName.about': 'Alleen gebruikt in de begroeting, alleen op deze telefoon.',
   'settings.fullText': 'Zoeken in alle teksten',
@@ -462,5 +467,7 @@ export const nl: LocaleTable = {
     'De andere telefoon is buiten bereik. Breng de telefoons dichterbij en probeer het opnieuw.',
   'failure.audio.unavailable': 'Audio is hiervoor nu niet beschikbaar.',
   'failure.share.unavailable': 'Delen is nu niet beschikbaar op deze telefoon.',
+  'failure.partners.invalid-feed':
+    'De verhalen van impact kwamen binnen in een vorm die de app niet kan lezen. De verhalen op deze telefoon blijven zichtbaar.',
   'failure.unexpected': 'Iets werkte niet. Probeer het opnieuw, of deel de diagnose zodat iemand kan helpen.',
 };

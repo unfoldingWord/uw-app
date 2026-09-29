@@ -97,6 +97,7 @@ export const sw: LocaleTable = {
   'invitation.action': 'Shirikiana na unfoldingWord',
   'invitation.dismiss': 'Si sasa',
   'invitation.readMore': 'Soma hadithi kamili kwenye unfoldingword.org',
+  'impact.securityNote': 'Majina katika hadithi hii yamebadilishwa kwa usalama.',
   'study.text.literal': 'Karibu na asili',
   'study.text.simplified': 'Maneno ya kila siku',
   'study.text.choice': 'Chagua jinsi maandiko ya Biblia yanavyosomeka',
@@ -153,6 +154,8 @@ export const sw: LocaleTable = {
   'resource.simplified.about': 'Maandiko rahisi ya kusoma kwa sauti na kufundishia.',
   'resource.notes': 'Maelezo',
   'resource.notes.about': 'Msaada kwa vifungu vigumu, umeunganishwa na kila mstari.',
+  'resource.wordLinks': 'Viungo vya maneno',
+  'resource.wordLinks.about': 'Maneno ya maandiko yaliyounganishwa na maelezo yake katika Maneno.',
   'resource.words': 'Maneno',
   'resource.words.about': 'Maneno muhimu na majina yameelezwa, yakiunganishwa kutoka kwenye maandiko.',
   'resource.questions': 'Maswali',
@@ -391,6 +394,8 @@ export const sw: LocaleTable = {
   'settings.appLanguage.partial': 'Katika lugha hii baadhi ya maneno bado yanaonekana kwa Kiingereza.',
   'settings.theme': 'Mwonekano',
   'settings.theme.about': 'Mwanga, giza au kama simu.',
+  'settings.reducedBlur': 'Punguza ukungu',
+  'settings.reducedBlur.about': 'Kioo rahisi zaidi kinachofanya kazi vizuri kwenye simu za zamani.',
   'settings.firstName': 'Jina la kwanza',
   'settings.firstName.about': 'Linatumika kwenye salamu tu, kwenye simu hii tu.',
   'settings.fullText': 'Tafuta ndani ya maandiko yote',
@@ -452,6 +457,8 @@ export const sw: LocaleTable = {
   'failure.transfer.peer-lost': 'Simu nyingine imetoka nje ya eneo. Sogeza simu karibu na ujaribu tena.',
   'failure.audio.unavailable': 'Sauti haipatikani kwa hiki kwa sasa.',
   'failure.share.unavailable': 'Kushiriki hakupatikani kwenye simu hii kwa sasa.',
+  'failure.partners.invalid-feed':
+    'Hadithi za matokeo zimefika kwa namna ambayo programu haiwezi kusoma. Zilizo kwenye simu hii bado zinaonekana.',
   'failure.unexpected':
     'Kuna kitu hakikufanya kazi. Jaribu tena, au shiriki uchunguzi ili mtu aweze kusaidia.',
 };

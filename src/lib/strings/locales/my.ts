@@ -92,6 +92,7 @@ export const my: LocaleTable = {
   'invitation.action': 'unfoldingWord နှင့် မိတ်ဖက်ဖြစ်ရန်',
   'invitation.dismiss': 'ယခု မဟုတ်ပါ',
   'invitation.readMore': 'ဇာတ်လမ်းအပြည့်အစုံကို unfoldingword.org တွင် ဖတ်ပါ',
+  'impact.securityNote': 'လုံခြုံရေးအတွက် ဤဇာတ်လမ်းရှိ အမည်များကို ပြောင်းထားသည်။',
   'study.text.literal': 'မူရင်းနှင့် နီးစပ်သော',
   'study.text.simplified': 'နေ့စဉ်သုံး စကား',
   'study.text.choice': 'ကျမ်းစာကို မည်သို့ ဖတ်မည်ကို ရွေးပါ',
@@ -146,6 +147,9 @@ export const my: LocaleTable = {
   'resource.simplified.about': 'အသံထွက်ဖတ်ရန်နှင့် သင်ကြားရန် ရိုးရှင်းသော စာသား။',
   'resource.notes': 'မှတ်စုများ',
   'resource.notes.about': 'ခက်ခဲသော ကျမ်းပိုဒ်များအတွက် အကူအညီ၊ အခန်းငယ်တိုင်းနှင့် ချိတ်ထားသည်။',
+  'resource.wordLinks': 'စကားလုံး လင့်ခ်များ',
+  'resource.wordLinks.about':
+    'စာသားထဲရှိ စကားလုံးများကို စကားလုံးများ အပိုင်းရှိ ၎င်းတို့၏ ရှင်းလင်းချက်နှင့် ချိတ်ထားသည်။',
   'resource.words': 'စကားလုံးများ',
   'resource.words.about': 'အဓိက ဝေါဟာရနှင့် အမည်များ ရှင်းလင်းချက်၊ စာသားမှ လင့်ခ်ချိတ်ထားသည်။',
   'resource.questions': 'မေးခွန်းများ',
@@ -376,6 +380,8 @@ export const my: LocaleTable = {
   'settings.appLanguage.partial': 'ဤဘာသာစကားတွင် စကားလုံး အချို့ကို အင်္ဂလိပ်ဖြင့် ပြနေဆဲ ဖြစ်ပါသည်။',
   'settings.theme': 'အသွင်',
   'settings.theme.about': 'အလင်း၊ အမှောင် သို့မဟုတ် ဖုန်းအတိုင်း။',
+  'settings.reducedBlur': 'မှုန်ဝါးမှု လျှော့ရန်',
+  'settings.reducedBlur.about': 'ဖုန်းအဟောင်းများတွင် ပေါ့ပါးစွာ အလုပ်လုပ်သော ရိုးရှင်းသည့် ဖန်။',
   'settings.firstName': 'အမည်',
   'settings.firstName.about': 'နှုတ်ဆက်ရာတွင်သာ၊ ဤဖုန်းပေါ်တွင်သာ သုံးပါသည်။',
   'settings.fullText': 'စာသားအားလုံးထဲတွင် ရှာရန်',
@@ -439,6 +445,8 @@ export const my: LocaleTable = {
     'အခြားဖုန်းသည် အကွာအဝေး ပြင်ပသို့ ရောက်သွားပါသည်။ ဖုန်းများကို နီးနီးထားပြီး ထပ်စမ်းကြည့်ပါ။',
   'failure.audio.unavailable': 'ဤအရာအတွက် အသံ ယခု မရနိုင်ပါ။',
   'failure.share.unavailable': 'ဤဖုန်းတွင် မျှဝေခြင်း ယခု မရနိုင်ပါ။',
+  'failure.partners.invalid-feed':
+    'အကျိုးသက်ရောက်မှု ဇာတ်လမ်းများသည် အက်ပ်မဖတ်နိုင်သော ပုံစံဖြင့် ရောက်လာသည်။ ဤဖုန်းပေါ်ရှိ ဇာတ်လမ်းများ ဆက်ပြသနေမည်။',
   'failure.unexpected':
     'တစ်ခုခု အလုပ်မလုပ်ပါ။ ထပ်စမ်းကြည့်ပါ သို့မဟုတ် တစ်စုံတစ်ယောက် ကူညီနိုင်ရန် ပြဿနာရှာ အချက်အလက်ကို မျှဝေပါ။',
 };

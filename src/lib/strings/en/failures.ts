@@ -38,5 +38,7 @@ export const failures = {
   'failure.transfer.peer-lost': 'The other phone moved out of reach. Bring the phones closer and try again.',
   'failure.audio.unavailable': 'Audio is not available for this right now.',
   'failure.share.unavailable': 'Sharing is not available on this phone right now.',
+  'failure.partners.invalid-feed':
+    'The impact stories came back in a form the app cannot read. The ones on this phone still show.',
   'failure.unexpected': 'Something did not work. Try again, or share diagnostics so someone can help.',
 } as const satisfies Record<`failure.${FailureCode}`, string>;

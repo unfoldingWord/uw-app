@@ -58,4 +58,5 @@ export const home = {
   'invitation.action': 'Partner with unfoldingWord',
   'invitation.dismiss': 'Not now',
   'invitation.readMore': 'Read the full story on unfoldingword.org',
+  'impact.securityNote': 'Names in this story are changed for security.',
 } as const;

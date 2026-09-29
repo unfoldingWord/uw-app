@@ -101,6 +101,7 @@ export const ru: LocaleTable = {
   'invitation.action': 'Стать партнёром unfoldingWord',
   'invitation.dismiss': 'Не сейчас',
   'invitation.readMore': 'Читать историю полностью на unfoldingword.org',
+  'impact.securityNote': 'Имена в этой истории изменены ради безопасности.',
   'study.text.literal': 'Близко к оригиналу',
   'study.text.simplified': 'Простыми словами',
   'study.text.choice': 'Выберите, как читается текст Библии',
@@ -174,6 +175,8 @@ export const ru: LocaleTable = {
   'resource.simplified.about': 'Простой текст для чтения вслух и обучения.',
   'resource.notes': 'Примечания',
   'resource.notes.about': 'Помощь с трудными местами, привязанная к каждому стиху.',
+  'resource.wordLinks': 'Ссылки на слова',
+  'resource.wordLinks.about': 'Слова текста со ссылками на их статьи в разделе Слова.',
   'resource.words': 'Слова',
   'resource.words.about': 'Объяснение ключевых терминов и имён со ссылками из текста.',
   'resource.questions': 'Вопросы',
@@ -440,6 +443,8 @@ export const ru: LocaleTable = {
   'settings.appLanguage.partial': 'На этом языке некоторые слова пока показываются по-английски.',
   'settings.theme': 'Тема',
   'settings.theme.about': 'Светлая, тёмная или как на телефоне.',
+  'settings.reducedBlur': 'Меньше размытия',
+  'settings.reducedBlur.about': 'Более простое стекло, которое легче работает на старых телефонах.',
   'settings.firstName': 'Имя',
   'settings.firstName.about': 'Используется только в приветствии и только на этом телефоне.',
   'settings.fullText': 'Искать во всех текстах',
@@ -500,5 +505,7 @@ export const ru: LocaleTable = {
   'failure.transfer.peer-lost': 'Другой телефон вне зоны связи. Поднесите телефоны ближе и повторите.',
   'failure.audio.unavailable': 'Аудио для этого сейчас недоступно.',
   'failure.share.unavailable': 'Отправка сейчас недоступна на этом телефоне.',
+  'failure.partners.invalid-feed':
+    'Истории перемен пришли в виде, который приложение не может прочитать. Истории на этом телефоне по-прежнему видны.',
   'failure.unexpected': 'Что-то не сработало. Повторите или поделитесь диагностикой, чтобы вам могли помочь.',
 };

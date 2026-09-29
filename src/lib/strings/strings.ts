@@ -30,6 +30,13 @@ export type Completeness = {
   complete: boolean;
 };
 
+export type Words<S extends StringKey = StringKey, P extends PluralKey = PluralKey> = {
+  readonly locale: Locale;
+  readonly direction: Direction;
+  t<K extends S>(key: K, ...params: StringParams<K>): string;
+  plural<K extends P>(key: K, count: number, ...params: PluralParams<K>): string;
+};
+
 export type StringsApi = {
   locales: readonly Locale[];
   t<K extends StringKey>(key: K, locale: Locale, ...params: StringParams<K>): string;
@@ -38,6 +45,7 @@ export type StringsApi = {
   resolveLocale(tags: readonly string[]): Locale;
   isLocale(value: unknown): value is Locale;
   completeness(): readonly Completeness[];
+  words(locale: Locale): Words;
 };
 
 const placeholder = /\{(\w+)\}/g;
@@ -108,7 +116,16 @@ export function createStrings(localeTables: LocaleTables): StringsApi {
     });
   }
 
-  return { locales, t, plural, direction, resolveLocale, isLocale, completeness };
+  function words(locale: Locale): Words {
+    return {
+      locale,
+      direction: direction(locale),
+      t: (key, ...params) => t(key, locale, ...params),
+      plural: (key, count, ...params) => plural(key, count, locale, ...params),
+    };
+  }
+
+  return { locales, t, plural, direction, resolveLocale, isLocale, completeness, words };
 }
 
 export const stringsModule = defineModule<StringsApi>({

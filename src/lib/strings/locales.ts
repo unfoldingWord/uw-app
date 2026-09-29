@@ -19,6 +19,25 @@ export const locales = [
 
 export type Locale = (typeof locales)[number];
 
+export const localeNames: Readonly<Record<Locale, string>> = Object.freeze({
+  en: 'English',
+  'es-419': 'Español (Latinoamérica)',
+  fr: 'Français',
+  hi: 'हिन्दी',
+  ru: 'Русский',
+  ar: 'العربية',
+  'zh-Hans': '简体中文',
+  sw: 'Kiswahili',
+  'pt-BR': 'Português (Brasil)',
+  id: 'Bahasa Indonesia',
+  vi: 'Tiếng Việt',
+  bn: 'বাংলা',
+  ur: 'اردو',
+  fa: 'فارسی',
+  my: 'မြန်မာ',
+  nl: 'Nederlands',
+});
+
 export type Direction = 'ltr' | 'rtl';
 
 export const sourceLocale: Locale = 'en';

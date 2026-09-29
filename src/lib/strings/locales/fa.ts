@@ -97,6 +97,7 @@ export const fa: LocaleTable = {
   'invitation.action': 'با unfoldingWord شریک شوید',
   'invitation.dismiss': 'اکنون نه',
   'invitation.readMore': 'داستان کامل را در unfoldingword.org بخوانید',
+  'impact.securityNote': 'نام‌ها در این داستان برای امنیت تغییر کرده‌اند.',
   'study.text.literal': 'نزدیک به متن اصلی',
   'study.text.simplified': 'واژه‌های روزمره',
   'study.text.choice': 'انتخاب کنید متن کتاب‌مقدس چگونه خوانده شود',
@@ -152,6 +153,8 @@ export const fa: LocaleTable = {
   'resource.simplified.about': 'متنی ساده برای بلندخوانی و تعلیم.',
   'resource.notes': 'یادداشت‌ها',
   'resource.notes.about': 'کمک برای بخش‌های دشوار، پیوسته به هر آیه.',
+  'resource.wordLinks': 'پیوند واژه‌ها',
+  'resource.wordLinks.about': 'واژه‌های متن که به مدخل خود در واژه‌ها پیوند خورده‌اند.',
   'resource.words': 'واژه‌ها',
   'resource.words.about': 'شرح واژه‌ها و نام‌های کلیدی، با پیوند از متن.',
   'resource.questions': 'پرسش‌ها',
@@ -389,6 +392,8 @@ export const fa: LocaleTable = {
   'settings.appLanguage.partial': 'در این زبان برخی واژه‌ها هنوز به انگلیسی نمایش داده می‌شوند.',
   'settings.theme': 'پوسته',
   'settings.theme.about': 'روشن، تیره یا مطابق گوشی.',
+  'settings.reducedBlur': 'کاهش تاری',
+  'settings.reducedBlur.about': 'شیشه‌ای ساده‌تر که روی گوشی‌های قدیمی سبک‌تر کار می‌کند.',
   'settings.firstName': 'نام کوچک',
   'settings.firstName.about': 'فقط در سلام و فقط روی این گوشی به کار می‌رود.',
   'settings.fullText': 'جست‌وجو درون همهٔ متن‌ها',
@@ -447,6 +452,8 @@ export const fa: LocaleTable = {
     'گوشی دیگر از دسترس خارج شد. گوشی‌ها را نزدیک‌تر بیاورید و دوباره امتحان کنید.',
   'failure.audio.unavailable': 'صدا برای این مورد اکنون در دسترس نیست.',
   'failure.share.unavailable': 'هم‌رسانی اکنون روی این گوشی در دسترس نیست.',
+  'failure.partners.invalid-feed':
+    'داستان‌های اثرگذاری به شکلی رسیدند که برنامه نمی‌تواند بخواند. داستان‌های روی این گوشی همچنان نشان داده می‌شوند.',
   'failure.unexpected':
     'کاری انجام نشد. دوباره امتحان کنید، یا اطلاعات عیب‌یابی را هم‌رسانی کنید تا کسی کمک کند.',
 };

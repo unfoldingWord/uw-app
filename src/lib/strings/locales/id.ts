@@ -91,6 +91,7 @@ export const id: LocaleTable = {
   'invitation.action': 'Bermitra dengan unfoldingWord',
   'invitation.dismiss': 'Nanti saja',
   'invitation.readMore': 'Baca kisah lengkapnya di unfoldingword.org',
+  'impact.securityNote': 'Nama-nama dalam kisah ini diubah demi keamanan.',
   'study.text.literal': 'Dekat dengan aslinya',
   'study.text.simplified': 'Bahasa sehari-hari',
   'study.text.choice': 'Pilih cara teks Alkitab dibaca',
@@ -145,6 +146,8 @@ export const id: LocaleTable = {
   'resource.simplified.about': 'Teks sederhana untuk dibacakan dan untuk mengajar.',
   'resource.notes': 'Catatan',
   'resource.notes.about': 'Bantuan untuk perikop yang sulit, melekat pada setiap ayat.',
+  'resource.wordLinks': 'Tautan kata',
+  'resource.wordLinks.about': 'Kata dalam teks yang ditautkan ke entrinya di Kata.',
   'resource.words': 'Kata',
   'resource.words.about': 'Istilah penting dan nama dijelaskan, ditautkan dari teks.',
   'resource.questions': 'Pertanyaan',
@@ -372,6 +375,8 @@ export const id: LocaleTable = {
   'settings.appLanguage.partial': 'Dalam bahasa ini beberapa kata masih tampil dalam bahasa Inggris.',
   'settings.theme': 'Tema',
   'settings.theme.about': 'Terang, gelap, atau ikuti ponsel.',
+  'settings.reducedBlur': 'Kurangi buram',
+  'settings.reducedBlur.about': 'Kaca yang lebih sederhana dan lebih ringan di ponsel lama.',
   'settings.firstName': 'Nama depan',
   'settings.firstName.about': 'Hanya dipakai dalam sapaan, hanya di ponsel ini.',
   'settings.fullText': 'Cari di dalam semua teks',
@@ -434,6 +439,8 @@ export const id: LocaleTable = {
   'failure.transfer.peer-lost': 'Ponsel lain sudah di luar jangkauan. Dekatkan kedua ponsel dan coba lagi.',
   'failure.audio.unavailable': 'Audio untuk ini belum tersedia sekarang.',
   'failure.share.unavailable': 'Berbagi belum tersedia di ponsel ini sekarang.',
+  'failure.partners.invalid-feed':
+    'Kisah dampak datang dalam bentuk yang tidak dapat dibaca aplikasi. Kisah yang ada di ponsel ini tetap tampil.',
   'failure.unexpected':
     'Ada yang tidak berjalan. Coba lagi, atau bagikan diagnostik supaya ada yang bisa membantu.',
 };

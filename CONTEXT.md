@@ -62,6 +62,10 @@ _Avoid_: location, address
 The text and helps for one reference, assembled from the corpus.
 _Avoid_: verse view, reader (that is a screen)
 
+**Bookmark**:
+A passage, article or story a leader saved to find again from Home. It holds a reference or an id and the language, never text.
+_Avoid_: favourite, saved item (that is the Home card that lists bookmarks), position (that is formation)
+
 **Corpus**:
 Everything installed on the device, queryable as passages, articles, stories and search hits.
 _Avoid_: database, store, content
@@ -189,6 +193,10 @@ _Avoid_: testimonial, case study
 **Language**:
 A language that has content. What a leader reads in.
 _Avoid_: locale (that is the app's own language)
+
+**Preference**:
+A value the leader chooses that shapes the app on this device: the app locale, the theme, reduced blur, the first name, the current language, the reading, the full-text index, English movements alongside. One of a closed list of keys.
+_Avoid_: setting (that is the screen), option, config
 
 **Locale**:
 The language of the app's own words: buttons, labels, settings. One of sixteen.

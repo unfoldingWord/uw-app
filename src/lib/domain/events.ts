@@ -147,6 +147,7 @@ export const eventSchemas = {
       reference: 'reference?',
       article: 'article?',
       story: 'story?',
+      language: 'language',
     },
   },
   BookmarkRemoved: { replay: 'redo', payload: { bookmark: 'id' } },
@@ -159,6 +160,8 @@ export const eventSchemas = {
   InvitationTapped: { replay: 'verbatim', payload: {} },
   InvitationDismissed: { replay: 'verbatim', payload: {} },
   ImpactStoryOpened: { replay: 'verbatim', payload: { story: 'slug' } },
+  ImpactStoriesRefreshStarted: { replay: 'redo', payload: {} },
+  ImpactStoriesRefreshed: { replay: 'follows', payload: { stories: 'count' } },
   Failure: { replay: 'follows', payload: { code: 'code', context: 'context' }, refine: failureRefinement },
 } as const satisfies Record<string, EventSchema>;
 

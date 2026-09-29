@@ -168,6 +168,9 @@ describe('kernel composition', () => {
       'corpus',
       'formation',
       'strings',
+      'preferences',
+      'bookmarks',
+      'partners',
     ]);
     expect(coreOwns.tables).toEqual(['schema_migrations', 'journal', 'journal_state', 'journal_baseline']);
   });
@@ -272,7 +275,11 @@ describe('replay (DX-3)', () => {
           at: 2,
           payload: { group: 'b', track: 'foundations', session: 1, language: 'qaa' },
         },
-        { type: 'BookmarkAdded', at: 3, payload: { bookmark: 'a', target: 'story', story: 3 } },
+        {
+          type: 'BookmarkAdded',
+          at: 3,
+          payload: { bookmark: 'a', target: 'story', story: 3, language: 'qaa' },
+        },
       ]),
     ).toEqual(['b', 'a']);
   });
@@ -293,14 +300,14 @@ describe('replay (DX-3)', () => {
       baseline: {},
       events: [
         { seq: 1, type: 'AppOpened', at: 10, payload: { day: '2026-01-05' } },
-        { seq: 2, type: 'InvitationShown', at: 20, payload: {} },
+        { seq: 2, type: 'BookmarkRemoved', at: 20, payload: { bookmark: 'id-000009' } },
       ],
     });
-    expect(result.ok && result.outcomes).toEqual({ restart: 1, unhandled: 1 });
+    expect(result.ok && result.outcomes).toEqual({ restart: 1, redone: 1 });
     expect(result.ok && result.divergence).toEqual([
       {
         index: 1,
-        recorded: '{"at":20,"payload":{},"type":"InvitationShown"}',
+        recorded: '{"at":20,"payload":{"bookmark":"id-000009"},"type":"BookmarkRemoved"}',
         replayed: 'nothing',
       },
     ]);

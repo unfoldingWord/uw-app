@@ -99,6 +99,7 @@ export const ptBR: LocaleTable = {
   'invitation.action': 'Seja parceiro da unfoldingWord',
   'invitation.dismiss': 'Agora não',
   'invitation.readMore': 'Leia a história completa em unfoldingword.org',
+  'impact.securityNote': 'Os nomes desta história foram trocados por segurança.',
   'study.text.literal': 'Próximo do original',
   'study.text.simplified': 'Palavras do dia a dia',
   'study.text.choice': 'Escolha como o texto bíblico é lido',
@@ -155,6 +156,8 @@ export const ptBR: LocaleTable = {
   'resource.simplified.about': 'Texto simples para ler em voz alta e ensinar.',
   'resource.notes': 'Notas',
   'resource.notes.about': 'Ajuda com passagens difíceis, ligada a cada versículo.',
+  'resource.wordLinks': 'Links de palavras',
+  'resource.wordLinks.about': 'Palavras do texto ligadas à sua entrada em Palavras.',
   'resource.words': 'Palavras',
   'resource.words.about': 'Termos-chave e nomes explicados, com links a partir do texto.',
   'resource.questions': 'Perguntas',
@@ -404,6 +407,8 @@ export const ptBR: LocaleTable = {
   'settings.appLanguage.partial': 'Neste idioma algumas palavras ainda aparecem em inglês.',
   'settings.theme': 'Tema',
   'settings.theme.about': 'Claro, escuro ou igual ao celular.',
+  'settings.reducedBlur': 'Reduzir o desfoque',
+  'settings.reducedBlur.about': 'Um vidro mais simples, mais leve em celulares antigos.',
   'settings.firstName': 'Primeiro nome',
   'settings.firstName.about': 'Usado só no cumprimento, só neste celular.',
   'settings.fullText': 'Buscar dentro de todos os textos',
@@ -468,6 +473,8 @@ export const ptBR: LocaleTable = {
     'O outro celular ficou fora de alcance. Aproxime os celulares e tente de novo.',
   'failure.audio.unavailable': 'O áudio não está disponível para isto agora.',
   'failure.share.unavailable': 'Compartilhar não está disponível neste celular agora.',
+  'failure.partners.invalid-feed':
+    'As histórias de impacto chegaram em um formato que o aplicativo não consegue ler. As que estão neste celular continuam aparecendo.',
   'failure.unexpected':
     'Algo não funcionou. Tente de novo ou compartilhe o diagnóstico para alguém poder ajudar.',
 };

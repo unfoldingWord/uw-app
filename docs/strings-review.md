@@ -30,6 +30,11 @@ Change a value in place; set it to `null` to fall back to English for that key w
   were drafted after the rest, when Packs, Corpus and the kernel added their codes: `failure.http.cancelled`,
   `failure.kernel.not-owned`, `failure.kernel.observer-failed` and `failure.corpus.unreadable`. The two kernel
   keys describe an inner fault in plain words; check they do not read as blame or as a warning.
+- **Drafted in T8.** Six keys were added with the feature services and drafted in every locale at once:
+  `failure.partners.invalid-feed`, `settings.reducedBlur`, `settings.reducedBlur.about`,
+  `impact.securityNote`, `resource.wordLinks` and `resource.wordLinks.about`. `impact.securityNote` is a
+  placeholder until comms supplies the website's security note (`docs/impact-stories.md`); a story that carries
+  its own note shows that note instead.
 - **Search examples.** `search.placeholder` and `search.empty` use Ruth 2 and covenant as examples; the book
   name and the word should be the ones a reader in that language would type.
 
@@ -55,6 +60,7 @@ Change a value in place; set it to `null` to fall back to English for that key w
 
 ## Not yet worded
 
-The impact story itself (title, body, security note) is content from the partners feed, not a string (PA-6).
+The impact story itself (title, body, security note) is content from the partners feed, not a string (PA-6);
+the shipped story is English and awaits comms review (`docs/impact-stories.md`).
 Dates are formatted by the screen layer with the platform's date formatting, and counts can be passed to
 `plural` already formatted, so digits follow the locale where the platform supports it.

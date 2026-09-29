@@ -98,6 +98,14 @@ describe('strings interface', () => {
     );
   });
 
+  it('binds the words of one locale for a feature', () => {
+    const words = createStrings(tables).words('ar');
+    expect(words.locale).toBe('ar');
+    expect(words.direction).toBe('rtl');
+    expect(words.t('nav.home')).toBe(createStrings(tables).t('nav.home', 'ar'));
+    expect(words.plural('languages.resources', 2)).toBe('موردان');
+  });
+
   it('uses the shipped Arabic and Russian forms', () => {
     const strings = createStrings(tables);
     expect([1, 2, 3, 11, 100].map((count) => strings.plural('languages.resources', count, 'ar'))).toEqual([

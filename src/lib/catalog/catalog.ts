@@ -26,6 +26,7 @@ export type CatalogApi = {
   releases(language: string): readonly CatalogRelease[];
   originals(): readonly CatalogRelease[];
   all(): readonly CatalogRelease[];
+  online(): Promise<boolean>;
 };
 
 type Fetched =
@@ -128,6 +129,7 @@ export const catalogModule = defineModule<CatalogApi>({
         releases: (language) => releasesIn(releases, language),
         originals: () => releases.filter((release) => release.kind === 'original'),
         all: () => releases,
+        online: () => ports.http.online(),
       },
       async start() {
         try {

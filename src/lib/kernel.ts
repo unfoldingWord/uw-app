@@ -6,6 +6,11 @@ import { catalogModule } from './catalog/catalog';
 import { packsModule } from './packs/packs';
 import { stringsModule } from './strings/strings';
 import { telemetryModule } from './telemetry/telemetry';
+import { preferencesModule } from './preferences/preferences';
+import { bookmarksModule } from './bookmarks/bookmarks';
+import { partnersModule } from './partners/partners';
+
+export { hostOf, isAllowedUrl } from './network';
 
 export const kernelModules = {
   telemetry: telemetryModule,
@@ -14,6 +19,9 @@ export const kernelModules = {
   corpus: corpusModule,
   formation: formationModule,
   strings: stringsModule,
+  preferences: preferencesModule,
+  bookmarks: bookmarksModule,
+  partners: partnersModule,
 } as const;
 
 export type Kernel = ComposedKernel<typeof kernelModules>;

@@ -51,6 +51,8 @@ export const about = {
   'settings.appLanguage.partial': 'Some words still appear in English in this language.',
   'settings.theme': 'Theme',
   'settings.theme.about': 'Light, dark or follow the phone.',
+  'settings.reducedBlur': 'Reduce blur',
+  'settings.reducedBlur.about': 'Plainer glass that runs lighter on older phones.',
   'settings.firstName': 'First name',
   'settings.firstName.about': 'Used only in the greeting, only on this phone.',
   'settings.fullText': 'Search inside every text',

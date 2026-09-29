@@ -91,6 +91,7 @@ export const vi: LocaleTable = {
   'invitation.action': 'Đồng hành cùng unfoldingWord',
   'invitation.dismiss': 'Để sau',
   'invitation.readMore': 'Đọc toàn bộ câu chuyện trên unfoldingword.org',
+  'impact.securityNote': 'Tên trong câu chuyện này đã được đổi vì lý do an toàn.',
   'study.text.literal': 'Sát với nguyên bản',
   'study.text.simplified': 'Lời lẽ hằng ngày',
   'study.text.choice': 'Chọn cách đọc bản văn Kinh Thánh',
@@ -143,6 +144,8 @@ export const vi: LocaleTable = {
   'resource.simplified.about': 'Bản văn đơn giản để đọc to và giảng dạy.',
   'resource.notes': 'Ghi chú',
   'resource.notes.about': 'Giúp hiểu những đoạn khó, gắn với từng câu.',
+  'resource.wordLinks': 'Liên kết từ',
+  'resource.wordLinks.about': 'Các từ trong văn bản được liên kết với mục của chúng trong Từ ngữ.',
   'resource.words': 'Từ ngữ',
   'resource.words.about': 'Giải thích các thuật ngữ chính và tên riêng, liên kết từ bản văn.',
   'resource.questions': 'Câu hỏi',
@@ -368,6 +371,8 @@ export const vi: LocaleTable = {
   'settings.appLanguage.partial': 'Trong ngôn ngữ này, một số chữ vẫn hiện bằng tiếng Anh.',
   'settings.theme': 'Giao diện',
   'settings.theme.about': 'Sáng, tối hoặc theo điện thoại.',
+  'settings.reducedBlur': 'Giảm làm mờ',
+  'settings.reducedBlur.about': 'Hiệu ứng kính đơn giản hơn, nhẹ hơn trên điện thoại cũ.',
   'settings.firstName': 'Tên',
   'settings.firstName.about': 'Chỉ dùng trong lời chào, chỉ trên điện thoại này.',
   'settings.fullText': 'Tìm trong mọi bản văn',
@@ -425,5 +430,7 @@ export const vi: LocaleTable = {
   'failure.transfer.peer-lost': 'Điện thoại kia đã ra ngoài tầm. Hãy đưa hai điện thoại lại gần và thử lại.',
   'failure.audio.unavailable': 'Hiện chưa có âm thanh cho mục này.',
   'failure.share.unavailable': 'Hiện điện thoại này chưa thể chia sẻ.',
+  'failure.partners.invalid-feed':
+    'Các câu chuyện tác động đến ở dạng mà ứng dụng không đọc được. Các câu chuyện đã có trên điện thoại này vẫn hiển thị.',
   'failure.unexpected': 'Có điều gì đó chưa hoạt động. Hãy thử lại, hoặc chia sẻ chẩn đoán để có người giúp.',
 };
