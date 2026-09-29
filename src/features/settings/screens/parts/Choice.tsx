@@ -32,6 +32,7 @@ export function Choice({ label, detail, selected, onPress, direction }: ChoicePr
       accessibilityRole="radio"
       accessibilityLabel={detail === undefined ? label : `${label}, ${detail}`}
       accessibilityState={{ checked: selected, busy }}
+      hitSlop={{ top: theme.space.sp2, bottom: theme.space.sp2 }}
       onPress={() => void choose()}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}

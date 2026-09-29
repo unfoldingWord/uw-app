@@ -68,7 +68,7 @@ export function GlassInput({
         <View style={[StyleSheet.absoluteFill, { backgroundColor: theme.color.glassFill2 }]} />
       </View>
       <ContentColor color={theme.color.textMuted}>
-        {leading}
+        {leading === undefined ? null : <View style={styles.adornment}>{leading}</View>}
         <TextInput
           {...input}
           editable={editable}
@@ -91,7 +91,7 @@ export function GlassInput({
             },
           ]}
         />
-        {trailing}
+        {trailing === undefined ? null : <View style={styles.adornment}>{trailing}</View>}
       </ContentColor>
     </View>
   );
@@ -99,5 +99,6 @@ export function GlassInput({
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center' },
-  field: { flex: 1, minWidth: 0, padding: 0 },
+  field: { flex: 1, alignSelf: 'stretch', minWidth: 0, padding: 0, position: 'relative', outlineWidth: 0 },
+  adornment: { position: 'relative' },
 });

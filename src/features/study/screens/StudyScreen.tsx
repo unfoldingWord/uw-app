@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import type { PackId } from '@lib/domain/pack';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
+import { useTabBarClearance } from '@shared/ui';
 import { createStudyService, type StudyView } from '../service';
 import { Attribution } from './parts/Attribution';
 import { AudioBar } from './parts/AudioBar';
@@ -41,6 +42,7 @@ function placeReference(place: ChapterPlace): string {
 export default function StudyScreen() {
   const service = useService(createStudyService);
   const theme = useTheme();
+  const tabBarClearance = useTabBarClearance();
   const router = useRouter();
   const openTarget = useOpenTarget();
   const params = useLocalSearchParams<{ reference?: string }>();
@@ -286,7 +288,7 @@ export default function StudyScreen() {
         onDownload={(pack) => download(pack, setAudioFailure)}
         failure={audioFailure}
       />
-      <View style={{ height: theme.space.sp5 }} />
+      <View style={{ height: tabBarClearance }} />
       <BookPicker
         words={words}
         open={picking}

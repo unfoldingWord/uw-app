@@ -13,6 +13,15 @@ const scriptRanges: readonly (readonly [Script, RegExp])[] = [
 
 const urduLanguages: readonly string[] = ['ur'];
 
+const strongRightToLeft = /[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/u;
+
+const strongLetter = /\p{L}/u;
+
+export function directionOf(sample: string): Direction {
+  const first = [...sample].find((character) => strongLetter.test(character));
+  return first !== undefined && strongRightToLeft.test(first) ? 'rtl' : 'ltr';
+}
+
 export function scriptOf(language: string, sample: string): Script | undefined {
   const found = scriptRanges.find(([, range]) => range.test(sample))?.[0];
   if (found === 'arabic' && urduLanguages.includes(language.split('-')[0] ?? language)) {

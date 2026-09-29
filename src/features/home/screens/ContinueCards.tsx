@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
-import { GlassButton, GlassSurface, Icon } from '@shared/glass';
+import { GlassButton, Icon } from '@shared/glass';
 import { useService } from '@shared/kernel';
-import { useTheme } from '@shared/theme';
+import { backgroundImage, useTheme } from '@shared/theme';
 import { Card, EmptyState, prototypeValues, ThemedText } from '@shared/ui';
 import { createHomeService, type FormationCard, type ReadingCard } from '../service';
 
@@ -76,18 +76,24 @@ export function ContinueFormation({ card, onOpen }: ContinueFormationProps) {
       }}
     >
       <View style={[styles.line, { gap: theme.space.sp7 }]}>
-        <GlassSurface
-          tone="night"
-          radius={theme.radius.rLg}
-          shadow="none"
-          style={[styles.tile, { width: prototypeValues.card.tile, height: prototypeValues.card.tile }]}
+        <View
+          style={[
+            styles.tile,
+            {
+              width: prototypeValues.card.tile,
+              height: prototypeValues.card.tile,
+              borderRadius: theme.radius.rLg,
+              overflow: 'hidden',
+            },
+            backgroundImage(prototypeValues.sessionTile),
+          ]}
         >
           <ThemedText variant="overline" tone="onImage" align="center">
             {card.position.track === 'foundations'
               ? words.t('home.formation.story', { number: card.position.session })
               : String(card.position.session)}
           </ThemedText>
-        </GlassSurface>
+        </View>
         <View style={styles.grow}>
           <ThemedText variant="overline" tone="dim">
             {words.t('home.formation.title', { group: card.groupName })}

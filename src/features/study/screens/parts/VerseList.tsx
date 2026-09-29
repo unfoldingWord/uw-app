@@ -109,6 +109,7 @@ export function VerseList({
 }: VerseListProps) {
   const theme = useTheme();
   const list = useRef<FlatList<Verse>>(null);
+  const retries = useRef(0);
   const direction: Direction = passage.text.direction;
   const verses = passage.text.verses;
   const titles = useMemo(
@@ -133,6 +134,7 @@ export function VerseList({
   }, [theme, language, verses, direction]);
   const selectedIndex = verses.findIndex((verse) => sameVerse(selected, keyOf(verse)));
   useEffect(() => {
+    retries.current = 0;
     if (selectedIndex > 0) {
       list.current?.scrollToIndex({ index: selectedIndex, animated: false, viewPosition: 0.2 });
     }
@@ -157,10 +159,15 @@ export function VerseList({
         );
       }}
       extraData={`${selectedIndex}:${[...highlighted].join(',')}`}
-      onScrollToIndexFailed={({ index }) => {
-        list.current?.scrollToOffset({
-          offset: index * (text.lineHeight ?? theme.fontSize.fsSubtitle) * 2,
-          animated: false,
+      onScrollToIndexFailed={({ index, averageItemLength }) => {
+        const estimate =
+          averageItemLength > 0 ? averageItemLength : (text.lineHeight ?? theme.fontSize.fsSubtitle) * 2;
+        list.current?.scrollToOffset({ offset: index * estimate, animated: false });
+        requestAnimationFrame(() => {
+          retries.current += 1;
+          if (index < verses.length && retries.current <= maximumScrollRetries) {
+            list.current?.scrollToIndex({ index, animated: false, viewPosition: 0.2 });
+          }
         });
       }}
       initialNumToRender={20}
@@ -177,6 +184,8 @@ export function VerseList({
 }
 
 const emptySet: ReadonlySet<number> = new Set();
+
+const maximumScrollRetries = 3;
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'flex-start' },

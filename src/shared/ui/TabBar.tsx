@@ -55,6 +55,11 @@ function Tab({ label, icon, focused, onPress }: Omit<TabItem, 'key'>) {
 
 export type TabBarProps = { items: readonly TabItem[] };
 
+export function useTabBarClearance(): number {
+  const theme = useTheme();
+  return useBottomInset() + prototypeValues.tabBar.item + 2 * theme.space.sp3 + theme.space.gapStack;
+}
+
 export function TabBar({ items }: TabBarProps) {
   const theme = useTheme();
   const bottom = useBottomInset();

@@ -11,6 +11,7 @@ import { Blocks } from './parts/Blocks';
 import { ScreenFrame, TopBar } from './parts/Frame';
 import { articleHref, studyRoutes, useOpenTarget } from './parts/routes';
 import { Say } from './parts/Say';
+import { directionOf } from './parts/script';
 import { StatePanel } from './parts/StatePanel';
 import { useLoaded } from './parts/useLoaded';
 
@@ -108,7 +109,9 @@ export default function ArticleScreen() {
               {article.subtitle}
             </Say>
           )}
-          <Blocks blocks={article.blocks} language={article.provenance.language} onLink={openTarget} />
+          <View style={{ direction: directionOf(article.title), gap: theme.space.sp6 }}>
+            <Blocks blocks={article.blocks} language={article.provenance.language} onLink={openTarget} />
+          </View>
           {article.related.length === 0 ? null : (
             <View style={{ gap: theme.space.sp5, marginTop: theme.space.sp4 }}>
               <Say role="overline" tone="dim">
