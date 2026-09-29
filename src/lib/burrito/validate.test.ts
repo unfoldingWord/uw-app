@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { buildBurrito, type BurritoInput, type IngredientInput } from './build';
 import { fromUtf8, md5Hex, utf8, type BurritoFiles } from './files';
-import { mimeTypes, pinnedRows, provisionalFlavors, requiredFormationSections, type RowId } from './flavors';
+import {
+  admittedRows,
+  mimeTypes,
+  pinnedRows,
+  provisionalFlavors,
+  requiredFormationSections,
+  type RowId,
+} from './flavors';
 import { readProvenance } from './metadata';
 import { validate, type ValidationReport } from './validate';
 
@@ -114,7 +121,7 @@ function failure(report: ValidationReport): { kind: string; rule: string; path: 
 
 describe('validate', () => {
   it.each(Object.entries(rowInputs))('matches the %s row', (row, overrides) => {
-    const report = validate(burrito(overrides));
+    const report = validate(burrito(overrides), { rows: admittedRows });
     expect(report.ok && report.row.id).toBe(row);
   });
 
@@ -143,6 +150,7 @@ describe('validate', () => {
       released: '2026-09-01T00:00:00Z',
       language: 'qaa',
       licence: 'Released under CC BY-SA 4.0',
+      title: 'Fixture Literal Text',
     });
   });
 
@@ -151,9 +159,63 @@ describe('validate', () => {
     expect(failure(report)).toEqual({ kind: 'ignored', rule: 'unknown-flavor', path: 'type.flavorType' });
   });
 
-  it('ignores the provisional flavors when only pinned rows are admitted', () => {
-    const report = validate(burrito(rowInputs.formation), { rows: pinnedRows });
-    expect(failure(report).kind).toBe('ignored');
+  it('admits only the pinned rows unless the provisional ones are asked for (content contract)', () => {
+    for (const row of ['formation', 'audio', 'images'] as const) {
+      expect(failure(validate(burrito(rowInputs[row]))).kind).toBe('ignored');
+      expect(failure(validate(burrito(rowInputs[row]), { rows: pinnedRows })).kind).toBe('ignored');
+      expect(validate(burrito(rowInputs[row]), { rows: admittedRows }).ok).toBe(true);
+    }
+  });
+
+  it('requires config.yaml beside each Academy section and lists it as YAML', () => {
+    const withoutConfig = burrito({
+      ...rowInputs.articles,
+      ingredients: [markdown('translate/figs-metaphor/01.md')],
+    });
+    expect(failure(validate(withoutConfig))).toEqual({
+      kind: 'invalid',
+      rule: 'row-ingredients',
+      path: 'ingredients/translate/config.yaml',
+    });
+    const mislabelled = burrito({
+      ...rowInputs.articles,
+      ingredients: [
+        markdown('translate/figs-metaphor/01.md'),
+        { path: 'translate/config.yaml', bytes: utf8('a: 1\n'), mimeType: mimeTypes.markdown },
+      ],
+    });
+    expect(failure(validate(mislabelled)).path).toBe('ingredients/translate/config.yaml');
+    const words = burrito({ ...rowInputs.articles, ingredients: [markdown('bible/kt/god.md')] });
+    expect(validate(words).ok).toBe(true);
+  });
+
+  it('refuses an ingredient key that is not a plain path under ingredients/', () => {
+    for (const key of [
+      '../metadata.json',
+      'ingredients/../x.usfm',
+      'README.md',
+      'ingredients//a',
+      'ingredients/a\\b',
+    ]) {
+      const files = editMetadata(burrito(), (metadata) => {
+        const ingredients = metadata.ingredients as Json;
+        ingredients[key] = ingredients['ingredients/08-RUT.usfm'];
+      });
+      expect(failure(validate(files))).toEqual({ kind: 'invalid', rule: 'ingredient-path', path: key });
+    }
+  });
+
+  it('refuses a burrito that is not Scripture Burrito 1.0', () => {
+    for (const version of ['0.2.0', '2.0.0', 'latest']) {
+      const files = editMetadata(burrito(), (metadata) => {
+        (metadata.meta as Json).version = version;
+      });
+      expect(failure(validate(files))).toEqual({
+        kind: 'invalid',
+        rule: 'metadata-version',
+        path: 'meta.version',
+      });
+    }
   });
 
   it('fails without metadata.json', () => {
@@ -284,6 +346,7 @@ describe('validate', () => {
         ...rowInputs.formation,
         ingredients: sections.map((section) => markdown(`01/${section}.md`)),
       }),
+      { rows: admittedRows },
     );
     expect(failure(report)).toEqual({
       kind: 'invalid',

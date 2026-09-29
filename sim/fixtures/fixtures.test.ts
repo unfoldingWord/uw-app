@@ -1,3 +1,4 @@
+import { fixtureRows } from './rows';
 import { readArchive } from '@lib/burrito/archive';
 import { validate } from '@lib/burrito/validate';
 import { describe, expect, it } from 'vitest';
@@ -32,7 +33,7 @@ describe('fixtures', () => {
         throw new Error(`${response.file}: ${read.message}`);
       }
       expect(read.discarded.length, response.file).toBeGreaterThan(0);
-      const report = validate(read.files);
+      const report = validate(read.files, { rows: fixtureRows });
       if (!report.ok) {
         throw new Error(`${response.file}: ${report.message}`);
       }

@@ -1,3 +1,4 @@
+import { fixtureRows } from './fixtures/rows';
 import { readArchive } from '@lib/burrito/archive';
 import { validate } from '@lib/burrito/validate';
 import { refOf, type ReleaseRef } from '@lib/domain/release';
@@ -14,7 +15,7 @@ export function fixturePeer(world: World, releases: readonly ReleaseRef[]): Fixt
   const offered: PeerBurrito[] = releases.map((ref) => {
     const archive = archiveOf(ref);
     const read = archive === undefined ? undefined : readArchive(archive);
-    const report = read?.ok ? validate(read.files) : undefined;
+    const report = read?.ok ? validate(read.files, { rows: fixtureRows }) : undefined;
     const row = resourceRows.find((item) => report?.ok && item === report.row.id);
     if (!read?.ok || row === undefined) {
       throw new Error(

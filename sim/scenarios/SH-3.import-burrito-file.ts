@@ -107,6 +107,7 @@ export default scenario(
         commit: 'unrecorded',
         licence: true,
         title: 'Fixture B Open Bible Stories',
+        released: '2026-09-20T00:00:00Z',
       },
       'a burrito the catalog does not list keeps the provenance its metadata carries',
     );

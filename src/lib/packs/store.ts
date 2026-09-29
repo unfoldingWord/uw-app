@@ -23,7 +23,6 @@ function burritoOf(row: DbRow): InstalledBurrito | undefined {
     root: textOf(row, 'root'),
     row: resourceRow,
     bytes: numberOf(row, 'bytes'),
-    released: textOf(row, 'released'),
     provenance: {
       publisher: textOf(row, 'publisher'),
       resource: textOf(row, 'resource'),
@@ -32,6 +31,7 @@ function burritoOf(row: DbRow): InstalledBurrito | undefined {
       commit: textOf(row, 'commit_sha'),
       licence: textOf(row, 'licence'),
       title: textOf(row, 'title'),
+      ...(textOf(row, 'released') === '' ? {} : { released: textOf(row, 'released') }),
     },
   };
 }
@@ -81,7 +81,7 @@ export async function writeInstalledPack(session: DbTransaction, pack: Installed
         provenance.language,
         provenance.tag,
         provenance.commit,
-        burrito.released,
+        provenance.released ?? '',
         burrito.row,
         burrito.root,
         provenance.title,

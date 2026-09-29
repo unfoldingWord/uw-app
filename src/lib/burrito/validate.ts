@@ -1,4 +1,4 @@
-import { admittedRows, rowFor, type ListedIngredient, type ContractRow } from './flavors';
+import { pinnedRows, rowFor, type ListedIngredient, type ContractRow } from './flavors';
 import { fromUtf8, ingredientsDirectory, md5Hex, metadataPath, type BurritoFiles } from './files';
 import { isRecord, type BurritoMetadata, type IngredientEntry } from './metadata';
 
@@ -7,7 +7,9 @@ type InvalidRule =
   | 'metadata-unreadable'
   | 'metadata-format'
   | 'metadata-field'
+  | 'metadata-version'
   | 'ingredient-field'
+  | 'ingredient-path'
   | 'ingredient-missing'
   | 'ingredient-size'
   | 'ingredient-checksum'
@@ -39,6 +41,8 @@ export type ValidationReport =
 export type ValidateOptions = { readonly rows?: readonly ContractRow[] };
 
 export const burritoFormat = 'scripture burrito';
+
+export const burritoVersion = /^1\.0\.\d+$/;
 
 const licenceName = /CC BY-SA 4\.0|Creative Commons Attribution-ShareAlike 4\.0/i;
 const licenceUrl = /creativecommons\.org\/licenses\/by-sa\/4\.0/i;
@@ -115,15 +119,29 @@ function ingredientEntry(value: unknown): IngredientEntry | string {
   return value as IngredientEntry;
 }
 
+function isSafeIngredientKey(key: string): boolean {
+  if (!key.startsWith(ingredientsDirectory) || key.includes('\\')) {
+    return false;
+  }
+  const segments = key.slice(ingredientsDirectory.length).split('/');
+  return segments.every((segment) => segment !== '' && segment !== '.' && segment !== '..');
+}
+
 function listIngredients(ingredients: Record<string, unknown>): ListedIngredient[] | ValidationReport {
   const listed: ListedIngredient[] = [];
   for (const [key, value] of Object.entries(ingredients)) {
+    if (!isSafeIngredientKey(key)) {
+      return invalid(
+        'ingredient-path',
+        key,
+        `ingredient ${key} is not a plain path under ${ingredientsDirectory}`,
+      );
+    }
     const entry = ingredientEntry(value);
     if (typeof entry === 'string') {
       return invalid('ingredient-field', key, `ingredient ${key} ${entry}`);
     }
-    const path = key.startsWith(ingredientsDirectory) ? key.slice(ingredientsDirectory.length) : key;
-    listed.push({ key, path, entry });
+    listed.push({ key, path: key.slice(ingredientsDirectory.length), entry });
   }
   return listed;
 }
@@ -196,13 +214,16 @@ export function validate(files: BurritoFiles, options: ValidateOptions = {}): Va
       return invalid('metadata-field', path, `metadata.json has no ${path}`);
     }
   }
+  if (!burritoVersion.test(String(at(metadata, ['meta', 'version'])))) {
+    return invalid('metadata-version', 'meta.version', 'meta.version is not Scripture Burrito 1.0');
+  }
   const ingredients = listIngredients(metadata.ingredients as Record<string, unknown>);
   if (!Array.isArray(ingredients)) {
     return ingredients;
   }
   const flavorType = String(at(metadata, ['type', 'flavorType', 'name']));
   const flavor = String(at(metadata, ['type', 'flavorType', 'flavor', 'name']));
-  const row = rowFor(options.rows ?? admittedRows, flavorType, flavor, ingredients);
+  const row = rowFor(options.rows ?? pinnedRows, flavorType, flavor, ingredients);
   if (!row) {
     return {
       ok: false,

@@ -1,3 +1,5 @@
+import { unrecordedCommit, type Provenance } from '../domain/provenance';
+
 export type JsonValue =
   string | number | boolean | null | readonly JsonValue[] | { readonly [key: string]: JsonValue };
 
@@ -58,16 +60,6 @@ export type BurritoMetadata = {
 export const doorAuthority = 'dcs';
 export const doorAuthorityId = 'https://git.door43.org';
 
-export type BurritoProvenance = {
-  readonly publisher: string;
-  readonly resource: string;
-  readonly tag: string;
-  readonly commit: string | undefined;
-  readonly released: string;
-  readonly language: string;
-  readonly licence: string;
-};
-
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -93,7 +85,12 @@ function upstreamCommit(metadata: BurritoMetadata, repository: string): string |
   return undefined;
 }
 
-export function readProvenance(metadata: BurritoMetadata): BurritoProvenance | undefined {
+export function titleOf(metadata: BurritoMetadata, fallback: string): string {
+  const names = metadata.identification.name;
+  return names.en ?? Object.values(names).find((name) => name.trim() !== '') ?? fallback;
+}
+
+export function readProvenance(metadata: BurritoMetadata): Provenance | undefined {
   const primary: unknown = metadata.identification.primary?.[doorAuthority];
   if (!isRecord(primary)) {
     return undefined;
@@ -112,10 +109,11 @@ export function readProvenance(metadata: BurritoMetadata): BurritoProvenance | u
   return {
     publisher,
     resource,
-    tag: revision.revision,
-    commit: upstreamCommit(metadata, repository),
-    released: revision.timestamp,
     language,
+    tag: revision.revision,
+    commit: upstreamCommit(metadata, repository) ?? unrecordedCommit,
     licence,
+    title: titleOf(metadata, resource),
+    released: revision.timestamp,
   };
 }

@@ -13,7 +13,7 @@ import {
   packKindOf,
   resourceRows,
 } from './pack';
-import { isProvenance, sameRelease, type Provenance } from './provenance';
+import { isProvenance, sameRelease, sourceUrlOf, unrecordedCommit, type Provenance } from './provenance';
 import { archiveUrlOf, releaseKey, resourceKey } from './release';
 
 const provenance: Provenance = {
@@ -39,6 +39,14 @@ describe('provenance', () => {
   it('knows two pieces of content come from the same release', () => {
     expect(sameRelease(provenance, { ...provenance, commit: 'other', title: 'other' })).toBe(true);
     expect(sameRelease(provenance, { ...provenance, tag: 'v87' })).toBe(false);
+  });
+
+  it('is one shape for the burrito reader and Packs, with an optional release time and a source link', () => {
+    expect(isProvenance({ ...provenance, commit: unrecordedCommit, released: '2026-09-01T00:00:00Z' })).toBe(
+      true,
+    );
+    expect(isProvenance({ ...provenance, released: 5 })).toBe(false);
+    expect(sourceUrlOf(provenance)).toBe('https://git.door43.org/unfoldingWord/ult/releases/tag/v86');
   });
 });
 

@@ -321,7 +321,6 @@ export function createInstaller(context: InstallerContext): Installer {
         root: `${root}/${provenance.publisher}/${provenance.resource}`,
         row: checked.burrito.row,
         bytes: bytesOf(checked.burrito.files),
-        released: checked.burrito.released,
         provenance,
       });
       progress.resources = index + 1;

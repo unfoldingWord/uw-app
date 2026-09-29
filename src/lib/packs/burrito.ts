@@ -1,22 +1,19 @@
 import { admittedRows, type ContractRow } from '../burrito/flavors';
 import { metadataPath, type BurritoFiles } from '../burrito/files';
-import { readProvenance, type BurritoMetadata } from '../burrito/metadata';
+import { readProvenance, titleOf, type BurritoMetadata } from '../burrito/metadata';
 import { validate } from '../burrito/validate';
 import type { FailureCode } from '../domain/failures';
 import { fieldValidators } from '../domain/fields';
 import { resourceRows, type ResourceRow } from '../domain/pack';
-import type { Provenance } from '../domain/provenance';
+import { unrecordedCommit, type Provenance } from '../domain/provenance';
 import type { CatalogChoice } from './source';
 
 export const packRows: readonly ContractRow[] = admittedRows;
-
-export const unrecordedCommit = 'unrecorded';
 
 export type CheckedBurrito = {
   files: BurritoFiles;
   row: ResourceRow;
   provenance: Provenance;
-  released: string;
 };
 
 export type BurritoCheck = { ok: true; burrito: CheckedBurrito } | { ok: false; code: FailureCode };
@@ -36,11 +33,6 @@ function listedOnly(files: BurritoFiles, metadata: BurritoMetadata): BurritoFile
     }
   }
   return kept;
-}
-
-function titleOf(metadata: BurritoMetadata, fallback: string): string {
-  const names = metadata.identification.name;
-  return names.en ?? Object.values(names).find((name) => name.trim() !== '') ?? fallback;
 }
 
 function eventSafe(provenance: Provenance): boolean {
@@ -83,12 +75,13 @@ export function checkBurrito(files: BurritoFiles, choice: CatalogChoice | undefi
     commit: choice?.commit ?? read?.commit ?? unrecordedCommit,
     licence,
     title: titleOf(metadata, choice?.title ?? origin.resource),
+    ...(read?.released === undefined ? {} : { released: read.released }),
   };
   if (!eventSafe(provenance)) {
     return { ok: false, code: 'pack.no-provenance' };
   }
   return {
     ok: true,
-    burrito: { files: listedOnly(files, metadata), row, provenance, released: read?.released ?? '' },
+    burrito: { files: listedOnly(files, metadata), row, provenance },
   };
 }

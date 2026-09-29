@@ -7,7 +7,6 @@ export type InstalledBurrito = {
   root: string;
   row: ResourceRow;
   bytes: number;
-  released: string;
   provenance: Provenance;
 };
 

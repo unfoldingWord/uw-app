@@ -134,9 +134,30 @@ function storyFiles(ingredients: readonly ListedIngredient[]): RowMismatch | und
   return undefined;
 }
 
-function markdownTree(ingredients: readonly ListedIngredient[]): RowMismatch | undefined {
+const academyArticle = /^([^/]+)\/[^/]+\/01\.md$/;
+
+const configFile = 'config.yaml';
+
+function articleTree(ingredients: readonly ListedIngredient[]): RowMismatch | undefined {
   if (ofType(ingredients, mimeTypes.markdown).length === 0) {
     return { path: 'ingredients', message: 'no Markdown article ingredient' };
+  }
+  const configs = ingredients.filter(
+    (ingredient) => ingredient.path === configFile || ingredient.path.endsWith(`/${configFile}`),
+  );
+  const misnamed = configs.find((config) => config.entry.mimeType !== mimeTypes.yaml);
+  if (misnamed) {
+    return { path: misnamed.key, message: `${configFile} is listed as ${mimeTypes.yaml}` };
+  }
+  const listed = new Set(configs.map((config) => config.path));
+  for (const ingredient of ofType(ingredients, mimeTypes.markdown)) {
+    const section = academyArticle.exec(ingredient.path)?.[1];
+    if (section !== undefined && !listed.has(`${section}/${configFile}`)) {
+      return {
+        path: `ingredients/${section}/${configFile}`,
+        message: `the Academy section ${section} has no ${configFile}`,
+      };
+    }
   }
   return undefined;
 }
@@ -244,7 +265,7 @@ export const pinnedRows: readonly ContractRow[] = [
     flavorType: 'peripheral',
     flavors: ['x-peripheralArticles'],
     appliesTo: always,
-    check: markdownTree,
+    check: articleTree,
   },
   {
     id: 'stories',
