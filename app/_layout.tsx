@@ -1,8 +1,10 @@
 import '@platform/intl';
-import { Slot } from 'expo-router';
+import Stack from 'expo-router/stack';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { createHomeService } from '@features/home/service';
+import { createOnboardingService } from '@features/onboarding/service';
 import { createSettingsService, type Appearance } from '@features/settings/service';
 import { createKernel, hostOf, isAllowedUrl, type Kernel } from '@lib/kernel';
 import { reducedBlurByDefault } from '@platform/display';
@@ -55,6 +57,34 @@ function useAppearance(kernel: Kernel | undefined): Appearance {
   return appearance;
 }
 
+function useOnboardingNeeded(kernel: Kernel | undefined): boolean {
+  const read = () => (kernel === undefined ? true : serviceOf(kernel, createOnboardingService).needed());
+  const [needed, setNeeded] = useState<boolean>(read);
+  useEffect(() => {
+    if (kernel === undefined) {
+      return undefined;
+    }
+    const onboarding = serviceOf(kernel, createOnboardingService);
+    setNeeded(onboarding.needed());
+    return serviceOf(kernel, createHomeService).onChange(() => setNeeded(onboarding.needed()));
+  }, [kernel]);
+  return needed;
+}
+
+function Routes({ needed }: { needed: boolean }) {
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Protected guard={needed}>
+        <Stack.Screen name="onboarding" />
+      </Stack.Protected>
+      <Stack.Protected guard={!needed}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="languages" options={{ presentation: 'modal' }} />
+      </Stack.Protected>
+    </Stack>
+  );
+}
+
 function AppShell({ appearance, children }: { appearance: Appearance; children?: ReactNode }) {
   const system = useColorScheme();
   const scheme: Scheme = appearance.scheme ?? (system === 'dark' ? 'dark' : 'light');
@@ -71,6 +101,7 @@ function AppShell({ appearance, children }: { appearance: Appearance; children?:
 export default function RootLayout() {
   const kernel = useBootedKernel();
   const appearance = useAppearance(kernel);
+  const needed = useOnboardingNeeded(kernel);
   const fonts = useThemeFonts();
   if (kernel === undefined || (!fonts.loaded && fonts.error === null)) {
     return null;
@@ -78,7 +109,7 @@ export default function RootLayout() {
   return (
     <KernelProvider kernel={kernel}>
       <AppShell appearance={appearance}>
-        <Slot />
+        <Routes needed={needed} />
       </AppShell>
     </KernelProvider>
   );

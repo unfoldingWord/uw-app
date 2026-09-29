@@ -1,11 +1,6 @@
 import type { KnipConfig } from 'knip';
 
-const sharedPrimitivesAwaitingScreens = [
-  'src/shared/theme/index.ts',
-  'src/shared/glass/index.ts',
-  'src/shared/fonts/index.ts',
-  'src/shared/kernel/index.ts',
-];
+const sharedLibraryBarrels = ['src/shared/*/index.ts'];
 
 const featureTemplate = ['src/features/_template/**/*.{ts,tsx}'];
 
@@ -17,7 +12,7 @@ const config: KnipConfig = {
     'sim/scenarios/*.ts',
     'migrations/*.ts',
     'src/features/*/migrations/*.ts',
-    ...sharedPrimitivesAwaitingScreens,
+    ...sharedLibraryBarrels,
     ...featureTemplate,
   ],
   ignoreExportsUsedInFile: true,
