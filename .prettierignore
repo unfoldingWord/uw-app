@@ -9,3 +9,4 @@ android/
 package-lock.json
 expo-env.d.ts
 **/*.md
+.claude/

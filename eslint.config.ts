@@ -15,6 +15,7 @@ export default defineConfig(
       '.expo/**',
       'dist/**',
       'web-build/**',
+      '.claude/**',
       'coverage/**',
       'ios/**',
       'android/**',
