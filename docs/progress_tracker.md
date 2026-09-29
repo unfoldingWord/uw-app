@@ -3,6 +3,83 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 F1 foundation review fixes
+
+Node v22.22.2. Everything below ran in Node through Vitest, the sim, the checks and `expo export`; nothing
+ran on a phone and no screen was rendered.
+
+### Checks and scenarios observed red, then green
+
+Each red below was provoked by a throwaway edit or file, reverted before the green run.
+
+- lint: with the T4 eslint config and rules restored, the new boundaries.test.ts cases: "Tests 49 failed | 67 passed (116)" (device modules, app layers, @design-system, dot segments, import()/require/import type, fetch globals, Intl/localeCompare/Function/eval/queueMicrotask/import.meta/Math alias/WeakRef, .mts/.cts/.jsx). With the new config: 116 passed. Also the new lib-purity syntax rule found 9 real uses of localeCompare in src/lib (catalog/languages, catalog/normalize, migrate, packs/install, packs/packs) -> compareText in src/lib/order.ts.
+- #5: events.test 'keeps names out of preferences, failure contexts and ids (DX-1)' against the T4 domain files: 'AssertionError: expected true to be false' (PreferenceChanged home.name value 'Jesse' accepted); green after preferences.ts, closed failure-context kinds and minted-id shape.
+- #3: sim/kernel-reactions.test.ts "holds an emit made before start..." with `await loaded` removed from journal.append: FAIL (1 failed | 10 passed); green with the gate. Also INSERT OR REPLACE -> INSERT so a reused seq fails loudly instead of overwriting.
+- #4: "never counts backwards when old events drop..." with telemetry folding from an empty baseline: FAIL; green with the checkpoint baseline.
+- #9: "resolves an emit only after every observer..." with onEntry fire-and-forget: FAIL; green awaited.
+- #11: "lets a module write only the tables, directories and preference keys it owns" with raw files/db/kv handed to modules: FAIL; green scoped.
+- #4 DX-3: the new bounded case (limit 8, dropped 4) with telemetry folding from an empty baseline: 'FAIL DX-3 ... 2 !== 6'; green with the baseline carried in the export and resumed in replay.
+- #12 archive limits: archive.test "refuses an archive that unpacks past its limits" is new API (limits param); with the T4 unzipSync reader the 4 MB-of-zeros entry in a <10 kB zip unpacked whole. Streaming reader (fflate Unzip + UnzipInflate) verified against a zip with data descriptors written by Python zipfile to a non-seekable stream (both entries read, 700 and 6000 bytes) and the fixture archives.
+- #12 intake: SH-3 with importFile removed from the Packs API: 'FAIL SH-3 ... opened.kernel.packs.importFile is not a function'; green with Files.adopt + packs.importFile.
+- #13/#14: validate.test with the T4 validate.ts and flavors.ts: 4 failed | 37 passed (provisional rows admitted by default; Academy without config.yaml accepted; ingredient keys ../metadata.json, README.md etc accepted; meta.version 0.2.0/2.0.0/latest accepted). Green after.
+- #14 contract: with the tn fixture mapped to questions, `npm run contract` printed 'FAIL sb/unfoldingWord/qaa_tn/v1.zip: notes ... expected questions', 'contract: 20 fixture burritos, 1 failed'.
+- #15: SH-3 went red once on the unified Provenance (released now part of provenance), expectation updated.
+- #16 owns: with a throwaway migration creating `throwaway` and a throwaway src/lib/catalog/throwaway.ts holding 'INSERT INTO journal ...': `npm run checks` -> 'FAIL owns ... table throwaway is created by a migration and owned by no one' and 'src/lib/catalog/throwaway.ts writes journal, which kernel owns in src/lib/journal'. Removed; pass: 5 owners, 7 tables, 6 created by migrations.
+- #16 network: with "axios" added to package.json dependencies (not installed): 'FAIL network ... axios opens connections itself ...' and '... no line in docs/dependencies.md'. Reverted; pass: 16 runtime dependencies, 582 locked production packages scanned.
+- #16 provenance/strings: with empty src/lib/corpus and src/lib/strings directories: both FAIL ('src/lib/corpus exists, so this check must now run for real ...'). Removed.
+- #16 typecheck: tsconfig.lib.json include pointed at nothing: 'typecheck tsconfig.lib.json: FAIL error TS18003: No inputs were found' (was 'pending' in T1). Reverted.
+- #16 trace: a copy of HO-8 named HO-88.typo.ts: 'FAIL scenarios named for no Must requirement in docs/PRD.md: HO-88.typo.ts', exit 1. Removed. Trace now reports scenarios and test-only proof separately (12 with a scenario, 1 with a test only, 38 unproven).
+- #17: with a throwaway app/_layout.tsx (expo-router Stack, importing @lib/order, @shared/glass and @shared/fonts) and app/index.tsx, `CI=1 npx expo export --platform android --output-dir <scratchpad>`: 'Android Bundled 9685ms node_modules/expo-router/entry.js (1458 modules)', Hermes bytecode bundle, all 18 design-system fonts emitted as assets; `--platform ios`: 'iOS Bundled 18021ms ... (1324 modules)'. So Metro and Babel handle "type": "module" and the tsconfig path aliases with no babel.config or metro.config. `npm run bundle` skipped with no app/, passed both platforms with a minimal app/, and failed both with 'Unable to resolve module @lib/does-not-exist' when the layout imported a missing alias. Throwaway files removed.
+- #18: pressGate.test 'goes inert synchronously ...' with the gate never marking itself pending: FAIL (1 failed | 2 passed); green after. Glass rendering was not run (no device, no react-native-web harness): the gate, hitSlop and minHeight are unverified on screen.
+- minor Jude 5: reference.test with the T4 parser: 1 failed | 5 passed ('Jude 5' refused); green after (a bare number above 1 in a one-chapter book is a verse; 'JUD 1' stays the chapter).
+- minor css-tokens: css-tokens.test 'refuses an at-rule it does not read' with the T9a parser: FAIL; green after, and the real tokens still pass.
+
+`npm run verify` then returned green (exit 0): 26 test files, 330 tests; `5 checks, 2 pending, none failed`
+(owns and network now run for real; provenance and strings fail as soon as `src/lib/corpus` and
+`src/lib/strings` exist); `sim: 12 scenarios, 12 passed, 0 failed`; `trace: 51 Must requirements, 12 with a
+scenario, 1 with a test only, 38 unproven`; `contract: 20 fixture burritos, 0 failed` (live skipped, offline);
+`bundle: skipped, app/_layout.tsx does not exist yet`.
+
+### What later tasks must follow
+
+- A module's `ctx.ports` is scoped: the clock has `dayOf` only; `ids.next()` throws on a second mint before an
+  event carries the first, and `emit` throws on an event that drops it; `db`, `files`, `kv` and
+  `http.download` refuse writes outside the module's `owns` with `kernel.not-owned`; audio URLs go through the
+  host allowlist. Reads are not scoped.
+- `observe(entry)` may be async and is awaited by the `emit` that appended the entry; it never sees entries
+  reloaded at start, so a module rebuilds from its own tables in `start`. A thrown reaction becomes
+  `Failure { code: 'kernel.observer-failed', context: { observer, type, cause } }`.
+- A module may declare `checkpoint: { initial, step }`, a fold the journal applies to the events it drops; the
+  module reads it through `ctx.baseline()`. The journal export is version 2 and carries `baseline`.
+- A Failure context is a closed record (`failureContextKinds`); a new key or step is a line in
+  `src/lib/domain/failures.ts`. An `id` field takes only a minted id. `PreferenceChanged.key` comes from
+  `src/lib/domain/preferences.ts`; T8 adds its keys there.
+- Files: `readRange`, `appendBytes`, `adopt(external, path)`. Http: `cancel` token (`createCancellation` in
+  `src/lib/cancel.ts`), `resumeFrom` on downloads, a `cancelled` outcome and a required final `url` on every
+  response. T9's platform Http must report the URL it landed on after redirects (the guard refuses one off the
+  allowlist); T9's Files must implement the three new methods, `adopt` copying from a `file://` or
+  `content://` URI the system handed over.
+- `validate` admits only `pinnedRows` unless handed rows; runtime code uses `packRows`, fixtures `fixtureRows`.
+- `kernelModules` gains one line per module until the scaffold PR merges (`docs/exceptions.md`), with the pin
+  in `sim/kernel.test.ts`.
+- T8 adds `--enforce` to the trace script; trace already fails on a scenario named for no Must requirement.
+- Migrations apply in code-point order of their ids (`compareText`), whatever the host locale.
+
+### Not verified
+
+- Nothing ran against a platform adapter; the streaming archive read is proven on fixture archives and one
+  zip with data descriptors, not on a go-rc2sb release (the network to git.door43.org is blocked here).
+- The Packs download still lands the whole archive through `Http.download` and decompresses kept files into
+  memory; only the archive bytes are now read in 1 MiB ranges. Streaming the download itself and writing each
+  entry as it inflates is a follow-up for the platform adapters.
+- The glass press gate, hitSlop, GlassInput growth and the hidden decorative drawings were not rendered in
+  light, dark or reduced-blur, and not tried with a screen reader.
+- Android `GlassBlur` still needs a `BlurTarget` ancestor (an `AuroraField`) to blur; T10 must place one.
+- `docs/architecture.md` still lists `StepCompleted`; the code and tests say `MovementCompleted`, the
+  CONTEXT.md word. The architecture doc needs a human edit.
+- Device discovery by reserved filename (stores, services, migrations) will need Metro's `require.context`
+  in `src/platform`, which the static-import lint rule leaves open there; not yet written.
+
 ## 2026-09-29 T4 catalog and packs
 
 Node v22.22.2. Everything below ran in Node through the sim and Vitest; nothing ran on a phone.
