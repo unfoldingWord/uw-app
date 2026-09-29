@@ -1,3 +1,4 @@
+import { strFromU8 } from 'fflate';
 import type { ListedIngredient } from '../burrito/flavors';
 import { ingredientsDirectory, metadataPath } from '../burrito/files';
 import { displayedLicence } from '../burrito/licence';
@@ -13,6 +14,7 @@ export type BurritoReader = {
   readonly direction: Direction;
   pathOf(key: string): string;
   read(key: string): Promise<string>;
+  head(key: string, bytes: number): Promise<string>;
 };
 
 export function isSafeIngredientKey(key: string): boolean {
@@ -98,5 +100,10 @@ export async function openBurrito(files: Files, root: string): Promise<BurritoRe
     direction: metadata.languages[0]?.scriptDirection === 'rtl' ? 'rtl' : 'ltr',
     pathOf,
     read: (key) => files.readText(pathOf(key)),
+    head: async (key, bytes) => {
+      const text = strFromU8(await files.readRange(pathOf(key), 0, bytes));
+      const end = text.lastIndexOf('\n');
+      return end === -1 ? text : text.slice(0, end);
+    },
   };
 }

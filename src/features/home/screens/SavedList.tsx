@@ -3,7 +3,6 @@ import { GlassButton } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { EmptyState, Row, SectionTitle } from '@shared/ui';
 import { createHomeService, type SavedItem, type SavedKind } from '../service';
-import type { HomeWords } from '../strings';
 
 const kindIcons: Record<SavedKind, IconName> = {
   passage: 'bookmark',
@@ -11,18 +10,6 @@ const kindIcons: Record<SavedKind, IconName> = {
   academy: 'folder',
   story: 'grid',
 };
-
-function titleOf(words: HomeWords, item: SavedItem): string {
-  const { bookmark } = item;
-  switch (bookmark.target) {
-    case 'passage':
-      return bookmark.reference;
-    case 'story':
-      return words.t('home.formation.story', { number: bookmark.story });
-    case 'article':
-      return bookmark.article.split('/').at(-1) ?? bookmark.article;
-  }
-}
 
 export type SavedListProps = { items: readonly SavedItem[]; onOpen: (item: SavedItem) => void };
 
@@ -36,7 +23,7 @@ export function SavedList({ items, onOpen }: SavedListProps) {
         <EmptyState icon="bookmark" title={words.t('home.saved.empty')} />
       ) : (
         items.map((item) => {
-          const title = titleOf(words, item);
+          const { title } = item;
           return (
             <Row
               key={item.bookmark.id}

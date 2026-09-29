@@ -1,5 +1,6 @@
 import { failureCodeOf } from '../domain/failures';
-import { formatReference, type Reference } from '../domain/reference';
+import { bookByCode } from '../domain/books';
+import { formatReference, parseReference, type Reference } from '../domain/reference';
 import type { JsonValue } from '../json';
 import { defineModule } from '../module';
 import { estimateIndex, indexedKinds, searchIndex } from './fulltext';
@@ -25,6 +26,7 @@ import type {
   IndexCost,
   IndexStatus,
   KindSummary,
+  LinkTarget,
   Movements,
   Passage,
   PassageOptions,
@@ -37,6 +39,9 @@ export type CorpusApi = {
   drop(pack: string): Promise<void>;
   languages(): readonly string[];
   summary(language: string): CorpusSummary;
+  bookName(book: string, language: string): string;
+  referenceName(reference: string, language: string): string;
+  title(target: LinkTarget, language: string): string | undefined;
   contents(language: string): Promise<Contents>;
   passage(reference: Reference, options: PassageOptions): Promise<Passage | undefined>;
   article(id: string, language: string): Promise<Article | undefined>;
@@ -83,6 +88,25 @@ function summarize(library: Library, language: string): CorpusSummary {
     }
   }
   return summary;
+}
+
+const namedKinds: readonly CorpusKind[] = ['literal', 'simplified', 'original'];
+
+function bookNameIn(library: Library, book: string, language: string): string {
+  const named = library
+    .of(language, namedKinds)
+    .map((entry) => entry.bookNames[book])
+    .find((name) => name !== undefined);
+  return named ?? bookByCode(book)?.name ?? book;
+}
+
+function referenceNameIn(library: Library, text: string, language: string): string {
+  const parsed = parseReference(text);
+  if (!parsed.ok) {
+    return text;
+  }
+  const { book } = parsed.reference;
+  return `${bookNameIn(library, book, language)}${formatReference(parsed.reference).slice(book.length)}`;
 }
 
 function contentLanguages(library: Library): string[] {
@@ -263,6 +287,9 @@ export const corpusModule = defineModule<CorpusApi>({
       drop: (pack) => serial(() => dropPack(pack)),
       languages: () => contentLanguages(library),
       summary: (language) => summarize(library, language),
+      bookName: (book, language) => bookNameIn(library, book, language),
+      referenceName: (reference, language) => referenceNameIn(library, reference, language),
+      title: (target, language) => library.titleOf(language, target),
       contents: (language) => read(() => contentsOf(library, language)),
       passage: (reference, options) =>
         read(async () => {

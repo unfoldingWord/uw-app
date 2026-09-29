@@ -73,7 +73,7 @@ export default function LibraryScreen() {
         >
           {value.cards.length === 0 ? (
             <Say role="body" tone="body">
-              {words.t('state.nothingPublished', { language: value.language })}
+              {words.t('state.nothingPublished', { language: service.languageName() ?? value.language })}
             </Say>
           ) : (
             value.cards.map((card) => (

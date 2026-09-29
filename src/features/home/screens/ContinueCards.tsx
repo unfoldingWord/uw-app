@@ -22,7 +22,7 @@ export function ContinueReading({ card, autonym, onOpen }: ContinueReadingProps)
   return (
     <Card
       press={{
-        accessibilityLabel: words.t('common.joined', { first: title, second: card.reference }),
+        accessibilityLabel: words.t('common.joined', { first: title, second: card.label }),
         onPress: onOpen,
       }}
     >
@@ -32,7 +32,7 @@ export function ContinueReading({ card, autonym, onOpen }: ContinueReadingProps)
       <View style={[styles.line, { gap: theme.space.sp6 }]}>
         <View style={styles.grow}>
           <ThemedText variant="cardTitle" tone="title">
-            {card.reference}
+            {card.label}
           </ThemedText>
           <ThemedText variant="label" tone="body" weight={theme.fontWeight.fwRegular}>
             {words.t('home.reading.detail', { language: autonym })}
@@ -101,6 +101,11 @@ export function ContinueFormation({ card, onOpen }: ContinueFormationProps) {
           <ThemedText variant="time" tone="title">
             {card.title}
           </ThemedText>
+          {card.next === undefined ? null : (
+            <ThemedText variant="label" tone="body" weight={theme.fontWeight.fwRegular}>
+              {card.next}
+            </ThemedText>
+          )}
         </View>
         <View
           style={[

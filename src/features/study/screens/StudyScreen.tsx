@@ -115,7 +115,7 @@ export default function StudyScreen() {
   }
 
   const { view, books } = value;
-  const language = service.language();
+  const language = service.languageName();
 
   if (view.state !== 'passage') {
     return (
@@ -139,21 +139,21 @@ export default function StudyScreen() {
           />
         ) : view.state === 'not-downloaded' ? (
           <StatePanel
-            message={words.t('study.passage.notDownloaded', { language: view.language })}
+            message={words.t('study.passage.notDownloaded', { language: language ?? view.language })}
             action={{
-              label: words.t('state.notDownloaded.action', { language: view.language }),
+              label: words.t('state.notDownloaded.action', { language: language ?? view.language }),
               onPress: () => download(view.pack, setFailure),
             }}
             failure={failure}
           />
         ) : view.state === 'no-text' ? (
           <StatePanel
-            message={words.t('state.nothingPublished', { language: view.language })}
+            message={words.t('state.nothingPublished', { language: language ?? view.language })}
             action={{ label: words.t('library.open'), onPress: () => router.push(studyRoutes.library) }}
           />
         ) : (
           <StatePanel
-            message={words.t('study.passage.missing', { language: view.language })}
+            message={words.t('study.passage.missing', { language: language ?? view.language })}
             action={
               books.length === 0
                 ? undefined
@@ -263,6 +263,7 @@ export default function StudyScreen() {
         focused={focused}
         onFocus={setFocused}
         onLink={openTarget}
+        labelOf={service.label}
         saved={saved !== undefined}
         onToggleSave={async () => {
           if (saved === undefined) {

@@ -56,6 +56,24 @@ const lineMarkers = new Set([
 
 const nameMarkers = ['toc2', 'h', 'toc1', 'toc3'];
 
+const headerLine = /^\\([a-z0-9]+)\s+(.+)$/;
+
+export function usfmBookName(head: string): string | undefined {
+  const found = new Map<string, string>();
+  for (const line of head.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (/^\\c\s/.test(trimmed)) {
+      break;
+    }
+    const match = headerLine.exec(trimmed);
+    const [, marker, value] = match ?? [];
+    if (marker !== undefined && value !== undefined && !found.has(marker)) {
+      found.set(marker, value.trim());
+    }
+  }
+  return nameMarkers.map((marker) => found.get(marker)).find((name) => name !== undefined && name !== '');
+}
+
 const characterMarkers = new Set([
   'add',
   'addpn',

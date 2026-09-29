@@ -3,6 +3,36 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 P1 readable names and small visual fixes
+
+Node v22.22.2; Chromium 141 through playwright-core 1.56.1 for the shots. Nothing ran on a phone.
+
+- Red first: `sim/corpus.test.ts` "corpus book names" failed with `device.kernel.corpus.bookName is not a
+  function`; HO-3 (card `label`), HO-4 (`next: 'Next: Observation'`), HO-6 (saved `title`), SH-4 (menu `subject`)
+  and `sim/study-service.test.ts` "names what a leader reads" failed before the service changes.
+- Corpus reads each text book's name from the USFM header (`\toc2`, then `\h`, `\toc1`, `\toc3`) through a
+  4 KB `readRange` at ingest and keeps it in `corpus_burritos.book_names` (migration `0102-corpus-book-names`,
+  default `{}`). New Corpus functions: `bookName(book, language)` (installed text first, then the English
+  domain name), `referenceName(reference, language)` and `title(target, language)`. Packs ingested before the
+  migration keep `{}` and show the English name until they are installed again (inference, not tried on a phone).
+- Services: Home continue-reading `label`, saved `title` (book name, article title, "Story 2 · title"),
+  continue-formation `next`; Study `languageName`, `referenceName`, `label(target)`, passage `label`, audio
+  label, `related` with titles, book picker names from the content; Share menu `subject`. No new string keys.
+- Screens: Study header shows the language by name like Home; at 360 px the name, the chapter pill and two
+  icon buttons do not fit on one row, so the chapter pill moved to its own row under the header, with bare
+  chevrons (44 px minimum) as in the prototype. Note support chips, related-article chips, search passage
+  rows and full-text passage hits show titles and book names. Formation session keeps the PRD order (FO-2);
+  a new `formation-session-end` shot (scrolled to the end) shows the last card clear of the footer.
+- `npm run shots` gains `scroll: 'end'` and `type` (fills the first text box); new shots
+  `formation-session-end` and `study-search-reference`.
+- `npm run verify`: green (648 tests in 61 files, 52 scenarios, 7 checks, trace 0 unproven, contract 21
+  fixture burritos, live skipped offline; bundle android 1909 and iOS 1776 modules).
+- `npm run shots`: 101 shots, 0 console errors, 0 unnamed controls, 0 horizontal overflow, 383 controls
+  visually under 44 px (hit slop not measured on web). Looked at home (light, dark), study passage (light,
+  RTL), study audio, study article, search, share, formation session and its end, and the light contact sheet.
+- Not verified: anything on a phone; the migration on a device holding an older corpus; long autonyms in the
+  Study chip (only "Fixture A" was rendered); dynamic type at the maximum.
+
 ## 2026-09-29 M9 merge of the audio player (G2) and the render harness (U2) onto G1
 
 Node v22.22.2; Chromium 141 through playwright-core 1.56.1 for the shots. Nothing ran on a phone.

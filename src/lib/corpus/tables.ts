@@ -34,6 +34,7 @@ export type Entry = {
   readonly direction: Direction;
   readonly provenance: Provenance;
   readonly books: readonly string[];
+  readonly bookNames: Readonly<Record<string, string>>;
   readonly items: number;
   readonly bytes: number;
 };
@@ -70,6 +71,16 @@ function parsed(json: string): unknown {
   }
 }
 
+function namesOf(json: string): Record<string, string> {
+  const value = parsed(json);
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return {};
+  }
+  return Object.fromEntries(
+    Object.entries(value).filter((pair): pair is [string, string] => typeof pair[1] === 'string'),
+  );
+}
+
 function entryOf(row: DbRow): Entry | undefined {
   const provenance = parsed(text(row, 'provenance'));
   const books = parsed(text(row, 'books'));
@@ -86,6 +97,7 @@ function entryOf(row: DbRow): Entry | undefined {
     direction: text(row, 'direction') === 'rtl' ? 'rtl' : 'ltr',
     provenance,
     books: books.filter((book): book is string => typeof book === 'string'),
+    bookNames: namesOf(text(row, 'book_names')),
     items: count(row, 'items'),
     bytes: count(row, 'bytes'),
   };
@@ -147,7 +159,7 @@ export async function saveEntry(
 ): Promise<void> {
   await removeRoot(session, entry.root);
   await session.run(
-    'INSERT INTO corpus_burritos (root, pack, row, kind, language, direction, provenance, books, items, bytes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    'INSERT INTO corpus_burritos (root, pack, row, kind, language, direction, provenance, books, book_names, items, bytes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
     [
       entry.root,
       entry.pack,
@@ -157,6 +169,7 @@ export async function saveEntry(
       entry.direction,
       JSON.stringify(entry.provenance),
       JSON.stringify(entry.books),
+      JSON.stringify(entry.bookNames),
       entry.items,
       entry.bytes,
     ],

@@ -4,6 +4,7 @@ import type {
   AudioClip,
   Frame,
   FullTextHit,
+  LinkTarget,
   Passage,
   SearchResults,
   Story,
@@ -70,6 +71,7 @@ export type AudioView =
 
 export type PassageView = {
   readonly reference: string;
+  readonly label: string;
   readonly language: string;
   readonly passage: Passage;
   readonly reading: Passage['text']['reading'];
@@ -86,8 +88,15 @@ export type StudyView =
   | { readonly state: 'missing'; readonly language: string; readonly reference: string }
   | { readonly state: 'passage'; readonly view: PassageView };
 
+export type RelatedArticle = { readonly id: string; readonly title: string };
+
 export type ArticleView =
-  | { readonly state: 'article'; readonly article: Article; readonly saved: Bookmark | undefined }
+  | {
+      readonly state: 'article';
+      readonly article: Article;
+      readonly related: readonly RelatedArticle[];
+      readonly saved: Bookmark | undefined;
+    }
   | { readonly state: 'missing'; readonly id: string }
   | { readonly state: 'no-language' };
 
@@ -110,6 +119,9 @@ export type SearchView =
 export type StudyService = {
   words(): StudyWords;
   language(): string | undefined;
+  languageName(): string | undefined;
+  referenceName(reference: string): string;
+  label(target: LinkTarget): string | undefined;
   open(): Promise<StudyView>;
   passage(reference: string): Promise<StudyView>;
   reading(): TextChoice;
@@ -142,7 +154,9 @@ export function createStudyService(kernel: Kernel): StudyService {
 
   const audioOf = async (passage: Passage): Promise<AudioView> => {
     const current = words();
-    const label = current.t('study.audio.label', { reference: passage.reference });
+    const label = current.t('study.audio.label', {
+      reference: corpus.referenceName(passage.reference, passage.language),
+    });
     const [clip] = passage.audio;
     if (clip !== undefined) {
       return { state: 'on-phone', clip, label };
@@ -200,6 +214,7 @@ export function createStudyService(kernel: Kernel): StudyService {
       state: 'passage',
       view: {
         reference: found.reference,
+        label: corpus.referenceName(found.reference, language),
         language,
         passage: found,
         reading: found.text.reading,
@@ -210,9 +225,26 @@ export function createStudyService(kernel: Kernel): StudyService {
     };
   };
 
+  const referenceName = (reference: string): string => {
+    const language = preferences.contentLanguage();
+    return language === undefined ? reference : corpus.referenceName(reference, language);
+  };
+
   return {
     words,
     language: () => preferences.contentLanguage(),
+    languageName: () => {
+      const language = preferences.contentLanguage();
+      return language === undefined ? undefined : autonymOf(kernel, language);
+    },
+    referenceName,
+    label: (target) => {
+      if (target.kind === 'passage') {
+        return referenceName(target.reference);
+      }
+      const language = preferences.contentLanguage();
+      return language === undefined ? undefined : corpus.title(target, language);
+    },
     async open() {
       const language = preferences.contentLanguage();
       if (language === undefined) {
@@ -276,7 +308,18 @@ export function createStudyService(kernel: Kernel): StudyService {
       const article = await corpus.article(id, language);
       return article === undefined
         ? { state: 'missing', id }
-        : { state: 'article', article, saved: bookmarks.find({ target: 'article', article: id, language }) };
+        : {
+            state: 'article',
+            article,
+            related: article.related.map((related) => ({
+              id: related,
+              title:
+                corpus.title({ kind: 'article', id: related }, language) ??
+                related.split('/').at(-1) ??
+                related,
+            })),
+            saved: bookmarks.find({ target: 'article', article: id, language }),
+          };
     },
     async story(number) {
       const language = preferences.contentLanguage();
@@ -309,7 +352,7 @@ export function createStudyService(kernel: Kernel): StudyService {
         .sort((left, right) => left.book.order - right.book.order)
         .map(({ book, found }) => ({
           code: book.code,
-          name: book.name,
+          name: corpus.bookName(book.code, language),
           testament: book.testament,
           chapters: [...found].sort((left, right) => left - right),
         }));

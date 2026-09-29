@@ -21,6 +21,7 @@ export type HelpsPanelProps = {
   focused: string | undefined;
   onFocus: (id: string) => void;
   onLink: (target: LinkTarget) => void;
+  labelOf: (target: LinkTarget) => string | undefined;
   saved: boolean;
   onToggleSave: () => Promise<void>;
   onShare: () => void;
@@ -45,6 +46,7 @@ function NoteItem({
   language,
   onFocus,
   onLink,
+  labelOf,
 }: {
   words: StudyWords;
   note: Note;
@@ -52,17 +54,19 @@ function NoteItem({
   language: string;
   onFocus: (id: string) => void;
   onLink: (target: LinkTarget) => void;
+  labelOf: (target: LinkTarget) => string | undefined;
 }) {
   const theme = useTheme();
   const support = note.support;
   const supportLabel =
     support === undefined
       ? ''
-      : support.kind === 'article'
-        ? words.t(support.id.startsWith('ta/') ? 'article.academy' : 'article.word')
-        : support.kind === 'passage'
-          ? support.reference
-          : words.t('search.kind.story');
+      : (labelOf(support) ??
+        (support.kind === 'article'
+          ? words.t(support.id.startsWith('ta/') ? 'article.academy' : 'article.word')
+          : support.kind === 'passage'
+            ? support.reference
+            : words.t('search.kind.story')));
   return (
     <Pressable
       accessibilityRole="button"
@@ -151,6 +155,7 @@ export function HelpsPanel({
   focused,
   onFocus,
   onLink,
+  labelOf,
   saved,
   onToggleSave,
   onShare,
@@ -223,6 +228,7 @@ export function HelpsPanel({
               language={language}
               onFocus={onFocus}
               onLink={onLink}
+              labelOf={labelOf}
             />
           ))
         ) : tab === 'wordLinks' ? (

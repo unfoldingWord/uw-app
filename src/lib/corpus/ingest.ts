@@ -18,11 +18,14 @@ import { storyTitle } from './stories';
 import { provenanceOf, type BurritoReader } from './source';
 import type { Entry, TitleRow } from './tables';
 import { helpsRowCount } from './tsv';
+import { usfmBookName } from './usfm';
 import type { CorpusBurrito, CorpusKind } from './types';
 
 const verseMarker = /\\v\s+\d/;
 
 const stubBookBytes = 64 * 1024;
+
+const headBytes = 4 * 1024;
 
 async function hasVerses(reader: BurritoReader, key: string): Promise<boolean> {
   const size = reader.ingredients.find((ingredient) => ingredient.key === key)?.entry.size ?? 0;
@@ -75,7 +78,27 @@ function sizeOf(reader: BurritoReader, keys: Iterable<string>): number {
     .reduce((sum, ingredient) => sum + ingredient.entry.size, 0);
 }
 
-type Counted = { books: readonly string[]; items: number; bytes: number; titles: TitleRow[] };
+type Counted = {
+  books: readonly string[];
+  bookNames?: Readonly<Record<string, string>>;
+  items: number;
+  bytes: number;
+  titles: TitleRow[];
+};
+
+async function bookNamesOf(
+  reader: BurritoReader,
+  books: ReadonlyMap<string, string>,
+): Promise<Record<string, string>> {
+  const names: Record<string, string> = {};
+  for (const [book, key] of books) {
+    const name = usfmBookName(await reader.head(key, headBytes));
+    if (name !== undefined) {
+      names[book] = name;
+    }
+  }
+  return names;
+}
 
 async function counted(kind: CorpusKind, reader: BurritoReader, language: string): Promise<Counted> {
   const title = (titleKind: TitleRow['kind'], target: string, text: string): TitleRow => ({
@@ -97,6 +120,7 @@ async function counted(kind: CorpusKind, reader: BurritoReader, language: string
       }
       return {
         books: [...books.keys()],
+        bookNames: await bookNamesOf(reader, books),
         items: books.size,
         bytes: sizeOf(reader, books.values()),
         titles: [],
@@ -181,7 +205,7 @@ export async function analyze(
     return undefined;
   }
   const kind = kindOf(pack, burrito, reader);
-  const { books, items, bytes, titles } = await counted(kind, reader, burrito.language);
+  const { books, bookNames = {}, items, bytes, titles } = await counted(kind, reader, burrito.language);
   return {
     entry: {
       root: burrito.root,
@@ -192,6 +216,7 @@ export async function analyze(
       direction: reader.direction,
       provenance,
       books,
+      bookNames,
       items,
       bytes,
     },

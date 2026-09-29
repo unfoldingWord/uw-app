@@ -22,13 +22,14 @@ export type LanguageChip = { readonly language: string; readonly autonym: string
 
 export type HeaderView = { readonly language: LanguageChip | undefined; readonly theme: ThemeChoice };
 
-export type ReadingCard = { readonly reference: string; readonly language: string };
+export type ReadingCard = { readonly reference: string; readonly label: string; readonly language: string };
 
 export type FormationCard = {
   readonly group: string;
   readonly groupName: string;
   readonly position: Position;
   readonly title: string;
+  readonly next: string | undefined;
   readonly href: string;
 };
 
@@ -69,6 +70,7 @@ export type SavedKind = 'passage' | 'word' | 'academy' | 'story';
 export type SavedItem = {
   readonly bookmark: Bookmark;
   readonly kind: SavedKind;
+  readonly title: string;
   readonly detail: string;
   readonly href: string;
 };
@@ -159,18 +161,38 @@ function bookmarkHref(bookmark: Bookmark): string {
   }
 }
 
+function savedTitle(kernel: Kernel, words: HomeWords, bookmark: Bookmark): string {
+  const { corpus } = kernel;
+  switch (bookmark.target) {
+    case 'passage':
+      return corpus.referenceName(bookmark.reference, bookmark.language);
+    case 'story': {
+      const number = words.t('home.formation.story', { number: bookmark.story });
+      const title = corpus.title({ kind: 'story', story: bookmark.story }, bookmark.language);
+      return title === undefined ? number : words.t('common.joined', { first: number, second: title });
+    }
+    case 'article':
+      return (
+        corpus.title({ kind: 'article', id: bookmark.article }, bookmark.language) ??
+        bookmark.article.split('/').at(-1) ??
+        bookmark.article
+      );
+  }
+}
+
 function savedOf(kernel: Kernel, words: HomeWords, bookmark: Bookmark): SavedItem {
   const language = autonymOf(kernel, bookmark.language);
   const href = bookmarkHref(bookmark);
+  const title = savedTitle(kernel, words, bookmark);
   switch (bookmark.target) {
     case 'passage':
-      return { bookmark, kind: 'passage', detail: words.t('home.saved.passage', { language }), href };
+      return { bookmark, kind: 'passage', title, detail: words.t('home.saved.passage', { language }), href };
     case 'story':
-      return { bookmark, kind: 'story', detail: words.t('home.saved.story', { language }), href };
+      return { bookmark, kind: 'story', title, detail: words.t('home.saved.story', { language }), href };
     case 'article':
       return bookmark.article.startsWith('ta/')
-        ? { bookmark, kind: 'academy', detail: words.t('home.saved.academy', { language }), href }
-        : { bookmark, kind: 'word', detail: words.t('home.saved.word', { language }), href };
+        ? { bookmark, kind: 'academy', title, detail: words.t('home.saved.academy', { language }), href }
+        : { bookmark, kind: 'word', title, detail: words.t('home.saved.word', { language }), href };
   }
 }
 
@@ -261,7 +283,9 @@ export function createHomeService(kernel: Kernel): HomeService {
     continueReading: () => {
       const language = preferences.contentLanguage();
       const reference = language === undefined ? undefined : preferences.lastPassage(language);
-      return language === undefined || reference === undefined ? undefined : { reference, language };
+      return language === undefined || reference === undefined
+        ? undefined
+        : { reference, label: kernel.corpus.referenceName(reference, language), language };
     },
     async continueFormation() {
       const language = preferences.contentLanguage();
@@ -277,6 +301,12 @@ export function createHomeService(kernel: Kernel): HomeService {
             groupName: group.name,
             position: next.position,
             title: next.title,
+            next:
+              next.position.movement === undefined
+                ? undefined
+                : words().t('home.formation.next', {
+                    movement: words().t(`movement.${next.position.movement}`),
+                  }),
             href: `/formation/session/${next.position.track}/${String(next.position.session)}`,
           };
     },

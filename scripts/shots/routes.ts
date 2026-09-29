@@ -13,6 +13,8 @@ export type Shot = {
   readonly path: string;
   readonly fresh?: boolean;
   readonly press?: string;
+  readonly scroll?: 'end';
+  readonly type?: string;
   readonly modes?: readonly Mode['name'][];
 };
 
@@ -50,11 +52,18 @@ export const shots: readonly Shot[] = [
   { name: 'formation', path: '/formation' },
   { name: 'formation-groups', path: '/formation/groups' },
   { name: 'formation-session', path: '/formation/session/foundations/1' },
+  {
+    name: 'formation-session-end',
+    path: '/formation/session/foundations/1',
+    scroll: 'end',
+    modes: leftToRight,
+  },
   { name: 'impact', path: '/impact/jeremiah-and-the-occult-king' },
   { name: 'share', path: '/share?kind=passage&ref=RUT%201:16' },
   { name: 'transfer', path: '/transfer' },
   { name: 'transfer-send', path: '/transfer', press: 'Send', modes: leftToRight },
   { name: 'transfer-receive', path: '/transfer', press: 'Receive', modes: leftToRight },
+  { name: 'study-search-reference', path: '/study/search', type: 'Ruth 1:16', modes: leftToRight },
   { name: 'study-audio', path: '/study?reference=RUT%201:16', press: 'Play audio', modes: leftToRight },
   { name: 'study-word-links', path: '/study?reference=RUT%201:16', press: 'Word links', modes: leftToRight },
   { name: 'languages', path: '/languages' },

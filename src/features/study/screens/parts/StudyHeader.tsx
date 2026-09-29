@@ -5,6 +5,7 @@ import { useTheme } from '@shared/theme';
 import type { StudyWords } from '../../strings';
 import type { ChapterPlace } from './passage';
 import { studyRoutes } from './routes';
+import { Say } from './Say';
 
 export type StudyHeaderProps = {
   words: StudyWords;
@@ -20,68 +21,85 @@ export function StudyHeader({ words, language, place, previous, next, onGo, onCh
   const theme = useTheme();
   const router = useRouter();
   const size = theme.space.sp14;
+  const target = { minWidth: theme.space.sp13, minHeight: theme.space.sp13 };
   return (
     <View
-      style={[
-        styles.row,
-        { gap: theme.space.sp4, paddingHorizontal: theme.space.gutterScreen, paddingTop: theme.space.sp6 },
-      ]}
+      style={{
+        gap: theme.space.sp4,
+        paddingHorizontal: theme.space.gutterScreen,
+        paddingTop: theme.space.sp6,
+      }}
     >
-      {language === undefined ? null : (
-        <GlassButton
-          size="sm"
-          accessibilityLabel={words.t('common.language.chip', { language })}
-          leading={<Icon name="globe" size={theme.fontSize.fsSubtitle} />}
-          onPress={() => router.push(studyRoutes.languages)}
-        >
-          {language}
-        </GlassButton>
-      )}
-      {place === undefined ? (
-        <View style={styles.fill} />
-      ) : (
-        <GlassSurface level={3} blur="medium" radius="pill" shadow="rest" style={[styles.fill, styles.row]}>
-          <GlassIconButton
-            label={words.t('study.nav.previous')}
-            size={theme.space.sp13}
-            disabled={previous === undefined}
-            onPress={() => (previous === undefined ? undefined : onGo(previous))}
+      <View style={[styles.row, { gap: theme.space.sp4 }]}>
+        {language === undefined ? null : (
+          <GlassButton
+            size="sm"
+            accessibilityLabel={words.t('common.language.chip', { language })}
+            leading={<Icon name="globe" size={theme.fontSize.fsSubtitle} />}
+            trailing={<Icon name="chevronDown" size={theme.fontSize.fsCaption} />}
+            onPress={() => router.push(studyRoutes.languages)}
+            style={styles.chip}
           >
-            <Icon name="chevronLeft" size={theme.fontSize.fsSubtitle} />
-          </GlassIconButton>
+            <Say role="caption" tone="title" weight="semibold" lines={1}>
+              {language}
+            </Say>
+          </GlassButton>
+        )}
+        <View style={styles.fill} />
+        <GlassIconButton
+          label={words.t('common.search')}
+          size={size}
+          onPress={() => router.push(studyRoutes.search)}
+        >
+          <Icon name="search" />
+        </GlassIconButton>
+        <GlassIconButton
+          label={words.t('library.open')}
+          size={size}
+          onPress={() => router.push(studyRoutes.library)}
+        >
+          <Icon name="layers" />
+        </GlassIconButton>
+      </View>
+      {place === undefined ? null : (
+        <GlassSurface
+          level={3}
+          blur="medium"
+          radius="pill"
+          shadow="rest"
+          style={[styles.row, { paddingHorizontal: theme.space.sp3 }]}
+        >
           <GlassButton
             variant="quiet"
-            size="sm"
+            accessibilityLabel={words.t('study.nav.previous')}
+            disabled={previous === undefined}
+            onPress={() => (previous === undefined ? undefined : onGo(previous))}
+            style={[styles.chevron, target]}
+          >
+            <Icon name="chevronLeft" size={theme.fontSize.fsSubtitle} />
+          </GlassButton>
+          <GlassButton
+            variant="quiet"
+            accessibilityLabel={place}
             accessibilityHint={words.t('study.nav.choose')}
             onPress={onChoose}
-            style={styles.fill}
+            style={[styles.fill, target]}
           >
-            {place}
+            <Say role="label" tone="title" weight="semibold" lines={1}>
+              {place}
+            </Say>
           </GlassButton>
-          <GlassIconButton
-            label={words.t('study.nav.next')}
-            size={theme.space.sp13}
+          <GlassButton
+            variant="quiet"
+            accessibilityLabel={words.t('study.nav.next')}
             disabled={next === undefined}
             onPress={() => (next === undefined ? undefined : onGo(next))}
+            style={[styles.chevron, target]}
           >
             <Icon name="chevronRight" size={theme.fontSize.fsSubtitle} />
-          </GlassIconButton>
+          </GlassButton>
         </GlassSurface>
       )}
-      <GlassIconButton
-        label={words.t('common.search')}
-        size={size}
-        onPress={() => router.push(studyRoutes.search)}
-      >
-        <Icon name="search" />
-      </GlassIconButton>
-      <GlassIconButton
-        label={words.t('library.open')}
-        size={size}
-        onPress={() => router.push(studyRoutes.library)}
-      >
-        <Icon name="layers" />
-      </GlassIconButton>
     </View>
   );
 }
@@ -89,4 +107,6 @@ export function StudyHeader({ words, language, place, previous, next, onGo, onCh
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center' },
   fill: { flex: 1, minWidth: 0 },
+  chevron: { alignSelf: 'center', alignItems: 'center', justifyContent: 'center' },
+  chip: { flexShrink: 1 },
 });

@@ -96,6 +96,7 @@ export default scenario(
     assert.deepEqual(menu, {
       state: 'ready',
       title: 'Share passage',
+      subject: 'Ruth 1:16',
       asText: 'Share as text',
       asAudio: 'Share as audio',
       noAudio: undefined,
@@ -105,6 +106,7 @@ export default scenario(
     assert.ok(quiet.state === 'ready' && quiet.asAudio === undefined && quiet.noAudio !== undefined);
     const storyMenu = await sharing.menu({ kind: 'story', number: 1 });
     assert.ok(storyMenu.state === 'ready' && storyMenu.title === 'Share story');
+    assert.equal(storyMenu.subject, 'The Creation', 'the sheet names the story, not its number');
     assert.deepEqual(await sharing.menu({ kind: 'story', number: 99 }), { state: 'missing' });
 
     const before = phone.adapters.shareSheet.shared().length;

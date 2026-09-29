@@ -89,7 +89,6 @@ export default function ShareScreen() {
 
   const header = <Header back={{ label: words.t('common.close'), onPress: close }} />;
   const ready = menu.value?.state === 'ready' ? menu.value : undefined;
-  const subject = target?.kind === 'passage' ? target.reference : undefined;
 
   return (
     <ScreenScaffold header={header} scroll={false}>
@@ -106,11 +105,9 @@ export default function ShareScreen() {
           <ThemedText variant="overline" tone="dim" accessibilityRole="header">
             {ready.title}
           </ThemedText>
-          {subject === undefined ? null : (
-            <ThemedText variant="cardTitle" tone="title">
-              {subject}
-            </ThemedText>
-          )}
+          <ThemedText variant="cardTitle" tone="title">
+            {ready.subject}
+          </ThemedText>
           <View style={{ gap: theme.space.sp4 }}>
             <GlassButton variant="dark" size="lg" full onPress={asText}>
               {ready.asText}

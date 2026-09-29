@@ -14,6 +14,13 @@ const pageInit = readFileSync(join(import.meta.dirname, 'page-init.js'), 'utf8')
 
 const pageAudit = readFileSync(join(import.meta.dirname, 'page-audit.js'), 'utf8');
 
+const scrollToEnd = `for (const element of document.querySelectorAll('*')) {
+  const overflow = getComputedStyle(element).overflowY;
+  if ((overflow === 'auto' || overflow === 'scroll') && element.scrollHeight > element.clientHeight) {
+    element.scrollTop = element.scrollHeight;
+  }
+}`;
+
 export type ControlFinding = {
   readonly role: string;
   readonly name: string;
@@ -78,6 +85,19 @@ async function shootOne(browser: Browser, origin: string, output: string, shot: 
     } catch (error) {
       errors.push(`could not press ${shot.press}: ${String(error).slice(0, 160)}`);
     }
+  }
+  if (shot.type !== undefined) {
+    try {
+      await page.getByRole('textbox').first().fill(shot.type, { timeout: 5000 });
+      await page.keyboard.press('Enter');
+      await page.waitForTimeout(1500);
+    } catch (error) {
+      errors.push(`could not type ${shot.type}: ${String(error).slice(0, 160)}`);
+    }
+  }
+  if (shot.scroll === 'end') {
+    await page.evaluate(scrollToEnd);
+    await page.waitForTimeout(800);
   }
   const file = join(output, `${shot.name}--${mode.name}.png`);
   await page.screenshot({ path: file });

@@ -31,6 +31,11 @@ export default scenario(
       ],
     );
     assert.deepEqual(
+      saved.map((item) => item.title),
+      ['Story 2 · Sin Enters the World', 'Idiom', 'God', 'Ruth 1:1'],
+      'each saved item is titled the way a leader reads it: the story title, the article title, the book name',
+    );
+    assert.deepEqual(
       saved.map((item) => item.href),
       [
         '/study/story/2',

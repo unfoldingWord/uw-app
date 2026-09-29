@@ -59,7 +59,7 @@ export default function ArticleScreen() {
     );
   }
 
-  const { article, saved } = value;
+  const { article, related, saved } = value;
   const kind = words.t(article.kind === 'word' ? 'article.word' : 'article.academy');
 
   return (
@@ -88,7 +88,7 @@ export default function ArticleScreen() {
           {article.title}
         </Say>
         <Say role="caption" tone="dim" style={styles.center}>
-          {words.t('article.meta', { kind, language })}
+          {words.t('article.meta', { kind, language: service.languageName() ?? language })}
         </Say>
       </TopBar>
       <ScrollView
@@ -112,20 +112,20 @@ export default function ArticleScreen() {
           <View style={{ direction: directionOf(article.title), gap: theme.space.sp6 }}>
             <Blocks blocks={article.blocks} language={article.provenance.language} onLink={openTarget} />
           </View>
-          {article.related.length === 0 ? null : (
+          {related.length === 0 ? null : (
             <View style={{ gap: theme.space.sp5, marginTop: theme.space.sp4 }}>
               <Say role="overline" tone="dim">
                 {words.t('article.links')}
               </Say>
               <View style={[styles.wrap, { gap: theme.space.sp3 }]}>
-                {article.related.map((related) => (
+                {related.map((item) => (
                   <GlassButton
-                    key={related}
+                    key={item.id}
                     variant="quiet"
                     size="sm"
-                    onPress={() => router.push(articleHref(related))}
+                    onPress={() => router.push(articleHref(item.id))}
                   >
-                    {related.split('/').pop() ?? related}
+                    {item.title}
                   </GlassButton>
                 ))}
               </View>

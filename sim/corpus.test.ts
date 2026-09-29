@@ -4,7 +4,7 @@ import { buildBurrito, type BurritoInput } from '@lib/burrito/build';
 import { metadataPath, utf8, type BurritoFiles } from '@lib/burrito/files';
 import { mimeTypes } from '@lib/burrito/flavors';
 import type { CorpusSource } from '@lib/corpus/types';
-import { imagePackId, languagePackId, type PackId } from '@lib/domain/pack';
+import { imagePackId, languagePackId, originalPackId, type PackId } from '@lib/domain/pack';
 import { parseReference, type Reference } from '@lib/domain/reference';
 import { archiveUrlOf } from '@lib/domain/release';
 import { fromCatalog, fromFile } from '@lib/packs/source';
@@ -228,6 +228,44 @@ describe('corpus contents', () => {
     expect(contents.stories.map((story) => story.number)).toEqual([1, 2, 3]);
     expect(contents.movements).toEqual([1, 2, 3]);
     expect(contents.audio).toEqual([]);
+  });
+});
+
+describe('corpus book names', () => {
+  it('names a book from the installed text in its language, keeps the name across a restart, and falls back to the English name', async () => {
+    const device = await phone([]);
+    const named = String.raw`\id RUT qac_ult
+\h Rut kitab
+\toc1 Kitab Rut
+\toc2 Rut
+\c 1
+\v 16 Ruth said.`;
+    const imported = await importBurrito(
+      device,
+      'qac_ult',
+      burrito({
+        resource: 'qac_ult',
+        flavorType: 'scripture',
+        flavor: 'textTranslation',
+        ingredients: [
+          { path: '08-RUT.usfm', bytes: utf8(named), mimeType: mimeTypes.usfm, scope: { RUT: ['1'] } },
+        ],
+      }),
+    );
+    expect(imported.ok).toBe(true);
+    expect(device.kernel.corpus.bookName('RUT', 'qac')).toBe('Rut');
+    expect(device.kernel.corpus.referenceName('RUT 1:16', 'qac')).toBe('Rut 1:16');
+    expect(device.kernel.corpus.referenceName('RUT 1:16-18', 'qac')).toBe('Rut 1:16-18');
+    expect(device.kernel.corpus.bookName('3JN', 'qac')).toBe('3 John');
+    expect(device.kernel.corpus.bookName('RUT', 'qab')).toBe('Ruth');
+    expect(device.kernel.corpus.referenceName('not a reference', 'qac')).toBe('not a reference');
+    await device.restart();
+    expect(device.kernel.corpus.bookName('RUT', 'qac')).toBe('Rut');
+  });
+
+  it('reads the Hebrew name of the original-language text', async () => {
+    const device = await phone([originalPackId('hbo')]);
+    expect(device.kernel.corpus.bookName('RUT', 'hbo')).toBe('רות');
   });
 });
 

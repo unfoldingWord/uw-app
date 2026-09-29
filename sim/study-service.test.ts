@@ -43,4 +43,23 @@ describe('the study service behind the passage view (ST-2, ST-7)', () => {
     expect(hebrew?.text.direction).toBe('rtl');
     expect(hebrew?.language).toBe('hbo');
   });
+
+  it('names what a leader reads: book names, the language by name, and article titles instead of ids', async () => {
+    const { services } = await readyPhone();
+    expect(services.study.languageName()).toBe('Fixture A');
+    const view = await services.study.passage('RUT 1:16');
+    expect(view.state === 'passage' && view.view.label).toBe('Ruth 1:16');
+    expect(services.study.referenceName('3JN 1:2')).toBe('3 John 1:2');
+    expect((await services.study.books()).map((book) => book.name)).toEqual(['Ruth', '3 John']);
+    expect(services.study.label({ kind: 'article', id: 'tw/bible/kt/god' })).toBe('God');
+    expect(services.study.label({ kind: 'article', id: 'ta/translate/figs-idiom' })).toBe('Idiom');
+    expect(services.study.label({ kind: 'story', story: 1 })).toBe('The Creation');
+    expect(services.study.label({ kind: 'passage', reference: 'RUT 1:16' })).toBe('Ruth 1:16');
+    expect(services.study.label({ kind: 'article', id: 'tw/bible/kt/nothing' })).toBeUndefined();
+    const article = await services.study.article('ta/translate/figs-metaphor');
+    expect(article.state === 'article' && article.related).toEqual([
+      { id: 'ta/translate/figs-idiom', title: 'Idiom' },
+      { id: 'ta/translate/translate-names', title: 'How to Translate Names' },
+    ]);
+  });
 });

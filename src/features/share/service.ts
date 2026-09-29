@@ -13,6 +13,7 @@ export type ShareMenu =
   | {
       readonly state: 'ready';
       readonly title: string;
+      readonly subject: string;
       readonly asText: string;
       readonly asAudio: string | undefined;
       readonly noAudio: string | undefined;
@@ -86,6 +87,7 @@ export function createShareService(kernel: Kernel): ShareService {
           : {
               state: 'ready',
               title: current.t('share.story'),
+              subject: found.value.title,
               asText: current.t('share.asText'),
               asAudio: undefined,
               noAudio: undefined,
@@ -100,6 +102,7 @@ export function createShareService(kernel: Kernel): ShareService {
       return {
         state: 'ready',
         title: current.t('share.passage'),
+        subject: corpus.referenceName(found.value.reference, found.value.language),
         asText: current.t('share.asText'),
         asAudio: audible ? current.t('share.asAudio') : undefined,
         noAudio: audible ? undefined : current.t('share.noAudio'),

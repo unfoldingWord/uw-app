@@ -44,7 +44,7 @@ export default function SearchScreen() {
   const [query, setQuery] = useState('');
   const [found, setFound] = useState<Found | undefined>(undefined);
   const generation = useRef(0);
-  const language = service.language();
+  const language = service.languageName();
 
   const run = useCallback(
     async (text: string) => {
@@ -135,7 +135,7 @@ export default function SearchScreen() {
               </Say>
               <ResultRow
                 icon="layers"
-                title={reference.reference}
+                title={service.referenceName(reference.reference)}
                 detail={
                   reference.available
                     ? words.t('search.kind.passage', { language: language ?? '' })
@@ -170,7 +170,7 @@ export default function SearchScreen() {
                 <ResultRow
                   key={`${targetKey(hit.target)}:${String(index)}`}
                   icon={targetIcon(hit.target)}
-                  title={hit.target.kind === 'passage' ? hit.target.reference : hit.provenance.title}
+                  title={service.label(hit.target) ?? hit.provenance.title}
                   detail={hit.snippet}
                   onPress={() => openTarget(hit.target)}
                 />

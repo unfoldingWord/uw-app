@@ -21,6 +21,7 @@ export default scenario(
       groupName: 'Tuesday group',
       position: { track: 'foundations', session: 1, movement: 'observation' },
       title: 'The Creation',
+      next: 'Next: Observation',
       href: '/formation/session/foundations/1',
     });
 
