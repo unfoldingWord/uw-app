@@ -1,11 +1,6 @@
-import { md5 } from '@noble/hashes/legacy.js';
-import { bytesToHex } from '@noble/hashes/utils.js';
 import { fromUtf8, metadataPath, type BurritoFiles } from '../burrito/files';
 import { isRecord } from '../burrito/metadata';
-import type { IngredientFact } from '../burrito/validate';
 import type { Files } from '../ports';
-
-export const hashReadBytes = 256 * 1024;
 
 export function parentOf(path: string): string {
   const index = path.lastIndexOf('/');
@@ -42,16 +37,4 @@ export async function readBurrito(files: Files, root: string): Promise<BurritoFi
     }
   }
   return burrito;
-}
-
-export async function hashOnDisk(files: Files, path: string): Promise<IngredientFact | undefined> {
-  if (!(await files.exists(path))) {
-    return undefined;
-  }
-  const size = await files.size(path);
-  const hash = md5.create();
-  for (let offset = 0; offset < size; offset += hashReadBytes) {
-    hash.update(await files.readRange(path, offset, Math.min(hashReadBytes, size - offset)));
-  }
-  return { size, md5: bytesToHex(hash.digest()) };
 }

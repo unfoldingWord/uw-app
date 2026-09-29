@@ -34,8 +34,12 @@ function eventSafe(provenance: Provenance): boolean {
   );
 }
 
-export function checkBurrito(facts: BurritoFacts, choice: CatalogChoice | undefined): BurritoCheck {
-  const report = validateFacts(facts, { rows: packRows });
+export function checkBurrito(
+  facts: BurritoFacts,
+  choice: CatalogChoice | undefined,
+  contents = true,
+): BurritoCheck {
+  const report = validateFacts(facts, { rows: packRows, contents });
   if (report.kind === 'ignored') {
     return { ok: false, code: 'pack.unknown-flavor' };
   }

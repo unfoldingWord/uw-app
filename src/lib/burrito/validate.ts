@@ -38,7 +38,10 @@ export type ValidationReport =
       readonly message: string;
     };
 
-export type ValidateOptions = { readonly rows?: readonly ContractRow[] };
+export type ValidateOptions = {
+  readonly rows?: readonly ContractRow[];
+  readonly contents?: boolean;
+};
 
 export type IngredientFact = { readonly size: number; readonly md5: string };
 
@@ -270,7 +273,7 @@ export function validateFacts(facts: BurritoFacts, options: ValidateOptions = {}
   if (mismatch) {
     return invalid('row-ingredients', mismatch.path, `${row.resource}: ${mismatch.message}`);
   }
-  const absent = checkPresence(facts, ingredients);
+  const absent = options.contents === false ? undefined : checkPresence(facts, ingredients);
   if (absent) {
     return absent;
   }

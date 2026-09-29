@@ -42,7 +42,11 @@ function parentOf(path: string): string {
   return index === -1 ? '' : path.slice(0, index);
 }
 
-export type UnpackOptions = { readonly into?: string; readonly limits?: ArchiveLimits };
+export type UnpackOptions = {
+  readonly into?: string;
+  readonly limits?: ArchiveLimits;
+  readonly hash?: boolean;
+};
 
 export async function unpackArchive(
   files: Files,
@@ -51,6 +55,7 @@ export async function unpackArchive(
 ): Promise<Unpacked> {
   const limits = options.limits ?? defaultArchiveLimits;
   const { into } = options;
+  const hashed = options.hash !== false;
   const names: string[] = [];
   const queue: Chunk[] = [];
   const hashing = new Map<string, Hashing>();
@@ -107,7 +112,9 @@ export async function unpackArchive(
     if (state === undefined) {
       return;
     }
-    state.hash.update(chunk.data);
+    if (hashed) {
+      state.hash.update(chunk.data);
+    }
     state.size += chunk.data.byteLength;
     if (kept(chunk.path)) {
       keptTotal += chunk.data.byteLength;
@@ -132,7 +139,7 @@ export async function unpackArchive(
     }
     state.started = true;
     if (chunk.final) {
-      facts.set(chunk.path, { size: state.size, md5: bytesToHex(state.hash.digest()) });
+      facts.set(chunk.path, { size: state.size, md5: hashed ? bytesToHex(state.hash.digest()) : '' });
     }
   }
 

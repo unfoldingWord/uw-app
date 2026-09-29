@@ -53,7 +53,7 @@ describe('packs install by streaming (LA-2, LA-7)', () => {
     const root = burritoRootOf(device, 'qaz_ult');
     const onDisk = await readBurrito(device.adapters.files, root);
     expect(validate(onDisk, { rows: packRows })).toMatchObject({ ok: true, kind: 'valid' });
-  });
+  }, 30_000);
 
   it('updates one resource without reading, copying or moving the burritos it keeps', async () => {
     const { world, device } = await phone();

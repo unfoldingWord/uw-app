@@ -3,6 +3,23 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 F2 fixes from review 2: verify
+
+- Red in the first full `npm run verify`: `sim/packs-streaming.test.ts` timed out at 5 s (6.6 s under the
+  parallel run) on the 12 MB import. Each byte was hashed three times: the file-import peek, the unpack,
+  and a second pass from disk. Changed after the Packs entry above was written: the peek reads metadata
+  and licences only (`unpackArchive(..., { hash: false })` and `validateFacts(..., { contents: false })`),
+  checksums are checked once on the bytes as they are written, and the check on disk before the rename is
+  of each ingredient's size. The file is imported whole or not at all as before; a corrupt import now fails
+  after `PackInstallStarted` with `pack.checksum-mismatch` instead of before it. The two heavy tests carry
+  30 s and 60 s limits. Inference: three MD5 passes of a 220 MB pack in JavaScript on a low-end phone would
+  have cost the better part of a minute.
+- `npm run verify` exit 0: `Test Files 45 passed`, `Tests 516 passed`; knip clean; `owns: 8 owners, 26
+  tables, 16 created by migrations, one writer each`; `provenance: 60 corpus values ... 164 pieces`;
+  `strings: 405 keys in 16 locales`; `sim: 26 scenarios, 26 passed, 0 failed`; `trace: 51 Must
+  requirements, 26 with a scenario, 2 with a test only, 23 unproven` (reporting only); `contract: 20
+  fixture burritos, 0 failed` (live skipped, offline); `bundle android: pass`, `bundle ios: pass`.
+
 ## 2026-09-29 F2 fixes from review 2: what was fixed elsewhere, skipped or only considered
 
 - Skipped, left to the release-wiring task as asked: finding 12 (`app.config` permissions and backups:

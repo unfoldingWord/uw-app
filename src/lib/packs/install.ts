@@ -28,7 +28,7 @@ import {
   stagingPath,
 } from './layout';
 import type { CatalogChoice, PackPlan, PackSource } from './source';
-import { hashOnDisk, parentOf, removeIfPresent } from './tree';
+import { parentOf, removeIfPresent } from './tree';
 import type { InstalledBurrito, InstalledPack, InstallOutcome, InstallProgress } from './types';
 import { writeInstalledPack } from './store';
 
@@ -109,14 +109,14 @@ export function catalogOffer(ports: ModulePorts, choice: CatalogChoice): Offer {
 async function fileOffer(ports: ModulePorts, path: string): Promise<Resolution> {
   let peeked: Awaited<ReturnType<typeof unpackArchive>>;
   try {
-    peeked = await unpackArchive(ports.files, path);
+    peeked = await unpackArchive(ports.files, path, { hash: false });
   } catch (error) {
     return { ok: false, code: failureCodeOf(error) };
   }
   if (!peeked.ok) {
     return { ok: false, code: 'pack.invalid-burrito' };
   }
-  const checked = checkBurrito(peeked.facts, undefined);
+  const checked = checkBurrito(peeked.facts, undefined, false);
   if (!checked.ok) {
     return checked;
   }
@@ -266,8 +266,9 @@ export function createInstaller(context: InstallerContext): Installer {
     }
     for (const key of burrito.listed) {
       const expected = facts.fact(key);
-      const actual = await hashOnDisk(files, `${directory}/${key}`);
-      if (expected === undefined || actual?.md5 !== expected.md5 || actual.size !== expected.size) {
+      const path = `${directory}/${key}`;
+      const size = (await files.exists(path)) ? await files.size(path) : undefined;
+      if (expected === undefined || size !== expected.size) {
         throw new InstallFailure('pack.checksum-mismatch');
       }
     }
