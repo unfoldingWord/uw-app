@@ -1,0 +1,32 @@
+export const referenceValues = {
+  auroraField: { insetPercent: 18, driftMs: 22000 },
+  dotRing: {
+    dotRadius: 0.9,
+    breatheMs: 4500,
+    innerBand: 0.34,
+    innerDensity: 0.4,
+    bandTwist: 0.16,
+    fade: 0.25,
+  },
+  filament: { strokeWidth: 1, nodeRadius: 3.5, branchInset: 8, straightWidth: 2, bend: [0.55, 0.45] },
+  glassSurface: { refractionOpacity: 0.6 },
+  glassButton: {
+    padding: { sm: [8, 14], md: [12, 20], lg: [15, 26] },
+    lineHeight: 1,
+    solidBorder: 'rgba(255,255,255,.9)',
+    darkBorder: 'rgba(255,255,255,.14)',
+    hairline: 0.5,
+  },
+  glassIconButton: { size: 52, darkBorder: 'rgba(255,255,255,.14)' },
+  glassInput: { height: 58 },
+  glassChip: {
+    padding: { bare: [4, 0], sm: [4, 9], md: [5, 11] },
+    lineHeight: 1.1,
+    letterSpacingEm: 0.01,
+    nightFill: 'rgba(255,255,255,.16)',
+    nightBorder: 'rgba(255,255,255,.18)',
+    hairline: 0.5,
+  },
+  icon: { size: 20, stroke: 1.7 },
+  disabledOpacity: 0.4,
+} as const;

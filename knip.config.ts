@@ -4,11 +4,14 @@ const dependenciesAwaitingFirstImport = [
   'expo-router',
   'expo-constants',
   'expo-linking',
-  'react-native-safe-area-context',
   'react-native-screens',
 ];
 
-const sharedPrimitivesAwaitingScreens = ['src/shared/theme/index.ts'];
+const sharedPrimitivesAwaitingScreens = [
+  'src/shared/theme/index.ts',
+  'src/shared/glass/index.ts',
+  'src/shared/fonts/index.ts',
+];
 
 const config: KnipConfig = {
   entry: [
