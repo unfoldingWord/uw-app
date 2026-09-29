@@ -3,6 +3,34 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 T3 burrito validator and fixture burritos
+
+Node v22.22.2. `npm run fixtures` wrote 23 files, 132011 bytes: 20 burrito archives under `sim/fixtures/sb/`,
+`catalog.json`, `languages.json` and `routes.json`.
+
+### Checks observed
+
+| Check | Command | Observed |
+|---|---|---|
+| Content matches the contract (red) | `npm run contract` (exit 1) after a throwaway script rewrote `sim/fixtures/sb/unfoldingWord/qaa_tn/v1.zip` with a zeroed md5 for `ingredients/tn_RUT.tsv` | `FAIL  sb/unfoldingWord/qaa_tn/v1.zip: invalid ingredient-checksum at ingredients/tn_RUT.tsv: ingredient ingredients/tn_RUT.tsv has md5 07b2768a4dd4f74daabfbb37a99cadac, listed as 00000000000000000000000000000000` / `contract: 20 fixture burritos, 1 failed` |
+| Fixtures rebuild byte for byte (red) | `npx vitest run sim/fixtures` with the same corrupted archive | `× rebuild to exactly the checked-in bytes, with nothing stale left on disk` and `× serve every release through a route, and every route resolves to a valid burrito` |
+| Content matches the contract (green) | `npm run fixtures`, then `npm run contract` | 20 `ok` lines, one per burrito with its row; `contract: 20 fixture burritos, 0 failed` |
+| Deterministic across time zones | `TZ=Pacific/Kiritimati` and `TZ=America/Los_Angeles npx vitest run sim/fixtures` | `Tests  5 passed (5)` both times |
+
+The throwaway script was deleted and the archive regenerated before the green run.
+
+### Not verified
+
+- The live half of `npm run contract` has never reached `git.door43.org`: from this environment the request is
+  refused (`live: skipped, offline (HTTP 403 ...)`). The first online run (CI) is the first comparison of the
+  pinned rows, the provenance fields and the story-helps rule against real `go-rc2sb` output, and it fails verify
+  if they disagree.
+- The fixture catalog, language list and route shapes are reconstructed from knowledge of the DCS API, not
+  captured from it.
+- The fixture JPEG (8x8 grey baseline) and MP3 (silent MPEG-1 Layer III frames) bytes were built by hand and never
+  decoded by an image or audio decoder; no decoder is available here.
+- The provisional flavors (`docs/proposals/2026-09-29-provisional-flavors.md`) await human approval.
+
 ## 2026-09-29 T1 toolchain and checks
 
 Node v22.22.2, npm 10.9.7, Expo SDK 57.0.26 (current `latest` on npm). `npx expo install --check` could not
