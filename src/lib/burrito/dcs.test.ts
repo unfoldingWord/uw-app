@@ -118,7 +118,7 @@ const observed: Readonly<Record<string, { shape: Shape; row: RowId }>> = {
           mimeType: 'text/plain',
           scope: { '1CO': [] },
         },
-        { path: 'FRT.usfm', text: '\\id FRT\n\\is Front\n', mimeType: 'text/plain', scope: { FRT: [] } },
+        { path: 'FRT.usfm', text: '\\id FRT\n\\is Front\n', mimeType: 'text/plain' },
       ],
     },
   },

@@ -24,7 +24,7 @@ Observed on 2026-09-29 in GitHub Actions run 36618141715, which paged the whole 
 
 | Resource | flavorType | flavor | Ingredients | Parsed as |
 |---|---|---|---|---|
-| Literal text, Simplified text, Hebrew, Greek | scripture | textTranslation | one `BBB.usfm` per book, listed as `text/plain` (older burritos say `text/x-usfm`; both are accepted, and USFM is told by the `.usfm` extension), `scope` naming the book with an empty chapter list. `FRT.usfm` front matter and books with no verse are listed, and are not shown as books | Text with alignment |
+| Literal text, Simplified text, Hebrew, Greek | scripture | textTranslation | one `BBB.usfm` per book, listed as `text/plain` (older burritos say `text/x-usfm`; both are accepted, and USFM is told by the `.usfm` extension), `scope` naming the book with an empty chapter list. `FRT.usfm` front matter and books with no verse are listed, and are not shown as books. `go-rc2sb` lists a USFM file whose id is not one of the 66 books (`FRT`, `BAK`, `GLO`, the deuterocanon, `XXA` to `XXG`) with no `scope` at all (CI run 36629971685); such a file is accepted unscoped or scoped to its own id, and at least one USFM ingredient must name a book of the Bible | Text with alignment |
 | Notes | parascriptural | x-bcvnotes | one `BBB.tsv` per book | Helps: Notes |
 | Word Links | parascriptural | x-bcvarticles | one `BBB.tsv` per book; `TWLink` is a path into the burrito, `./payload/names/paul.md`. The burrito also carries the whole Words dictionary under `payload/`, which the app does not read from here | Helps: Word Links |
 | Questions | parascriptural | x-bcvquestions | one `BBB.tsv` per book | Helps: Questions |

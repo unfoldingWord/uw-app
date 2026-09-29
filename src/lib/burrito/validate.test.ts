@@ -336,6 +336,49 @@ describe('validate', () => {
     });
   });
 
+  it.each(['FRT.usfm', 'A0-FRT.usfm', 'BAK.usfm', 'GLO.usfm', 'TOB.usfm', '1MA.usfm', 'XXA.usfm'])(
+    'accepts %s listed without a scope beside a book, as go-rc2sb v0.5.0 lists front matter (CI run 36629971685)',
+    (path) => {
+      const report = validate(
+        burrito({
+          ingredients: [
+            scoped('08-RUT.usfm', mimeTypes.usfm, 'RUT'),
+            { path, bytes: utf8('\\id FRT\n'), mimeType: mimeTypes.usfm },
+          ],
+        }),
+      );
+      expect(report.ok && report.row.id).toBe('text');
+    },
+  );
+
+  it('accepts a peripheral USFM ingredient scoped to its own book id', () => {
+    const report = validate(
+      burrito({
+        ingredients: [
+          scoped('08-RUT.usfm', mimeTypes.usfm, 'RUT'),
+          { path: 'FRT.usfm', bytes: utf8('x'), mimeType: mimeTypes.usfm, scope: { FRT: [] } },
+        ],
+      }),
+    );
+    expect(report.ok && report.row.id).toBe('text');
+  });
+
+  it('fails a text burrito whose only USFM ingredient is front matter', () => {
+    const report = validate(
+      burrito({ ingredients: [{ path: 'FRT.usfm', bytes: utf8('x'), mimeType: mimeTypes.usfm }] }),
+    );
+    expect(failure(report)).toEqual({ kind: 'invalid', rule: 'row-ingredients', path: 'ingredients' });
+  });
+
+  it('fails a USFM ingredient scoped to an id that is not a USFM book', () => {
+    const report = validate(burrito({ ingredients: [scoped('08-RUT.usfm', mimeTypes.usfm, 'QQQ')] }));
+    expect(failure(report)).toEqual({
+      kind: 'invalid',
+      rule: 'row-ingredients',
+      path: 'ingredients/08-RUT.usfm',
+    });
+  });
+
   it('fails a formation story that lacks a movement', () => {
     const sections = requiredFormationSections.filter((section) => section !== 'journal');
     const report = validate(

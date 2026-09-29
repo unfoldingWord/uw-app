@@ -1,4 +1,7 @@
+import { readArchive } from '@lib/burrito/archive';
+import { validate } from '@lib/burrito/validate';
 import { languagePackId } from '@lib/domain/pack';
+import { packRows } from '@lib/packs/burrito';
 import { parseReference } from '@lib/domain/reference';
 import { fromCatalog } from '@lib/packs/source';
 import { createWorld } from '@sim/world';
@@ -23,6 +26,29 @@ function messageOf(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
+type Fetched = { readonly label: string; readonly bytes: Uint8Array };
+
+function diagnosis({ label, bytes }: Fetched): Outcome {
+  const archive = readArchive(bytes);
+  if (!archive.ok) {
+    return {
+      line: `FAIL  ingest: ${label}: ${archive.rule} at ${archive.path}: ${archive.message}`,
+      failed: true,
+    };
+  }
+  const report = validate(archive.files, { rows: packRows });
+  if (!report.ok) {
+    return {
+      line: `FAIL  ingest: ${label}: ${report.kind} ${report.rule} at ${report.path}: ${report.message}`,
+      failed: true,
+    };
+  }
+  return {
+    line: `note  ingest: ${label}: validates as ${report.row.id} (${report.row.status})`,
+    failed: false,
+  };
+}
+
 export async function ingestSmoke(catalog: Extract<LiveCatalog, { ok: true }>): Promise<Outcome[]> {
   try {
     const world = createWorld();
@@ -42,9 +68,12 @@ export async function ingestSmoke(catalog: Extract<LiveCatalog, { ok: true }>): 
           release.publisher === 'unfoldingWord' &&
           smokeResources.some((resource) => resource === release.resource),
       );
+    const fetched: Fetched[] = [];
     for (const release of chosen) {
+      const bytes = await fetchBytes(release.archiveUrl);
+      fetched.push({ label: `${release.publisher}/${release.resource} ${release.tag}`, bytes });
       world.network.serve(release.archiveUrl, {
-        body: await fetchBytes(release.archiveUrl),
+        body: bytes,
         headers: { 'content-type': 'application/octet-stream' },
       });
     }
@@ -54,6 +83,7 @@ export async function ingestSmoke(catalog: Extract<LiveCatalog, { ok: true }>): 
     if (!installed.ok) {
       return [
         { line: `FAIL  ingest: install of ${chosen.length} real releases: ${installed.code}`, failed: true },
+        ...fetched.map(diagnosis),
       ];
     }
     const lines: Outcome[] = [

@@ -141,7 +141,6 @@ function literalIngredients(): IngredientInput[] {
       path: 'FRT.usfm',
       bytes: utf8(frontMatterUsfm('ult', 'qaa')),
       mimeType: mimeTypes.usfm,
-      scope: { FRT: [] },
     },
     {
       path: 'NEH.usfm',
@@ -255,7 +254,7 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     flavorType: 'scripture',
     flavor: 'textTranslation',
     flavorDetails: textFlavor,
-    currentScope: { ...bookScope(literalBooks), FRT: [], NEH: [] },
+    currentScope: { ...bookScope(literalBooks), NEH: [] },
     books: bookCodes(literalBooks),
     ingredients: literalIngredients(),
   }),

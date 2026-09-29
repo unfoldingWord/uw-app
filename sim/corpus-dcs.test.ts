@@ -135,7 +135,7 @@ describe('corpus over the release shapes observed from go-rc2sb v0.5.0 (CI run 3
       abbreviation: 'ULT',
       name: 'Fixture Literal Text',
       ingredients: [
-        text('FRT.usfm', frontMatter, 'text/plain', 'FRT'),
+        text('FRT.usfm', frontMatter, 'text/plain'),
         text('NEH.usfm', stub, 'text/plain', 'NEH'),
         text('RUT.usfm', ruth, 'text/plain', 'RUT'),
       ],

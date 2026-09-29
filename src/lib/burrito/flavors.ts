@@ -1,3 +1,4 @@
+import { bookByCode } from '../domain/books';
 import type { ResourceRow } from '../domain/pack';
 import { repositoryCode, type IngredientEntry } from './metadata';
 
@@ -126,6 +127,91 @@ function oneBookEach(
     if (books.length !== 1 || !books.every((book) => bookCode.test(book) && book !== storiesScope)) {
       return { path: file.key, message: `a ${kind.name} ingredient has a scope naming exactly one book` };
     }
+  }
+  return undefined;
+}
+
+const peripheralUsfmBooks: ReadonlySet<string> = new Set([
+  'FRT',
+  'BAK',
+  'OTH',
+  'INT',
+  'CNC',
+  'GLO',
+  'TDX',
+  'NDX',
+  'TOB',
+  'JDT',
+  'ESG',
+  'WIS',
+  'SIR',
+  'BAR',
+  'LJE',
+  'S3Y',
+  'SUS',
+  'BEL',
+  '1MA',
+  '2MA',
+  '3MA',
+  '4MA',
+  '1ES',
+  '2ES',
+  'MAN',
+  'PS2',
+  'ODA',
+  'PSS',
+  'EZA',
+  '5EZ',
+  '6EZ',
+  'DAG',
+  'PS3',
+  '2BA',
+  'LBA',
+  'JUB',
+  'ENO',
+  '1MQ',
+  '2MQ',
+  '3MQ',
+  'REP',
+  '4BA',
+  'LAO',
+  'XXA',
+  'XXB',
+  'XXC',
+  'XXD',
+  'XXE',
+  'XXF',
+  'XXG',
+]);
+
+const usfmFileBook = /(?:^|[-_/])([A-Za-z0-9]{3})\.u?sfm$/i;
+
+function isUsfmBook(book: string): boolean {
+  return bookByCode(book) !== undefined || peripheralUsfmBooks.has(book);
+}
+
+function isPeripheralFile(file: ListedIngredient): boolean {
+  const book = usfmFileBook.exec(file.path)?.[1]?.toUpperCase();
+  return book !== undefined && peripheralUsfmBooks.has(book);
+}
+
+function scriptureBooks(ingredients: readonly ListedIngredient[]): RowMismatch | undefined {
+  const files = ingredients.filter(usfmKind.test);
+  for (const file of files) {
+    const books = scopedBooks(file.entry);
+    const unscopedPeripheral = books.length === 0 && isPeripheralFile(file);
+    if (!unscopedPeripheral && (books.length !== 1 || !books.every(isUsfmBook))) {
+      return {
+        path: file.key,
+        message: `a ${usfmKind.name} ingredient has a scope naming exactly one USFM book, or is unscoped front, back or other matter`,
+      };
+    }
+  }
+  const canonical = files.some((file) =>
+    scopedBooks(file.entry).some((book) => bookByCode(book) !== undefined),
+  );
+  if (!canonical) {
+    return { path: 'ingredients', message: `no ${usfmKind.name} ingredient scoped to a book of the Bible` };
   }
   return undefined;
 }
@@ -276,7 +362,7 @@ export const pinnedRows: readonly ContractRow[] = [
         flavorType: 'scripture',
         flavors: ['textTranslation'],
         appliesTo: always,
-        check: (ingredients) => oneBookEach(ingredients, usfmKind),
+        check: scriptureBooks,
       },
     ],
   },
