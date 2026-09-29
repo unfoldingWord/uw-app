@@ -23,6 +23,8 @@ list. Versions live in `package.json`; the lock file is committed.
 | expo-haptics | ~57.0.3 | Native vibration code; the light impact on press |
 | react-native-svg | 15.15.4 | Hand-drawn views for DotRing and Filament; also the renderer lucide-react-native draws with |
 | lucide-react-native | ^1.48.0 | The Lucide path data inlined in `design-system/components/icons/Icon.jsx`; the same outlines as components, ISC licence |
+| marked | ^18.0.14 | A hand-written Markdown parser for Words, Academy, notes and movements in `src/lib/corpus`; only its lexer is used, and Corpus maps the tokens to its own typed blocks, so no HTML is produced. MIT, typed, no dependencies, pure JavaScript for Node and Hermes |
+| yaml | ^2.9.1 | A hand-written YAML reader for Academy `config.yaml` and `toc.yaml` in `src/lib/corpus`. ISC, typed, no dependencies, pure JavaScript |
 
 ## Development
 
@@ -38,3 +40,10 @@ list. Versions live in `package.json`; the lock file is committed.
 | vitest | ^5.0.2 | Jest; runs tests and scenarios in plain Node with ES modules and TypeScript |
 | knip | ^6.38.0 | Hand audits for unused files, exports, types and dependencies |
 | tsx | ^4.23.15 | A compile step before running `sim/` and `scripts/` in Node; resolves the tsconfig path aliases |
+
+## Evaluated and not taken
+
+| Package | Considered for | Why not |
+|---|---|---|
+| usfm-js 3.5.0 (unfoldingWord) | USFM with alignment in `src/lib/corpus` | none: usfm-js rejected because it ships no type declarations and there is no `@types/usfm-js` (AGENTS.md section 6 asks for typed packages); it is ISC and was released on 2026-05-23, so it is otherwise eligible. `src/lib/corpus/usfm.ts` is a minimal reader of what the app shows: books, chapters, verses, words and their `\zaln` alignment |
+| tsv-groupdata-parser 1.1.1 (unfoldingWord) | Notes, Word Links and Questions TSV | none: tsv-groupdata-parser rejected because it turns Translation Notes TSVs into translationCore group indexes and group data, not the verse helps the app shows, and ships no type declarations. `src/lib/corpus/tsv.ts` splits the table by its header names |

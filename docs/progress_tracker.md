@@ -145,6 +145,59 @@ installs", received `install: "id-000002"`). The decision now happens inside the
 - English names come from a table in `src/lib/catalog/languageNames.ts`, because Hermes has no
   `Intl.DisplayNames` (inference from Hermes' documented Intl coverage, not run on a device).
 
+## 2026-09-29 T5 Corpus
+
+Node v22.22.2. Everything below ran in Node through the sim and Vitest; nothing ran on a phone, and nothing
+ran against expo-sqlite or expo-file-system.
+
+### Scenarios observed red, then green
+
+| Scenario | First red | Red against the behaviour | Green |
+|---|---|---|---|
+| `ST-2.passage-with-attached-helps` | Written before `src/lib/corpus` existed; `npm run sim -- all` printed `FAIL ... Cannot read properties of undefined (reading 'describe')` for ST-2 to ST-9 (`sim: 10 scenarios, 2 passed, 8 failed`) | With `attachQuote` returning no spans, `npm run sim -- ST-2` printed `FAIL ... Expected values to be strictly deep-equal: + [] - [ 'your', ...` | `npm run sim -- all`: pass |
+| `ST-3.literal-and-simplified-toggle` | Same run | With `availableTexts` returning every reading found, `npm run sim -- ST-3` printed `FAIL ... no toggle when only one reading exists + [ 'literal' ] - []` | pass |
+| `ST-4.audio-available-for-passage` | Same run | | pass |
+| `ST-5.corpus-counts-per-resource-type` | Same run (`reading 'summary'`) | | pass |
+| `ST-6.article-links-resolve` | Same run | | pass |
+| `ST-7.original-language-plain-text` | Same run | | pass |
+| `ST-8.reference-and-title-search` | Same run | The first implementation matched titles anywhere in a word: `FAIL ... + { id: 'tw/bible/kt/truth' }` for the query `ruth`; title search now matches at word starts only | pass |
+| `ST-9.full-text-index-opt-in` | Same run | With the storage estimate factor at 1, `npm run sim -- ST-9` printed `FAIL ... built 13194 within the estimate 9552` | pass |
+
+Each regression was reverted before the green run.
+
+### Checks observed
+
+| Check | Observed |
+|---|---|
+| Provenance on every content value (red) | With the Questions provenance given the licence `All rights reserved` in `src/lib/corpus/passage.ts`, `npm run checks` printed `FAIL provenance: ...` then `qaa literal RUT 1.questions[0]: provenance names no CC BY-SA 4.0 licence (All rights reserved)` and one line per question |
+| Provenance on every content value (green) | `pass provenance: 60 corpus values rendered from every fixture pack, 164 pieces, each with a CC BY-SA 4.0 licence` |
+
+### Decisions taken here, with their evidence
+
+- Full-text search uses SQLite FTS5. `node:sqlite` in Node v22.22.2 created and queried an `fts5` table.
+  expo-sqlite 57.0.3 (the package tarball, not a device) compiles `-DSQLITE_ENABLE_FTS5=1` on Android
+  (`android/build.gradle`) and iOS (`ios/ExpoSQLite.podspec`) unless `expo.sqlite.enableFTS` is `false`.
+- usfm-js is not used: no type declarations and no `@types/usfm-js` (`docs/dependencies.md`).
+- The migration is `migrations/0100-corpus.ts`, numbered away from the Packs migrations.
+
+### Changed beyond `src/lib/corpus`
+
+- `src/lib/kernel.ts` gains one line, `corpus: corpusModule`, and `src/lib/domain/failures.ts` gains the code
+  `corpus.unreadable`. `sim/kernel.test.ts` now lists the two modules and uses `InvitationShown` (still unowned)
+  as its unhandled event, since Corpus now owns `StoryOpened`.
+- `scripts/checks/provenance.check.ts` is no longer pending.
+
+### Not verified
+
+- No Corpus path has run on a phone or against expo-sqlite; FTS5 on a device is inferred from the package's
+  build flags only.
+- Corpus has not yet read a pack that Packs installed. The sim writes fixture burritos to the Files port itself
+  (`sim/corpus-fixtures.ts`) and calls `ingest`; the `PackInstalled` and `PackRemoved` wiring is left for the merge.
+- Alignment attachment matches each quoted original word by its occurrence, which is exact for single-word
+  quotes and an approximation for multi-word quotes in which a word repeats. It has run only on fixture
+  alignment, not on a real aligned literal text.
+- The parsers have run only on fixture content and on the hand-written cases in the tests, not on a full real release.
+
 ## 2026-09-29 T2 domain, ports, memory adapters, journal, kernel, sim skeleton
 
 Node v22.22.2. Everything below ran in Node through the sim and Vitest; nothing ran on a phone.

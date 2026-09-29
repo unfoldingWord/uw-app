@@ -25,6 +25,7 @@ export const failureCodes = [
   'pack.no-provenance',
   'pack.empty-plan',
   'pack.mixed-packs',
+  'corpus.unreadable',
   'transfer.unavailable',
   'transfer.unsupported',
   'transfer.declined',
