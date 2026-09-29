@@ -3,6 +3,40 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 M9 merge of the audio player (G2) and the render harness (U2) onto G1
+
+Node v22.22.2; Chromium 141 through playwright-core 1.56.1 for the shots. Nothing ran on a phone.
+
+- `git merge --no-ff g2-player`: conflicts only where both sides appended, all kept: the sixteen locale files
+  (I1 and G1 keys, then the four G2 keys), `docs/strings-review.md` (I1 and G1 sections, then G2),
+  `docs/exceptions.md` (the player row above the G1 and I1 rows) and this file. `src/lib/kernel.ts` and the
+  registry pin in `sim/kernel.test.ts` merged cleanly with `player` after `media`, and the kernel registry
+  exception row names player. `npm run verify` green on the merge.
+- `git merge --no-ff u2-visual`: conflicts in `package.json` (both `icons` and `shots` scripts),
+  `src/features/study/screens/parts/script.ts` (U2's exported `directionOf`), `docs/exceptions.md` (the web
+  harness row above the player row) and this file. `app/_layout.tsx` merged without a conflict and keeps
+  every behaviour: `createBoot` with `BootFailure` and Try again (T13), `useResume` over `AppState` and
+  `useLayoutDirection` (G1), and onboarding and appearance read from the kernel on every render with a
+  subscription (U2). `sim/web/ports.ts` gains the memory Picker, since `Ports.picker` is now required (I1).
+  Knip, tightened by T13, refused four exports only used in their own file (`nativeForbiddenRoots`,
+  `repositoryPath`, `viewport`, `scriptOf`); they are no longer exported. `npm install` left the lock file
+  unchanged; `rm -rf node_modules && npm ci` then `npm run verify` green.
+- Follow-up: the harness gives the memory Audio port a 3:12 length for every restored `.mp3`, so the audio
+  bar can play in the browser, and `npm run shots` gains `study-audio` (Play audio pressed). U2's remaining
+  item "Play audio on Study is always disabled" is closed by G2: the shot shows Pause audio, `0:00 / 3:12`,
+  the progress bar and both ten-second pills.
+- `npm run verify`: green (645 tests in 61 files, 52 scenarios, trace 0 unproven, contract 21 fixture
+  burritos, live checks skipped offline; bundle android 1908 and iOS 1775 modules, none from `sim/`,
+  `scripts/`, sql.js or react-native-web).
+- `npm run shots`: 95 shots, 0 console errors, 0 unnamed controls, 0 horizontal overflow, 376 controls
+  visually under 44 px (hit slop is not measured by React Native Web). Looked at home, study passage,
+  study audio, formation session, languages (the From a file section with Import from a file and Open),
+  settings, transfer and the contact sheets in light, dark and RTL: no regression against the U2 shots; the
+  session footer and the Study audio bar sit above the tab bar as before.
+- Not verified: anything on a phone (playback through expo-audio, the boot failure screen, resume, the
+  direction reload, the file picker); the picker in the harness always cancels, so the import confirmation
+  was not shot; story audio in "Play and discuss" (no fixture session carries it); the shots workflow in CI.
+
 ## 2026-09-29 U2 Render harness and visual QA in Chromium
 
 Node v22.22.2, Chromium 141 (Playwright build 1194 at `/opt/pw-browsers`) through playwright-core 1.56.1.
