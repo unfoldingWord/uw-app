@@ -459,8 +459,6 @@ export const ptBR: LocaleTable = {
     'Uma parte do aplicativo não terminou de se atualizar. Compartilhe o diagnóstico para alguém poder ajudar.',
   'failure.catalog.invalid-response':
     'A lista da biblioteca chegou em um formato que o aplicativo não consegue ler. Tente de novo mais tarde.',
-  'failure.catalog.superseded':
-    'Uma lista mais nova da biblioteca chegou antes, então não é preciso fazer mais nada.',
   'failure.pack.not-found': 'Este recurso não está mais publicado. Procure atualizações mais tarde.',
   'failure.pack.no-space': 'Não há espaço suficiente para este pacote. Remova outro pacote e tente de novo.',
   'failure.pack.checksum-mismatch': 'O download não chegou inteiro. Tente de novo.',

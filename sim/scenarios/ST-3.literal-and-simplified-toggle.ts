@@ -6,6 +6,7 @@ import { mimeTypes } from '@lib/burrito/flavors';
 import { languagePackId, originalPackId } from '@lib/domain/pack';
 import { parseReference } from '@lib/domain/reference';
 import { fromFile } from '@lib/packs/source';
+import { importLocalBurrito } from '../burritos';
 import { installFromCatalog } from '../install';
 import { scenario } from '../scenario';
 
@@ -78,5 +79,37 @@ export default scenario(
     assert.equal(single?.text.verses[0]?.text, 'Ruth answered.');
     assert.deepEqual(single?.availableTexts, [], 'no toggle when only one reading exists');
     assert.equal(await corpus.passage(parsed.reference, { language: 'qac', text: 'simplified' }), undefined);
+
+    for (const [resource, abbreviation, verse] of [
+      ['qad_rlob', 'rlob', 'Ruth said, Do not urge me.'],
+      ['qad_rsob', 'rsob', 'But Ruth answered her.'],
+    ] as const) {
+      const outcome = await importLocalBurrito(device, {
+        resource,
+        language: 'qad',
+        abbreviation,
+        name: 'Texto',
+        flavorType: 'scripture',
+        flavor: 'textTranslation',
+        ingredients: [
+          {
+            path: '08-RUT.usfm',
+            bytes: utf8(`\\id RUT\n\\c 1\n\\v 16 ${verse}`),
+            mimeType: mimeTypes.usfm,
+            scope: { RUT: ['1'] },
+          },
+        ],
+      });
+      assert.ok(outcome.ok, outcome.ok ? '' : outcome.code);
+    }
+    const gateway = await corpus.passage(parsed.reference, { language: 'qad' });
+    assert.deepEqual(
+      gateway?.availableTexts,
+      ['literal', 'simplified'],
+      'the Russian gateway codes rlob and rsob',
+    );
+    assert.equal(gateway?.text.provenance.resource, 'qad_rlob');
+    const gatewaySimplified = await corpus.passage(parsed.reference, { language: 'qad', text: 'simplified' });
+    assert.equal(gatewaySimplified?.text.provenance.resource, 'qad_rsob');
   },
 );

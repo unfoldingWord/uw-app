@@ -302,6 +302,228 @@ fixture burritos, 0 failed`; `bundle android: pass`, `bundle ios: pass`.
 - The feed address `https://unfoldingword.org/app/impact-stories.json` is not published; PA-6 was proven
   against the sim serving that address.
 - Six new strings were drafted in fifteen locales by an agent (`docs/strings-review.md`).
+## 2026-09-29 F2 fixes from review 2: verify
+
+- Red in the first full `npm run verify`: `sim/packs-streaming.test.ts` timed out at 5 s (6.6 s under the
+  parallel run) on the 12 MB import. Each byte was hashed three times: the file-import peek, the unpack,
+  and a second pass from disk. Changed after the Packs entry above was written: the peek reads metadata
+  and licences only (`unpackArchive(..., { hash: false })` and `validateFacts(..., { contents: false })`),
+  checksums are checked once on the bytes as they are written, and the check on disk before the rename is
+  of each ingredient's size. The file is imported whole or not at all as before; a corrupt import now fails
+  after `PackInstallStarted` with `pack.checksum-mismatch` instead of before it. The two heavy tests carry
+  30 s and 60 s limits. Inference: three MD5 passes of a 220 MB pack in JavaScript on a low-end phone would
+  have cost the better part of a minute.
+- `npm run verify` exit 0: `Test Files 45 passed`, `Tests 516 passed`; knip clean; `owns: 8 owners, 26
+  tables, 16 created by migrations, one writer each`; `provenance: 60 corpus values ... 164 pieces`;
+  `strings: 405 keys in 16 locales`; `sim: 26 scenarios, 26 passed, 0 failed`; `trace: 51 Must
+  requirements, 26 with a scenario, 2 with a test only, 23 unproven` (reporting only); `contract: 20
+  fixture burritos, 0 failed` (live skipped, offline); `bundle android: pass`, `bundle ios: pass`.
+
+## 2026-09-29 F2 fixes from review 2: what was fixed elsewhere, skipped or only considered
+
+- Skipped, left to the release-wiring task as asked: finding 12 (`app.config` permissions and backups:
+  expo-audio's microphone and foreground-service defaults, iCloud and Android backup of `packs/` and
+  `uw.db`) and finding 13 (a failed boot leaves a blank screen in `app/_layout.tsx`).
+- Considered, not changed: coarser timestamps for the reading trail in an exported journal. Replay (DX-3)
+  rebuilds a device to the same snapshot from the recorded `at` of every event, so coarsening only the
+  export breaks that equality, and coarsening at record time changes every module's time facts. The
+  journal leaves the device only when a leader shares it (DX-2), and no event carries typed text. A
+  proposal is the place to trade this off; `PRAGMA secure_delete` for notes is done.
+- Duplication: the unfoldingWord-first order, `isRecord` in Catalog, the reading of a corpus kind and the
+  byte joining in `src/lib/burrito` each have one home now. `isRecord` in `src/lib/telemetry/folds.ts` and
+  `joined` in `src/platform/http.ts` remain: Telemetry is being changed on the Transfer branch, and the
+  platform layer may not import lib values.
+
+## 2026-09-29 F2 fixes from review 2: platform adapters
+
+Typecheck and lint only; none of this ran on a phone, and the platform adapters cannot run in Node.
+
+- Audio: a stream URL is resolved through the Http port before the player sees it: a `HEAD` request that
+  follows redirects one hop at a time against the host allowlist (the Http adapter's own rule), and the
+  player is handed the URL it landed on, re-checked against the policy. A refused hop is
+  `http.host-refused`, no connection `http.offline`, a non-2xx answer `audio.unavailable`. Not verified: a
+  host that answers `HEAD` with 405 cannot be streamed this way (the downloaded audio pack still plays),
+  and a host could still redirect the player's own `GET` after a clean `HEAD`; downloading before playing
+  would close that, at the cost of waiting.
+- Files: `list` no longer walks each directory to size it (the port contract now says a directory's
+  `bytes` is 0; `size` still sums one). Start-up garbage collection lists only the directories on the way
+  to a recorded burrito.
+- Db: `PRAGMA secure_delete = ON` after WAL, so a deleted group note is overwritten in the database file.
+
+## 2026-09-29 F2 fixes from review 2: Corpus memory and full-text search
+
+Node v22.22.2 (SQLite 3.51.2 in `node:sqlite`), in Node through Vitest and the sim. expo-sqlite bundles
+SQLite 3.50.3 (`node_modules/expo-sqlite/vendor/sqlite3/sqlite3.h`), and 3.49.1 in its SQLCipher build;
+the trigram tokenizer needs 3.34 and its `remove_diacritics` option 3.45, so both qualify. Not run on a
+phone.
+
+| Test | Red | Green |
+|---|---|---|
+| `sim/corpus-memory.test.ts` (vitest now runs with `--expose-gc`): a 22 MB aligned text of eight books, heap after `gc()` | `opening 8 books kept 49 MB against 8 MB for one` (limit 4 times one book) | 8 MB for one book, 18 MB for all eight, 18 MB after building the index |
+| ST-9 extended: `indexWanted`, `dropIndex`, the cost read from nothing, a passage opening while the index builds, an audio pack leaving the index alone, a text update rebuilding it with `IndexBuilt` only, a removal keeping the wish and a reinstall building again, and Chinese words of two, three and four characters found mid-sentence | `corpus.indexWanted is not a function` | pass |
+| `src/lib/corpus/source.test.ts`: `tokenizerFor` picks trigrams for `zh`, `zh-tw` and text with almost no spaces | no export | pass |
+
+The ordering assertion in ST-9 (`IndexStarted`, `PassageOpened`, `IndexBuilt`) was not run against the old
+code; that the old code put `PassageOpened` after `IndexBuilt` (reads waited on the queue the build ran in)
+is read from the code.
+
+Decisions:
+
+- Parse caches: book-scoped values (a USFM book, a book's notes, word links or questions) live in one LRU
+  of at most 4 entries and 32 MB of source bytes (always keeping the newest); everything else in an LRU of
+  256. Inference, not measured on a real pack: at the review probe's 3.5 heap bytes per aligned USFM byte
+  (47 MB for a 13.4 MB Psalms), the book cache is bounded near 110 MB, and a Psalms passage with its helps
+  (roughly 18 MB of source, estimated) stays cached whole. Titles by language and the title index for links are memoized and rebuilt on change.
+- The index is built book by book, parsed outside the caches, and written in batches of 100 rows, each
+  its own transaction with one multi-row insert, so the platform database lock is released between
+  batches. Builds run on their own queue; reads never wait for them.
+- Each language's index has a generation. A build writes a new generation beside the old one, then in one
+  transaction removes every other generation and records the new one, so search never sees a half-built
+  index, and a crash mid-build leaves the old one (the stray rows go at the next build).
+- Two FTS5 tables: `corpus_fulltext` (`unicode61 remove_diacritics 2`) and `corpus_fulltext_trigram`
+  (`trigram remove_diacritics 1`). A language is indexed by trigrams when its base code is one of a list of
+  languages written without spaces (Chinese varieties, Japanese, Thai, Lao, Khmer, Burmese, Tibetan,
+  Dzongkha, Yi, Shan, Tai Dam), or when the first hundred entries hold fewer than one space per fifty
+  letters. A query term shorter than three characters in a trigram index is matched with `LIKE` (a scan
+  of that language's rows); longer terms go through `MATCH`.
+- The wish for an index is a fact Corpus keeps: `corpus_index_wanted`, set by `reindex` and cleared by
+  `dropIndex` (event `IndexDropped`, redo). `indexWanted(language)` exposes it. Migration
+  `0101-corpus-fulltext` drops the old index (its table had no generation column) and keeps the wish, so
+  an index built before this change is rebuilt on the next text install or `reindex`, not on start.
+- The storage cost is estimated from the byte sizes Corpus already holds: verses from the books in scope
+  (26 a chapter) capped by bytes over 120, text capped at 400 bytes a verse, times 3 for words or 6 for
+  trigrams, plus 96 bytes an entry. The fixture's built index stayed under the estimate.
+
+## 2026-09-29 F2 fixes from review 2: Packs installs by streaming, one directory per install
+
+Node v22.22.2, in Node through Vitest and the sim; nothing ran against expo-file-system.
+
+| Test | Red | Green |
+|---|---|---|
+| `sim/packs-streaming.test.ts`: a 12 MB aligned Psalms and Isaiah text imported from a file | with `src/lib/packs`, `src/lib/burrito` and `corpus.ts` from `a1c6cd9`: `expected 12034064 to be less than or equal to 262144` (the whole book read at once) | the largest read is 64 KiB, the largest write well under a quarter of the largest book, and the burrito on disk validates |
+| `sim/packs-streaming.test.ts`: an update of `qaa_tn` touches no file of the ten burritos it keeps | same old code: `expected [ …(106) ] to deeply equal []` (every kept burrito read and copied) | no read, no write under a kept root, roots unchanged |
+| `sim/packs-streaming.test.ts`: an archive that fits but would not fit unpacked | passes on the old code too (the full disk surfaced as `files.no-space` while writing) | refused as `pack.no-space` from the zip central directory before unpacking; nothing left under `packs/` |
+| LA-7 rewritten: old release whole on each failure, the passage reads v1 while v2 downloads and v2 only after, kept roots unchanged, and three crash windows | old layout: `+ packs/language/qaa/unfoldingWord/qaa_tn/ingredients/` for the release directories; with the new layout and no Corpus reconcile yet: `files.not-found: packs/language/qaa/id-000005/unfoldingWord/qaa_tn/metadata.json` after the crash between the database row and the ingest | pass |
+| `sim/adapters` contract: `list` is one level deep, a directory's `bytes` is 0 | memory adapter listed `inner` with 4 bytes | both adapters; `size` still sums a directory |
+
+The crash windows are proven with `sim/crash.ts`: at a trigger (a database write, a file operation) every
+later write on the device is refused, as if power went, and the device then restarts over the same
+adapters. After the files are written and before the `packs` row: the old release stays, the new
+directory is removed on start. After the row and before the Corpus ingest (the `PackInstalled` journal
+row is refused, so the journal never holds it): the new release stays and Corpus catches up on start.
+After the ingest and before the old directory is removed: the old directory is removed on start.
+
+Decisions:
+
+- Layout: `packs/{kind}/{language or pack}/{install}/{publisher}/{resource}`. `PackInstalled.burritos.root`
+  is a new field kind, `path` (segments of letters, digits, `._+-`, no `..`, at most 256 characters).
+- Unpacking: `src/lib/burrito/unpack.ts` reads the archive in 64 KiB ranges, inflates with fflate's
+  streaming `Unzip`, appends each chunk to staging and hashes it with an incremental MD5, keeping only
+  `metadata.json` and licence files in memory. Validation runs on those facts (`validateFacts`), then each
+  listed ingredient is hashed again from disk before the rename; unlisted files are removed.
+- A file import is read twice (once to learn its pack and check it, once to unpack); a catalog or peer
+  archive once. A peer receipt may now be a path (`PeerReceipt` `{ ok: true, path }`) so Transfer can hand
+  over the file it received instead of reading it into memory; the `archive` form still works.
+- Free space: the unpacked size from the central directory is checked against free space before
+  unpacking. A HEAD request before the download was tried and dropped: it consumed the scripted
+  outcomes of the sim, and whether DCS answers HEAD on `sb/{tag}.zip` is unknown. A download that fills
+  the disk still fails as `pack.no-space`.
+- Corpus ingests a pack in one transaction, reads only burritos it has not seen (a root is never
+  reused), waits for reads in flight before and after swapping, drops the pack if it cannot read it (so
+  no entry points at a directory about to go), and on start reconciles its tables against the installed
+  packs.
+- Reads no longer wait behind the Corpus write queue; they see the library as it stands.
+
+Not verified:
+
+- expo-file-system on Android moves a directory by copy and delete when a rename fails
+  (`CopyMoveStrategy.kt`, read in the review, not here). The rename of a new burrito from staging to its
+  directory is therefore not atomic on such a device, but a crash mid-move leaves a directory no row
+  names, which the next start removes; atomicity now rests on the database row.
+- Peak memory on a phone. The sim bounds the size of reads and writes; the heap is measured in the
+  Corpus test below.
+
+## 2026-09-29 F2 fixes from review 2: Catalog
+
+Node v22.22.2, in Node through Vitest and the sim. The live catalog was not reached (git.door43.org is
+blocked here), so the paging parameters are from the Gitea and DCS API as I know it: `limit` and `page`, 50 a
+page. That the DCS server honours `limit=50` is an inference.
+
+| Test | Red | Green |
+|---|---|---|
+| `sim/catalog.test.ts`: pages of fifty until a short or empty page, with and without `X-Total-Count` | `refresh` stopped after one page with no total count | pass |
+| `sim/catalog.test.ts`: dropped entries counted in the outcome and in `CatalogRefreshed` | no `dropped` | pass |
+| `sim/catalog.test.ts`: two refreshes run one after the other, the last wins, and a replay of overlapping refreshes has no divergence | the older returned `catalog.superseded` with no `CatalogRefreshed`, which a replay could not reproduce | pass |
+| `src/lib/catalog/catalog.test.ts`: `ne-x-kathmandu_OBS.v2` with language `ne-x-kathmandu` and tag `v2.0.1-2026` is keyed; a name with a space or `..` is not | undefined | pass |
+| `src/lib/catalog/catalog.test.ts`: English names for 22 codes beyond the old table | 21 failed (the autonym came back) | pass |
+
+- `CatalogRefreshed` gains `dropped` (a count, so no text enters the journal). Refreshes are serialized in
+  Catalog, so `catalog.superseded` is gone: the code, its sixteen strings and its only emitter (grepped:
+  no other reference).
+- Field kinds widened: `resource` takes upper case and dots up to 64, `tag` up to 64, a language subtag up
+  to 16 characters and six subtags. None admits a space, a slash or a leading dot.
+- English names: `src/lib/catalog/isoNames.ts` holds every ISO 639-1 code and about 200 ISO 639-3 codes
+  that Door43 publishes in or that I expect it to (South Asian, Philippine, African, Arabic varieties,
+  Chinese varieties, Kurdish, Persian, Quechua), plus tags such as `zh-tw` and `pt-br`. Written from
+  memory of ISO 639 reference names, not fetched from `td.unfoldingword.org` (blocked here); a name not in
+  the table falls back to the autonym. Refreshing the table from `langnames.json` is a follow-up.
+
+## 2026-09-29 F2 fixes from review 2: reading real releases
+
+Node v22.22.2, in Node through Vitest and the sim; no real release was read (git.door43.org is blocked
+here), so every format below comes from what I know of unfoldingWord and Door43 releases. That is an
+inference, labelled as such where it matters.
+
+| Test | Red | Green |
+|---|---|---|
+| `src/lib/corpus/tsv.test.ts`: nine-column notes, rows counted as read, `1:2a` and `2:front` | 3 failed: nine-column rows `[]`; `helpsRowCount` 2 for one readable row; `1:2a` undefined | pass |
+| `src/lib/corpus/alignment.test.ts`: repeated words, gaps (`…`, `&`), the nth phrase past a shared word | 2 failed: `καὶ λέγει καὶ` attached `[0, 1]` | pass |
+| `src/lib/corpus/usfm.test.ts`: `\d` kept, `\fig`, `\va`, `\vp`, `\ca` dropped | 2 failed: `titles` undefined; `A picture|src="x.jpg" ... Many say 3 of my soul.` | pass |
+| `src/lib/corpus/links.test.ts`: `rc://*/obs/book/obs/01/01`, `rc://*/tn/help/obs/01/02`, `rc://*/obs/50`, `rc://*/bible/gen/01/02` | 1 failed: all unresolved | pass |
+| `src/lib/corpus/readings.test.ts`: literal or simplified from the repository code, the burrito abbreviation, then its name; study helps | failed: no module | pass |
+| ST-2 extended: a nine-column notes release and a repeated-word quote imported from files, and a psalm title | with `alignment.ts` from `b416757`: `+ 'and said'  - 'and said and'` | pass |
+| ST-3 extended: `rlob` and `rsob` texts imported from files | with `ingest.ts` and `layout.ts` from `b416757`: `availableTexts` `[]` | pass |
+| `sim/corpus.test.ts`: story questions from `qaa_obs-sq` carry `study: true` | `study` undefined | pass |
+
+Decisions and inferences:
+
+- Notes TSV: the current seven-column form (`Reference ID Tags SupportReference Quote Occurrence Note`) and
+  the older nine-column form (`Book Chapter Verse ID SupportReference OrigQuote Occurrence GLQuote
+  OccurrenceNote`) are both read, by header name. `front`/`intro` in the older columns is an introduction.
+  A verse part (`2a`) is the verse. The row count in the corpus summary is of rows that parse.
+- A quote is matched as a phrase: the verse's original words are put in an order that is the target
+  text's order with each word's occurrences kept ascending (the source order is not in the aligned text;
+  this is an approximation), and the nth contiguous match of the quote is taken, or the nth match with
+  gaps when there are fewer contiguous ones. `…`, `...` and `&` separate the parts of a quote.
+- Literal or simplified: pinned codes `ult ulb glt rlob irv ayt` are literal, `ust udb gst rsob ueb` are
+  simplified, read from the repository name after the language, then from the burrito abbreviation;
+  otherwise a burrito named with a word for simplified, dynamic or easy (in the sixteen locales' languages)
+  is simplified; anything else is literal. `irv` (Hindi and Bengali Indian Revised Version) and `ayt`
+  (Indonesian Alkitab Yang Terbuka) being literal, and `rlob`/`rsob` being the Russian literal and
+  simplified open Bibles, are inferences from memory of DCS; `ar_nav` and `fa_opcb` are not pinned because
+  I could not place them with confidence.
+- `\d` before the first verse is the chapter's title (Psalm superscriptions), shown in `PassageText.titles`
+  when the passage includes verse 1; `\d` inside a verse stays in its text.
+- Study Notes and Study Questions stay in the notes and questions of a passage or story, now with
+  `study: true` (repository codes `sn`, `sq`, `obs-sn`, `obs-sq`).
+- The unfoldingWord-first order is `comparePublishers` in `src/lib/order.ts`, used by Catalog and Corpus;
+  `isRecord` in Catalog comes from `src/lib/burrito/metadata.ts`; the reading of a corpus kind is
+  `readingOfKind`.
+
+## 2026-09-29 F2 fixes from review 2: Strings
+
+Node v22.22.2, in Node through Vitest and ESLint; nothing ran on a phone.
+
+| Test | Red | Green |
+|---|---|---|
+| `scripts/checks/plural.test.ts`, written before `src/lib/strings/plural.ts` | `Cannot find package '@lib/strings/plural'` | 32 passed: each of the sixteen locales picks the same category as Node's `Intl.PluralRules` over 0 to 2,399, round millions and six decimals, and lists the same categories |
+| `src/lib refuses ... new Intl.PluralRules(locale)` (two cases moved from "allows" in `scripts/eslint/boundaries.test.ts`) | `expected false to be true` for both | pass, after the `PluralRules` allowance left `scripts/eslint/lib-globals.ts` |
+
+- `Strings.plural` selects the category from the CLDR rules held as data, so Hermes needs no `Intl`.
+  `npm run checks` asks each locale for the categories of the same table.
+- `ru` and `ar` Formation words and `ru` `movement.discourse` changed; the `es-419`, `fr` and `pt-BR` `many`
+  forms were reviewed and kept. Reasons in `docs/strings-review.md`.
+- Not verified: Hermes itself (no phone run); the new words by a native speaker.
 
 ## 2026-09-29 T6 Formation
 

@@ -16,11 +16,11 @@ type ArchiveMtime = NonNullable<ZipAttributes['mtime']>;
 
 export type WriteArchiveOptions = { readonly root?: string; readonly mtime: ArchiveMtime };
 
-function isUnsafe(path: string): boolean {
+export function isUnsafePath(path: string): boolean {
   return path.startsWith('/') || path.includes('\\') || path.split('/').some((segment) => segment === '..');
 }
 
-function rootOf(paths: readonly string[]): string | undefined {
+export function rootOf(paths: readonly string[]): string | undefined {
   if (paths.includes(metadataPath)) {
     return '';
   }
@@ -50,7 +50,7 @@ function refusal(rule: ArchiveRule, path: string, message: string): Refusal {
   return { ok: false, rule, path, message };
 }
 
-function mayHoldBurrito(path: string): boolean {
+export function mayHoldBurrito(path: string): boolean {
   const parts = path.split('/');
   const inner = parts.slice(1).join('/');
   return (
@@ -61,7 +61,7 @@ function mayHoldBurrito(path: string): boolean {
   );
 }
 
-function joined(parts: readonly Uint8Array[]): Uint8Array {
+export function joined(parts: readonly Uint8Array[]): Uint8Array {
   const total = parts.reduce((sum, part) => sum + part.byteLength, 0);
   const bytes = new Uint8Array(total);
   let offset = 0;
@@ -98,7 +98,7 @@ export function createArchiveReader(limits: ArchiveLimits = defaultArchiveLimits
     if (file.name.endsWith('/')) {
       return;
     }
-    if (isUnsafe(file.name)) {
+    if (isUnsafePath(file.name)) {
       problem = refusal('archive-path', file.name, `the archive holds an unsafe path ${file.name}`);
       return;
     }

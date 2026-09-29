@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { imagePackId, languagePackId } from '@lib/domain/pack';
+import { burritoRootOf } from '../install';
 import { scenario } from '../scenario';
 
 const image = 'ingredients/images/obs-en-01-01.jpg';
@@ -31,11 +32,11 @@ export default scenario(
     assert.equal(started.filter((entry) => entry.payload.pack === imagePackId).length, 1);
 
     const files = phone.adapters.files;
-    const shared = await files.readBytes(`packs/image/obs/unfoldingWord/obs-images/${image}`);
-    const override = await files.readBytes(`packs/language/qaa/unfoldingWord/qaa_obs/${image}`);
+    const shared = await files.readBytes(`${burritoRootOf(phone, 'obs-images')}/${image}`);
+    const override = await files.readBytes(`${burritoRootOf(phone, 'qaa_obs')}/${image}`);
     assert.notDeepEqual(override, shared, 'qaa overrides one image inside its own stories burrito');
     assert.equal(
-      await files.exists(`packs/language/qab/unfoldingWord/qab_obs/${image}`),
+      await files.exists(`${burritoRootOf(phone, 'qab_obs')}/${image}`),
       false,
       'qab uses the shared image',
     );

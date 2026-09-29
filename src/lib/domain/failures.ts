@@ -16,7 +16,6 @@ export const failureCodes = [
   'kernel.not-owned',
   'kernel.observer-failed',
   'catalog.invalid-response',
-  'catalog.superseded',
   'pack.not-found',
   'pack.no-space',
   'pack.checksum-mismatch',

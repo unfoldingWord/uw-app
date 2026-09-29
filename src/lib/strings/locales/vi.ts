@@ -418,7 +418,6 @@ export const vi: LocaleTable = {
     'Một phần của ứng dụng chưa cập nhật xong. Hãy chia sẻ chẩn đoán để có người giúp.',
   'failure.catalog.invalid-response':
     'Danh sách thư viện đến ở dạng ứng dụng không đọc được. Hãy thử lại sau.',
-  'failure.catalog.superseded': 'Một danh sách thư viện mới hơn đã đến trước, nên không cần làm gì thêm.',
   'failure.pack.not-found': 'Tài nguyên này không còn được xuất bản. Hãy kiểm tra bản cập nhật sau.',
   'failure.pack.no-space': 'Không đủ chỗ cho gói này. Hãy gỡ một gói khác rồi thử lại.',
   'failure.pack.checksum-mismatch': 'Bản tải về không đầy đủ. Hãy thử lại.',

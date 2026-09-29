@@ -13,14 +13,6 @@ export async function removeIfPresent(files: Files, path: string): Promise<void>
   }
 }
 
-export async function writeBurrito(files: Files, root: string, burrito: BurritoFiles): Promise<void> {
-  for (const [path, bytes] of burrito) {
-    const target = `${root}/${path}`;
-    await files.mkdir(parentOf(target));
-    await files.writeBytes(target, bytes);
-  }
-}
-
 function listedPaths(metadata: Uint8Array): readonly string[] {
   try {
     const parsed: unknown = JSON.parse(fromUtf8(metadata));
@@ -45,16 +37,4 @@ export async function readBurrito(files: Files, root: string): Promise<BurritoFi
     }
   }
   return burrito;
-}
-
-export async function copyBurrito(files: Files, from: string, to: string): Promise<void> {
-  await writeBurrito(files, to, await readBurrito(files, from));
-}
-
-export function bytesOf(burrito: BurritoFiles): number {
-  let total = 0;
-  for (const bytes of burrito.values()) {
-    total += bytes.byteLength;
-  }
-  return total;
 }

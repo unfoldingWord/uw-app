@@ -67,7 +67,7 @@ const releaseRefSpec = {
 
 const installedBurritoSpec = {
   list: {
-    root: 'token',
+    root: 'path',
     row: resourceRows,
     publisher: 'publisher',
     resource: 'resource',
@@ -82,7 +82,10 @@ const installedBurritoSpec = {
 export const eventSchemas = {
   AppOpened: { replay: 'redo', payload: { day: 'day' } },
   CatalogRefreshStarted: { replay: 'redo', payload: {} },
-  CatalogRefreshed: { replay: 'follows', payload: { languages: 'count', releases: 'count' } },
+  CatalogRefreshed: {
+    replay: 'follows',
+    payload: { languages: 'count', releases: 'count', dropped: 'count' },
+  },
   PackInstallStarted: {
     replay: 'redo',
     payload: {
@@ -119,6 +122,7 @@ export const eventSchemas = {
   SearchRun: { replay: 'verbatim', payload: { kind: searchKinds, language: 'language', hits: 'count' } },
   IndexStarted: { replay: 'redo', payload: { language: 'language' } },
   IndexBuilt: { replay: 'follows', payload: { language: 'language', entries: 'count', bytes: 'bytes' } },
+  IndexDropped: { replay: 'redo', payload: { language: 'language' } },
   GroupCreated: { replay: 'redo', payload: { group: 'id' } },
   GroupRenamed: { replay: 'redo', payload: { group: 'id' } },
   GroupDeleted: { replay: 'redo', payload: { group: 'id' } },

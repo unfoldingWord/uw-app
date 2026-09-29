@@ -25,7 +25,7 @@ export default scenario(
     assert.equal(installedAudio.language, 'qaa');
     assert.deepEqual(
       installedAudio.burritos.map((burrito) => burrito.root),
-      ['packs/audio/qaa/qaa_ult-audio/unfoldingWord/qaa_ult-audio'],
+      [`packs/audio/qaa/qaa_ult-audio/${outcome.install ?? ''}/unfoldingWord/qaa_ult-audio`],
     );
     assert.ok(
       phone.adapters.files.tree().some((path) => path.endsWith('.mp3') && path.startsWith('packs/audio/')),

@@ -33,6 +33,7 @@ const passage: Passage = {
     book: 'RUT',
     bookName: 'Ruth',
     direction: 'ltr',
+    titles: [],
     verses: [
       { chapter: 1, verse: 16, text: 'Where you go I will go.', tokens: [] },
       { chapter: 1, verse: 17, through: 18, text: 'Where you die I will die.', tokens: [] },

@@ -450,8 +450,6 @@ export const nl: LocaleTable = {
     'Een deel van de app is niet klaar met bijwerken. Deel de diagnose zodat iemand kan helpen.',
   'failure.catalog.invalid-response':
     'De lijst van de bibliotheek kwam binnen in een vorm die de app niet kan lezen. Probeer het later opnieuw.',
-  'failure.catalog.superseded':
-    'Er kwam eerst een nieuwere lijst van de bibliotheek binnen, dus er hoeft niets meer te gebeuren.',
   'failure.pack.not-found': 'Dit hulpmiddel wordt niet meer gepubliceerd. Zoek later naar updates.',
   'failure.pack.no-space':
     'Er is niet genoeg ruimte voor dit pakket. Verwijder een ander pakket en probeer het opnieuw.',

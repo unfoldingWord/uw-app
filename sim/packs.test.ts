@@ -38,7 +38,7 @@ describe('packs interface (LA-2, LA-6, LA-7, SH-3)', () => {
       bytes: expect.any(Number) as number,
       burritos: [
         {
-          root: 'packs/language/qab/unfoldingWord/qab_obs',
+          root: 'packs/language/qab/id-000001/unfoldingWord/qab_obs',
           row: 'stories',
           publisher: 'unfoldingWord',
           resource: 'qab_obs',
@@ -48,7 +48,7 @@ describe('packs interface (LA-2, LA-6, LA-7, SH-3)', () => {
           bytes: expect.any(Number) as number,
         },
         {
-          root: 'packs/language/qab/unfoldingWord/qab_obs-sq',
+          root: 'packs/language/qab/id-000001/unfoldingWord/qab_obs-sq',
           row: 'storyHelps',
           publisher: 'unfoldingWord',
           resource: 'qab_obs-sq',
@@ -197,7 +197,9 @@ describe('packs interface (LA-2, LA-6, LA-7, SH-3)', () => {
       kind: 'original',
       language: 'hbo',
     });
-    expect(device.adapters.files.tree()).toContain('packs/original/hbo/unfoldingWord/hbo_uhb/metadata.json');
+    expect(device.adapters.files.tree()).toContain(
+      `${outcome.ok ? (outcome.pack.burritos[0]?.root ?? '') : ''}/metadata.json`,
+    );
   });
 
   it('serializes installs so a pack is never written by two at once', async () => {

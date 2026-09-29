@@ -22,7 +22,6 @@ export const failures = {
     'Part of the app did not finish updating. Share diagnostics so someone can help.',
   'failure.catalog.invalid-response':
     'The library list came back in a form the app cannot read. Try again later.',
-  'failure.catalog.superseded': 'A newer library list arrived first, so nothing more is needed.',
   'failure.pack.not-found': 'This resource is no longer published. Check for updates later.',
   'failure.pack.no-space': 'There is not enough space for this pack. Remove another pack, then try again.',
   'failure.pack.checksum-mismatch': 'The download did not arrive whole. Try again.',

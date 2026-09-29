@@ -11,7 +11,8 @@ export type CatalogChoice = ReleaseRef & {
 
 export type PeerBurrito = ReleaseRef & { row: ResourceRow; bytes: number };
 
-export type PeerReceipt = { ok: true; archive: Uint8Array } | { ok: false; code: FailureCode };
+export type PeerReceipt =
+  { ok: true; archive: Uint8Array } | { ok: true; path: string } | { ok: false; code: FailureCode };
 
 export type PeerSession = {
   offered(): readonly PeerBurrito[];

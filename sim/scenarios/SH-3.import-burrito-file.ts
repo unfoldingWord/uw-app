@@ -88,18 +88,35 @@ export default scenario(
     assert.ok(received.ok, received.ok ? '' : received.code);
     assert.deepEqual(peer.received(), ['unfoldingWord/qab_obs@v1'], 'only the chosen resource travels');
 
-    const burritoFiles = (tree: readonly string[]) => tree.filter((path) => path.includes('qab_obs/'));
-    const reference = burritoFiles(online.adapters.files.tree());
-    assert.deepEqual(
-      burritoFiles(offline.adapters.files.tree()),
-      reference,
-      'a file lands where a download lands',
-    );
-    assert.deepEqual(burritoFiles(peered.adapters.files.tree()), reference, 'a transfer lands there too');
+    const within = (device: typeof online) =>
+      device.kernel.packs
+        .installed()
+        .flatMap((pack) => pack.burritos)
+        .flatMap((item) => {
+          const root = `${item.root}/`;
+          const key = `${item.provenance.publisher}/${item.provenance.resource}/`;
+          return device.adapters.files
+            .tree()
+            .filter((path) => path.startsWith(root))
+            .map((path) => key + path.slice(root.length));
+        })
+        .sort();
+    const burritoFiles = (device: typeof online) =>
+      within(device).filter((path) => path.startsWith('unfoldingWord/qab_obs/'));
+    const reference = burritoFiles(online);
+    assert.ok(reference.length > 0);
+    assert.deepEqual(burritoFiles(offline), reference, 'a file lands as a download lands');
+    assert.deepEqual(burritoFiles(peered), reference, 'a transfer lands the same way');
+    const rootOf = (device: typeof online) =>
+      device.kernel.packs
+        .installed()
+        .flatMap((pack) => pack.burritos)
+        .find((item) => item.provenance.resource === 'qab_obs')?.root ?? '';
     for (const path of reference.filter((item) => !item.endsWith('/'))) {
+      const inside = path.slice('unfoldingWord/qab_obs/'.length);
       assert.deepEqual(
-        await offline.adapters.files.readBytes(path),
-        await online.adapters.files.readBytes(path),
+        await offline.adapters.files.readBytes(`${rootOf(offline)}/${inside}`),
+        await online.adapters.files.readBytes(`${rootOf(online)}/${inside}`),
       );
     }
 
@@ -208,7 +225,6 @@ export default scenario(
     }
     const installedHere = taker.kernel.packs.installed()[0];
     assert.equal(installedHere?.source, 'peer');
-    const where = (tree: readonly string[]) => tree.filter((path) => path.startsWith('packs/language/qab/'));
-    assert.deepEqual(where(taker.adapters.files.tree()), where(online.adapters.files.tree()));
+    assert.deepEqual(within(taker), within(online), 'a transfer lands the same files in each burrito root');
   },
 );

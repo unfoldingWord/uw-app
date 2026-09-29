@@ -60,11 +60,11 @@ Change a value in place; set it to `null` to fall back to English for that key w
 | id | "Pembinaan" for Formation; "Cerita Alkitab Terbuka" as the OBS title |
 | sw | Noun-class agreement in plural forms (`library.*`, `transfer.selected`); "Malezi" for Formation |
 | vi | "Đào tạo" for Formation; "Câu Chuyện Kinh Thánh Mở" as the OBS title |
-| ru | "Наставничество" for Formation; the `other` plural form, used for fractions only |
+| ru | "Формирование" for Formation (was "Наставничество", mentoring); the `other` plural form, used for fractions only |
 | hi | "शिष्यता" for Formation; greetings by time of day |
 | bn | "শিষ্যত্ব" for Formation; Bengali digits in `search.placeholder` |
 | zh-Hans | "造就" for Formation; spacing around interpolated numbers |
-| ar | All six plural forms, especially `zero` and `many`; "التلمذة" for Formation; RTL layout of `·` joins |
+| ar | All six plural forms, especially `zero` and `many`; "التكوين" for Formation (was "التلمذة", discipleship); RTL layout of `·` joins |
 | ur | Nastaliq line height in long strings; "شاگردی" for Formation |
 | fa | Zero-width non-joiners; "شاگردسازی" for Formation; Persian digits in `search.*` |
 | my | The whole table: Burmese was the least certain draft, and no published Burmese content exists to check terms against |
@@ -75,3 +75,21 @@ The impact story itself (title, body, security note) is content from the partner
 the shipped story is English and awaits comms review (`docs/impact-stories.md`).
 Dates are formatted by the screen layer with the platform's date formatting, and counts can be passed to
 `plural` already formatted, so digits follow the locale where the platform supports it.
+
+## Changes on 2026-09-29 (review 2)
+
+- Plural categories no longer come from `Intl.PluralRules`, which Hermes may not ship. They come from the
+  CLDR rules written as data in `src/lib/strings/plural.ts`, checked against the ICU in Node for all sixteen
+  locales. The phone and the sim now pick the same form.
+- `ru`: `nav.formation`, `formation.title` and the other Formation labels were "Наставничество"
+  (mentoring); they are now "Формирование" (formation). `movement.discourse` was "Повествование"
+  (narration); it is now "Дискурс", the term the movement is named for. Both are an AI agent's choice and
+  still need a native reviewer, who may prefer "Духовное формирование" for the title.
+- `ar`: every "التلمذة" (discipleship) is now "التكوين" (formation, as in "التكوين الروحي"). Same caveat.
+- `hi`, `bn`, `ur` and `fa` also word Formation as discipleship ("शिष्यता", "শিষ্যত্ব", "شاگردی",
+  "شاگردسازی"). They are unchanged and flagged here for the same review.
+- `es-419`, `fr`, `pt-BR` `many` forms ("{count} de recursos", "{count} de ressources"): reviewed and kept.
+  CLDR gives these languages a `many` category for round millions (1 000 000, 2 000 000) precisely because
+  the noun then takes "de" ("1 000 000 de ressources"); with the rule table above, `many` is chosen only for
+  those counts, and every other count uses `other`. A native reviewer should confirm the phrasing, but none
+  of these forms reads as clearly wrong, so none was changed.

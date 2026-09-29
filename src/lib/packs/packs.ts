@@ -9,7 +9,7 @@ import { catalogOffer, createInstaller, resolveSource, type Resolved } from './i
 import { defaultReleases, missingReleases, updatesOf } from './plan';
 import { fromCatalog, fromFile, type PackPlan, type PackSource } from './source';
 import { deleteInstalledPack, packTables, readInstalledPacks } from './store';
-import { inboxDirectory, recoverPacks } from './swap';
+import { inboxDirectory, recoverPacks } from './layout';
 import { removeIfPresent } from './tree';
 import type {
   InstalledBurrito,
@@ -216,17 +216,17 @@ export const packsModule = defineModule<PacksApi>({
         defaults: async (pack) => defaultReleases(await catalogReleases(), pack),
       },
       async start() {
-        let known: readonly PackId[] | undefined;
+        let roots: readonly string[] | undefined;
         try {
           for (const pack of await readInstalledPacks(ports.db)) {
             installed.set(pack.pack, pack);
           }
-          known = [...installed.keys()];
+          roots = [...installed.values()].flatMap((pack) => pack.burritos.map((burrito) => burrito.root));
         } catch {
-          known = undefined;
+          roots = undefined;
         }
         try {
-          await recoverPacks(ports.files, known);
+          await recoverPacks(ports.files, roots);
         } catch {
           return;
         }

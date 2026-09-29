@@ -4,10 +4,13 @@ import type { Library } from './library';
 import { resolveLink } from './links';
 import { audioClips, bookNotes, bookQuestions, bookWordLinks, textBook } from './loaders';
 import { renderMarkdown } from './markdown';
+import { isStudyResource, readingOfKind } from './readings';
 import type { Entry } from './tables';
 import type { HelpsReference } from './tsv';
+import type { UsfmBook } from './usfm';
 import type {
   AudioClip,
+  ChapterTitle,
   Note,
   Passage,
   PassageOptions,
@@ -58,6 +61,13 @@ function helpsReferenceText(book: string, reference: HelpsReference): string {
   return formatReference(same ? { book, start: first.start } : { book, start: first.start, end: last.end });
 }
 
+function chapterTitles(book: UsfmBook, verses: readonly Verse[]): ChapterTitle[] {
+  return verses.flatMap((verse) => {
+    const text = verse.verse === 1 ? book.titles.get(verse.chapter) : undefined;
+    return text === undefined ? [] : [{ chapter: verse.chapter, text }];
+  });
+}
+
 function helpsCover(reference: HelpsReference, verses: readonly Verse[]): boolean {
   return verses.some((verse) => coversVerse(reference, verse));
 }
@@ -97,6 +107,7 @@ async function notesFor(
       });
       const note = {
         id: row.id,
+        study: isStudyResource(entry.provenance.resource, entry.language),
         reference: helpsReferenceText(book, row.reference),
         quote: row.quote,
         occurrence: row.occurrence,
@@ -156,6 +167,7 @@ async function questionsFor(
       if (helpsCover(row.reference, verses)) {
         questions.push({
           id: row.id,
+          study: isStudyResource(entry.provenance.resource, entry.language),
           reference: helpsReferenceText(book, row.reference),
           question: row.question,
           response: row.response,
@@ -211,10 +223,11 @@ export async function assemblePassage(
     reference: formatReference(reference),
     language,
     text: {
-      reading: entry.kind === 'simplified' || entry.kind === 'original' ? entry.kind : 'literal',
+      reading: readingOfKind(entry.kind),
       book: reference.book,
       bookName: book.name,
       direction: entry.direction,
+      titles: chapterTitles(book, verses),
       verses,
       provenance: entry.provenance,
     },

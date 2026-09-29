@@ -98,20 +98,38 @@ describe('corpus stories', () => {
     expect(
       story?.frames.map((frame) => [frame.number, frame.image?.path, frame.image?.provenance.resource]),
     ).toEqual([
-      [1, 'packs/language/qaa/unfoldingWord/qaa_obs/ingredients/images/obs-en-01-01.jpg', 'qaa_obs'],
-      [2, 'packs/image/obs/unfoldingWord/obs-images/ingredients/images/obs-en-01-02.jpg', 'obs-images'],
-      [3, 'packs/image/obs/unfoldingWord/obs-images/ingredients/images/obs-en-01-03.jpg', 'obs-images'],
+      [
+        1,
+        expect.stringMatching(
+          /^packs\/language\/qaa\/[^/]+\/unfoldingWord\/qaa_obs\/ingredients\/images\/obs-en-01-01\.jpg$/,
+        ),
+        'qaa_obs',
+      ],
+      [
+        2,
+        expect.stringMatching(
+          /^packs\/image\/obs\/[^/]+\/unfoldingWord\/obs-images\/ingredients\/images\/obs-en-01-02\.jpg$/,
+        ),
+        'obs-images',
+      ],
+      [
+        3,
+        expect.stringMatching(
+          /^packs\/image\/obs\/[^/]+\/unfoldingWord\/obs-images\/ingredients\/images\/obs-en-01-03\.jpg$/,
+        ),
+        'obs-images',
+      ],
     ]);
     for (const frame of story?.frames ?? []) {
       expect(await device.adapters.files.exists(frame.image?.path ?? '')).toBe(true);
     }
-    expect(story?.notes.map((note) => [note.id, note.frame])).toEqual([
-      ['s002', 1],
-      ['s003', 2],
+    expect(story?.notes.map((note) => [note.id, note.frame, note.study])).toEqual([
+      ['s002', 1, false],
+      ['s003', 2, false],
     ]);
-    expect(story?.questions.map((question) => [question.id, question.frame])).toEqual([
-      ['q001', 1],
-      ['q002', 3],
+    expect(story?.questions.map((question) => [question.id, question.frame, question.study])).toEqual([
+      ['q001', 1, true],
+      ['q002', 3, true],
     ]);
     expect(
       device.kernel.journal
@@ -348,7 +366,10 @@ describe('corpus packs and replay', () => {
     expect(await device.kernel.corpus.article('tw/bible/kt/love', 'qaa')).toBeUndefined();
     expect(device.kernel.snapshot().modules.corpus).toEqual({ indexes: {}, languages: {} });
     await device.restart();
-    expect(device.kernel.corpus.languages()).toEqual([]);
+    expect(
+      device.kernel.corpus.languages(),
+      'on start the corpus follows what Packs holds, so a pack still installed is read again',
+    ).toEqual(['qaa']);
   });
 
   it('redoes a recorded index build from its IndexStarted event', async () => {

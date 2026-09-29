@@ -1,7 +1,7 @@
 const throughPort = (port: string) => `src/lib reaches this through the ${port} port (AGENTS.md rule 2).`;
 const notInLib = 'src/lib is pure TypeScript with no host globals (AGENTS.md rule 2).';
 const hostDependent =
-  'src/lib gives the same answer on every host; locale-sensitive formatting and collation belong to screens, from the Locale port facts. Only Intl.PluralRules is allowed, for Strings (AGENTS.md rule 2).';
+  'src/lib gives the same answer on every host; locale-sensitive formatting and collation belong to screens, from the Locale port facts. Plural rules are data in src/lib/strings/plural.ts (AGENTS.md rule 2).';
 
 export const libRestrictedGlobals: { name: string; message: string }[] = [
   { name: 'Date', message: throughPort('Clock') },
@@ -49,12 +49,7 @@ export const libRestrictedProperties: { object: string; property: string; messag
 
 export const libRestrictedSyntax: { selector: string; message: string }[] = [
   {
-    selector: "MemberExpression[object.type='Identifier'][object.name='Intl'][computed=true]",
-    message: hostDependent,
-  },
-  {
-    selector:
-      "MemberExpression[object.type='Identifier'][object.name='Intl'][computed=false][property.name!='PluralRules']",
+    selector: "MemberExpression[object.type='Identifier'][object.name='Intl']",
     message: hostDependent,
   },
   {

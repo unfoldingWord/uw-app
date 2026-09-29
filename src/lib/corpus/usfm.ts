@@ -5,6 +5,7 @@ export type UsfmBook = {
   readonly name: string;
   readonly names: readonly string[];
   readonly chapters: ReadonlyMap<number, readonly Verse[]>;
+  readonly titles: ReadonlyMap<number, string>;
 };
 
 type Marker = { readonly name: string; readonly closing: boolean };
@@ -46,7 +47,6 @@ const lineMarkers = new Set([
   's4',
   'sr',
   'r',
-  'd',
   'rem',
   'sts',
   'cl',
@@ -83,7 +83,19 @@ const characterMarkers = new Set([
   'wj',
 ]);
 
-const skippedSpans: Readonly<Record<string, string>> = { f: 'f', fe: 'fe', x: 'x', ef: 'ef', ex: 'ex' };
+const skippedSpans: Readonly<Record<string, string>> = {
+  f: 'f',
+  fe: 'fe',
+  x: 'x',
+  ef: 'ef',
+  ex: 'ex',
+  fig: 'fig',
+  va: 'va',
+  vp: 'vp',
+  ca: 'ca',
+};
+
+const titleMarker = 'd';
 
 const wordPattern = /[\p{L}\p{M}\p{N}]+(?:['’][\p{L}\p{M}\p{N}]+)*/gu;
 
@@ -186,12 +198,27 @@ type VerseStart = { chapter: number; verse: number; through?: number };
 export function parseUsfm(source: string): UsfmBook {
   const headers = new Map<string, string>();
   const chapters = new Map<number, Verse[]>();
+  const titles = new Map<number, string>();
   const alignment: OriginalWord[] = [];
   let chapter = 0;
   let current: VerseStart | undefined;
   let raw: RawToken[] = [];
+  let title: RawToken[] | undefined;
   let word: string | undefined;
   let skipping: string | undefined;
+
+  const sink = (): RawToken[] | undefined => (current !== undefined ? raw : title);
+
+  const closeTitle = (): void => {
+    if (title === undefined) {
+      return;
+    }
+    const { text } = finishTokens(title);
+    if (text !== '' && chapter > 0 && !titles.has(chapter)) {
+      titles.set(chapter, text);
+    }
+    title = undefined;
+  };
 
   const closeVerse = (): void => {
     if (current === undefined) {
@@ -206,14 +233,15 @@ export function parseUsfm(source: string): UsfmBook {
   };
 
   const addText = (text: string): void => {
-    if (current === undefined || text === '') {
+    const target = sink();
+    if (target === undefined || text === '') {
       return;
     }
     if (word !== undefined) {
       word += text;
       return;
     }
-    raw.push(...plainTokens(text));
+    target.push(...plainTokens(text));
   };
 
   for (const piece of split(source.replace(/\r\n?/g, '\n'))) {
@@ -239,13 +267,25 @@ export function parseUsfm(source: string): UsfmBook {
       addText(newline === -1 ? '' : piece.text.slice(newline));
       continue;
     }
+    if (name === titleMarker && !marker.closing) {
+      if (current === undefined) {
+        closeTitle();
+        title = [];
+        addText(piece.text);
+      } else {
+        addText(` ${piece.text}`);
+      }
+      continue;
+    }
     if (name === 'c' && !marker.closing) {
+      closeTitle();
       closeVerse();
       const match = /^\s*(\d+)/.exec(piece.text);
       chapter = whole(match?.[1]);
       continue;
     }
     if (name === 'v' && !marker.closing) {
+      closeTitle();
       closeVerse();
       const match = /^\s*(\d+)(?:-(\d+))?[a-z]?\s?/.exec(piece.text);
       if (match === null || chapter === 0) {
@@ -276,8 +316,9 @@ export function parseUsfm(source: string): UsfmBook {
       if (marker.closing) {
         const text = (word ?? '').split('|')[0]?.trim() ?? '';
         word = undefined;
-        if (current !== undefined && text !== '') {
-          raw.push({ kind: 'word', text, original: alignment.slice() });
+        const target = sink();
+        if (target !== undefined && text !== '') {
+          target.push({ kind: 'word', text, original: alignment.slice() });
         }
         addText(piece.text);
       } else {
@@ -289,14 +330,16 @@ export function parseUsfm(source: string): UsfmBook {
     if (marker.closing || characterMarkers.has(name)) {
       addText(marker.closing ? piece.text : piece.text.replace(/^ /, ''));
     } else {
+      closeTitle();
       addText(` ${piece.text}`);
     }
   }
+  closeTitle();
   closeVerse();
 
   const code = (headers.get('id') ?? '').split(/\s+/)[0]?.toUpperCase() ?? '';
   const names = [
     ...new Set(nameMarkers.flatMap((marker) => headers.get(marker) ?? []).filter((value) => value !== '')),
   ];
-  return { code, name: names[0] ?? code, names, chapters };
+  return { code, name: names[0] ?? code, names, chapters, titles };
 }

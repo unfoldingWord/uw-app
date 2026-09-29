@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import { readArchive, writeArchive } from '@lib/burrito/archive';
 import { languagePackId } from '@lib/domain/pack';
+import { parseReference } from '@lib/domain/reference';
 import { archiveUrlOf } from '@lib/domain/release';
+import { crashAt } from '../crash';
 import type { SimDevice } from '../device';
 import { scenario } from '../scenario';
 
 const pack = languagePackId('qaa');
-const notes = 'packs/language/qaa/unfoldingWord/qaa_tn';
 
 function tampered(archive: Uint8Array): Uint8Array {
   const read = readArchive(archive);
@@ -33,6 +34,32 @@ function tagsOf(phone: SimDevice): Record<string, string> {
   );
 }
 
+function rootsOf(phone: SimDevice): Record<string, string> {
+  return Object.fromEntries(
+    (phone.kernel.packs.installed()[0]?.burritos ?? []).map((burrito) => [
+      burrito.provenance.resource,
+      burrito.root,
+    ]),
+  );
+}
+
+const ruth = parseReference('RUT 1:16');
+
+async function notesTags(phone: SimDevice): Promise<string[]> {
+  assert.ok(ruth.ok);
+  const passage = await phone.kernel.corpus.passage(ruth.reference, { language: 'qaa' });
+  return [...new Set((passage?.notes ?? []).map((note) => note.provenance.tag))];
+}
+
+function staged(phone: SimDevice): string[] {
+  return phone.adapters.files.tree().filter((path) => path.startsWith('packs/.'));
+}
+
+function installDirectories(phone: SimDevice, resource: string): string[] {
+  const shape = new RegExp(`^packs/language/qaa/[^/]+/unfoldingWord/${resource}/$`);
+  return phone.adapters.files.tree().filter((path) => shape.test(path));
+}
+
 export default scenario(
   'LA-7',
   'updates are checked against the catalog, opt-in, and replace the pack atomically',
@@ -41,6 +68,8 @@ export default scenario(
     await phone.start();
     await phone.kernel.catalog.refresh();
     assert.ok((await phone.kernel.packs.installFromCatalog(pack)).ok);
+    const firstRoots = rootsOf(phone);
+    const notes = firstRoots.qaa_tn ?? '';
     const original = await phone.adapters.files.readBytes(`${notes}/ingredients/tn_RUT.tsv`);
 
     world.fixtures.publish('unfoldingWord', 'qaa_tn', 'v2');
@@ -72,23 +101,24 @@ export default scenario(
     const interrupted = await phone.kernel.packs.update(pack);
     assert.equal(!interrupted.ok && interrupted.code, 'files.io');
 
-    for (const failed of [timedOut, corrupt, interrupted]) {
-      assert.equal(failed.ok, false);
-    }
     assert.deepEqual(await phone.adapters.files.readBytes(`${notes}/ingredients/tn_RUT.tsv`), original);
     assert.equal(tagsOf(phone).qaa_tn, 'v1', 'every failed update leaves the old pack whole');
-    assert.ok(
-      !phone.adapters.files.tree().some((path) => path.startsWith('packs/.')),
-      'nothing is left staged',
-    );
+    assert.deepEqual(staged(phone), [], 'nothing is left staged');
+    assert.deepEqual(installDirectories(phone, 'qaa_tn'), [`${notes}/`], 'no half-written release is left');
     const failures = phone.kernel.journal.read().filter((entry) => entry.type === 'PackFailed');
     assert.deepEqual(
       failures.map((entry) => entry.type === 'PackFailed' && entry.payload.code),
       ['http.timeout', 'pack.checksum-mismatch', 'files.io'],
     );
 
-    const updated = await phone.kernel.packs.update(pack);
+    const release = phone.adapters.http.hold(newer);
+    const updating = phone.kernel.packs.update(pack);
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.deepEqual(await notesTags(phone), ['v1'], 'while the update downloads, the passage reads v1');
+    release();
+    const updated = await updating;
     assert.ok(updated.ok, updated.ok ? '' : updated.code);
+    assert.deepEqual(await notesTags(phone), ['v2'], 'once it is in, the passage reads v2 and only v2');
     const started = phone.kernel.journal
       .read()
       .filter((entry) => entry.type === 'PackInstallStarted')
@@ -102,26 +132,68 @@ export default scenario(
     assert.equal(tags.qaa_tn, 'v2');
     assert.equal(tags.qaa_ult, 'v1');
     assert.equal(Object.keys(tags).length, 11);
-    const metadata = JSON.parse(await phone.adapters.files.readText(`${notes}/metadata.json`)) as {
-      identification: { primary: { dcs: Record<string, { revision: string }> } };
-    };
+    const secondRoots = rootsOf(phone);
+    assert.notEqual(secondRoots.qaa_tn, notes, 'the new release has a directory of its own');
+    assert.deepEqual(
+      Object.entries(secondRoots).filter(([resource]) => resource !== 'qaa_tn'),
+      Object.entries(firstRoots).filter(([resource]) => resource !== 'qaa_tn'),
+      'the burritos an update keeps stay where they are, neither copied nor moved',
+    );
+    assert.equal(await phone.adapters.files.exists(notes), false, 'the old release is removed once read');
+    const metadata = JSON.parse(
+      await phone.adapters.files.readText(`${secondRoots.qaa_tn ?? ''}/metadata.json`),
+    ) as { identification: { primary: { dcs: Record<string, { revision: string }> } } };
     assert.equal(metadata.identification.primary.dcs['unfoldingWord/qaa_tn']?.revision, 'v2');
     assert.deepEqual(await phone.kernel.packs.updates(), []);
 
-    await phone.adapters.files.mkdir('packs/.old/language');
-    await phone.adapters.files.rename('packs/language/qaa', 'packs/.old/language/qaa');
+    world.fixtures.publish('unfoldingWord', 'qaa_tn', 'v3');
+    await phone.kernel.catalog.refresh();
+    const beforeRow = crashAt(phone, { db: (sql) => /^INSERT INTO packs /.test(sql) });
+    await phone.kernel.packs.update(pack);
+    assert.ok(beforeRow.crashed());
+    await beforeRow.restart();
+    assert.equal(tagsOf(phone).qaa_tn, 'v2', 'a crash before the database row keeps the old release');
+    assert.deepEqual(await notesTags(phone), ['v2']);
+    assert.deepEqual(installDirectories(phone, 'qaa_tn'), [`${secondRoots.qaa_tn ?? ''}/`]);
+    assert.deepEqual(staged(phone), []);
+
+    const beforeIngest = crashAt(phone, { db: (_sql, params) => params[1] === 'PackInstalled' });
+    await phone.kernel.packs.update(pack);
+    assert.ok(beforeIngest.crashed());
+    await beforeIngest.restart();
+    assert.equal(tagsOf(phone).qaa_tn, 'v3', 'a crash after the database row keeps the new release');
+    assert.deepEqual(await notesTags(phone), ['v3'], 'and the corpus catches up with it on start');
+    const thirdRoots = rootsOf(phone);
+    assert.deepEqual(installDirectories(phone, 'qaa_tn'), [`${thirdRoots.qaa_tn ?? ''}/`]);
+
+    world.fixtures.publish('unfoldingWord', 'qaa_tn', 'v4');
+    await phone.kernel.catalog.refresh();
+    const beforeCleanup = crashAt(phone, {
+      files: (operation, path) => operation === 'remove' && (thirdRoots.qaa_tn ?? '').startsWith(`${path}/`),
+    });
+    await phone.kernel.packs.update(pack);
+    assert.ok(beforeCleanup.crashed());
+    await beforeCleanup.restart();
+    assert.equal(tagsOf(phone).qaa_tn, 'v4');
+    assert.deepEqual(await notesTags(phone), ['v4']);
+    assert.deepEqual(
+      installDirectories(phone, 'qaa_tn'),
+      [`${rootsOf(phone).qaa_tn ?? ''}/`],
+      'a crash after the corpus read the new release leaves the old one to be removed on start',
+    );
+
+    await phone.adapters.files.mkdir('packs/.old/language/qaa');
     await phone.adapters.files.mkdir('packs/.staging/id-crashed/unfoldingWord/qaa_tn');
     await phone.adapters.files.mkdir('packs/language/qzz/unfoldingWord/qzz_obs');
+    await phone.adapters.files.mkdir('packs/language/qaa/id-999999/unfoldingWord/qaa_tn/ingredients');
     await phone.restart();
-    assert.equal(
-      await phone.adapters.files.exists(`${notes}/metadata.json`),
-      true,
-      'a pack moved aside when the app stopped is restored on start',
-    );
     assert.ok(
-      !phone.adapters.files.tree().some((path) => path.startsWith('packs/.') || path.includes('qzz')),
-      'staging, the old copy and a pack the database never recorded are cleaned on start',
+      !phone.adapters.files
+        .tree()
+        .some((path) => path.startsWith('packs/.') || path.includes('qzz') || path.includes('id-999999')),
+      'staging, old copies, a pack the database never recorded and a release it never pointed to go on start',
     );
     assert.equal((await phone.kernel.packs.status('qaa')).complete, true);
+    assert.deepEqual(await notesTags(phone), ['v4']);
   },
 );

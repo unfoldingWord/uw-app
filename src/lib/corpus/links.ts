@@ -7,7 +7,9 @@ export type LinkBase = { readonly resource: 'tw' | 'ta' | 'other'; readonly path
 export const wordsPrefix = 'tw';
 export const academyPrefix = 'ta';
 
-const rcPattern = /^rc:\/\/[^/]*\/([^/]+)\/([^/]+)\/(.+)$/;
+const rcPattern = /^rc:\/\/[^/]*\/(.+)$/;
+const storiesSegment = 'obs';
+const storyCount = 50;
 const articleShape = /^[a-z0-9]+(\/[a-z0-9][a-z0-9_-]*){1,4}$/;
 const numbered = /^\d{1,3}$/;
 
@@ -51,22 +53,37 @@ function passageFrom(segments: readonly string[]): LinkTarget | undefined {
   return undefined;
 }
 
+function storyFrom(segments: readonly string[]): LinkTarget | undefined {
+  const at = segments.lastIndexOf(storiesSegment);
+  const number = segments[at + 1];
+  if (at === -1 || number === undefined || !numbered.test(number)) {
+    return undefined;
+  }
+  const story = Number(number);
+  return story >= 1 && story <= storyCount ? { kind: 'story', story } : undefined;
+}
+
 function resolveRc(href: string): LinkTarget | undefined {
   const match = rcPattern.exec(href);
   if (match === null) {
     return undefined;
   }
-  const [, resource = '', type = '', rest = ''] = match;
-  if (resource === wordsPrefix && type === 'dict') {
+  const segments = (match[1] ?? '').split('/').filter((segment) => segment !== '');
+  const [resource = '', type = '', ...path] = segments;
+  const rest = path.join('/');
+  if (resource === wordsPrefix && type === 'dict' && rest !== '') {
     const id = wordsArticleId(rest);
     return id === undefined ? undefined : { kind: 'article', id };
   }
   if (resource === academyPrefix && type === 'man') {
-    const [manual = '', slug = ''] = rest.split('/');
+    const [manual = '', slug = ''] = path;
     const id = academyArticleId(manual, slug);
     return id === undefined ? undefined : { kind: 'article', id };
   }
-  return passageFrom(rest.split('/'));
+  if (segments.includes(storiesSegment)) {
+    return storyFrom(segments);
+  }
+  return passageFrom(segments.slice(1));
 }
 
 function joinPath(base: string, relative: string): readonly string[] {

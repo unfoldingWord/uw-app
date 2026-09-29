@@ -167,6 +167,8 @@ describe('lib purity (AGENTS.md rule 2)', () => {
     'const { random } = Math;\nexport const roll = () => random();\n',
     "export const roll = () => Math['random']();\n",
     'export const ref = new WeakRef({});\n',
+    'export const plural = (locale: string, n: number) => new Intl.PluralRules(locale).select(n);\n',
+    'export const rules = (locale: string): Intl.PluralRules => new Intl.PluralRules(locale);\n',
   ])('src/lib refuses %s', async (code) => {
     const ids = await ruleIds('src/lib/clock.ts', code);
     expect(
@@ -183,11 +185,7 @@ describe('lib purity (AGENTS.md rule 2)', () => {
     ).toBe(true);
   });
 
-  it.each([
-    'export const plural = (locale: string, n: number) => new Intl.PluralRules(locale).select(n);\n',
-    'export const rules = (locale: string): Intl.PluralRules => new Intl.PluralRules(locale);\n',
-    'export const floor = (n: number) => Math.floor(n);\n',
-  ])('src/lib allows %s', async (code) => {
+  it.each(['export const floor = (n: number) => Math.floor(n);\n'])('src/lib allows %s', async (code) => {
     expect(await ruleIds('src/lib/clock.ts', code)).toEqual([]);
   });
 });

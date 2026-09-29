@@ -1,7 +1,6 @@
 import { admittedRows, type ContractRow } from '../burrito/flavors';
-import { metadataPath, type BurritoFiles } from '../burrito/files';
-import { readProvenance, titleOf, type BurritoMetadata } from '../burrito/metadata';
-import { validate } from '../burrito/validate';
+import { readProvenance, titleOf } from '../burrito/metadata';
+import { validateFacts, type BurritoFacts } from '../burrito/validate';
 import type { FailureCode } from '../domain/failures';
 import { fieldValidators } from '../domain/fields';
 import { resourceRows, type ResourceRow } from '../domain/pack';
@@ -11,9 +10,10 @@ import type { CatalogChoice } from './source';
 export const packRows: readonly ContractRow[] = admittedRows;
 
 export type CheckedBurrito = {
-  files: BurritoFiles;
   row: ResourceRow;
   provenance: Provenance;
+  listed: readonly string[];
+  bytes: number;
 };
 
 export type BurritoCheck = { ok: true; burrito: CheckedBurrito } | { ok: false; code: FailureCode };
@@ -23,17 +23,6 @@ const checksumRules: ReadonlySet<string> = new Set([
   'ingredient-size',
   'ingredient-checksum',
 ]);
-
-function listedOnly(files: BurritoFiles, metadata: BurritoMetadata): BurritoFiles {
-  const kept = new Map<string, Uint8Array>();
-  for (const path of [metadataPath, ...Object.keys(metadata.ingredients)]) {
-    const bytes = files.get(path);
-    if (bytes !== undefined) {
-      kept.set(path, bytes);
-    }
-  }
-  return kept;
-}
 
 function eventSafe(provenance: Provenance): boolean {
   return (
@@ -45,8 +34,12 @@ function eventSafe(provenance: Provenance): boolean {
   );
 }
 
-export function checkBurrito(files: BurritoFiles, choice: CatalogChoice | undefined): BurritoCheck {
-  const report = validate(files, { rows: packRows });
+export function checkBurrito(
+  facts: BurritoFacts,
+  choice: CatalogChoice | undefined,
+  contents = true,
+): BurritoCheck {
+  const report = validateFacts(facts, { rows: packRows, contents });
   if (report.kind === 'ignored') {
     return { ok: false, code: 'pack.unknown-flavor' };
   }
@@ -80,8 +73,8 @@ export function checkBurrito(files: BurritoFiles, choice: CatalogChoice | undefi
   if (!eventSafe(provenance)) {
     return { ok: false, code: 'pack.no-provenance' };
   }
-  return {
-    ok: true,
-    burrito: { files: listedOnly(files, metadata), row, provenance },
-  };
+  const listed = Object.keys(metadata.ingredients);
+  const bytes =
+    (facts.metadata?.byteLength ?? 0) + listed.reduce((sum, key) => sum + (facts.fact(key)?.size ?? 0), 0);
+  return { ok: true, burrito: { row, provenance, listed, bytes } };
 }

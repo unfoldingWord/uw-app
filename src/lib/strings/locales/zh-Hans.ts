@@ -406,7 +406,6 @@ export const zhHans: LocaleTable = {
   'failure.kernel.not-owned': '应用阻止了一项它不该做的更改。请分享诊断信息，以便有人帮助你。',
   'failure.kernel.observer-failed': '应用的一部分没有完成更新。请分享诊断信息，以便有人帮助你。',
   'failure.catalog.invalid-response': '资料库列表的格式应用无法读取。请稍后重试。',
-  'failure.catalog.superseded': '更新的资料库列表已先到达，无需其他操作。',
   'failure.pack.not-found': '这项资源已不再发布。请稍后检查更新。',
   'failure.pack.no-space': '空间不足，无法放下这个资源包。请移除另一个资源包后重试。',
   'failure.pack.checksum-mismatch': '下载的内容不完整。请重试。',

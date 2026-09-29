@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { matchQuery } from './fulltext';
+import { matchTerms, tokenizerFor } from './fulltext';
 import { fold, referenceQuery } from './search';
 import { isSafeIngredientKey } from './source';
 
@@ -28,7 +28,15 @@ describe('search input', () => {
   });
 
   it('quotes every word so that query syntax never reaches the index', () => {
-    expect(matchQuery('famine OR "land')).toBe('"famine" "OR" "land"');
-    expect(matchQuery('  *  ')).toBeUndefined();
+    expect(matchTerms('famine OR "land')).toEqual(['famine', 'OR', 'land']);
+    expect(matchTerms('  *  ')).toEqual([]);
+  });
+
+  it('indexes scripts written without spaces by trigrams', () => {
+    expect(tokenizerFor('zh')).toBe('trigram');
+    expect(tokenizerFor('zh-tw')).toBe('trigram');
+    expect(tokenizerFor('en')).toBe('words');
+    expect(tokenizerFor('qzz', ['神爱世人，甚至将他的独生子赐给他们'.repeat(20)])).toBe('trigram');
+    expect(tokenizerFor('qzz', ['Dios amó tanto al mundo '.repeat(20)])).toBe('words');
   });
 });

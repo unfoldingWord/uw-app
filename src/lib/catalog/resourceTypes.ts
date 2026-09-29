@@ -1,4 +1,4 @@
-import { resourceCode, simplifiedTextCodes } from '../corpus/layout';
+import { readingOfText } from '../corpus/readings';
 import type { CatalogRelease } from './types';
 
 export const resourceTypes = [
@@ -21,17 +21,19 @@ export const resourceTypes = [
 export type ResourceType = (typeof resourceTypes)[number];
 
 export function resourceTypeOf(
-  release: Pick<CatalogRelease, 'row' | 'kind' | 'resource' | 'language'>,
+  release: Pick<CatalogRelease, 'row' | 'kind' | 'resource' | 'language' | 'title'>,
 ): ResourceType | undefined {
-  const code = resourceCode(release.resource, release.language);
   switch (release.row) {
     case 'text':
       if (release.kind === 'original') {
         return release.language === 'hbo' ? 'hebrew' : 'greek';
       }
-      return simplifiedTextCodes.includes(code) ? 'simplified' : 'literal';
+      return readingOfText(release.resource, release.language, {
+        abbreviation: {},
+        name: { en: release.title },
+      });
     case 'articles':
-      return code === 'ta' ? 'academy' : 'words';
+      return release.resource.toLowerCase().split('_').at(-1) === 'ta' ? 'academy' : 'words';
     case undefined:
       return undefined;
     default:

@@ -7,13 +7,12 @@ import {
   imageKeys,
   isAcademy,
   movementKeys,
-  resourceCode,
-  simplifiedTextCodes,
   storyHelpsFlavors,
   storyHelpsKey,
   storyKeys,
   wordKeys,
 } from './layout';
+import { readingOfText } from './readings';
 import { storyTitle } from './stories';
 import { provenanceOf, type BurritoReader } from './source';
 import type { Entry, TitleRow } from './tables';
@@ -24,12 +23,11 @@ export type Analysis = { readonly entry: Entry; readonly titles: readonly TitleR
 
 const originalPackPrefix = originalPackId('');
 
-function textKind(pack: string, burrito: CorpusBurrito): CorpusKind {
+function textKind(pack: string, burrito: CorpusBurrito, reader: BurritoReader): CorpusKind {
   if (pack.startsWith(originalPackPrefix)) {
     return 'original';
   }
-  const code = resourceCode(burrito.resource, burrito.language);
-  return simplifiedTextCodes.includes(code) ? 'simplified' : 'literal';
+  return readingOfText(burrito.resource, burrito.language, reader.metadata.identification);
 }
 
 function storyHelpsKind(reader: BurritoReader): CorpusKind {
@@ -43,7 +41,7 @@ function storyHelpsKind(reader: BurritoReader): CorpusKind {
 export function kindOf(pack: string, burrito: CorpusBurrito, reader: BurritoReader): CorpusKind {
   switch (burrito.row) {
     case 'text':
-      return textKind(pack, burrito);
+      return textKind(pack, burrito, reader);
     case 'storyHelps':
       return storyHelpsKind(reader);
     case 'articles':

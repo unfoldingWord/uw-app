@@ -458,8 +458,6 @@ export const es419: LocaleTable = {
     'Una parte de la aplicación no terminó de actualizarse. Comparte el diagnóstico para que alguien te ayude.',
   'failure.catalog.invalid-response':
     'La lista de la biblioteca llegó en una forma que la aplicación no puede leer. Intenta de nuevo más tarde.',
-  'failure.catalog.superseded':
-    'Primero llegó una lista más reciente de la biblioteca, así que no hace falta nada más.',
   'failure.pack.not-found': 'Este recurso ya no está publicado. Busca actualizaciones más tarde.',
   'failure.pack.no-space':
     'No hay espacio suficiente para este paquete. Quita otro paquete e intenta de nuevo.',

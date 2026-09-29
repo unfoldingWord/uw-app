@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { languagePackId } from '@lib/domain/pack';
+import { burritoRootOf } from '../install';
 import { scenario } from '../scenario';
 
 const textRows = [
@@ -53,8 +54,8 @@ export default scenario(
     assert.ok(types.filter((type) => type === 'PackInstallProgressed').length <= 10);
 
     const tree = phone.adapters.files.tree();
-    assert.ok(tree.includes('packs/language/qaa/unfoldingWord/qaa_ult/metadata.json'));
-    assert.ok(tree.includes('packs/language/qaa/unfoldingWord/qaa_tn/ingredients/tn_RUT.tsv'));
+    assert.ok(tree.includes(`${burritoRootOf(phone, 'qaa_ult')}/metadata.json`));
+    assert.ok(tree.includes(`${burritoRootOf(phone, 'qaa_tn')}/ingredients/tn_RUT.tsv`));
     assert.ok(
       !tree.some((path) => /README|\.github|\.gitignore/.test(path)),
       'only the burrito is kept from the archive',

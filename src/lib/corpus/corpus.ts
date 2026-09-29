@@ -2,7 +2,8 @@ import { failureCodeOf } from '../domain/failures';
 import { formatReference, type Reference } from '../domain/reference';
 import type { JsonValue } from '../json';
 import { defineModule } from '../module';
-import { buildIndex, estimateIndex, searchIndex } from './fulltext';
+import { estimateIndex, indexedKinds, searchIndex } from './fulltext';
+import { createIndexing } from './indexing';
 import { analyze, type Analysis } from './ingest';
 import { createLibrary, type Library } from './library';
 import { contentsOf } from './contents';
@@ -11,15 +12,9 @@ import { assemblePassage } from './passage';
 import { assembleArticle, assembleMovements, assembleStory } from './reading';
 import { canonical, referenceQuery, titleHits } from './search';
 import { openBurrito } from './source';
-import {
-  clearIndex,
-  corpusTables,
-  loadEntries,
-  loadIndexes,
-  loadTitles,
-  removeRoot,
-  saveEntry,
-} from './tables';
+import { readInstalledPacks } from '../packs/store';
+import type { InstalledPack } from '../packs/types';
+import { corpusTables, loadEntries, loadTitles, removeRoot, saveEntry, type Entry } from './tables';
 import type {
   Article,
   Contents,
@@ -50,8 +45,10 @@ export type CorpusApi = {
   movementStories(language: string): Promise<readonly number[]>;
   search(query: string, language: string): Promise<SearchResults>;
   index(language: string): IndexStatus;
+  indexWanted(language: string): boolean;
   indexCost(language: string): Promise<IndexCost>;
   reindex(language: string): Promise<IndexStatus>;
+  dropIndex(language: string): Promise<void>;
   fullText(query: string, language: string): Promise<FullTextHit[]>;
 };
 
@@ -99,6 +96,22 @@ function contentLanguages(library: Library): string[] {
   ].sort();
 }
 
+function sourceOf(pack: InstalledPack): CorpusSource {
+  return {
+    pack: pack.pack,
+    burritos: pack.burritos.map((burrito) => ({
+      root: burrito.root,
+      row: burrito.row,
+      publisher: burrito.provenance.publisher,
+      resource: burrito.provenance.resource,
+      language: burrito.provenance.language,
+      tag: burrito.provenance.tag,
+      commit: burrito.provenance.commit,
+      bytes: burrito.bytes,
+    })),
+  };
+}
+
 function unreadable(root: string): Error {
   return Object.assign(new Error(`${root} is not a readable burrito with a licence`), {
     code: 'corpus.unreadable' as const,
@@ -106,11 +119,21 @@ function unreadable(root: string): Error {
 }
 
 export const corpusModule = defineModule<CorpusApi>({
-  events: ['PassageOpened', 'ArticleOpened', 'StoryOpened', 'SearchRun', 'IndexStarted', 'IndexBuilt'],
+  events: [
+    'PassageOpened',
+    'ArticleOpened',
+    'StoryOpened',
+    'SearchRun',
+    'IndexStarted',
+    'IndexBuilt',
+    'IndexDropped',
+  ],
   owns: { tables: corpusTables, directories: [], keys: [] },
   create(context) {
     const { files, db } = context.ports;
     const library = createLibrary(files);
+    const indexing = createIndexing({ library, db, emit: context.emit });
+    const reading = new Set<Promise<unknown>>();
     let work: Promise<unknown> = Promise.resolve();
 
     const serial = <T>(task: () => Promise<T>): Promise<T> => {
@@ -119,147 +142,193 @@ export const corpusModule = defineModule<CorpusApi>({
       return result;
     };
 
-    const settled = (): Promise<unknown> => work;
-
-    const forgetIndex = async (languages: readonly string[]): Promise<void> => {
-      for (const language of new Set(languages)) {
-        if (library.index(language).built) {
-          await db.transaction((session) => clearIndex(session, language));
-          library.setIndex({ language, built: false });
-        }
-      }
+    const read = <T>(task: () => Promise<T>): Promise<T> => {
+      const running = task();
+      const tracked = running.then(
+        () => undefined,
+        () => undefined,
+      );
+      reading.add(tracked);
+      void tracked.then(() => reading.delete(tracked));
+      return running;
     };
 
+    const readsSettled = async (): Promise<void> => {
+      await Promise.all([...reading]);
+    };
+
+    const entriesOf = (pack: string): readonly Entry[] =>
+      library.all().filter((entry) => entry.pack === pack);
+
+    const indexedLanguages = (entries: readonly Entry[]): string[] =>
+      entries.filter((entry) => indexedKinds.includes(entry.kind)).map((entry) => entry.language);
+
     const dropPack = async (pack: string): Promise<void> => {
-      const entries = library.all().filter((entry) => entry.pack === pack);
+      const entries = entriesOf(pack);
+      await readsSettled();
       await db.transaction(async (session) => {
         for (const entry of entries) {
           await removeRoot(session, entry.root);
         }
       });
       library.remove(entries.map((entry) => entry.root));
-      await forgetIndex(entries.map((entry) => entry.language));
+      await readsSettled();
+      await indexing.refresh(indexedLanguages(entries));
     };
 
-    const ingest = (source: CorpusSource): Promise<void> =>
-      serial(async () => {
-        try {
-          const analyses: Analysis[] = [];
-          for (const burrito of source.burritos) {
-            const reader = await openBurrito(files, burrito.root);
-            const analysis = reader === undefined ? undefined : await analyze(source.pack, burrito, reader);
-            if (analysis === undefined) {
-              throw unreadable(burrito.root);
-            }
-            analyses.push(analysis);
-          }
-          await dropPack(source.pack);
-          await db.transaction(async (session) => {
-            for (const analysis of analyses) {
-              await saveEntry(session, analysis.entry, analysis.titles);
-            }
-          });
-          library.put(
-            analyses.map((analysis) => analysis.entry),
-            analyses.flatMap((analysis) => analysis.titles),
-          );
-          await forgetIndex(analyses.map((analysis) => analysis.entry.language));
-        } catch (error) {
-          const code = failureCodeOf(error);
-          await context.emit({
-            type: 'Failure',
-            payload: {
-              code: code === 'unexpected' ? 'corpus.unreadable' : code,
-              context: { pack: source.pack },
-            },
-          });
+    const analyses = async (source: CorpusSource, known: ReadonlySet<string>): Promise<Analysis[]> => {
+      const found: Analysis[] = [];
+      for (const burrito of source.burritos.filter((item) => !known.has(item.root))) {
+        const reader = await openBurrito(files, burrito.root);
+        const analysis = reader === undefined ? undefined : await analyze(source.pack, burrito, reader);
+        if (analysis === undefined) {
+          throw unreadable(burrito.root);
+        }
+        found.push(analysis);
+      }
+      return found;
+    };
+
+    const replacePack = async (source: CorpusSource): Promise<void> => {
+      const previous = entriesOf(source.pack);
+      const wanted = new Set(source.burritos.map((burrito) => burrito.root));
+      const known = new Set(previous.map((entry) => entry.root).filter((root) => wanted.has(root)));
+      const found = await analyses(source, known);
+      const gone = previous.filter((entry) => !wanted.has(entry.root));
+      await readsSettled();
+      await db.transaction(async (session) => {
+        for (const entry of gone) {
+          await removeRoot(session, entry.root);
+        }
+        for (const analysis of found) {
+          await saveEntry(session, analysis.entry, analysis.titles);
         }
       });
+      library.remove(gone.map((entry) => entry.root));
+      library.put(
+        found.map((analysis) => analysis.entry),
+        found.flatMap((analysis) => analysis.titles),
+      );
+      await readsSettled();
+      await indexing.refresh(indexedLanguages([...gone, ...found.map((analysis) => analysis.entry)]));
+    };
 
-    const reindex = (language: string): Promise<IndexStatus> =>
-      serial(async () => {
-        await context.emit({ type: 'IndexStarted', payload: { language } });
-        const row = await buildIndex(library, db, language);
-        library.setIndex(row);
+    const ingestNow = async (source: CorpusSource): Promise<void> => {
+      try {
+        await replacePack(source);
+      } catch (error) {
+        const code = failureCodeOf(error);
         await context.emit({
-          type: 'IndexBuilt',
-          payload: { language, entries: row.entries, bytes: row.bytes },
+          type: 'Failure',
+          payload: {
+            code: code === 'unexpected' ? 'corpus.unreadable' : code,
+            context: { pack: source.pack },
+          },
         });
-        return library.index(language);
-      });
+        try {
+          await dropPack(source.pack);
+        } catch {
+          return;
+        }
+      }
+    };
+
+    const ingest = (source: CorpusSource): Promise<void> => serial(() => ingestNow(source));
+
+    const reconcile = async (): Promise<void> => {
+      let installed: readonly InstalledPack[];
+      try {
+        installed = await readInstalledPacks(db);
+      } catch {
+        return;
+      }
+      const present = new Set(installed.map((pack) => pack.pack));
+      for (const pack of new Set(library.all().map((entry) => entry.pack))) {
+        if (!present.has(pack)) {
+          await dropPack(pack);
+        }
+      }
+      for (const pack of installed) {
+        const roots = new Set(entriesOf(pack.pack).map((entry) => entry.root));
+        const same =
+          roots.size === pack.burritos.length && pack.burritos.every((burrito) => roots.has(burrito.root));
+        if (!same) {
+          await ingestNow(sourceOf(pack));
+        }
+      }
+    };
 
     const api: CorpusApi = {
       ingest,
       drop: (pack) => serial(() => dropPack(pack)),
       languages: () => contentLanguages(library),
       summary: (language) => summarize(library, language),
-      contents: async (language) => {
-        await settled();
-        return contentsOf(library, language);
-      },
-      passage: async (reference, options) => {
-        await settled();
-        const passage = await assemblePassage(library, reference, options);
-        if (passage !== undefined) {
-          await context.emit({
-            type: 'PassageOpened',
-            payload: { reference: formatReference(reference), language: options.language },
-          });
-        }
-        return passage;
-      },
-      article: async (id, language) => {
-        await settled();
-        const article = await assembleArticle(library, id, language);
-        if (article !== undefined) {
-          await context.emit({ type: 'ArticleOpened', payload: { article: id, language } });
-        }
-        return article;
-      },
-      story: async (number, language) => {
-        await settled();
-        const story = await assembleStory(library, number, language);
-        if (story !== undefined) {
-          await context.emit({ type: 'StoryOpened', payload: { story: number, language } });
-        }
-        return story;
-      },
-      movements: async (story, language) => {
-        await settled();
-        return assembleMovements(library, story, language);
-      },
-      movementStories: async (language) => {
-        await settled();
-        const [entry] = library.of(language, ['movements']);
-        return entry === undefined ? [] : movementStories(library, entry);
-      },
-      search: async (query, language) => {
-        await settled();
-        const reference = referenceQuery(query);
-        if (reference !== undefined) {
-          const available = (await assemblePassage(library, reference, { language })) !== undefined;
+      contents: (language) => read(() => contentsOf(library, language)),
+      passage: (reference, options) =>
+        read(async () => {
+          const passage = await assemblePassage(library, reference, options);
+          if (passage !== undefined) {
+            await context.emit({
+              type: 'PassageOpened',
+              payload: { reference: formatReference(reference), language: options.language },
+            });
+          }
+          return passage;
+        }),
+      article: (id, language) =>
+        read(async () => {
+          const article = await assembleArticle(library, id, language);
+          if (article !== undefined) {
+            await context.emit({ type: 'ArticleOpened', payload: { article: id, language } });
+          }
+          return article;
+        }),
+      story: (number, language) =>
+        read(async () => {
+          const story = await assembleStory(library, number, language);
+          if (story !== undefined) {
+            await context.emit({ type: 'StoryOpened', payload: { story: number, language } });
+          }
+          return story;
+        }),
+      movements: (story, language) => read(() => assembleMovements(library, story, language)),
+      movementStories: (language) =>
+        read(async () => {
+          const [entry] = library.of(language, ['movements']);
+          return entry === undefined ? [] : movementStories(library, entry);
+        }),
+      search: (query, language) =>
+        read(async () => {
+          const reference = referenceQuery(query);
+          if (reference !== undefined) {
+            const available = (await assemblePassage(library, reference, { language })) !== undefined;
+            await context.emit({
+              type: 'SearchRun',
+              payload: { kind: 'reference', language, hits: available ? 1 : 0 },
+            });
+            return { reference: { reference: canonical(reference), available }, titles: [] };
+          }
+          const titles = titleHits(library, query, language);
           await context.emit({
             type: 'SearchRun',
-            payload: { kind: 'reference', language, hits: available ? 1 : 0 },
+            payload: { kind: 'title', language, hits: titles.length },
           });
-          return { reference: { reference: canonical(reference), available }, titles: [] };
-        }
-        const titles = titleHits(library, query, language);
-        await context.emit({ type: 'SearchRun', payload: { kind: 'title', language, hits: titles.length } });
-        return { titles };
-      },
+          return { titles };
+        }),
       index: (language) => library.index(language),
-      indexCost: async (language) => {
-        await settled();
-        return estimateIndex(library, language);
-      },
-      reindex,
-      fullText: async (query, language) => {
-        await settled();
-        const hits = await searchIndex(library, db, query, language);
-        await context.emit({ type: 'SearchRun', payload: { kind: 'fulltext', language, hits: hits.length } });
-        return hits;
-      },
+      indexWanted: (language) => indexing.wanted(language),
+      indexCost: async (language) => estimateIndex(library, language),
+      reindex: (language) => indexing.reindex(language),
+      dropIndex: (language) => indexing.drop(language),
+      fullText: (query, language) =>
+        read(async () => {
+          const hits = await searchIndex(library, db, query, language);
+          await context.emit({
+            type: 'SearchRun',
+            payload: { kind: 'fulltext', language, hits: hits.length },
+          });
+          return hits;
+        }),
     };
 
     return {
@@ -267,9 +336,8 @@ export const corpusModule = defineModule<CorpusApi>({
       async start() {
         const entries = await loadEntries(db);
         library.put(entries, await loadTitles(db));
-        for (const row of await loadIndexes(db)) {
-          library.setIndex(row);
-        }
+        await indexing.start();
+        await reconcile();
       },
       observe(entry) {
         if (entry.type === 'PackInstalled') {
@@ -291,7 +359,10 @@ export const corpusModule = defineModule<CorpusApi>({
       },
       redo: {
         IndexStarted: async (event) => {
-          await reindex(event.payload.language);
+          await indexing.reindex(event.payload.language);
+        },
+        IndexDropped: async (event) => {
+          await indexing.drop(event.payload.language);
         },
       },
     };

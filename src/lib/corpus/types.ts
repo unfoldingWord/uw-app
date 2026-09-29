@@ -88,16 +88,20 @@ export type WordSpan = {
   readonly tokens: readonly number[];
 };
 
+export type ChapterTitle = { readonly chapter: number; readonly text: string };
+
 export type PassageText = Sourced & {
   readonly reading: Reading;
   readonly book: string;
   readonly bookName: string;
   readonly direction: Direction;
+  readonly titles: readonly ChapterTitle[];
   readonly verses: readonly Verse[];
 };
 
 export type Note = Sourced & {
   readonly id: string;
+  readonly study: boolean;
   readonly reference: string;
   readonly quote: string;
   readonly occurrence: number;
@@ -118,6 +122,7 @@ export type WordLink = Sourced & {
 
 export type Question = Sourced & {
   readonly id: string;
+  readonly study: boolean;
   readonly reference: string;
   readonly question: string;
   readonly response: string;
@@ -165,6 +170,7 @@ export type Frame = Sourced & {
 
 export type StoryNote = Sourced & {
   readonly id: string;
+  readonly study: boolean;
   readonly frame: number;
   readonly quote: string;
   readonly blocks: readonly Block[];
@@ -172,6 +178,7 @@ export type StoryNote = Sourced & {
 
 export type StoryQuestion = Sourced & {
   readonly id: string;
+  readonly study: boolean;
   readonly frame: number;
   readonly question: string;
   readonly response: string;
