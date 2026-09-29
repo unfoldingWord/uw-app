@@ -46,7 +46,7 @@ export const home = {
   'home.saved.story': 'Open Bible Stories · {language}',
   'home.new.title': 'What is new',
   'home.new.one': '{resource} has a newer release',
-  'home.new.detail': '{newVersion} replaces {oldVersion}, {size}. Update when you are ready.',
+  'home.new.detail': '{newVersion} replaces {oldVersion}, {size}. Choose when to update.',
   'home.new.many': {
     one: '{count} resource has a newer release',
     other: '{count} resources have a newer release',

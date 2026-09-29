@@ -9,7 +9,7 @@ export const failures = {
   'failure.files.no-space': 'This phone is out of space. Remove a pack, then try again.',
   'failure.files.io': 'The phone could not save this. Try again.',
   'failure.db.migration-failed':
-    'The app could not update its records. Share diagnostics so someone can help.',
+    'The app could not bring its records up to date. Share diagnostics so someone can help.',
   'failure.db.io': 'The app could not read its records. Try again.',
   'failure.kv.io': 'This setting could not be saved. Try again.',
   'failure.journal.persist-failed': 'The diagnostics record could not be kept. Everything else still works.',
