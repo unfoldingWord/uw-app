@@ -270,7 +270,7 @@ describe('what a module is handed (docs/replay.md rules 4 and 5, AGENTS.md rule 
   });
 });
 
-describe('ports for large files and intake (SH-1, SH-3)', () => {
+describe('ports for large files and intake (SH-3)', () => {
   it('reads a range, appends, and adopts a file the system handed to the app', async () => {
     const { files } = device().adapters;
     await files.mkdir('inbox');

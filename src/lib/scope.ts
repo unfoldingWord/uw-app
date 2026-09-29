@@ -49,19 +49,20 @@ const statementKinds = /^\s*(SELECT|WITH|INSERT|REPLACE|UPDATE|DELETE|CREATE|DRO
 
 const readOnly = /^\s*SELECT\b/i;
 
-export function writeTargets(sql: string): readonly string[] | undefined {
-  if (!statementKinds.test(sql)) {
-    return undefined;
-  }
+export function tablesWrittenIn(text: string): readonly string[] {
   const targets = new Set<string>();
   for (const pattern of writeTargetPatterns) {
-    for (const match of sql.matchAll(pattern)) {
+    for (const match of text.matchAll(pattern)) {
       if (match[1] !== undefined) {
         targets.add(match[1]);
       }
     }
   }
   return [...targets];
+}
+
+export function writeTargets(sql: string): readonly string[] | undefined {
+  return statementKinds.test(sql) ? tablesWrittenIn(sql) : undefined;
 }
 
 function guardStatement(scope: Scope, sql: string): void {

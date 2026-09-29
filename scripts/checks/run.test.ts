@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { pendingCheck, type Check } from './check.ts';
+import { pendingUntil, type Check } from './check.ts';
 import { runChecks } from './run.ts';
 
 const passing: Check = {
@@ -15,9 +15,16 @@ const failing: Check = {
 
 describe('runChecks', () => {
   it('passes when every check passes or is pending', async () => {
-    const report = await runChecks([passing, pendingCheck('later', 'arrives later', 'T9')]);
+    const report = await runChecks([passing, pendingUntil('later', 'arrives later', 'src/lib/later', 'T9')]);
     expect(report.passed).toBe(true);
-    expect(report.lines).toContain('pending  later: arrives later. Awaiting T9');
+    expect(report.lines).toContain(
+      'pending  later: arrives later. Awaiting T9; fails as soon as src/lib/later exists',
+    );
+  });
+
+  it('fails a pending check once its subject exists', async () => {
+    const report = await runChecks([pendingUntil('lib', 'the lib exists', 'src/lib', 'now')]);
+    expect(report.passed).toBe(false);
   });
 
   it('fails when any check fails and lists its findings', async () => {

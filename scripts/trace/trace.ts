@@ -27,3 +27,14 @@ export function coverage(
 export function unproven(rows: Coverage[]): string[] {
   return rows.filter((row) => row.scenarios.length === 0 && row.tests.length === 0).map((row) => row.id);
 }
+
+export function withoutScenario(rows: Coverage[]): string[] {
+  return rows.filter((row) => row.scenarios.length === 0).map((row) => row.id);
+}
+
+export function strayScenarios(ids: string[], scenarioFiles: string[]): string[] {
+  return scenarioFiles.filter((file) => {
+    const id = scenarioName.exec(file)?.[1];
+    return id === undefined || !ids.includes(id);
+  });
+}

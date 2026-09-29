@@ -1,7 +1,8 @@
-import { pendingCheck } from './check.ts';
+import { pendingUntil } from './check.ts';
 
-export default pendingCheck(
+export default pendingUntil(
   'provenance',
   'Every content value rendered from every fixture carries provenance with its licence',
-  'T3 (fixture burritos) and T5 (Corpus)',
+  'src/lib/corpus',
+  'T5 (Corpus)',
 );

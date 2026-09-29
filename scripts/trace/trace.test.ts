@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { coverage, mustRequirementIds, unproven } from './trace.ts';
+import { coverage, mustRequirementIds, strayScenarios, unproven, withoutScenario } from './trace.ts';
 
 const prd = [
   '| ID | Requirement | Priority |',
@@ -29,5 +29,21 @@ describe('trace', () => {
   it('does not mistake a longer ID for a shorter one', () => {
     const rows = coverage(['ST-1'], ['ST-10.bookmarks.ts'], [{ path: 'a.test.ts', text: 'ST-10' }]);
     expect(unproven(rows)).toEqual(['ST-1']);
+  });
+
+  it('asks DX-4 for a scenario, counting a test only as secondary proof', () => {
+    const rows = coverage(
+      ['ST-3', 'SH-1'],
+      ['SH-1.transfer.ts'],
+      [{ path: 'src/lib/corpus/corpus.test.ts', text: 'ST-3' }],
+    );
+    expect(unproven(rows)).toEqual([]);
+    expect(withoutScenario(rows)).toEqual(['ST-3']);
+  });
+
+  it('names a scenario whose ID is not a Must requirement', () => {
+    expect(
+      strayScenarios(['ST-3'], ['ST-3.toggle.ts', 'ST-33.typo.ts', 'XX-1.later.ts', 'helpers.ts']),
+    ).toEqual(['ST-33.typo.ts', 'XX-1.later.ts', 'helpers.ts']);
   });
 });
