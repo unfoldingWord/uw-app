@@ -1,6 +1,7 @@
 import { compareText } from '../order';
-import { createArchiveReader, readArchive } from '../burrito/archive';
-import type { BurritoFiles } from '../burrito/files';
+import { metadataPath } from '../burrito/files';
+import { unpackArchive, unpackedBytes } from '../burrito/unpack';
+import type { BurritoFacts } from '../burrito/validate';
 import { failureCodeOf, type FailureCode } from '../domain/failures';
 import {
   packDirectory,
@@ -17,11 +18,17 @@ import type { JournalEntry } from '../journal/entry';
 import type { EventDraft } from '../journal/journal';
 import type { ModulePorts } from '../module';
 import type { HttpDownloaded } from '../ports';
-import { validate } from '../burrito/validate';
-import { checkBurrito, packRows, type CheckedBurrito } from './burrito';
+import { checkBurrito, type CheckedBurrito } from './burrito';
+import {
+  burritoRoot,
+  collectGarbage,
+  installDirectory,
+  pruneEmpty,
+  stagingDirectory,
+  stagingPath,
+} from './layout';
 import type { CatalogChoice, PackPlan, PackSource } from './source';
-import { stagingDirectory, stagingPath, swapIn } from './swap';
-import { bytesOf, copyBurrito, readBurrito, removeIfPresent, writeBurrito } from './tree';
+import { hashOnDisk, parentOf, removeIfPresent } from './tree';
 import type { InstalledBurrito, InstalledPack, InstallOutcome, InstallProgress } from './types';
 import { writeInstalledPack } from './store';
 
@@ -29,14 +36,14 @@ export const archiveTimeoutMs = 120_000;
 
 const reportedSteps = 10;
 
-type Opened = { ok: true; files: BurritoFiles } | { ok: false; code: FailureCode };
+type Fetched = { ok: true; path: string; temporary: boolean } | { ok: false; code: FailureCode };
 
 type Offer = {
   ref: ReleaseRef;
   row: ResourceRow | undefined;
   bytes: number | undefined;
   choice: CatalogChoice | undefined;
-  open(stage: string, index: number, onBytes: (bytes: number) => void): Promise<Opened>;
+  fetch(stage: string, index: number, onBytes: (bytes: number) => void): Promise<Fetched>;
 };
 
 export type Resolved = { kind: PackSourceKind; offers: readonly Offer[]; announce: boolean };
@@ -74,64 +81,42 @@ function downloadProblem(outcome: HttpDownloaded): FailureCode | undefined {
   }
 }
 
-export const archiveChunkBytes = 1024 * 1024;
-
-function opened(archive: Uint8Array): Opened {
-  const read = readArchive(archive);
-  return read.ok ? { ok: true, files: read.files } : { ok: false, code: 'pack.invalid-burrito' };
-}
-
-async function openedFromDisk(files: ModulePorts['files'], path: string): Promise<Opened> {
-  const size = await files.size(path);
-  const reader = createArchiveReader();
-  let offset = 0;
-  do {
-    const chunk = await files.readRange(path, offset, archiveChunkBytes);
-    offset += archiveChunkBytes;
-    reader.push(chunk, offset >= size);
-  } while (offset < size);
-  const read = reader.finish();
-  return read.ok ? { ok: true, files: read.files } : { ok: false, code: 'pack.invalid-burrito' };
-}
-
 export function catalogOffer(ports: ModulePorts, choice: CatalogChoice): Offer {
   return {
     ref: refOf(choice),
     row: choice.row,
     bytes: choice.bytes,
     choice,
-    async open(stage, index, onBytes) {
-      const to = `${stage}.archive-${index}.zip`;
-      try {
-        const outcome = await ports.http.download({
-          url: archiveUrlOf(choice),
-          to,
-          timeoutMs: archiveTimeoutMs,
-          onProgress: (received) => onBytes(received),
-        });
-        const problem = downloadProblem(outcome);
-        if (problem !== undefined) {
-          return { ok: false, code: problem };
-        }
-        return await openedFromDisk(ports.files, to);
-      } finally {
-        await removeIfPresent(ports.files, to);
+    async fetch(stage, index, onBytes) {
+      const url = archiveUrlOf(choice);
+      const path = `${stage}/${index}.zip`;
+      const outcome = await ports.http.download({
+        url,
+        to: path,
+        timeoutMs: archiveTimeoutMs,
+        onProgress: (received) => onBytes(received),
+      });
+      const problem = downloadProblem(outcome);
+      if (problem !== undefined) {
+        await removeIfPresent(ports.files, path);
+        return { ok: false, code: problem };
       }
+      return { ok: true, path, temporary: true };
     },
   };
 }
 
 async function fileOffer(ports: ModulePorts, path: string): Promise<Resolution> {
-  let read: Opened;
+  let peeked: Awaited<ReturnType<typeof unpackArchive>>;
   try {
-    read = await openedFromDisk(ports.files, path);
+    peeked = await unpackArchive(ports.files, path);
   } catch (error) {
     return { ok: false, code: failureCodeOf(error) };
   }
-  if (!read.ok) {
-    return read;
+  if (!peeked.ok) {
+    return { ok: false, code: 'pack.invalid-burrito' };
   }
-  const checked = checkBurrito(read.files, undefined);
+  const checked = checkBurrito(peeked.facts, undefined);
   if (!checked.ok) {
     return checked;
   }
@@ -139,9 +124,9 @@ async function fileOffer(ports: ModulePorts, path: string): Promise<Resolution> 
   const offer: Offer = {
     ref: refOf(burrito.provenance),
     row: burrito.row,
-    bytes: bytesOf(burrito.files),
+    bytes: burrito.bytes,
     choice: undefined,
-    open: async () => ({ ok: true, files: read.files }),
+    fetch: async () => ({ ok: true, path, temporary: false }),
   };
   return { ok: true, resolved: { kind: 'file', offers: [offer], announce: true } };
 }
@@ -164,9 +149,17 @@ export async function resolveSource(ports: ModulePorts, source: PackSource): Pro
         row: burrito.row,
         bytes: burrito.bytes,
         choice: undefined,
-        async open(_stage, _index, onBytes) {
+        async fetch(stage, index, onBytes) {
           const receipt = await session.receive(refOf(burrito), onBytes);
-          return receipt.ok ? opened(receipt.archive) : receipt;
+          if (!receipt.ok) {
+            return receipt;
+          }
+          if ('path' in receipt) {
+            return { ok: true, path: receipt.path, temporary: false };
+          }
+          const path = `${stage}/${index}.zip`;
+          await ports.files.writeBytes(path, receipt.archive);
+          return { ok: true, path, temporary: true };
         },
       }));
       return { ok: true, resolved: { kind: 'peer', offers, announce: false } };
@@ -242,6 +235,8 @@ export type Installer = {
   prepare(resolved: Resolved, plan: PackPlan): Promise<InstallOutcome>;
 };
 
+type Written = { pack: InstalledPack; roots: readonly string[] };
+
 export function createInstaller(context: InstallerContext): Installer {
   const { ports } = context;
   const { files } = ports;
@@ -257,21 +252,67 @@ export function createInstaller(context: InstallerContext): Installer {
     }
   }
 
-  async function verify(stage: string, burritos: readonly InstalledBurrito[]): Promise<void> {
-    for (const burrito of burritos) {
-      const { publisher, resource } = burrito.provenance;
-      const report = validate(await readBurrito(files, `${stage}/${publisher}/${resource}`), {
-        rows: packRows,
-      });
-      if (!report.ok) {
+  async function verifyOnDisk(
+    directory: string,
+    burrito: CheckedBurrito,
+    facts: BurritoFacts,
+    written: readonly string[],
+  ): Promise<void> {
+    const listed = new Set([metadataPath, ...burrito.listed]);
+    for (const path of written) {
+      if (!listed.has(path)) {
+        await files.remove(`${directory}/${path}`);
+      }
+    }
+    for (const key of burrito.listed) {
+      const expected = facts.fact(key);
+      const actual = await hashOnDisk(files, `${directory}/${key}`);
+      if (expected === undefined || actual?.md5 !== expected.md5 || actual.size !== expected.size) {
         throw new InstallFailure('pack.checksum-mismatch');
       }
     }
   }
 
-  async function run(install: string, resolved: Resolved, offers: readonly Offer[], target: Target) {
+  async function place(
+    install: string,
+    offer: Offer,
+    target: Target,
+    fetched: { path: string; temporary: boolean },
+    index: number,
+    stage: string,
+  ): Promise<InstalledBurrito> {
+    const needed = await unpackedBytes(files, fetched.path);
+    if (needed !== undefined && needed > (await files.freeSpace())) {
+      throw new InstallFailure('pack.no-space');
+    }
+    const unpacked = await unpackArchive(files, fetched.path, { into: `${stage}/${index}` });
+    if (fetched.temporary) {
+      await removeIfPresent(files, fetched.path);
+    }
+    if (!unpacked.ok || unpacked.directory === undefined) {
+      throw new InstallFailure('pack.invalid-burrito');
+    }
+    const checked = checkBurrito(unpacked.facts, offer.choice);
+    if (!checked.ok) {
+      throw new InstallFailure(checked.code);
+    }
+    accept(offer, target, checked.burrito);
+    await verifyOnDisk(unpacked.directory, checked.burrito, unpacked.facts, unpacked.written);
+    const { provenance } = checked.burrito;
+    const root = burritoRoot(target.pack, install, provenance.publisher, provenance.resource);
+    await files.mkdir(parentOf(root));
+    await files.rename(unpacked.directory, root);
+    return { root, row: checked.burrito.row, bytes: checked.burrito.bytes, provenance };
+  }
+
+  async function run(
+    install: string,
+    resolved: Resolved,
+    offers: readonly Offer[],
+    target: Target,
+    placed: string[],
+  ): Promise<Written> {
     const stage = stagingPath(install);
-    const root = packDirectory(target.pack);
     const existing = context.installed().get(target.pack);
     const replaced = new Set(offers.map((offer) => resourceKey(offer.ref)));
     const kept = (existing?.burritos ?? []).filter(
@@ -286,45 +327,25 @@ export function createInstaller(context: InstallerContext): Installer {
     };
     context.progress.set(install, progress);
     const known = offers.every((offer) => offer.bytes !== undefined);
-    const needed =
-      offers.reduce((sum, offer) => sum + (offer.bytes ?? 0), 0) +
-      kept.reduce((sum, item) => sum + item.bytes, 0);
+    const needed = offers.reduce((sum, offer) => sum + (offer.bytes ?? 0), 0);
     if (known && (await files.freeSpace()) < needed) {
       throw new InstallFailure('pack.no-space');
     }
     await files.mkdir(stage);
-    for (const burrito of kept) {
-      const { publisher, resource } = burrito.provenance;
-      await copyBurrito(files, burrito.root, `${stage}/${publisher}/${resource}`);
-    }
     const added: InstalledBurrito[] = [];
     for (const [index, offer] of offers.entries()) {
       const before = progress.bytes;
-      const result = await offer.open(stage, index, (bytes) => {
+      const fetched = await offer.fetch(stage, index, (bytes) => {
         progress.bytes = before + bytes;
       });
-      if (!result.ok) {
-        throw new InstallFailure(result.code);
+      if (!fetched.ok) {
+        throw new InstallFailure(fetched.code);
       }
-      const checked = checkBurrito(result.files, offer.choice);
-      if (!checked.ok) {
-        throw new InstallFailure(checked.code);
-      }
-      accept(offer, target, checked.burrito);
-      const { provenance } = checked.burrito;
-      await writeBurrito(
-        files,
-        `${stage}/${provenance.publisher}/${provenance.resource}`,
-        checked.burrito.files,
-      );
-      added.push({
-        root: `${root}/${provenance.publisher}/${provenance.resource}`,
-        row: checked.burrito.row,
-        bytes: bytesOf(checked.burrito.files),
-        provenance,
-      });
+      const burrito = await place(install, offer, target, fetched, index, stage);
+      placed.push(burrito.root);
+      added.push(burrito);
       progress.resources = index + 1;
-      progress.bytes = before + bytesOf(result.files);
+      progress.bytes = before + burrito.bytes;
       if (crossesStep(progress.resources, progress.total)) {
         await context.emit({
           type: 'PackInstallProgressed',
@@ -335,8 +356,6 @@ export function createInstaller(context: InstallerContext): Installer {
     const burritos = [...kept, ...added].sort((left, right) =>
       compareText(resourceKey(left.provenance), resourceKey(right.provenance)),
     );
-    await verify(stage, burritos);
-    await swapIn(files, stage, target.pack);
     const pack: InstalledPack = {
       pack: target.pack,
       kind: target.kind,
@@ -347,12 +366,12 @@ export function createInstaller(context: InstallerContext): Installer {
     };
     await ports.db.transaction((session) => writeInstalledPack(session, pack));
     context.commit(pack);
-    return pack;
+    return { pack, roots: burritos.map((burrito) => burrito.root) };
   }
 
-  async function clearStaging(): Promise<void> {
+  async function quietly(work: () => Promise<void>): Promise<void> {
     try {
-      await removeIfPresent(files, stagingDirectory);
+      await work();
     } catch {
       return;
     }
@@ -380,31 +399,42 @@ export function createInstaller(context: InstallerContext): Installer {
         releases: offers.map((offer) => offer.ref),
       },
     });
+    const placed: string[] = [];
+    let written: Written;
     try {
-      const pack = await run(install, resolved, offers, target);
-      await context.emit({
-        type: 'PackInstalled',
-        payload: {
-          install,
-          pack: pack.pack,
-          kind: pack.kind,
-          source: pack.source,
-          ...(pack.language === undefined ? {} : { language: pack.language }),
-          resources: pack.burritos.length,
-          bytes: pack.bytes,
-          burritos: pack.burritos.map(descriptorOf),
-        },
-      });
-      await clearStaging();
-      return { ok: true, install, pack };
+      written = await run(install, resolved, offers, target, placed);
     } catch (error) {
       const code = installCodeOf(error);
-      await clearStaging();
+      await quietly(async () => {
+        for (const root of placed) {
+          await removeIfPresent(files, root);
+        }
+        await removeIfPresent(files, installDirectory(target.pack, install));
+        await pruneEmpty(files, packDirectory(target.pack));
+      });
+      await quietly(() => removeIfPresent(files, stagingDirectory));
       await context.emit({ type: 'PackFailed', payload: { install, pack: target.pack, code } });
-      return { ok: false, install, pack: target.pack, code };
-    } finally {
       context.progress.delete(install);
+      return { ok: false, install, pack: target.pack, code };
     }
+    context.progress.delete(install);
+    await quietly(() => removeIfPresent(files, stagingDirectory));
+    const { pack, roots } = written;
+    await context.emit({
+      type: 'PackInstalled',
+      payload: {
+        install,
+        pack: pack.pack,
+        kind: pack.kind,
+        source: pack.source,
+        ...(pack.language === undefined ? {} : { language: pack.language }),
+        resources: pack.burritos.length,
+        bytes: pack.bytes,
+        burritos: pack.burritos.map(descriptorOf),
+      },
+    });
+    await quietly(() => collectGarbage(files, packDirectory(pack.pack), roots));
+    return { ok: true, install, pack };
   }
 
   return { prepare };

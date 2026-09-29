@@ -1,6 +1,11 @@
+import { md5 } from '@noble/hashes/legacy.js';
+import { bytesToHex } from '@noble/hashes/utils.js';
 import { fromUtf8, metadataPath, type BurritoFiles } from '../burrito/files';
 import { isRecord } from '../burrito/metadata';
+import type { IngredientFact } from '../burrito/validate';
 import type { Files } from '../ports';
+
+export const hashReadBytes = 256 * 1024;
 
 export function parentOf(path: string): string {
   const index = path.lastIndexOf('/');
@@ -10,14 +15,6 @@ export function parentOf(path: string): string {
 export async function removeIfPresent(files: Files, path: string): Promise<void> {
   if (await files.exists(path)) {
     await files.remove(path);
-  }
-}
-
-export async function writeBurrito(files: Files, root: string, burrito: BurritoFiles): Promise<void> {
-  for (const [path, bytes] of burrito) {
-    const target = `${root}/${path}`;
-    await files.mkdir(parentOf(target));
-    await files.writeBytes(target, bytes);
   }
 }
 
@@ -47,14 +44,14 @@ export async function readBurrito(files: Files, root: string): Promise<BurritoFi
   return burrito;
 }
 
-export async function copyBurrito(files: Files, from: string, to: string): Promise<void> {
-  await writeBurrito(files, to, await readBurrito(files, from));
-}
-
-export function bytesOf(burrito: BurritoFiles): number {
-  let total = 0;
-  for (const bytes of burrito.values()) {
-    total += bytes.byteLength;
+export async function hashOnDisk(files: Files, path: string): Promise<IngredientFact | undefined> {
+  if (!(await files.exists(path))) {
+    return undefined;
   }
-  return total;
+  const size = await files.size(path);
+  const hash = md5.create();
+  for (let offset = 0; offset < size; offset += hashReadBytes) {
+    hash.update(await files.readRange(path, offset, Math.min(hashReadBytes, size - offset)));
+  }
+  return { size, md5: bytesToHex(hash.digest()) };
 }

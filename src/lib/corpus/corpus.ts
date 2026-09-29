@@ -11,9 +11,12 @@ import { assemblePassage } from './passage';
 import { assembleArticle, assembleMovements, assembleStory } from './reading';
 import { canonical, referenceQuery, titleHits } from './search';
 import { openBurrito } from './source';
+import { readInstalledPacks } from '../packs/store';
+import type { InstalledPack } from '../packs/types';
 import {
   clearIndex,
   corpusTables,
+  type Entry,
   loadEntries,
   loadIndexes,
   loadTitles,
@@ -99,6 +102,22 @@ function contentLanguages(library: Library): string[] {
   ].sort();
 }
 
+function sourceOf(pack: InstalledPack): CorpusSource {
+  return {
+    pack: pack.pack,
+    burritos: pack.burritos.map((burrito) => ({
+      root: burrito.root,
+      row: burrito.row,
+      publisher: burrito.provenance.publisher,
+      resource: burrito.provenance.resource,
+      language: burrito.provenance.language,
+      tag: burrito.provenance.tag,
+      commit: burrito.provenance.commit,
+      bytes: burrito.bytes,
+    })),
+  };
+}
+
 function unreadable(root: string): Error {
   return Object.assign(new Error(`${root} is not a readable burrito with a licence`), {
     code: 'corpus.unreadable' as const,
@@ -130,51 +149,120 @@ export const corpusModule = defineModule<CorpusApi>({
       }
     };
 
+    const reading = new Set<Promise<unknown>>();
+
+    const read = <T>(task: () => Promise<T>): Promise<T> => {
+      const running = task();
+      const tracked = running.then(
+        () => undefined,
+        () => undefined,
+      );
+      reading.add(tracked);
+      void tracked.then(() => reading.delete(tracked));
+      return running;
+    };
+
+    const readsSettled = async (): Promise<void> => {
+      await Promise.all([...reading]);
+    };
+
+    const entriesOf = (pack: string): readonly Entry[] =>
+      library.all().filter((entry) => entry.pack === pack);
+
     const dropPack = async (pack: string): Promise<void> => {
-      const entries = library.all().filter((entry) => entry.pack === pack);
+      const entries = entriesOf(pack);
+      await readsSettled();
       await db.transaction(async (session) => {
         for (const entry of entries) {
           await removeRoot(session, entry.root);
         }
       });
       library.remove(entries.map((entry) => entry.root));
+      await readsSettled();
       await forgetIndex(entries.map((entry) => entry.language));
     };
 
-    const ingest = (source: CorpusSource): Promise<void> =>
-      serial(async () => {
-        try {
-          const analyses: Analysis[] = [];
-          for (const burrito of source.burritos) {
-            const reader = await openBurrito(files, burrito.root);
-            const analysis = reader === undefined ? undefined : await analyze(source.pack, burrito, reader);
-            if (analysis === undefined) {
-              throw unreadable(burrito.root);
-            }
-            analyses.push(analysis);
-          }
-          await dropPack(source.pack);
-          await db.transaction(async (session) => {
-            for (const analysis of analyses) {
-              await saveEntry(session, analysis.entry, analysis.titles);
-            }
-          });
-          library.put(
-            analyses.map((analysis) => analysis.entry),
-            analyses.flatMap((analysis) => analysis.titles),
-          );
-          await forgetIndex(analyses.map((analysis) => analysis.entry.language));
-        } catch (error) {
-          const code = failureCodeOf(error);
-          await context.emit({
-            type: 'Failure',
-            payload: {
-              code: code === 'unexpected' ? 'corpus.unreadable' : code,
-              context: { pack: source.pack },
-            },
-          });
+    const analyses = async (source: CorpusSource, known: ReadonlySet<string>): Promise<Analysis[]> => {
+      const found: Analysis[] = [];
+      for (const burrito of source.burritos.filter((item) => !known.has(item.root))) {
+        const reader = await openBurrito(files, burrito.root);
+        const analysis = reader === undefined ? undefined : await analyze(source.pack, burrito, reader);
+        if (analysis === undefined) {
+          throw unreadable(burrito.root);
+        }
+        found.push(analysis);
+      }
+      return found;
+    };
+
+    const replacePack = async (source: CorpusSource): Promise<void> => {
+      const previous = entriesOf(source.pack);
+      const wanted = new Set(source.burritos.map((burrito) => burrito.root));
+      const known = new Set(previous.map((entry) => entry.root).filter((root) => wanted.has(root)));
+      const found = await analyses(source, known);
+      const gone = previous.filter((entry) => !wanted.has(entry.root));
+      await readsSettled();
+      await db.transaction(async (session) => {
+        for (const entry of gone) {
+          await removeRoot(session, entry.root);
+        }
+        for (const analysis of found) {
+          await saveEntry(session, analysis.entry, analysis.titles);
         }
       });
+      library.remove(gone.map((entry) => entry.root));
+      library.put(
+        found.map((analysis) => analysis.entry),
+        found.flatMap((analysis) => analysis.titles),
+      );
+      await readsSettled();
+      await forgetIndex([...gone, ...found.map((analysis) => analysis.entry)].map((entry) => entry.language));
+    };
+
+    const ingestNow = async (source: CorpusSource): Promise<void> => {
+      try {
+        await replacePack(source);
+      } catch (error) {
+        const code = failureCodeOf(error);
+        await context.emit({
+          type: 'Failure',
+          payload: {
+            code: code === 'unexpected' ? 'corpus.unreadable' : code,
+            context: { pack: source.pack },
+          },
+        });
+        try {
+          await dropPack(source.pack);
+        } catch {
+          return;
+        }
+      }
+    };
+
+    const ingest = (source: CorpusSource): Promise<void> => serial(() => ingestNow(source));
+
+    const reconcile = async (): Promise<void> => {
+      let installed: readonly InstalledPack[];
+      try {
+        installed = await readInstalledPacks(db);
+      } catch {
+        return;
+      }
+      const wanted = new Map(installed.map((pack) => [pack.pack, pack]));
+      for (const pack of new Set(library.all().map((entry) => entry.pack))) {
+        if (!wanted.has(pack)) {
+          await dropPack(pack);
+        }
+      }
+      for (const pack of installed) {
+        const roots = new Set(entriesOf(pack.pack).map((entry) => entry.root));
+        const same =
+          roots.size === pack.burritos.length && pack.burritos.every((burrito) => roots.has(burrito.root));
+        if (!same) {
+          await ingestNow(sourceOf(pack));
+        }
+      }
+    };
 
     const reindex = (language: string): Promise<IndexStatus> =>
       serial(async () => {
@@ -193,61 +281,64 @@ export const corpusModule = defineModule<CorpusApi>({
       drop: (pack) => serial(() => dropPack(pack)),
       languages: () => contentLanguages(library),
       summary: (language) => summarize(library, language),
-      contents: async (language) => {
-        await settled();
-        return contentsOf(library, language);
-      },
-      passage: async (reference, options) => {
-        await settled();
-        const passage = await assemblePassage(library, reference, options);
-        if (passage !== undefined) {
-          await context.emit({
-            type: 'PassageOpened',
-            payload: { reference: formatReference(reference), language: options.language },
-          });
-        }
-        return passage;
-      },
-      article: async (id, language) => {
-        await settled();
-        const article = await assembleArticle(library, id, language);
-        if (article !== undefined) {
-          await context.emit({ type: 'ArticleOpened', payload: { article: id, language } });
-        }
-        return article;
-      },
-      story: async (number, language) => {
-        await settled();
-        const story = await assembleStory(library, number, language);
-        if (story !== undefined) {
-          await context.emit({ type: 'StoryOpened', payload: { story: number, language } });
-        }
-        return story;
-      },
-      movements: async (story, language) => {
-        await settled();
-        return assembleMovements(library, story, language);
-      },
-      movementStories: async (language) => {
-        await settled();
-        const [entry] = library.of(language, ['movements']);
-        return entry === undefined ? [] : movementStories(library, entry);
-      },
-      search: async (query, language) => {
-        await settled();
-        const reference = referenceQuery(query);
-        if (reference !== undefined) {
-          const available = (await assemblePassage(library, reference, { language })) !== undefined;
+      contents: (language) =>
+        read(async () => {
+          return contentsOf(library, language);
+        }),
+      passage: (reference, options) =>
+        read(async () => {
+          const passage = await assemblePassage(library, reference, options);
+          if (passage !== undefined) {
+            await context.emit({
+              type: 'PassageOpened',
+              payload: { reference: formatReference(reference), language: options.language },
+            });
+          }
+          return passage;
+        }),
+      article: (id, language) =>
+        read(async () => {
+          const article = await assembleArticle(library, id, language);
+          if (article !== undefined) {
+            await context.emit({ type: 'ArticleOpened', payload: { article: id, language } });
+          }
+          return article;
+        }),
+      story: (number, language) =>
+        read(async () => {
+          const story = await assembleStory(library, number, language);
+          if (story !== undefined) {
+            await context.emit({ type: 'StoryOpened', payload: { story: number, language } });
+          }
+          return story;
+        }),
+      movements: (story, language) =>
+        read(async () => {
+          return assembleMovements(library, story, language);
+        }),
+      movementStories: (language) =>
+        read(async () => {
+          const [entry] = library.of(language, ['movements']);
+          return entry === undefined ? [] : movementStories(library, entry);
+        }),
+      search: (query, language) =>
+        read(async () => {
+          const reference = referenceQuery(query);
+          if (reference !== undefined) {
+            const available = (await assemblePassage(library, reference, { language })) !== undefined;
+            await context.emit({
+              type: 'SearchRun',
+              payload: { kind: 'reference', language, hits: available ? 1 : 0 },
+            });
+            return { reference: { reference: canonical(reference), available }, titles: [] };
+          }
+          const titles = titleHits(library, query, language);
           await context.emit({
             type: 'SearchRun',
-            payload: { kind: 'reference', language, hits: available ? 1 : 0 },
+            payload: { kind: 'title', language, hits: titles.length },
           });
-          return { reference: { reference: canonical(reference), available }, titles: [] };
-        }
-        const titles = titleHits(library, query, language);
-        await context.emit({ type: 'SearchRun', payload: { kind: 'title', language, hits: titles.length } });
-        return { titles };
-      },
+          return { titles };
+        }),
       index: (language) => library.index(language),
       indexCost: async (language) => {
         await settled();
@@ -270,6 +361,7 @@ export const corpusModule = defineModule<CorpusApi>({
         for (const row of await loadIndexes(db)) {
           library.setIndex(row);
         }
+        await reconcile();
       },
       observe(entry) {
         if (entry.type === 'PackInstalled') {

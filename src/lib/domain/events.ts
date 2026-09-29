@@ -61,7 +61,7 @@ const releaseRefSpec = {
 
 const installedBurritoSpec = {
   list: {
-    root: 'token',
+    root: 'path',
     row: resourceRows,
     publisher: 'publisher',
     resource: 'resource',

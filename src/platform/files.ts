@@ -104,7 +104,7 @@ export function createPlatformFiles(root: DeviceRoot): Files {
   function entryOf(entry: File | Directory): FileEntry {
     return entry instanceof File
       ? { name: entry.name, kind: 'file', bytes: entry.size }
-      : { name: entry.name, kind: 'directory', bytes: sizeOfDirectory(entry) };
+      : { name: entry.name, kind: 'directory', bytes: 0 };
   }
 
   return {

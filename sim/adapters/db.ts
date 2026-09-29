@@ -4,6 +4,7 @@ import { portError } from './errors';
 
 export type MemoryDb = Db & {
   failWrites(fail: boolean): void;
+  onWrite(listener: (sql: string, params: readonly SqlValue[]) => void): () => void;
   tables(): readonly string[];
   close(): void;
 };
@@ -22,8 +23,14 @@ export function createMemoryDb(): MemoryDb {
   const database = new DatabaseSync(':memory:');
   let failing = false;
   let lock: Promise<unknown> = Promise.resolve();
+  const listeners = new Set<(sql: string, params: readonly SqlValue[]) => void>();
 
-  function guard(sql: string): void {
+  function guard(sql: string, params: readonly SqlValue[] = []): void {
+    if (writeStatement.test(sql)) {
+      for (const listener of listeners) {
+        listener(sql, params);
+      }
+    }
     if (failing && writeStatement.test(sql)) {
       throw portError('db.io', 'the database refused a write');
     }
@@ -35,7 +42,7 @@ export function createMemoryDb(): MemoryDb {
       database.exec(sql);
     },
     run: async (sql, params = []) => {
-      guard(sql);
+      guard(sql, params);
       const result = database.prepare(sql).run(...inputs(params));
       return { changes: Number(result.changes), lastInsertRowId: Number(result.lastInsertRowid) };
     },
@@ -75,6 +82,12 @@ export function createMemoryDb(): MemoryDb {
       }),
     failWrites: (fail) => {
       failing = fail;
+    },
+    onWrite: (listener) => {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
     },
     tables: () =>
       database

@@ -85,7 +85,7 @@ const filesCases: ContractCase[] = [
   },
   {
     port: 'files',
-    name: 'lists sorted entries with sizes, and sizes a directory as the sum of its files',
+    name: 'lists sorted entries one level deep with file sizes, and sizes a directory as the sum of its files',
     async run({ ports: { files }, scratch }) {
       await files.mkdir(`${scratch}/pack/inner`);
       await files.writeBytes(`${scratch}/pack/b.bin`, new Uint8Array(3));
@@ -94,7 +94,7 @@ const filesCases: ContractCase[] = [
         await files.list(`${scratch}/pack`),
         [
           { name: 'b.bin', kind: 'file', bytes: 3 },
-          { name: 'inner', kind: 'directory', bytes: 4 },
+          { name: 'inner', kind: 'directory', bytes: 0 },
         ],
         'listing',
       );

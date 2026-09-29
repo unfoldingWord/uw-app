@@ -22,6 +22,7 @@ export type FieldTypes = {
   article: string;
   key: string;
   token: string;
+  path: string;
   day: string;
   count: number;
   bytes: number;
@@ -41,6 +42,7 @@ const patterns = {
   article: /^[a-z0-9]+(\/[a-z0-9][a-z0-9_-]*){1,4}$/,
   key: /^[a-z][A-Za-z0-9]*(\.[a-z][A-Za-z0-9]*){0,3}$/,
   token: /^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,127}$/,
+  path: /^[A-Za-z0-9][A-Za-z0-9._+-]*(\/[A-Za-z0-9][A-Za-z0-9._+-]*){0,15}$/,
   day: /^\d{4}-\d{2}-\d{2}$/,
   migration: /^\d{4}-[a-z0-9-]{1,60}$/,
   eventType: /^[A-Z][a-z]+([A-Z][a-z]+)+$|^Failure$/,
@@ -96,6 +98,7 @@ export const fieldValidators: { readonly [K in FieldKind]: (value: unknown) => b
   article: (value) => isString(value) && patterns.article.test(value),
   key: (value) => isString(value) && patterns.key.test(value),
   token: (value) => isString(value) && patterns.token.test(value),
+  path: (value) => isString(value) && value.length <= 256 && patterns.path.test(value),
   day: (value) => isString(value) && patterns.day.test(value),
   count: isWholeNumber,
   bytes: isWholeNumber,

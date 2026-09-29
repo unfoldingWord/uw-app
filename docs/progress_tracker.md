@@ -3,6 +3,55 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-29 F2 fixes from review 2: Packs installs by streaming, one directory per install
+
+Node v22.22.2, in Node through Vitest and the sim; nothing ran against expo-file-system.
+
+| Test | Red | Green |
+|---|---|---|
+| `sim/packs-streaming.test.ts`: a 12 MB aligned Psalms and Isaiah text imported from a file | with `src/lib/packs`, `src/lib/burrito` and `corpus.ts` from `a1c6cd9`: `expected 12034064 to be less than or equal to 262144` (the whole book read at once) | the largest read is 64 KiB, the largest write well under a quarter of the largest book, and the burrito on disk validates |
+| `sim/packs-streaming.test.ts`: an update of `qaa_tn` touches no file of the ten burritos it keeps | same old code: `expected [ …(106) ] to deeply equal []` (every kept burrito read and copied) | no read, no write under a kept root, roots unchanged |
+| `sim/packs-streaming.test.ts`: an archive that fits but would not fit unpacked | passes on the old code too (the full disk surfaced as `files.no-space` while writing) | refused as `pack.no-space` from the zip central directory before unpacking; nothing left under `packs/` |
+| LA-7 rewritten: old release whole on each failure, the passage reads v1 while v2 downloads and v2 only after, kept roots unchanged, and three crash windows | old layout: `+ packs/language/qaa/unfoldingWord/qaa_tn/ingredients/` for the release directories; with the new layout and no Corpus reconcile yet: `files.not-found: packs/language/qaa/id-000005/unfoldingWord/qaa_tn/metadata.json` after the crash between the database row and the ingest | pass |
+| `sim/adapters` contract: `list` is one level deep, a directory's `bytes` is 0 | memory adapter listed `inner` with 4 bytes | both adapters; `size` still sums a directory |
+
+The crash windows are proven with `sim/crash.ts`: at a trigger (a database write, a file operation) every
+later write on the device is refused, as if power went, and the device then restarts over the same
+adapters. After the files are written and before the `packs` row: the old release stays, the new
+directory is removed on start. After the row and before the Corpus ingest (the `PackInstalled` journal
+row is refused, so the journal never holds it): the new release stays and Corpus catches up on start.
+After the ingest and before the old directory is removed: the old directory is removed on start.
+
+Decisions:
+
+- Layout: `packs/{kind}/{language or pack}/{install}/{publisher}/{resource}`. `PackInstalled.burritos.root`
+  is a new field kind, `path` (segments of letters, digits, `._+-`, no `..`, at most 256 characters).
+- Unpacking: `src/lib/burrito/unpack.ts` reads the archive in 64 KiB ranges, inflates with fflate's
+  streaming `Unzip`, appends each chunk to staging and hashes it with an incremental MD5, keeping only
+  `metadata.json` and licence files in memory. Validation runs on those facts (`validateFacts`), then each
+  listed ingredient is hashed again from disk before the rename; unlisted files are removed.
+- A file import is read twice (once to learn its pack and check it, once to unpack); a catalog or peer
+  archive once. A peer receipt may now be a path (`PeerReceipt` `{ ok: true, path }`) so Transfer can hand
+  over the file it received instead of reading it into memory; the `archive` form still works.
+- Free space: the unpacked size from the central directory is checked against free space before
+  unpacking. A HEAD request before the download was tried and dropped: it consumed the scripted
+  outcomes of the sim, and whether DCS answers HEAD on `sb/{tag}.zip` is unknown. A download that fills
+  the disk still fails as `pack.no-space`.
+- Corpus ingests a pack in one transaction, reads only burritos it has not seen (a root is never
+  reused), waits for reads in flight before and after swapping, drops the pack if it cannot read it (so
+  no entry points at a directory about to go), and on start reconciles its tables against the installed
+  packs.
+- Reads no longer wait behind the Corpus write queue; they see the library as it stands.
+
+Not verified:
+
+- expo-file-system on Android moves a directory by copy and delete when a rename fails
+  (`CopyMoveStrategy.kt`, read in the review, not here). The rename of a new burrito from staging to its
+  directory is therefore not atomic on such a device, but a crash mid-move leaves a directory no row
+  names, which the next start removes; atomicity now rests on the database row.
+- Peak memory on a phone. The sim bounds the size of reads and writes; the heap is measured in the
+  Corpus test below.
+
 ## 2026-09-29 F2 fixes from review 2: Catalog
 
 Node v22.22.2, in Node through Vitest and the sim. The live catalog was not reached (git.door43.org is

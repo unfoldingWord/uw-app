@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { languagePackId } from '@lib/domain/pack';
+import { burritoRootOf } from '../install';
 import { scenario } from '../scenario';
 
 export default scenario(
@@ -33,10 +34,7 @@ export default scenario(
       ['language:en', 'language:qaa'],
     );
     assert.equal(await phone.adapters.files.exists('packs/language/qab'), false);
-    assert.equal(
-      await phone.adapters.files.exists('packs/language/qaa/unfoldingWord/qaa_obs/metadata.json'),
-      true,
-    );
+    assert.equal(await phone.adapters.files.exists(`${burritoRootOf(phone, 'qaa_obs')}/metadata.json`), true);
     const qaa = await phone.kernel.packs.status('qaa');
     assert.equal(qaa.complete, true, 'removing one language leaves the other whole');
   },

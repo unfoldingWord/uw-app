@@ -54,7 +54,7 @@ describe('Files memory adapter', () => {
     await files.writeText('packs/qaa/metadata.json', '{}');
     await files.writeBytes('packs/qaa/a.bin', new Uint8Array(10));
     expect(await files.readText('packs/qaa/metadata.json')).toBe('{}');
-    expect(await files.list('packs')).toEqual([{ name: 'qaa', kind: 'directory', bytes: 12 }]);
+    expect(await files.list('packs')).toEqual([{ name: 'qaa', kind: 'directory', bytes: 0 }]);
     expect((await files.list('packs/qaa')).map((entry) => entry.name)).toEqual(['a.bin', 'metadata.json']);
     expect(await files.size('packs')).toBe(12);
     expect(await files.exists('packs/qaa/a.bin')).toBe(true);

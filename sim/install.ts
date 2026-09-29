@@ -24,3 +24,14 @@ export async function installFromCatalog(
 export function catalogPacks(device: SimDevice): PackId[] {
   return [...new Set(device.kernel.catalog.all().flatMap((release) => release.pack ?? []))];
 }
+
+export function burritoRootOf(device: SimDevice, resource: string): string {
+  const found = device.kernel.packs
+    .installed()
+    .flatMap((pack) => pack.burritos)
+    .find((burrito) => burrito.provenance.resource === resource);
+  if (found === undefined) {
+    throw new Error(`${device.name} has no installed ${resource}`);
+  }
+  return found.root;
+}

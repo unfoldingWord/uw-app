@@ -40,6 +40,28 @@ export type ValidationReport =
 
 export type ValidateOptions = { readonly rows?: readonly ContractRow[] };
 
+export type IngredientFact = { readonly size: number; readonly md5: string };
+
+export type BurritoFacts = {
+  readonly metadata: Uint8Array | undefined;
+  fact(key: string): IngredientFact | undefined;
+  text(key: string): string | undefined;
+};
+
+export function factsOf(files: BurritoFiles): BurritoFacts {
+  return {
+    metadata: files.get(metadataPath),
+    fact: (key) => {
+      const bytes = files.get(key);
+      return bytes === undefined ? undefined : { size: bytes.byteLength, md5: md5Hex(bytes) };
+    },
+    text: (key) => {
+      const bytes = files.get(key);
+      return bytes === undefined ? undefined : fromUtf8(bytes);
+    },
+  };
+}
+
 export const burritoFormat = 'scripture burrito';
 
 export const burritoVersion = /^1\.0\.\d+$/;
@@ -147,22 +169,22 @@ function listIngredients(ingredients: Record<string, unknown>): ListedIngredient
 }
 
 function checkPresence(
-  files: BurritoFiles,
+  facts: BurritoFacts,
   ingredients: readonly ListedIngredient[],
 ): ValidationReport | undefined {
   for (const { key, entry } of ingredients) {
-    const bytes = files.get(key);
-    if (!bytes) {
+    const found = facts.fact(key);
+    if (!found) {
       return invalid('ingredient-missing', key, `ingredient ${key} is listed but not present`);
     }
-    if (bytes.length !== entry.size) {
+    if (found.size !== entry.size) {
       return invalid(
         'ingredient-size',
         key,
-        `ingredient ${key} is ${bytes.length} bytes, listed as ${entry.size}`,
+        `ingredient ${key} is ${found.size} bytes, listed as ${entry.size}`,
       );
     }
-    const actual = md5Hex(bytes);
+    const actual = found.md5;
     if (actual !== entry.checksum.md5) {
       return invalid(
         'ingredient-checksum',
@@ -176,7 +198,7 @@ function checkPresence(
 
 function hasLicence(
   metadata: unknown,
-  files: BurritoFiles,
+  facts: BurritoFacts,
   ingredients: readonly ListedIngredient[],
 ): boolean {
   const statements = at(metadata, ['copyright', 'shortStatements']);
@@ -191,13 +213,24 @@ function hasLicence(
     return true;
   }
   return ingredients.some(({ key }) => {
-    const bytes = files.get(key);
-    return licenceFile.test(key) && bytes !== undefined && licenceName.test(fromUtf8(bytes));
+    if (!licenceFile.test(key)) {
+      return false;
+    }
+    const text = facts.text(key);
+    return text !== undefined && licenceName.test(text);
   });
 }
 
+export function isLicenceFile(key: string): boolean {
+  return licenceFile.test(key);
+}
+
 export function validate(files: BurritoFiles, options: ValidateOptions = {}): ValidationReport {
-  const bytes = files.get(metadataPath);
+  return validateFacts(factsOf(files), options);
+}
+
+export function validateFacts(facts: BurritoFacts, options: ValidateOptions = {}): ValidationReport {
+  const bytes = facts.metadata;
   if (!bytes) {
     return invalid('metadata-missing', metadataPath, 'the burrito has no metadata.json');
   }
@@ -237,11 +270,11 @@ export function validate(files: BurritoFiles, options: ValidateOptions = {}): Va
   if (mismatch) {
     return invalid('row-ingredients', mismatch.path, `${row.resource}: ${mismatch.message}`);
   }
-  const absent = checkPresence(files, ingredients);
+  const absent = checkPresence(facts, ingredients);
   if (absent) {
     return absent;
   }
-  if (!hasLicence(metadata, files, ingredients)) {
+  if (!hasLicence(metadata, facts, ingredients)) {
     return invalid('licence', 'copyright', 'no licence ingredient or copyright statement names CC BY-SA 4.0');
   }
   return { ok: true, kind: 'valid', row, metadata: metadata as BurritoMetadata };
