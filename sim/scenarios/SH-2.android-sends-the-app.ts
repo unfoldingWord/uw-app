@@ -3,7 +3,8 @@ import { languagePackId } from '@lib/domain/pack';
 import { simAppPackage } from '../device';
 import { installFromCatalog } from '../install';
 import { scenario } from '../scenario';
-import { transferBetween } from '../transfer';
+import { servicesOf } from '../services';
+import { transferBetween, transferThroughServices } from '../transfer';
 
 function packageBytes(length: number): Uint8Array {
   return Uint8Array.from({ length }, (_, index) => (index * 31 + 7) % 251);
@@ -80,5 +81,53 @@ export default scenario(
     assert.equal(reader.kernel.transfer.receivedApp(), undefined);
     const accepted = reader.kernel.journal.read().find((entry) => entry.type === 'TransferAccepted');
     assert.ok(accepted?.type === 'TransferAccepted' && accepted.payload.app === 'none');
+
+    const androidView = await servicesOf(android).transfer.capabilities();
+    assert.ok(androidView.app.state === 'available', 'Android offers the app package');
+    assert.equal(androidView.app.bytes, apk.byteLength);
+    assert.equal(androidView.app.label, 'Send this app too');
+    const iphoneView = await servicesOf(iphone).transfer.capabilities();
+    assert.deepEqual(
+      iphoneView.app,
+      {
+        state: 'ios-not-permitted',
+        reason: 'iPhone does not allow sending the app itself. Resources can still go.',
+      },
+      'an iPhone says why it cannot',
+    );
+    const refusedHere = await servicesOf(iphone).transfer.offer({ language: 'qab', app: true });
+    assert.ok(!refusedHere.ok);
+    assert.equal(refusedHere.message, 'This phone cannot send the app itself. Resources can still go.');
+
+    const newcomer = world.device('newcomer', { platform: 'android' });
+    await newcomer.start();
+    const withApp = await transferThroughServices(android, newcomer, {
+      language: 'qaa',
+      resources: [stories],
+      app: true,
+    });
+    assert.ok(withApp.incoming.ok && withApp.incoming.app?.bytes === apk.byteLength);
+    assert.ok(withApp.received.ok && withApp.received.state === 'ready-to-read');
+    assert.equal(withApp.received.app?.path, 'transfer/app/unfoldingword.apk');
+    assert.ok(withApp.sent.ok);
+    assert.deepEqual(withApp.sent.messages.slice(1), [
+      'The app is on the other phone. Install it there, then send resources.',
+    ]);
+    const bare = world.device('bare', { platform: 'android' });
+    await bare.start();
+    const alone = await transferThroughServices(android, bare, { app: true });
+    assert.ok(alone.received.ok && alone.received.state === 'app-received');
+    assert.deepEqual(servicesOf(bare).transfer.receivedApp(), alone.received.app);
+    const onIphone = world.device('on-iphone', { platform: 'ios' });
+    await onIphone.start();
+    const noApp = await transferThroughServices(android, onIphone, {
+      language: 'qaa',
+      resources: [stories],
+      app: true,
+    });
+    assert.ok(noApp.incoming.ok && noApp.incoming.app === undefined, 'an iPhone is not offered the app');
+    assert.ok(
+      noApp.received.ok && noApp.received.state === 'ready-to-read' && noApp.received.app === undefined,
+    );
   },
 );

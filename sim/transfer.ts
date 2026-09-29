@@ -1,3 +1,12 @@
+import type {
+  IncomingView,
+  OfferView,
+  PeerView,
+  ReceiveResult,
+  Selection,
+  SendPlan,
+  SendResult,
+} from '@features/transfer/service';
 import { fromPeer } from '@lib/packs/source';
 import type { InstallOutcome } from '@lib/packs/types';
 import type {
@@ -9,6 +18,7 @@ import type {
   TransferSelection,
 } from '@lib/transfer/types';
 import type { SimDevice } from './device';
+import { servicesOf } from './services';
 
 export type TransferRun = {
   offered: Extract<OfferOutcome, { ok: true }>;
@@ -58,4 +68,39 @@ export async function transferBetween(
   const installed =
     session === undefined ? undefined : await receiver.kernel.packs.install(fromPeer(session));
   return { offered, incoming, accepted, sent, installed };
+}
+
+export type ServiceTransferRun = {
+  offered: Extract<OfferView, { ok: true }>;
+  peers: readonly PeerView[];
+  incoming: IncomingView;
+  received: ReceiveResult;
+  sent: SendResult;
+};
+
+export async function transferThroughServices(
+  sender: SimDevice,
+  receiver: SimDevice,
+  plan: SendPlan,
+  selection: Selection = {},
+): Promise<ServiceTransferRun> {
+  const from = servicesOf(sender).transfer;
+  const to = servicesOf(receiver).transfer;
+  const offered = await from.offer(plan);
+  if (!offered.ok) {
+    throw new Error(`${sender.name} could not offer: ${offered.code}`);
+  }
+  const sending = from.send(offered);
+  const peers = await to.discover();
+  const peer = peers.find((item) => item.peer.code === offered.code);
+  if (peer === undefined) {
+    throw new Error(`${receiver.name} found no peer advertising ${offered.code}`);
+  }
+  const incoming = await to.connect(peer.peer);
+  if (!incoming.ok) {
+    await from.cancel();
+    return { offered, peers, incoming, received: incoming, sent: await sending };
+  }
+  const received = await to.accept(selection);
+  return { offered, peers, incoming, received, sent: await sending };
 }

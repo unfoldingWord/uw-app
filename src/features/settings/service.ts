@@ -64,7 +64,8 @@ export type SettingsEntryId =
   | 'storage'
   | 'licence'
   | 'about'
-  | 'privacy';
+  | 'privacy'
+  | 'diagnostics';
 
 export type SettingsEntry = { readonly id: SettingsEntryId; readonly title: string; readonly about: string };
 
@@ -271,6 +272,11 @@ export function createSettingsService(kernel: Kernel): SettingsService {
         { id: 'licence', title: current.t('settings.licence'), about: current.t('settings.licence.about') },
         { id: 'about', title: current.t('settings.about'), about: current.t('settings.about.about') },
         { id: 'privacy', title: current.t('settings.privacy'), about: current.t('settings.privacy.about') },
+        {
+          id: 'diagnostics',
+          title: current.t('settings.diagnostics'),
+          about: current.t('settings.diagnostics.about'),
+        },
       ];
     },
     footer: () => words().t('settings.footer'),

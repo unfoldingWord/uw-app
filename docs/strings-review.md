@@ -39,6 +39,9 @@ Change a value in place; set it to `null` to fall back to English for that key w
   `impact.securityNote`, `resource.wordLinks` and `resource.wordLinks.about`. `impact.securityNote` is a
   placeholder until comms supplies the website's security note (`docs/impact-stories.md`); a story that carries
   its own note shows that note instead.
+- **Drafted with the Transfer, Share and diagnostics services.** `transfer.code`, `transfer.code.hint` and
+  `transfer.nothing`. The code is the four digits both phones show while they pair; the word for it should be
+  the one people use for a short number read aloud, not a password or a PIN.
 - **Search examples.** `search.placeholder` and `search.empty` use Ruth 2 and covenant as examples; the book
   name and the word should be the ones a reader in that language would type.
 

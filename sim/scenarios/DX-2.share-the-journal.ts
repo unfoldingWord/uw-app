@@ -6,6 +6,7 @@ import { diagnosticsPath } from '@lib/share/payload';
 import { installFromCatalog } from '../install';
 import { replayJournal } from '../replay';
 import { scenario } from '../scenario';
+import { servicesOf } from '../services';
 import { transferBetween } from '../transfer';
 
 const locale = { tag: 'sw-TZ', region: 'TZ', timeZone: 'Africa/Dar_es_Salaam' };
@@ -68,5 +69,26 @@ export default scenario(
     assert.ok(replayed.ok, replayed.ok ? '' : replayed.reason);
     assert.deepEqual(replayed.divergence, []);
     assert.equal(stableJson(replayed.snapshot), stableJson(snapshot), 'the shared file rebuilds the device');
+
+    const services = servicesOf(phone);
+    assert.ok(
+      (await services.settings.entries()).some((entry) => entry.id === 'diagnostics'),
+      'Settings leads to diagnostics',
+    );
+    const diagnostics = services.diagnostics;
+    assert.ok(await services.settings.setLocale('en'));
+    assert.deepEqual(diagnostics.view(), {
+      title: 'Share diagnostics',
+      body: phone.kernel.strings.t('diagnostics.body', 'en'),
+      action: 'Share the file',
+    });
+    assert.equal(diagnostics.view().body.split('. ').length, 1, 'one sentence says what the file holds');
+    assert.deepEqual(await diagnostics.share(), { state: 'shared' });
+    const handed = phone.adapters.shareSheet.shared().at(-1);
+    assert.deepEqual(handed?.file, { path: diagnosticsPath, mimeType: 'application/json' });
+    const again = JSON.parse(await phone.adapters.files.readText(diagnosticsPath)) as unknown;
+    assert.ok(parseJournalExport(again).ok, 'the service shares a journal the sim can replay');
+    phone.adapters.shareSheet.respondWith('dismissed');
+    assert.deepEqual(await diagnostics.share(), { state: 'dismissed' });
   },
 );

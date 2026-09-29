@@ -4,6 +4,7 @@ import { parseReference } from '@lib/domain/reference';
 import { getTheAppLink } from '@lib/share/payload';
 import { installFromCatalog } from '../install';
 import { scenario } from '../scenario';
+import { servicesOf } from '../services';
 
 export default scenario(
   'SH-4',
@@ -84,5 +85,51 @@ export default scenario(
     assert.deepEqual(letter?.audio, [], 'where there is no audio there is nothing to share as audio');
     const gone = await share.audio({ ...clip, path: 'packs/audio/qaa/missing.mp3' }, { locale: 'en' });
     assert.equal(!gone.ok && gone.code, 'audio.unavailable');
+
+    phone.adapters.shareSheet.respondWith('shared');
+    const services = servicesOf(phone);
+    const sharing = services.share;
+    const reader = world.device('reader');
+    assert.deepEqual(await servicesOf(reader).share.passage('RUT 1:16'), { state: 'no-language' });
+    assert.ok(await services.languages.select('qaa'));
+    const menu = await sharing.menu({ kind: 'passage', reference: 'RUT 1:16' });
+    assert.deepEqual(menu, {
+      state: 'ready',
+      title: 'Share passage',
+      asText: 'Share as text',
+      asAudio: 'Share as audio',
+      noAudio: undefined,
+      note: 'Sent with its licence and attribution, and a short link to get the app.',
+    });
+    const quiet = await sharing.menu({ kind: 'passage', reference: '3JN 1:1' });
+    assert.ok(quiet.state === 'ready' && quiet.asAudio === undefined && quiet.noAudio !== undefined);
+    const storyMenu = await sharing.menu({ kind: 'story', number: 1 });
+    assert.ok(storyMenu.state === 'ready' && storyMenu.title === 'Share story');
+    assert.deepEqual(await sharing.menu({ kind: 'story', number: 99 }), { state: 'missing' });
+
+    const before = phone.adapters.shareSheet.shared().length;
+    assert.deepEqual(await sharing.passage('RUT 1:16'), { state: 'shared' });
+    assert.deepEqual(await sharing.story(1), { state: 'shared' }, 'a story shares from Study or Formation');
+    assert.deepEqual(await sharing.audio('RUT 1:16'), { state: 'shared' });
+    const handed = phone.adapters.shareSheet.shared().slice(before);
+    assert.deepEqual(
+      handed.map((payload) => payload.title),
+      [text.payload.title, story.title, heard.payload.title],
+    );
+    assert.ok(handed.every((payload) => payload.text.includes(sharing.link())));
+    assert.deepEqual(await sharing.audio('3JN 1:1'), {
+      state: 'failed',
+      code: 'audio.unavailable',
+      message: 'Audio is not available for this right now.',
+    });
+    assert.ok(await services.settings.setLocale('fr'));
+    assert.deepEqual(await sharing.passage('RUT 1:16'), { state: 'shared' });
+    const translated = phone.adapters.shareSheet.shared().at(-1);
+    assert.ok(
+      translated !== undefined && !translated.text.includes('Get the app'),
+      'the app language is used',
+    );
+    phone.adapters.shareSheet.respondWith('dismissed');
+    assert.deepEqual(await sharing.story(1), { state: 'dismissed' });
   },
 );

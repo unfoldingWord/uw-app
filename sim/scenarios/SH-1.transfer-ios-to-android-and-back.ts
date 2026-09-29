@@ -4,7 +4,8 @@ import { parseReference } from '@lib/domain/reference';
 import type { JournalEntry } from '@lib/journal/entry';
 import { installFromCatalog } from '../install';
 import { scenario } from '../scenario';
-import { startOffer, transferBetween } from '../transfer';
+import { servicesOf } from '../services';
+import { startOffer, transferBetween, transferThroughServices } from '../transfer';
 import type { SimDevice } from '../device';
 
 const simplified = { publisher: 'unfoldingWord', resource: 'qaa_ust' };
@@ -174,5 +175,74 @@ export default scenario(
     assert.deepEqual(android.kernel.packs.installed(), before);
     assert.equal(android.kernel.transfer.current(), undefined);
     assert.equal(iphone.kernel.transfer.current(), undefined);
+
+    const leader = world.device('leader', { platform: 'ios' });
+    await leader.start();
+    await installFromCatalog(leader, [languagePackId('qaa')]);
+    const friend = world.device('friend', { platform: 'android' });
+    await friend.start();
+    for (const device of [leader, friend]) {
+      device.adapters.http.setOnline(false);
+    }
+    const sending = servicesOf(leader).transfer;
+    const capabilities = await sending.capabilities();
+    assert.equal(capabilities.available, true);
+    assert.equal(capabilities.platform, 'ios');
+    const choices = sending.choices('qaa');
+    assert.ok(choices.state === 'choices', 'the leader chooses from the language on the phone');
+    assert.equal(choices.resources.length, sent.burritos.length);
+    for (const item of choices.resources) {
+      assert.ok(item.bytes > 0);
+      assert.equal(item.label, `${item.title} · ${item.size}`, 'each resource shows its size');
+    }
+    const picked = choices.resources
+      .filter((item) => item.resource !== simplified.resource)
+      .map(({ publisher, resource }) => ({ publisher, resource }));
+    const summary = sending.summary('qaa', picked);
+    assert.equal(summary.count, picked.length);
+    assert.equal(
+      summary.bytes,
+      choices.resources
+        .filter((item) => item.resource !== simplified.resource)
+        .reduce((sum, item) => sum + item.bytes, 0),
+    );
+    assert.match(summary.label, new RegExp(`^${picked.length} resources selected · `));
+    assert.equal(servicesOf(world.device('empty')).transfer.choices('qaa').state, 'nothing');
+
+    const labels: string[] = [];
+    const watching = world.bus.tap(() => {
+      const status = servicesOf(friend).transfer.status();
+      if (status !== undefined) {
+        labels.push(status.label);
+      }
+    });
+    const run = await transferThroughServices(leader, friend, { language: 'qaa', resources: picked });
+    watching();
+    assert.equal(run.offered.codeLabel, `Code ${run.offered.code}`, 'the pairing code is shown');
+    assert.equal(
+      run.peers.find((item) => item.peer.code === run.offered.code)?.codeLabel,
+      run.offered.codeLabel,
+    );
+    assert.match(run.peers[0]?.label ?? '', /^Nearby phone \d+$/);
+    assert.ok(run.incoming.ok);
+    assert.equal(run.incoming.platform, 'ios');
+    assert.equal(run.incoming.resources.length, picked.length, 'the receiver sees what is offered');
+    assert.equal(run.incoming.app, undefined);
+    assert.ok(
+      labels.some((label) => /^Receiving \d+%$/.test(label)),
+      'the receiver sees progress',
+    );
+    assert.ok(run.received.ok && run.received.state === 'ready-to-read', 'the result is ready to read');
+    assert.equal(run.received.language, 'qaa');
+    assert.match(run.received.label, /is ready to read\.$/);
+    assert.ok(run.sent.ok);
+    assert.equal(run.sent.messages.length, 1);
+    assert.match(run.sent.messages[0] ?? '', /is ready on the other phone\.$/);
+    const friendly = servicesOf(friend);
+    assert.ok(await friendly.transfer.open('qaa'));
+    const opened = await friendly.study.passage('RUT 1:16');
+    assert.equal(opened.state, 'passage', 'the received language opens in Study');
+    assert.equal(friendly.transfer.status(), undefined);
+    assert.equal(friendly.transfer.last()?.outcome, 'completed');
   },
 );
