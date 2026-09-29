@@ -1,0 +1,172 @@
+import { describe, expect, it } from 'vitest';
+import { englishAreas } from './en/index';
+import { direction, locales, resolveLocale, type Locale } from './locales';
+import { tables } from './locales/index';
+import { createStrings, stringsModule, type LocaleTables } from './strings';
+import { english, type LocaleTable } from './table';
+
+function untranslated(): LocaleTable {
+  return Object.fromEntries(Object.keys(english).map((key) => [key, null])) as unknown as LocaleTable;
+}
+
+function tablesWith(locale: Locale, table: LocaleTable): LocaleTables {
+  const empty = untranslated();
+  return {
+    ...(Object.fromEntries(locales.map((each) => [each, empty])) as Record<Locale, LocaleTable>),
+    en: english,
+    [locale]: table,
+  };
+}
+
+const arabicMarkers = {
+  zero: 'zero {count}',
+  one: 'one {count}',
+  two: 'two {count}',
+  few: 'few {count}',
+  many: 'many {count}',
+  other: 'other {count}',
+};
+
+describe('strings interface', () => {
+  it('words a key in English with its parameters', () => {
+    const strings = createStrings(tables);
+    expect(strings.t('onboarding.overline', 'en')).toBe('Open Bible translation resources');
+    expect(strings.t('home.greeting.morning.named', 'en', { name: 'Amani' })).toBe('Good morning, Amani');
+    expect(strings.t('storage.summary', 'en', { used: '112 MB', free: '9.4 GB' })).toBe(
+      '112 MB on this phone · 9.4 GB free',
+    );
+  });
+
+  it('falls back to English string by string when a locale has not translated a key', () => {
+    const partial = { ...untranslated(), 'nav.home': 'Nyumbani' };
+    const strings = createStrings(tablesWith('sw', partial));
+    expect(strings.t('nav.home', 'sw')).toBe('Nyumbani');
+    expect(strings.t('nav.study', 'sw')).toBe('Study');
+    expect(strings.plural('languages.resources', 3, 'sw')).toBe('3 resources');
+  });
+
+  it('chooses among the six Arabic plural forms', () => {
+    const table = { ...untranslated(), 'languages.resources': arabicMarkers };
+    const strings = createStrings(tablesWith('ar', table));
+    const forms = [0, 1, 2, 3, 11, 100].map((count) => strings.plural('languages.resources', count, 'ar'));
+    expect(forms).toEqual(['zero 0', 'one 1', 'two 2', 'few 3', 'many 11', 'other 100']);
+  });
+
+  it('chooses the Russian forms for one, few and many', () => {
+    const table = {
+      ...untranslated(),
+      'languages.resources': {
+        one: 'one {count}',
+        few: 'few {count}',
+        many: 'many {count}',
+        other: 'other {count}',
+      },
+    };
+    const strings = createStrings(tablesWith('ru', table));
+    const forms = [1, 2, 5, 21, 22, 25, 111].map((count) =>
+      strings.plural('languages.resources', count, 'ru'),
+    );
+    expect(forms).toEqual(['one 1', 'few 2', 'many 5', 'one 21', 'few 22', 'many 25', 'many 111']);
+  });
+
+  it('uses the other form when a locale leaves a category out, and English rules for English forms', () => {
+    const table = { ...untranslated(), 'languages.resources': { other: 'other {count}' } };
+    const strings = createStrings(tablesWith('ar', table));
+    expect(strings.plural('languages.resources', 1, 'ar')).toBe('other 1');
+    expect(createStrings(tablesWith('ar', untranslated())).plural('languages.resources', 1, 'ar')).toBe(
+      '1 resource',
+    );
+  });
+
+  it('interpolates every parameter in a plural form, with a count the screen formatted', () => {
+    const strings = createStrings(tables);
+    expect(strings.plural('library.overline', 1, 'en', { language: 'Kiswahili' })).toBe(
+      'Kiswahili · 1 resource',
+    );
+    expect(strings.plural('library.overline', 1200, 'en', { language: 'English', count: '1,200' })).toBe(
+      'English · 1,200 resources',
+    );
+  });
+
+  it('words the app in one locale whatever language the content is in', () => {
+    const strings = createStrings(tables);
+    expect(strings.t('state.notDownloaded', 'en', { language: 'Kiswahili' })).toBe(
+      'Kiswahili is not on this phone yet.',
+    );
+    expect(strings.t('study.nav.reference', 'sw', { book: 'Ruth', chapter: 1 })).toBe('Ruth 1');
+  });
+
+  it('reports how complete each locale is', () => {
+    const report = createStrings(tablesWith('nl', { ...untranslated(), 'nav.home': 'Start' })).completeness();
+    const total = Object.keys(english).length;
+    expect(report.find((row) => row.locale === 'en')).toEqual({
+      locale: 'en',
+      translated: total,
+      total,
+      complete: true,
+    });
+    expect(report.find((row) => row.locale === 'nl')).toEqual({
+      locale: 'nl',
+      translated: 1,
+      total,
+      complete: false,
+    });
+    expect(report.map((row) => row.locale)).toEqual([...locales]);
+  });
+
+  it('keeps each English key in exactly one area', () => {
+    const areaKeys = Object.values(englishAreas).flatMap((area) => Object.keys(area));
+    expect(new Set(areaKeys).size).toBe(areaKeys.length);
+    expect(areaKeys.length).toBe(Object.keys(english).length);
+  });
+
+  it('is a kernel module with no events and nothing owned', () => {
+    expect(stringsModule.events).toEqual([]);
+    expect(stringsModule.owns).toEqual({ tables: [], directories: [], keys: [] });
+  });
+});
+
+describe('locales', () => {
+  it('registers the sixteen locales of the Open Bible Stories website', () => {
+    expect(locales).toEqual([
+      'en',
+      'es-419',
+      'fr',
+      'hi',
+      'ru',
+      'ar',
+      'zh-Hans',
+      'sw',
+      'pt-BR',
+      'id',
+      'vi',
+      'bn',
+      'ur',
+      'fa',
+      'my',
+      'nl',
+    ]);
+  });
+
+  it('lays out Arabic, Urdu and Farsi right to left and every other locale left to right', () => {
+    expect(locales.filter((locale) => direction(locale) === 'rtl')).toEqual(['ar', 'ur', 'fa']);
+  });
+
+  it('maps device locale tags to a registered locale, in the order the device prefers them', () => {
+    expect(resolveLocale(['es-MX'])).toBe('es-419');
+    expect(resolveLocale(['es'])).toBe('es-419');
+    expect(resolveLocale(['pt'])).toBe('pt-BR');
+    expect(resolveLocale(['pt-PT'])).toBe('pt-BR');
+    expect(resolveLocale(['zh-CN'])).toBe('zh-Hans');
+    expect(resolveLocale(['zh-Hans-CN'])).toBe('zh-Hans');
+    expect(resolveLocale(['sw_KE'])).toBe('sw');
+    expect(resolveLocale(['fa-IR'])).toBe('fa');
+    expect(resolveLocale(['ur-PK'])).toBe('ur');
+    expect(resolveLocale(['in-ID'])).toBe('id');
+    expect(resolveLocale(['de-DE', 'fr-CA'])).toBe('fr');
+    expect(resolveLocale(['de-DE'])).toBe('en');
+    expect(resolveLocale([])).toBe('en');
+    expect(resolveLocale(['pt-BR'])).toBe('pt-BR');
+    expect(resolveLocale(['my-MM'])).toBe('my');
+  });
+});
