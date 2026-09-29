@@ -416,6 +416,7 @@ export const hi: LocaleTable = {
   'failure.http.timeout': 'पुस्तकालय ने जवाब देने में बहुत देर की। थोड़ी देर में फिर कोशिश करें।',
   'failure.http.status': 'पुस्तकालय ने उम्मीद के अनुसार जवाब नहीं दिया। बाद में फिर कोशिश करें।',
   'failure.http.host-refused': 'ऐप केवल उन्हीं जगहों से जुड़ता है जिन्हें वह जानता है।',
+  'failure.http.cancelled': 'यह पूरा होने से पहले रुक गया। आप फिर कोशिश कर सकते हैं।',
   'failure.files.not-found': 'वह फ़ाइल अब इस फ़ोन पर नहीं है।',
   'failure.files.no-space': 'इस फ़ोन में जगह नहीं बची। कोई पैक हटाएँ, फिर कोशिश करें।',
   'failure.files.io': 'फ़ोन इसे सहेज नहीं सका। फिर कोशिश करें।',
@@ -425,6 +426,10 @@ export const hi: LocaleTable = {
   'failure.journal.persist-failed': 'निदान का रिकॉर्ड रखा नहीं जा सका। बाकी सब काम कर रहा है।',
   'failure.journal.event-rejected': 'निदान की एक प्रविष्टि छूट गई। बाकी सब काम कर रहा है।',
   'failure.journal.import-invalid': 'यह ऐसी निदान फ़ाइल नहीं है जिसे ऐप पढ़ सके।',
+  'failure.kernel.not-owned':
+    'ऐप ने एक ऐसा बदलाव रोक दिया जो उसे नहीं करना था। निदान साझा करें ताकि कोई मदद कर सके।',
+  'failure.kernel.observer-failed':
+    'ऐप का एक हिस्सा अपडेट पूरा नहीं कर सका। निदान साझा करें ताकि कोई मदद कर सके।',
   'failure.catalog.invalid-response':
     'पुस्तकालय की सूची ऐसे रूप में आई जिसे ऐप पढ़ नहीं सकता। बाद में फिर कोशिश करें।',
   'failure.catalog.superseded': 'पुस्तकालय की नई सूची पहले आ गई, इसलिए और कुछ करने की ज़रूरत नहीं है।',
@@ -437,6 +442,7 @@ export const hi: LocaleTable = {
     'यह संसाधन नहीं बताता कि इसे किसने प्रकाशित किया, इसलिए ऐप इसे इंस्टॉल नहीं करता।',
   'failure.pack.empty-plan': 'पहले कम से कम एक संसाधन चुनें।',
   'failure.pack.mixed-packs': 'ये संसाधन अलग-अलग पैक के हैं। एक बार में एक पैक भेजें।',
+  'failure.corpus.unreadable': 'यह पैक खुल नहीं सका। इसे हटाएँ, फिर दोबारा डाउनलोड करें।',
   'failure.transfer.unavailable': 'पास के फ़ोन पर भेजना अभी इस फ़ोन पर उपलब्ध नहीं है।',
   'failure.transfer.unsupported': 'यह फ़ोन ऐप को ही नहीं भेज सकता। संसाधन फिर भी भेजे जा सकते हैं।',
   'failure.transfer.declined': 'दूसरे फ़ोन ने स्वीकार नहीं किया। आप फिर से पेश कर सकते हैं।',

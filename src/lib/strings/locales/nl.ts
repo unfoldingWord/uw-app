@@ -422,6 +422,7 @@ export const nl: LocaleTable = {
   'failure.http.timeout': 'De bibliotheek deed er te lang over om te antwoorden. Probeer het zo opnieuw.',
   'failure.http.status': 'De bibliotheek antwoordde niet zoals verwacht. Probeer het later opnieuw.',
   'failure.http.host-refused': 'De app maakt alleen verbinding met plekken die hij kent.',
+  'failure.http.cancelled': 'Dit stopte voordat het klaar was. Je kunt het opnieuw proberen.',
   'failure.files.not-found': 'Dat bestand staat niet meer op deze telefoon.',
   'failure.files.no-space':
     'Deze telefoon heeft geen ruimte meer. Verwijder een pakket en probeer het opnieuw.',
@@ -433,6 +434,10 @@ export const nl: LocaleTable = {
   'failure.journal.persist-failed': 'Het diagnoseverslag kon niet worden bewaard. De rest blijft werken.',
   'failure.journal.event-rejected': 'Eén regel van de diagnose is weggelaten. De rest blijft werken.',
   'failure.journal.import-invalid': 'Dit is geen diagnosebestand dat de app kan lezen.',
+  'failure.kernel.not-owned':
+    'De app hield een wijziging tegen die hij niet hoort te maken. Deel de diagnose zodat iemand kan helpen.',
+  'failure.kernel.observer-failed':
+    'Een deel van de app is niet klaar met bijwerken. Deel de diagnose zodat iemand kan helpen.',
   'failure.catalog.invalid-response':
     'De lijst van de bibliotheek kwam binnen in een vorm die de app niet kan lezen. Probeer het later opnieuw.',
   'failure.catalog.superseded':
@@ -448,6 +453,7 @@ export const nl: LocaleTable = {
   'failure.pack.empty-plan': 'Kies eerst minstens één hulpmiddel.',
   'failure.pack.mixed-packs':
     'Deze hulpmiddelen horen bij verschillende pakketten. Stuur één pakket tegelijk.',
+  'failure.corpus.unreadable': 'Dit pakket kon niet worden geopend. Verwijder het en download het opnieuw.',
   'failure.transfer.unavailable': 'Overzetten in de buurt is nu niet beschikbaar op deze telefoon.',
   'failure.transfer.unsupported':
     'Deze telefoon kan de app zelf niet versturen. Hulpmiddelen kunnen wel mee.',

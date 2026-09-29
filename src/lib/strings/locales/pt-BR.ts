@@ -430,6 +430,7 @@ export const ptBR: LocaleTable = {
   'failure.http.timeout': 'A biblioteca demorou demais para responder. Tente de novo em um instante.',
   'failure.http.status': 'A biblioteca não respondeu como esperado. Tente de novo mais tarde.',
   'failure.http.host-refused': 'O aplicativo só se conecta aos lugares que conhece.',
+  'failure.http.cancelled': 'Isso parou antes de terminar. Você pode tentar de novo.',
   'failure.files.not-found': 'Esse arquivo não está mais neste celular.',
   'failure.files.no-space': 'Este celular está sem espaço. Remova um pacote e tente de novo.',
   'failure.files.io': 'O celular não conseguiu salvar isto. Tente de novo.',
@@ -442,6 +443,10 @@ export const ptBR: LocaleTable = {
   'failure.journal.event-rejected':
     'Uma entrada do diagnóstico ficou de fora. Todo o resto continua funcionando.',
   'failure.journal.import-invalid': 'Este não é um arquivo de diagnóstico que o aplicativo consegue ler.',
+  'failure.kernel.not-owned':
+    'O aplicativo impediu uma alteração que não deveria fazer. Compartilhe o diagnóstico para alguém poder ajudar.',
+  'failure.kernel.observer-failed':
+    'Uma parte do aplicativo não terminou de se atualizar. Compartilhe o diagnóstico para alguém poder ajudar.',
   'failure.catalog.invalid-response':
     'A lista da biblioteca chegou em um formato que o aplicativo não consegue ler. Tente de novo mais tarde.',
   'failure.catalog.superseded':
@@ -454,6 +459,7 @@ export const ptBR: LocaleTable = {
   'failure.pack.no-provenance': 'Este recurso não diz quem o publicou, então o aplicativo não o instala.',
   'failure.pack.empty-plan': 'Escolha pelo menos um recurso primeiro.',
   'failure.pack.mixed-packs': 'Estes recursos são de pacotes diferentes. Envie um pacote por vez.',
+  'failure.corpus.unreadable': 'Não foi possível abrir este pacote. Remova-o e baixe de novo.',
   'failure.transfer.unavailable': 'A transferência por perto não está disponível neste celular agora.',
   'failure.transfer.unsupported':
     'Este celular não consegue enviar o próprio aplicativo. Os recursos podem ir mesmo assim.',

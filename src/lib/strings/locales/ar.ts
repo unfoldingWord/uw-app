@@ -483,6 +483,7 @@ export const ar: LocaleTable = {
   'failure.http.timeout': 'تأخرت المكتبة كثيرًا في الرد. حاول مرة أخرى بعد قليل.',
   'failure.http.status': 'لم ترد المكتبة كما هو متوقع. حاول مرة أخرى لاحقًا.',
   'failure.http.host-refused': 'لا يتصل التطبيق إلا بالعناوين التي يعرفها.',
+  'failure.http.cancelled': 'توقف هذا قبل أن ينتهي. يمكنك المحاولة مرة أخرى.',
   'failure.files.not-found': 'هذا الملف لم يعد على هذا الهاتف.',
   'failure.files.no-space': 'لا توجد مساحة على هذا الهاتف. أزل حزمة ثم حاول مرة أخرى.',
   'failure.files.io': 'تعذر على الهاتف حفظ هذا. حاول مرة أخرى.',
@@ -492,6 +493,10 @@ export const ar: LocaleTable = {
   'failure.journal.persist-failed': 'تعذر الاحتفاظ بسجل التشخيص. كل شيء آخر ما زال يعمل.',
   'failure.journal.event-rejected': 'تُرك إدخال واحد من التشخيص. كل شيء آخر ما زال يعمل.',
   'failure.journal.import-invalid': 'هذا ليس ملف تشخيص يستطيع التطبيق قراءته.',
+  'failure.kernel.not-owned':
+    'منع التطبيق تغييرًا لا ينبغي له أن يجريه. شارك بيانات التشخيص ليتمكن أحد من مساعدتك.',
+  'failure.kernel.observer-failed':
+    'لم يكمل جزء من التطبيق تحديثه. شارك بيانات التشخيص ليتمكن أحد من مساعدتك.',
   'failure.catalog.invalid-response':
     'وصلت قائمة المكتبة بشكل لا يستطيع التطبيق قراءته. حاول مرة أخرى لاحقًا.',
   'failure.catalog.superseded': 'وصلت قائمة أحدث للمكتبة أولًا، فلا حاجة لشيء آخر.',
@@ -503,6 +508,7 @@ export const ar: LocaleTable = {
   'failure.pack.no-provenance': 'لا يذكر هذا المورد من نشره، لذا لا يثبِّته التطبيق.',
   'failure.pack.empty-plan': 'اختر موردًا واحدًا على الأقل أولًا.',
   'failure.pack.mixed-packs': 'تنتمي هذه الموارد إلى حزم مختلفة. أرسل حزمة واحدة في كل مرة.',
+  'failure.corpus.unreadable': 'تعذر فتح هذه الحزمة. أزلها ثم نزّلها مرة أخرى.',
   'failure.transfer.unavailable': 'الإرسال إلى هاتف قريب غير متاح على هذا الهاتف الآن.',
   'failure.transfer.unsupported': 'لا يستطيع هذا الهاتف إرسال التطبيق نفسه. يمكن إرسال الموارد مع ذلك.',
   'failure.transfer.declined': 'لم يقبل الهاتف الآخر. يمكنك العرض مرة أخرى.',

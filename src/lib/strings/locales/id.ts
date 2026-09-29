@@ -397,6 +397,7 @@ export const id: LocaleTable = {
   'failure.http.timeout': 'Perpustakaan terlalu lama menjawab. Coba lagi sebentar lagi.',
   'failure.http.status': 'Perpustakaan tidak menjawab seperti yang diharapkan. Coba lagi nanti.',
   'failure.http.host-refused': 'Aplikasi hanya tersambung ke tempat yang dikenalnya.',
+  'failure.http.cancelled': 'Ini berhenti sebelum selesai. Anda bisa mencoba lagi.',
   'failure.files.not-found': 'Berkas itu sudah tidak ada di ponsel ini.',
   'failure.files.no-space': 'Ruang di ponsel ini sudah penuh. Hapus satu paket, lalu coba lagi.',
   'failure.files.io': 'Ponsel tidak bisa menyimpan ini. Coba lagi.',
@@ -407,6 +408,10 @@ export const id: LocaleTable = {
   'failure.journal.persist-failed': 'Catatan diagnostik tidak bisa disimpan. Hal lain tetap berfungsi.',
   'failure.journal.event-rejected': 'Satu entri diagnostik terlewat. Hal lain tetap berfungsi.',
   'failure.journal.import-invalid': 'Ini bukan berkas diagnostik yang bisa dibaca aplikasi.',
+  'failure.kernel.not-owned':
+    'Aplikasi menahan perubahan yang tidak semestinya dibuat. Bagikan diagnostik supaya ada yang bisa membantu.',
+  'failure.kernel.observer-failed':
+    'Sebagian aplikasi tidak selesai diperbarui. Bagikan diagnostik supaya ada yang bisa membantu.',
   'failure.catalog.invalid-response':
     'Daftar perpustakaan datang dalam bentuk yang tidak bisa dibaca aplikasi. Coba lagi nanti.',
   'failure.catalog.superseded':
@@ -421,6 +426,7 @@ export const id: LocaleTable = {
   'failure.pack.empty-plan': 'Pilih setidaknya satu sumber dulu.',
   'failure.pack.mixed-packs':
     'Sumber-sumber ini berasal dari paket yang berbeda. Kirim satu paket setiap kali.',
+  'failure.corpus.unreadable': 'Paket ini tidak bisa dibuka. Hapus paket ini, lalu unduh lagi.',
   'failure.transfer.unavailable': 'Pengiriman ke ponsel terdekat belum tersedia di ponsel ini sekarang.',
   'failure.transfer.unsupported':
     'Ponsel ini tidak bisa mengirim aplikasinya sendiri. Sumbernya tetap bisa dikirim.',

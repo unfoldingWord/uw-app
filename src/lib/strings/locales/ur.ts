@@ -414,6 +414,7 @@ export const ur: LocaleTable = {
   'failure.http.timeout': 'لائبریری نے جواب دینے میں بہت دیر کی۔ تھوڑی دیر میں دوبارہ کوشش کریں۔',
   'failure.http.status': 'لائبریری نے توقع کے مطابق جواب نہیں دیا۔ بعد میں دوبارہ کوشش کریں۔',
   'failure.http.host-refused': 'ایپ صرف اُن جگہوں سے جڑتی ہے جنہیں وہ جانتی ہے۔',
+  'failure.http.cancelled': 'یہ مکمل ہونے سے پہلے رک گیا۔ آپ دوبارہ کوشش کر سکتے ہیں۔',
   'failure.files.not-found': 'وہ فائل اب اس فون پر نہیں ہے۔',
   'failure.files.no-space': 'اس فون میں جگہ نہیں رہی۔ کوئی پیک ہٹائیں، پھر کوشش کریں۔',
   'failure.files.io': 'فون اسے محفوظ نہیں کر سکا۔ دوبارہ کوشش کریں۔',
@@ -424,6 +425,10 @@ export const ur: LocaleTable = {
   'failure.journal.persist-failed': 'تشخیصی ریکارڈ محفوظ نہیں رکھا جا سکا۔ باقی سب کام کر رہا ہے۔',
   'failure.journal.event-rejected': 'تشخیص کا ایک اندراج رہ گیا۔ باقی سب کام کر رہا ہے۔',
   'failure.journal.import-invalid': 'یہ ایسی تشخیصی فائل نہیں ہے جسے ایپ پڑھ سکے۔',
+  'failure.kernel.not-owned':
+    'ایپ نے ایک ایسی تبدیلی روک دی جو اسے نہیں کرنی تھی۔ تشخیصی معلومات شیئر کریں تاکہ کوئی مدد کر سکے۔',
+  'failure.kernel.observer-failed':
+    'ایپ کا ایک حصہ اپ ڈیٹ مکمل نہیں کر سکا۔ تشخیصی معلومات شیئر کریں تاکہ کوئی مدد کر سکے۔',
   'failure.catalog.invalid-response':
     'لائبریری کی فہرست ایسی صورت میں آئی جسے ایپ پڑھ نہیں سکتی۔ بعد میں دوبارہ کوشش کریں۔',
   'failure.catalog.superseded': 'لائبریری کی نئی فہرست پہلے آ گئی، اس لیے مزید کچھ کرنے کی ضرورت نہیں۔',
@@ -435,6 +440,7 @@ export const ur: LocaleTable = {
   'failure.pack.no-provenance': 'یہ وسیلہ نہیں بتاتا کہ اسے کس نے شائع کیا، اس لیے ایپ اسے انسٹال نہیں کرتی۔',
   'failure.pack.empty-plan': 'پہلے کم از کم ایک وسیلہ منتخب کریں۔',
   'failure.pack.mixed-packs': 'یہ وسائل مختلف پیکوں کے ہیں۔ ایک وقت میں ایک پیک بھیجیں۔',
+  'failure.corpus.unreadable': 'یہ پیک کھل نہیں سکا۔ اسے ہٹائیں، پھر دوبارہ ڈاؤن لوڈ کریں۔',
   'failure.transfer.unavailable': 'قریبی فون پر بھیجنا ابھی اس فون پر دستیاب نہیں ہے۔',
   'failure.transfer.unsupported': 'یہ فون خود ایپ نہیں بھیج سکتا۔ وسائل پھر بھی بھیجے جا سکتے ہیں۔',
   'failure.transfer.declined': 'دوسرے فون نے قبول نہیں کیا۔ آپ دوبارہ پیش کر سکتے ہیں۔',

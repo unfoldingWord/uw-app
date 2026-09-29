@@ -443,6 +443,7 @@ export const fr: LocaleTable = {
   'failure.http.timeout': 'La bibliothèque a mis trop de temps à répondre. Réessayez dans un instant.',
   'failure.http.status': 'La bibliothèque n’a pas répondu comme prévu. Réessayez plus tard.',
   'failure.http.host-refused': 'L’application se connecte seulement aux adresses qu’elle connaît.',
+  'failure.http.cancelled': 'Cela s’est arrêté avant la fin. Vous pouvez réessayer.',
   'failure.files.not-found': 'Ce fichier n’est plus sur ce téléphone.',
   'failure.files.no-space': 'Ce téléphone n’a plus d’espace. Retirez un pack, puis réessayez.',
   'failure.files.io': 'Le téléphone n’a pas pu enregistrer ceci. Réessayez.',
@@ -455,6 +456,10 @@ export const fr: LocaleTable = {
   'failure.journal.event-rejected':
     'Une entrée du diagnostic a été laissée de côté. Tout le reste fonctionne.',
   'failure.journal.import-invalid': 'Ce n’est pas un fichier de diagnostic que l’application peut lire.',
+  'failure.kernel.not-owned':
+    'L’application a retenu une modification qu’elle ne doit pas faire. Partagez le diagnostic pour qu’on puisse vous aider.',
+  'failure.kernel.observer-failed':
+    'Une partie de l’application n’a pas fini de se mettre à jour. Partagez le diagnostic pour qu’on puisse vous aider.',
   'failure.catalog.invalid-response':
     'La liste de la bibliothèque est arrivée sous une forme illisible pour l’application. Réessayez plus tard.',
   'failure.catalog.superseded':
@@ -469,6 +474,7 @@ export const fr: LocaleTable = {
   'failure.pack.empty-plan': 'Choisissez d’abord au moins une ressource.',
   'failure.pack.mixed-packs':
     'Ces ressources appartiennent à des packs différents. Envoyez un pack à la fois.',
+  'failure.corpus.unreadable': 'Ce pack n’a pas pu être ouvert. Retirez-le, puis téléchargez-le à nouveau.',
   'failure.transfer.unavailable':
     'Le transfert à proximité n’est pas disponible sur ce téléphone pour le moment.',
   'failure.transfer.unsupported':

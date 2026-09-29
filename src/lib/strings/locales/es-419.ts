@@ -430,6 +430,7 @@ export const es419: LocaleTable = {
   'failure.http.timeout': 'La biblioteca tardó demasiado en responder. Intenta de nuevo en un momento.',
   'failure.http.status': 'La biblioteca no respondió como se esperaba. Intenta de nuevo más tarde.',
   'failure.http.host-refused': 'La aplicación solo se conecta a los lugares que conoce.',
+  'failure.http.cancelled': 'Esto se detuvo antes de terminar. Puedes intentar de nuevo.',
   'failure.files.not-found': 'Ese archivo ya no está en este teléfono.',
   'failure.files.no-space': 'Este teléfono no tiene espacio. Quita un paquete e intenta de nuevo.',
   'failure.files.io': 'El teléfono no pudo guardar esto. Intenta de nuevo.',
@@ -441,6 +442,10 @@ export const es419: LocaleTable = {
     'No se pudo conservar el registro de diagnóstico. Todo lo demás sigue funcionando.',
   'failure.journal.event-rejected': 'Se omitió una entrada del diagnóstico. Todo lo demás sigue funcionando.',
   'failure.journal.import-invalid': 'Este no es un archivo de diagnóstico que la aplicación pueda leer.',
+  'failure.kernel.not-owned':
+    'La aplicación evitó un cambio que no le corresponde hacer. Comparte el diagnóstico para que alguien te ayude.',
+  'failure.kernel.observer-failed':
+    'Una parte de la aplicación no terminó de actualizarse. Comparte el diagnóstico para que alguien te ayude.',
   'failure.catalog.invalid-response':
     'La lista de la biblioteca llegó en una forma que la aplicación no puede leer. Intenta de nuevo más tarde.',
   'failure.catalog.superseded':
@@ -455,6 +460,7 @@ export const es419: LocaleTable = {
     'Este recurso no indica quién lo publicó, así que la aplicación no lo instala.',
   'failure.pack.empty-plan': 'Primero elige al menos un recurso.',
   'failure.pack.mixed-packs': 'Estos recursos pertenecen a paquetes distintos. Envía un paquete a la vez.',
+  'failure.corpus.unreadable': 'No se pudo abrir este paquete. Quítalo y descárgalo de nuevo.',
   'failure.transfer.unavailable': 'La transferencia cercana no está disponible en este teléfono ahora.',
   'failure.transfer.unsupported':
     'Este teléfono no puede enviar la aplicación. Los recursos sí se pueden enviar.',

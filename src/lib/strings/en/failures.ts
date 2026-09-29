@@ -5,6 +5,7 @@ export const failures = {
   'failure.http.timeout': 'The library took too long to answer. Try again in a moment.',
   'failure.http.status': 'The library did not answer as expected. Try again later.',
   'failure.http.host-refused': 'The app only connects to the places it knows.',
+  'failure.http.cancelled': 'This stopped before it finished. You can try again.',
   'failure.files.not-found': 'That file is no longer on this phone.',
   'failure.files.no-space': 'This phone is out of space. Remove a pack, then try again.',
   'failure.files.io': 'The phone could not save this. Try again.',
@@ -15,6 +16,10 @@ export const failures = {
   'failure.journal.persist-failed': 'The diagnostics record could not be kept. Everything else still works.',
   'failure.journal.event-rejected': 'One diagnostics entry was left out. Everything else still works.',
   'failure.journal.import-invalid': 'This is not a diagnostics file the app can read.',
+  'failure.kernel.not-owned':
+    'The app held back a change it is not meant to make. Share diagnostics so someone can help.',
+  'failure.kernel.observer-failed':
+    'Part of the app did not finish updating. Share diagnostics so someone can help.',
   'failure.catalog.invalid-response':
     'The library list came back in a form the app cannot read. Try again later.',
   'failure.catalog.superseded': 'A newer library list arrived first, so nothing more is needed.',
@@ -26,6 +31,7 @@ export const failures = {
   'failure.pack.no-provenance': 'This resource does not say who published it, so the app keeps it out.',
   'failure.pack.empty-plan': 'Choose at least one resource first.',
   'failure.pack.mixed-packs': 'These resources belong to different packs. Send one pack at a time.',
+  'failure.corpus.unreadable': 'This pack could not be opened. Remove it, then download it again.',
   'failure.transfer.unavailable': 'Nearby transfer is not available on this phone right now.',
   'failure.transfer.unsupported': 'This phone cannot send the app itself. Resources can still go.',
   'failure.transfer.declined': 'The other phone did not accept. You can offer again.',

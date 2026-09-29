@@ -26,7 +26,10 @@ Change a value in place; set it to `null` to fall back to English for that key w
   heard as a slight.
 - **Privacy.** `privacy.*` states the analytics policy of PRD section 9. A reviewer should confirm each count
   says exactly what the English says, since the policy is binding.
-- **Failures.** `failure.*` must stay calm; no word that reads as an alarm or an error code.
+- **Failures.** `failure.*` must stay calm; no word that reads as an alarm or an error code. Four keys
+  were drafted after the rest, when Packs, Corpus and the kernel added their codes: `failure.http.cancelled`,
+  `failure.kernel.not-owned`, `failure.kernel.observer-failed` and `failure.corpus.unreadable`. The two kernel
+  keys describe an inner fault in plain words; check they do not read as blame or as a warning.
 - **Search examples.** `search.placeholder` and `search.empty` use Ruth 2 and covenant as examples; the book
   name and the word should be the ones a reader in that language would type.
 

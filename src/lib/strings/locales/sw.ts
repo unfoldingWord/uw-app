@@ -415,6 +415,7 @@ export const sw: LocaleTable = {
   'failure.http.timeout': 'Maktaba imechelewa kujibu. Jaribu tena baada ya muda mfupi.',
   'failure.http.status': 'Maktaba haikujibu kama ilivyotarajiwa. Jaribu tena baadaye.',
   'failure.http.host-refused': 'Programu inaunganishwa tu na mahali inapopajua.',
+  'failure.http.cancelled': 'Hili lilisimama kabla ya kumalizika. Unaweza kujaribu tena.',
   'failure.files.not-found': 'Faili hilo halipo tena kwenye simu hii.',
   'failure.files.no-space': 'Simu hii haina nafasi. Ondoa kifurushi, kisha ujaribu tena.',
   'failure.files.io': 'Simu haikuweza kuhifadhi hiki. Jaribu tena.',
@@ -427,6 +428,10 @@ export const sw: LocaleTable = {
   'failure.journal.event-rejected':
     'Kipengele kimoja cha uchunguzi kimeachwa. Mengine yote bado yanafanya kazi.',
   'failure.journal.import-invalid': 'Hili si faili la uchunguzi ambalo programu inaweza kusoma.',
+  'failure.kernel.not-owned':
+    'Programu ilizuia badiliko ambalo haipaswi kulifanya. Shiriki uchunguzi ili mtu aweze kusaidia.',
+  'failure.kernel.observer-failed':
+    'Sehemu ya programu haikumaliza kusasisha. Shiriki uchunguzi ili mtu aweze kusaidia.',
   'failure.catalog.invalid-response':
     'Orodha ya maktaba imefika katika muundo ambao programu haiwezi kusoma. Jaribu tena baadaye.',
   'failure.catalog.superseded':
@@ -440,6 +445,7 @@ export const sw: LocaleTable = {
   'failure.pack.no-provenance': 'Nyenzo hii haisemi nani aliichapisha, kwa hiyo programu haiisakinishi.',
   'failure.pack.empty-plan': 'Chagua angalau nyenzo moja kwanza.',
   'failure.pack.mixed-packs': 'Nyenzo hizi ni za vifurushi tofauti. Tuma kifurushi kimoja kwa wakati.',
+  'failure.corpus.unreadable': 'Kifurushi hiki hakikuweza kufunguliwa. Kiondoe, kisha ukipakue tena.',
   'failure.transfer.unavailable': 'Kutuma kwa simu iliyo karibu hakupatikani kwenye simu hii kwa sasa.',
   'failure.transfer.unsupported': 'Simu hii haiwezi kutuma programu yenyewe. Nyenzo bado zinaweza kutumwa.',
   'failure.transfer.declined': 'Simu nyingine haikukubali. Unaweza kutoa tena.',

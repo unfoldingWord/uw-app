@@ -392,6 +392,7 @@ export const vi: LocaleTable = {
   'failure.http.timeout': 'Thư viện phản hồi quá lâu. Hãy thử lại sau giây lát.',
   'failure.http.status': 'Thư viện không phản hồi như mong đợi. Hãy thử lại sau.',
   'failure.http.host-refused': 'Ứng dụng chỉ kết nối đến những nơi nó biết.',
+  'failure.http.cancelled': 'Việc này đã dừng trước khi xong. Bạn có thể thử lại.',
   'failure.files.not-found': 'Tệp đó không còn trên điện thoại này.',
   'failure.files.no-space': 'Điện thoại này đã hết dung lượng. Hãy gỡ một gói rồi thử lại.',
   'failure.files.io': 'Điện thoại không lưu được mục này. Hãy thử lại.',
@@ -402,6 +403,10 @@ export const vi: LocaleTable = {
   'failure.journal.persist-failed': 'Không giữ được bản ghi chẩn đoán. Mọi thứ khác vẫn hoạt động.',
   'failure.journal.event-rejected': 'Một mục chẩn đoán đã bị bỏ qua. Mọi thứ khác vẫn hoạt động.',
   'failure.journal.import-invalid': 'Đây không phải tệp chẩn đoán mà ứng dụng đọc được.',
+  'failure.kernel.not-owned':
+    'Ứng dụng đã chặn một thay đổi mà nó không nên thực hiện. Hãy chia sẻ chẩn đoán để có người giúp.',
+  'failure.kernel.observer-failed':
+    'Một phần của ứng dụng chưa cập nhật xong. Hãy chia sẻ chẩn đoán để có người giúp.',
   'failure.catalog.invalid-response':
     'Danh sách thư viện đến ở dạng ứng dụng không đọc được. Hãy thử lại sau.',
   'failure.catalog.superseded': 'Một danh sách thư viện mới hơn đã đến trước, nên không cần làm gì thêm.',
@@ -413,6 +418,7 @@ export const vi: LocaleTable = {
   'failure.pack.no-provenance': 'Tài nguyên này không cho biết ai xuất bản, nên ứng dụng không cài đặt.',
   'failure.pack.empty-plan': 'Hãy chọn ít nhất một tài nguyên trước.',
   'failure.pack.mixed-packs': 'Các tài nguyên này thuộc những gói khác nhau. Hãy gửi từng gói một.',
+  'failure.corpus.unreadable': 'Không mở được gói này. Hãy gỡ gói rồi tải lại.',
   'failure.transfer.unavailable': 'Hiện điện thoại này chưa thể chuyển đến thiết bị ở gần.',
   'failure.transfer.unsupported': 'Điện thoại này không gửi được chính ứng dụng. Vẫn có thể gửi tài nguyên.',
   'failure.transfer.declined': 'Điện thoại kia chưa chấp nhận. Bạn có thể gửi lời mời lại.',
