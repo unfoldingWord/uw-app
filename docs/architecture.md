@@ -103,12 +103,12 @@ Nothing it reads identifies the leader or the device. The glass primitives in `s
 
 ## Events are the spine
 
-Every module returns events; the kernel appends them to the journal. Modules never call each other's internals; where one needs to react to another, it reacts to an event. There are 42 (`eventSchemas` in `src/lib/domain/events.ts`), each with a replay class (`redo`, `follows` or `verbatim`, `replay.md`):
+Every module returns events; the kernel appends them to the journal. Modules never call each other's internals; where one needs to react to another, it reacts to an event. There are 43 (`eventSchemas` in `src/lib/domain/events.ts`), each with a replay class (`redo`, `follows` or `verbatim`, `replay.md`):
 
 ```
 AppOpened   Failure(code, context)
 CatalogRefreshStarted   CatalogRefreshed
-PackInstallStarted   PackInstallProgressed   PackInstalled   PackFailed   PackRemoved
+PackInstallStarted   PackInstallProgressed   PackInstalled   PackResourceFailed   PackFailed   PackRemoved
 PassageOpened   ArticleOpened   StoryOpened   SearchRun   IndexStarted   IndexBuilt   IndexDropped
 GroupCreated   GroupRenamed   GroupDeleted   GroupActivated   PositionChanged
 SessionStarted   MovementCompleted   SessionCompleted   SessionNoteSaved   LessonCompleted
