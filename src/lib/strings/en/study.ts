@@ -33,7 +33,7 @@ export const study = {
   'study.audio.time': '{position} / {duration}',
   'study.audio.download': 'Download audio for offline',
   'study.audio.downloading': 'Downloading audio',
-  'study.audio.offline': 'Audio streams when you are online. Download it to listen offline.',
+  'study.audio.offline': 'Download it once to listen offline.',
   'study.audio.back': 'Back 10 seconds',
   'study.audio.forward': 'Ahead 10 seconds',
   'study.audio.loading': 'Getting the audio ready',
@@ -44,7 +44,7 @@ export const study = {
     other: '{language} · {count} resources',
   },
   'library.footer':
-    'All content CC BY-SA 4.0, attributed to the organization that published it. unfoldingWord resources are listed first.',
+    'All content is CC BY-SA 4.0, attributed to the organization that published it, with unfoldingWord resources listed first.',
   'library.about': 'About this library',
   'library.meta': '{publisher} · {version}',
   'library.optional': 'Optional download',
@@ -108,6 +108,6 @@ export const study = {
   'study.noLanguage.action': 'Choose a language',
   'library.download': 'Download {resource}',
   'library.onPhone': 'On this phone',
-  'search.fullText.inSettings': 'Turn it on in Settings. The index stays on this phone.',
+  'search.fullText.inSettings': 'Turn it on in Settings, and the index stays on this phone.',
   'study.frame.picture': 'Picture for frame {number}',
 } as const;

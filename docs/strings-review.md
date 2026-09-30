@@ -225,3 +225,37 @@ Dates are formatted by the screen layer with the platform's date formatting, and
   screen's summary, intro and note once a telemetry endpoint is set and the app sends its counts. Until then the
   screen keeps `privacy.summary`, `privacy.counts` and `privacy.dropped`, which say nothing is sent yet. "Batch"
   is one small bundle of numbers sent once a day; it must not read as a file or a report about the leader.
+
+## One sentence of support (issue #42, 2026-09-30)
+
+Support copy is one sentence (AGENTS.md section 7, the design readme). Fifty-five keys carried two, and each was
+rewritten in English as one sentence that keeps both facts, then redrafted by an AI agent in all fifteen locales
+to match. None is reviewed. The `strings` check in `npm run checks` now counts sentences with the platform's
+sentence segmenter in every locale and fails above one; `onboarding.tagline` and `onboarding.footer` are exempt
+because PRD ON-1 fixes their wording. In `my` the little section sign (၊) is read as a comma, not a full stop.
+
+- **Home, Study, Formation.** `state.offline`, `onboarding.name.hint`, `home.download.detail`, `home.new.detail`,
+  `invitation.body`, `study.audio.offline`, `library.footer`, `search.fullText.inSettings`,
+  `formation.group.deleteConfirm`, `formation.training.about`, `session.picturesMissing`.
+  `study.audio.offline` also stopped saying audio streams when online: v1.0.0 plays only a downloaded Audio
+  Pack (ST-4), so it now says only to download it once to listen offline.
+- **Languages and Transfer.** `languages.coverage`, `languages.removeConfirm`, `languages.import.opened`,
+  `languages.import.done`, `transfer.note`, `transfer.app.ios`, `transfer.sent`, `transfer.stopped`,
+  `transfer.app.received`, `transfer.address.qr`, `transfer.app.install.opened`,
+  `transfer.app.install.unsupported`. `languages.removeConfirm` now asks "until you download it again" in place
+  of a second sentence saying it can be downloaded later; check it still reads as reassurance.
+- **About and Settings.** `about.publishedBy.body` (every plural form), `about.partner.body`,
+  `settings.fullText.about`, `settings.storage.about`, `settings.licence.about`, `settings.footer`.
+- **Failures.** `failure.boot` and twenty-five `failure.*` keys: `http.offline`, `http.timeout`, `http.status`,
+  `http.cancelled`, `files.no-space`, `files.io`, `db.migration-failed`, `db.io`, `kv.io`,
+  `journal.persist-failed`, `journal.event-rejected`, `kernel.not-owned`, `kernel.observer-failed`,
+  `catalog.invalid-response`, `pack.not-found`, `pack.no-space`, `pack.checksum-mismatch`, `pack.mixed-packs`,
+  `corpus.unreadable`, `transfer.unsupported`, `transfer.declined`, `transfer.peer-lost`,
+  `transfer.cancelled`, `partners.invalid-feed`, `unexpected`. Each joins what happened and what to do with
+  "so", "but" or "and". The locale drafts join the two existing sentences the same way with the language's own
+  word for it; a reviewer may prefer a fresh sentence where the join reads mechanically. In `my` the two halves
+  are joined with ၊, which is the least certain of all.
+
+The prototype (`design-system/templates/uw-resources-app/UwResourcesApp.dc.html`) still carries the old
+two-sentence wording of `invitation.body`, `about.partner.body` and `settings.footer`; the next Claude Design
+sync should take the new wording.

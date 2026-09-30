@@ -23,7 +23,7 @@ export default scenario(
     assert.equal(due.state === 'due' && due.give, 'https://unfoldingword.org/Give');
     assert.deepEqual(due.state === 'due' && due.words, {
       overline: 'Impact story',
-      body: 'Partners make resources like these free for leaders everywhere. You can help extend the reach into the unreached.',
+      body: 'Partners make resources like these free for leaders everywhere, and you can help extend the reach into the unreached.',
       action: 'Partner with unfoldingWord',
       dismiss: 'Not now',
       readMore: 'Read the full story on unfoldingword.org',

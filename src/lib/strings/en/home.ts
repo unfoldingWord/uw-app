@@ -5,7 +5,7 @@ export const onboarding = {
   'onboarding.body':
     'Read, listen and share what the global church has built with unfoldingWord, in the languages you work in, online or off.',
   'onboarding.name.label': 'Your first name (optional)',
-  'onboarding.name.hint': 'Stays on this phone. Used only to greet you.',
+  'onboarding.name.hint': 'It stays on this phone and is used only to greet you.',
   'onboarding.choose': 'Choose your language',
   'onboarding.english': 'Continue in English',
   'onboarding.footer': 'Free. Openly licensed. No account needed.',
@@ -29,7 +29,7 @@ export const home = {
   'home.formation.empty': 'Create a group in Formation to walk through the stories together.',
   'home.download.progress': 'Downloading {language}',
   'home.download.percent': '{percent}%',
-  'home.download.detail': 'Language pack, {size}. It is ready to read offline when it finishes.',
+  'home.download.detail': 'Language pack, {size}, ready to read offline when it finishes.',
   'home.download.waiting': 'Downloading continues when you are online.',
   'home.download.none': 'Nothing for {language} is on this phone yet.',
   'home.download.missing': 'Some resources for {language} are not on this phone yet.',
@@ -46,7 +46,7 @@ export const home = {
   'home.saved.story': 'Open Bible Stories · {language}',
   'home.new.title': 'What is new',
   'home.new.one': '{resource} has a newer release',
-  'home.new.detail': '{newVersion} replaces {oldVersion}, {size}. Choose when to update.',
+  'home.new.detail': '{newVersion} replaces {oldVersion}, {size}, when you choose to update.',
   'home.new.many': {
     one: '{count} resource has a newer release',
     other: '{count} resources have a newer release',
@@ -54,7 +54,7 @@ export const home = {
   'home.new.action': 'Update',
   'invitation.overline': 'Impact story',
   'invitation.body':
-    'Partners make resources like these free for leaders everywhere. You can help extend the reach into the unreached.',
+    'Partners make resources like these free for leaders everywhere, and you can help extend the reach into the unreached.',
   'invitation.action': 'Partner with unfoldingWord',
   'invitation.dismiss': 'Not now',
   'invitation.readMore': 'Read the full story on unfoldingword.org',

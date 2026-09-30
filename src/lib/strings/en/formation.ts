@@ -14,7 +14,7 @@ export const formation = {
   'formation.group.namePlaceholder': 'Like Tuesday group',
   'formation.group.rename': 'Rename',
   'formation.group.delete': 'Delete group',
-  'formation.group.deleteConfirm': 'Delete {group}? Its position and notes are removed from this phone.',
+  'formation.group.deleteConfirm': 'Delete {group} with its position and notes from this phone?',
   'formation.group.keep': 'Keep group',
   'formation.tracks.title': 'Tracks',
   'formation.foundations': 'Foundations',
@@ -26,7 +26,7 @@ export const formation = {
   'formation.foundations.tagline': 'Gather a group, press play, go deeper.',
   'formation.foundations.done': '{done} of {total} done',
   'formation.training': 'Training',
-  'formation.training.about': 'Academy as a course. How to translate and check Scripture in your church.',
+  'formation.training.about': 'Academy as a course on how to translate and check Scripture in your church.',
   'formation.training.lesson': 'Lesson {number} of {total}',
   'formation.topics': 'Topics',
   'formation.topics.about': 'Themes for deeper study.',
@@ -68,5 +68,5 @@ export const formation = {
   'session.nextSession': 'Next session',
   'session.chooseGroup': 'Choose a group to keep your place.',
   'session.picturesMissing':
-    'Story pictures are not on this phone yet. They download once for every language.',
+    'Story pictures are not on this phone yet, and they download once for every language.',
 } as const;

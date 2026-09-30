@@ -35,7 +35,7 @@ export const fr: LocaleTable = {
   'common.theme.light': 'Clair',
   'common.theme.dark': 'Sombre',
   'common.theme.system': 'Comme le téléphone',
-  'state.offline': 'Vous êtes hors ligne. Tout ce qui est sur ce téléphone fonctionne encore.',
+  'state.offline': 'Vous êtes hors ligne, et tout ce qui est sur ce téléphone fonctionne encore.',
   'state.notDownloaded': '{language} n’est pas encore sur ce téléphone.',
   'state.notDownloaded.action': 'Télécharger {language}',
   'state.nothingPublished': 'Rien n’est encore publié en {language}.',
@@ -47,7 +47,7 @@ export const fr: LocaleTable = {
   'onboarding.body':
     'Lisez, écoutez et partagez ce que l’Église mondiale a bâti avec unfoldingWord, dans les langues où vous travaillez, en ligne ou non.',
   'onboarding.name.label': 'Votre prénom (facultatif)',
-  'onboarding.name.hint': 'Reste sur ce téléphone. Sert seulement à vous saluer.',
+  'onboarding.name.hint': 'Il reste sur ce téléphone et sert seulement à vous saluer.',
   'onboarding.choose': 'Choisissez votre langue',
   'onboarding.english': 'Continuer en anglais',
   'onboarding.footer': 'Gratuit. Sous licence libre. Aucun compte requis.',
@@ -68,7 +68,7 @@ export const fr: LocaleTable = {
   'home.formation.empty': 'Créez un groupe dans Formation pour parcourir les histoires ensemble.',
   'home.download.progress': 'Téléchargement de {language}',
   'home.download.percent': '{percent} %',
-  'home.download.detail': 'Pack de langue, {size}. Il sera lisible hors ligne une fois terminé.',
+  'home.download.detail': 'Pack de langue, {size}, lisible hors ligne une fois terminé.',
   'home.download.waiting': 'Le téléchargement reprendra quand vous serez en ligne.',
   'home.download.none': 'Rien en {language} n’est encore sur ce téléphone.',
   'home.download.missing': 'Certaines ressources en {language} ne sont pas encore sur ce téléphone.',
@@ -86,7 +86,7 @@ export const fr: LocaleTable = {
   'home.saved.story': 'Histoires Bibliques Libres · {language}',
   'home.new.title': 'Nouveautés',
   'home.new.one': '{resource} a une version plus récente',
-  'home.new.detail': '{newVersion} remplace {oldVersion}, {size}. Mettez à jour quand vous voulez.',
+  'home.new.detail': '{newVersion} remplace {oldVersion}, {size}, quand vous choisissez de mettre à jour.',
   'home.new.many': {
     one: '{count} ressource a une version plus récente',
     many: '{count} de ressources ont une version plus récente',
@@ -95,7 +95,7 @@ export const fr: LocaleTable = {
   'home.new.action': 'Mettre à jour',
   'invitation.overline': 'Histoire d’impact',
   'invitation.body':
-    'Des partenaires rendent ces ressources gratuites pour les responsables partout. Vous pouvez aider à les porter jusqu’aux peuples non atteints.',
+    'Des partenaires rendent ces ressources gratuites pour les responsables partout, et vous pouvez aider à les porter jusqu’aux peuples non atteints.',
   'invitation.action': 'Devenir partenaire d’unfoldingWord',
   'invitation.dismiss': 'Pas maintenant',
   'invitation.readMore': 'Lire l’histoire complète sur unfoldingword.org',
@@ -134,7 +134,7 @@ export const fr: LocaleTable = {
   'study.audio.time': '{position} / {duration}',
   'study.audio.download': 'Télécharger l’audio pour l’écouter hors ligne',
   'study.audio.downloading': 'Téléchargement de l’audio',
-  'study.audio.offline': 'L’audio se lit en ligne. Téléchargez-le pour l’écouter hors ligne.',
+  'study.audio.offline': 'Téléchargez-le une fois pour l’écouter hors ligne.',
   'library.open': 'Bibliothèque',
   'library.title': 'Bibliothèque',
   'library.overline': {
@@ -143,7 +143,7 @@ export const fr: LocaleTable = {
     other: '{language} · {count} ressources',
   },
   'library.footer':
-    'Tout le contenu est sous licence CC BY-SA 4.0 et attribué à l’organisation qui l’a publié. Les ressources d’unfoldingWord sont listées en premier.',
+    'Tout le contenu est sous licence CC BY-SA 4.0 et attribué à l’organisation qui l’a publié, avec les ressources d’unfoldingWord en premier.',
   'library.about': 'À propos de cette bibliothèque',
   'library.meta': '{publisher} · {version}',
   'library.optional': 'Téléchargement facultatif',
@@ -217,8 +217,7 @@ export const fr: LocaleTable = {
   'formation.group.namePlaceholder': 'Par exemple, groupe du mardi',
   'formation.group.rename': 'Renommer',
   'formation.group.delete': 'Supprimer le groupe',
-  'formation.group.deleteConfirm':
-    'Supprimer {group} ? Sa position et ses notes seront retirées de ce téléphone.',
+  'formation.group.deleteConfirm': 'Supprimer {group} avec sa position et ses notes de ce téléphone ?',
   'formation.group.keep': 'Garder le groupe',
   'formation.tracks.title': 'Parcours',
   'formation.foundations': 'Fondements',
@@ -232,7 +231,7 @@ export const fr: LocaleTable = {
   'formation.foundations.done': '{done} sur {total} terminées',
   'formation.training': 'Formation pratique',
   'formation.training.about':
-    'L’Académie comme un cours. Comment traduire et vérifier les Écritures dans votre Église.',
+    'L’Académie comme un cours pour apprendre à traduire et vérifier les Écritures dans votre Église.',
   'formation.training.lesson': 'Leçon {number} sur {total}',
   'formation.topics': 'Thèmes',
   'formation.topics.about': 'Des thèmes pour approfondir.',
@@ -273,7 +272,7 @@ export const fr: LocaleTable = {
   'session.nextSession': 'Séance suivante',
   'session.chooseGroup': 'Choisissez un groupe pour garder votre place.',
   'session.picturesMissing':
-    'Les images des histoires ne sont pas encore sur ce téléphone. Elles se téléchargent une seule fois pour toutes les langues.',
+    'Les images des histoires ne sont pas encore sur ce téléphone, et elles se téléchargent une seule fois pour toutes les langues.',
   'languages.title': 'Langues',
   'languages.overline': {
     one: '{count} langue · {language} choisie',
@@ -293,11 +292,11 @@ export const fr: LocaleTable = {
   'languages.noMatch': 'Aucune langue ne correspond à {query}.',
   'languages.offline': 'Vous êtes hors ligne, seules les langues déjà sur ce téléphone sont listées.',
   'languages.coverage':
-    '{available} des {total} langues de l’application ont du contenu publié aujourd’hui. Les autres apparaîtront dès qu’elles en auront.',
+    '{available} des {total} langues de l’application ont du contenu publié aujourd’hui, et les autres apparaîtront dès qu’elles en auront.',
   'languages.download': 'Télécharger',
   'languages.remove': 'Retirer',
   'languages.removeConfirm':
-    'Retirer {language} de ce téléphone ? Vous pourrez le télécharger de nouveau plus tard.',
+    'Retirer {language} de ce téléphone jusqu’à ce que vous le téléchargiez de nouveau ?',
   'languages.update': 'Mettre à jour',
   'languages.updateDetail': '{version} est prête, {size}.',
   'languages.installing': 'Vérification et installation',
@@ -328,11 +327,11 @@ export const fr: LocaleTable = {
     other: '{count} ressources choisies · {size}',
   },
   'transfer.note':
-    'Fonctionne entre iPhone et Android dans les deux sens. La licence et l’attribution accompagnent chaque élément.',
+    'Fonctionne entre iPhone et Android dans les deux sens, avec la licence et l’attribution sur chaque élément.',
   'transfer.app': 'Envoyer aussi cette application',
   'transfer.app.about': 'L’autre téléphone peut l’installer sans magasin d’applications.',
   'transfer.app.ios':
-    'L’iPhone ne permet pas d’envoyer l’application elle-même. Les ressources peuvent partir.',
+    'L’iPhone ne permet pas d’envoyer l’application elle-même, mais les ressources peuvent partir.',
   'transfer.find': 'Trouver un téléphone à proximité',
   'transfer.looking': 'Recherche d’un téléphone à proximité',
   'transfer.looking.hint': 'Ouvrez Recevoir sur l’autre téléphone et gardez les téléphones proches.',
@@ -353,12 +352,12 @@ export const fr: LocaleTable = {
   'transfer.sending': 'Envoi {percent} %',
   'transfer.receiving': 'Réception {percent} %',
   'transfer.stop': 'Arrêter',
-  'transfer.sent': 'Envoyé. {language} est prêt sur l’autre téléphone.',
+  'transfer.sent': '{language} est envoyé et prêt sur l’autre téléphone.',
   'transfer.received': '{language} est prêt à lire.',
   'transfer.openLanguage': 'Ouvrir {language}',
-  'transfer.stopped': 'Le transfert s’est arrêté avant la fin. Rien d’incomplet n’a été gardé.',
+  'transfer.stopped': 'Le transfert s’est arrêté avant la fin, et rien d’incomplet n’a été gardé.',
   'transfer.app.received':
-    'L’application est sur l’autre téléphone. Installez-la, puis envoyez les ressources.',
+    'L’application est sur l’autre téléphone, alors installez-la, puis envoyez les ressources.',
   'share.passage': 'Partager le passage',
   'share.story': 'Partager l’histoire',
   'share.asText': 'Partager en texte',
@@ -382,16 +381,16 @@ export const fr: LocaleTable = {
   },
   'about.publishedBy': 'Publié par',
   'about.publishedBy.body': {
-    one: 'unfoldingWord et les organisations d’Église avec lesquelles il sert, en {count} langue. Chaque ressource porte le nom de l’organisation qui l’a réalisée, sous CC BY-SA 4.0.',
-    many: 'unfoldingWord et les organisations d’Église avec lesquelles il sert, en {count} de langues. Chaque ressource porte le nom de l’organisation qui l’a réalisée, sous CC BY-SA 4.0.',
+    one: 'unfoldingWord et les organisations d’Église avec lesquelles il sert, en {count} langue, chaque ressource sous CC BY-SA 4.0 portant le nom de l’organisation qui l’a réalisée.',
+    many: 'unfoldingWord et les organisations d’Église avec lesquelles il sert, en {count} de langues, chaque ressource sous CC BY-SA 4.0 portant le nom de l’organisation qui l’a réalisée.',
     other:
-      'unfoldingWord et les organisations d’Église avec lesquelles il sert, en {count} langues. Chaque ressource porte le nom de l’organisation qui l’a réalisée, sous CC BY-SA 4.0.',
+      'unfoldingWord et les organisations d’Église avec lesquelles il sert, en {count} langues, chaque ressource sous CC BY-SA 4.0 portant le nom de l’organisation qui l’a réalisée.',
   },
   'about.byType': 'Ressources par type',
   'about.stories': 'Histoires d’impact',
   'about.partner': 'Partenariat',
   'about.partner.body':
-    'Ces ressources sont gratuites grâce aux partenaires. Vous pouvez aider à les porter jusqu’aux peuples non atteints.',
+    'Ces ressources sont gratuites grâce aux partenaires, et vous pouvez aider à les porter jusqu’aux peuples non atteints.',
   'about.partner.link': 'Donner sur unfoldingword.org',
   'about.next': 'Ce qui pourrait vous servir ensuite',
   'about.link.translationCore': 'translationCore',
@@ -447,11 +446,11 @@ export const fr: LocaleTable = {
   'settings.firstName': 'Prénom',
   'settings.firstName.about': 'Utilisé seulement dans la salutation, seulement sur ce téléphone.',
   'settings.fullText': 'Rechercher dans tous les textes',
-  'settings.fullText.about': 'Crée un index sur ce téléphone. Environ {size} par langue.',
+  'settings.fullText.about': 'Crée sur ce téléphone un index d’environ {size} par langue.',
   'settings.storage': 'Stockage',
-  'settings.storage.about': '{size} utilisés. Voir et retirer des packs de langue.',
+  'settings.storage.about': 'Voir et retirer des packs de langue, {size} utilisés.',
   'settings.licence': 'Licence et attribution',
-  'settings.licence.about': 'Contenu CC BY-SA 4.0, application MIT. Gratuit grâce aux partenaires.',
+  'settings.licence.about': 'Contenu CC BY-SA 4.0 et application MIT, gratuits grâce aux partenaires.',
   'settings.about': 'À propos de cette bibliothèque',
   'settings.about.about': 'Ce que l’Église a bâti, et comment devenir partenaire.',
   'settings.privacy': 'Confidentialité',
@@ -460,7 +459,7 @@ export const fr: LocaleTable = {
   'settings.diagnostics.about':
     'Envoyer un relevé de ce qui s’est passé sur ce téléphone à la personne qui vous aide.',
   'settings.footer':
-    'Rien ne quitte ce téléphone sans que vous ayez choisi de l’envoyer. L’application compte les ouvertures, téléchargements, transferts et partages au total, sans identifiant.',
+    'Rien ne quitte ce téléphone sans que vous ayez choisi de l’envoyer, et l’application compte les ouvertures, téléchargements, transferts et partages seulement au total, sans identifiant.',
   'diagnostics.title': 'Partager le diagnostic',
   'diagnostics.body':
     'Le fichier contient un relevé de ce que l’application a fait sur ce téléphone et un résumé de ce qu’il contient, sans les passages, articles et histoires que vous avez ouverts ou enregistrés, et sans noms, notes ni identifiants.',
@@ -468,61 +467,64 @@ export const fr: LocaleTable = {
   'diagnostics.body.reading':
     'Le fichier contient un relevé de ce que l’application a fait sur ce téléphone, un résumé de ce qu’il contient et les passages, articles et histoires que vous avez ouverts ou enregistrés, sans noms, notes ni identifiants.',
   'diagnostics.includeReading': 'Inclure ce que j’ai lu',
-  'failure.http.offline': 'Vous êtes hors ligne. Réessayez une fois connecté.',
-  'failure.http.timeout': 'Le catalogue a mis trop de temps à répondre. Réessayez dans un instant.',
-  'failure.http.status': 'Le catalogue n’a pas répondu comme prévu. Réessayez plus tard.',
+  'failure.http.offline': 'Vous êtes hors ligne, alors réessayez une fois connecté.',
+  'failure.http.timeout': 'Le catalogue a mis trop de temps à répondre, alors réessayez dans un instant.',
+  'failure.http.status': 'Le catalogue n’a pas répondu comme prévu, alors réessayez plus tard.',
   'failure.http.host-refused': 'L’application se connecte seulement aux adresses qu’elle connaît.',
-  'failure.http.cancelled': 'Cela s’est arrêté avant la fin. Vous pouvez réessayer.',
+  'failure.http.cancelled': 'Cela s’est arrêté avant la fin, et vous pouvez réessayer.',
   'failure.files.not-found': 'Ce fichier n’est plus sur ce téléphone.',
-  'failure.files.no-space': 'Ce téléphone n’a plus d’espace. Retirez un pack, puis réessayez.',
-  'failure.files.io': 'Le téléphone n’a pas pu enregistrer ceci. Réessayez.',
+  'failure.files.no-space': 'Ce téléphone n’a plus d’espace, alors retirez un pack, puis réessayez.',
+  'failure.files.io': 'Le téléphone n’a pas pu enregistrer ceci, alors réessayez.',
   'failure.db.migration-failed':
-    'L’application n’a pas pu mettre à jour ses données. Partagez le diagnostic pour qu’on puisse vous aider.',
-  'failure.db.io': 'L’application n’a pas pu lire ni enregistrer ses données. Réessayez.',
-  'failure.kv.io': 'Cette préférence n’a pas pu être enregistrée. Réessayez.',
+    'L’application n’a pas pu mettre à jour ses données, alors partagez le diagnostic pour qu’on puisse vous aider.',
+  'failure.db.io': 'L’application n’a pas pu lire ni enregistrer ses données, alors réessayez.',
+  'failure.kv.io': 'Cette préférence n’a pas pu être enregistrée, alors réessayez.',
   'failure.journal.persist-failed':
-    'Le relevé de diagnostic n’a pas pu être conservé. Tout le reste fonctionne.',
+    'Le relevé de diagnostic n’a pas pu être conservé, mais tout le reste fonctionne.',
   'failure.journal.event-rejected':
-    'Une entrée du diagnostic a été laissée de côté. Tout le reste fonctionne.',
+    'Une entrée du diagnostic a été laissée de côté, mais tout le reste fonctionne.',
   'failure.journal.import-invalid': 'Ce n’est pas un fichier de diagnostic que l’application peut lire.',
   'failure.kernel.not-owned':
-    'L’application a retenu une modification qu’elle ne doit pas faire. Partagez le diagnostic pour qu’on puisse vous aider.',
+    'L’application a retenu une modification qu’elle ne doit pas faire, alors partagez le diagnostic pour qu’on puisse vous aider.',
   'failure.kernel.observer-failed':
-    'Une partie de l’application n’a pas fini de se mettre à jour. Partagez le diagnostic pour qu’on puisse vous aider.',
+    'Une partie de l’application n’a pas fini de se mettre à jour, alors partagez le diagnostic pour qu’on puisse vous aider.',
   'failure.catalog.invalid-response':
-    'Le catalogue est arrivé sous une forme illisible pour l’application. Réessayez plus tard.',
-  'failure.pack.not-found': 'Cette ressource n’est plus publiée. Recherchez des mises à jour plus tard.',
-  'failure.pack.no-space': 'Il n’y a pas assez d’espace pour ce pack. Retirez un autre pack, puis réessayez.',
-  'failure.pack.checksum-mismatch': 'Le pack n’est pas arrivé en entier. Réessayez.',
+    'Le catalogue est arrivé sous une forme illisible pour l’application, alors réessayez plus tard.',
+  'failure.pack.not-found':
+    'Cette ressource n’est plus publiée, alors recherchez des mises à jour plus tard.',
+  'failure.pack.no-space':
+    'Il n’y a pas assez d’espace pour ce pack, alors retirez un autre pack, puis réessayez.',
+  'failure.pack.checksum-mismatch': 'Le pack n’est pas arrivé en entier, alors réessayez.',
   'failure.pack.invalid-burrito': 'Ce fichier n’est pas une ressource que l’application peut lire.',
   'failure.pack.unknown-flavor': 'Cette ressource est d’un type que l’application ne peut pas encore ouvrir.',
   'failure.pack.no-provenance':
     'Cette ressource n’indique pas qui l’a publiée, donc l’application ne l’installe pas.',
   'failure.pack.empty-plan': 'Choisissez d’abord au moins une ressource.',
   'failure.pack.mixed-packs':
-    'Ces ressources appartiennent à des packs différents. Envoyez un pack à la fois.',
-  'failure.corpus.unreadable': 'Ce pack n’a pas pu être ouvert. Retirez-le, puis téléchargez-le à nouveau.',
+    'Ces ressources appartiennent à des packs différents, alors envoyez un pack à la fois.',
+  'failure.corpus.unreadable':
+    'Ce pack n’a pas pu être ouvert, alors retirez-le, puis téléchargez-le à nouveau.',
   'failure.transfer.unavailable':
     'Le transfert à proximité n’est pas disponible sur ce téléphone pour le moment.',
   'failure.transfer.unsupported':
-    'Ce téléphone ne peut pas envoyer l’application elle-même. Les ressources peuvent partir.',
-  'failure.transfer.declined': 'L’autre téléphone n’a pas accepté. Vous pouvez proposer de nouveau.',
+    'Ce téléphone ne peut pas envoyer l’application elle-même, mais les ressources peuvent partir.',
+  'failure.transfer.declined': 'L’autre téléphone n’a pas accepté, et vous pouvez proposer de nouveau.',
   'failure.transfer.peer-lost':
-    'L’autre téléphone est hors de portée. Rapprochez les téléphones et réessayez.',
-  'failure.transfer.cancelled': 'Le transfert a été arrêté. Rien d’incomplet n’a été gardé.',
+    'L’autre téléphone est hors de portée, alors rapprochez les téléphones et réessayez.',
+  'failure.transfer.cancelled': 'Le transfert a été arrêté, et rien d’incomplet n’a été gardé.',
   'failure.audio.unavailable': 'L’audio n’est pas disponible pour ceci pour le moment.',
   'failure.share.unavailable': 'Le partage n’est pas disponible sur ce téléphone pour le moment.',
   'failure.partners.invalid-feed':
-    'Les histoires d’impact sont arrivées sous une forme que l’application ne peut pas lire. Celles qui sont sur ce téléphone restent affichées.',
+    'Les histoires d’impact sont arrivées sous une forme que l’application ne peut pas lire, mais celles qui sont sur ce téléphone restent affichées.',
   'failure.unexpected':
-    'Quelque chose n’a pas fonctionné. Réessayez, ou partagez le diagnostic pour qu’on puisse vous aider.',
+    'Quelque chose n’a pas fonctionné, alors réessayez, ou partagez le diagnostic pour qu’on puisse vous aider.',
   'study.helps.showResponse': 'Afficher la réponse',
   'study.helps.hideResponse': 'Masquer la réponse',
   'study.noLanguage': 'Choisissez une langue pour commencer à lire.',
   'study.noLanguage.action': 'Choisir une langue',
   'library.download': 'Télécharger {resource}',
   'library.onPhone': 'Sur ce téléphone',
-  'search.fullText.inSettings': 'Activez-la dans Réglages. L’index reste sur ce téléphone.',
+  'search.fullText.inSettings': 'Activez-la dans Réglages, et l’index reste sur ce téléphone.',
   'study.frame.picture': 'Illustration de l’image {number}',
   'transfer.app.ready':
     'L’application est arrivée sur ce téléphone ({size}) et elle est prête à être installée.',
@@ -530,7 +532,7 @@ export const fr: LocaleTable = {
   'transfer.localNetwork.prompt':
     'L’application cherche l’autre téléphone sur votre Wi-Fi ou partage de connexion seulement pendant que vous envoyez ou recevez.',
   'transfer.address': 'Si l’autre téléphone ne trouve pas celui-ci, saisissez-y {address}.',
-  'transfer.address.qr': 'Code image pour {address}. Scannez-le avec l’appareil photo de l’autre téléphone.',
+  'transfer.address.qr': 'Code image pour {address}, à scanner avec l’appareil photo de l’autre téléphone.',
   'transfer.typed': 'Saisir une adresse',
   'transfer.typed.address': 'Adresse de l’autre téléphone',
   'transfer.typed.code': 'Code de l’autre téléphone',
@@ -538,17 +540,18 @@ export const fr: LocaleTable = {
   'transfer.typed.invalid':
     'Saisissez l’adresse et le code à six chiffres tels que l’autre téléphone les affiche.',
   'transfer.app.install': 'Installer l’application',
-  'transfer.app.install.opened': 'Le programme d’installation est ouvert. Suivez ses étapes pour terminer.',
+  'transfer.app.install.opened':
+    'Le programme d’installation est ouvert, alors suivez ses étapes pour terminer.',
   'transfer.app.install.unsupported':
-    'Cette copie de l’application ne peut pas ouvrir le programme d’installation. Installez plutôt l’application depuis sa boutique.',
-  'failure.boot': 'L’application n’a pas pu se préparer sur ce téléphone. Réessayez dans un instant.',
+    'Cette copie de l’application ne peut pas ouvrir le programme d’installation, alors installez plutôt l’application depuis sa boutique.',
+  'failure.boot': 'L’application n’a pas pu se préparer sur ce téléphone, alors réessayez dans un instant.',
   'languages.import.title': 'Depuis un fichier',
   'languages.import': 'Importer depuis un fichier',
   'languages.import.about':
     'Installez une archive Scripture Burrito (.zip) que vous avez enregistrée ou reçue.',
-  'languages.import.opened': 'Vous avez ouvert {name}. L’installer sur ce téléphone ?',
+  'languages.import.opened': 'Installer sur ce téléphone {name}, le fichier que vous avez ouvert ?',
   'languages.import.install': 'Installer',
-  'languages.import.done': 'Installé depuis le fichier. Vous pouvez le lire hors connexion.',
+  'languages.import.done': 'Installé depuis le fichier et lisible hors connexion.',
   'settings.appLanguage.direction':
     'L’application redémarre pour changer le sens de l’affichage quand vous passez à l’arabe, à l’ourdou ou au persan, ou que vous les quittez.',
   'study.audio.back': 'Reculer de 10 secondes',

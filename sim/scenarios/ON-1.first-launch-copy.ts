@@ -19,7 +19,7 @@ export default scenario(
       english: 'Continue in English',
       footer: 'Free. Openly licensed. No account needed.',
       nameLabel: 'Your first name (optional)',
-      nameHint: 'Stays on this phone. Used only to greet you.',
+      nameHint: 'It stays on this phone and is used only to greet you.',
     });
 
     const french = world.device('french', { locale: { tag: 'fr-FR', region: 'FR' }, localeGate: 'drafts' });

@@ -33,11 +33,11 @@ export const common = {
   'common.theme.light': 'Light',
   'common.theme.dark': 'Dark',
   'common.theme.system': 'Follow the phone',
-  'state.offline': 'You are offline. Everything on this phone still works.',
+  'state.offline': 'You are offline, and everything on this phone still works.',
   'state.notDownloaded': '{language} is not on this phone yet.',
   'state.notDownloaded.action': 'Download {language}',
   'state.nothingPublished': 'Nothing is published in {language} yet.',
   'state.checking': 'Checking for updates',
   'state.upToDate': 'Everything on this phone is up to date.',
-  'failure.boot': 'The app could not get ready on this phone. Try again in a moment.',
+  'failure.boot': 'The app could not get ready on this phone, so try again in a moment.',
 } as const;

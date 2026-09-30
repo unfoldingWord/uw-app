@@ -247,7 +247,7 @@ export default scenario(
     assert.match(run.received.label, /is ready to read\.$/);
     assert.ok(run.sent.ok);
     assert.equal(run.sent.messages.length, 1);
-    assert.match(run.sent.messages[0] ?? '', /is ready on the other phone\.$/);
+    assert.match(run.sent.messages[0] ?? '', /is sent and ready on the other phone\.$/);
     const friendly = servicesOf(friend);
     assert.ok(await friendly.transfer.open('qaa'));
     const opened = await friendly.study.passage('RUT 1:16');

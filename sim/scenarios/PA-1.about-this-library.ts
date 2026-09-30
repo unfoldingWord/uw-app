@@ -36,7 +36,7 @@ export default scenario(
     assert.deepEqual(summary.publishers, ['unfoldingWord', 'Door43-Catalog', 'Worldview']);
     assert.equal(
       summary.publishedBy,
-      'unfoldingWord and the church organizations it serves with, in 3 languages. Every resource carries the name of the organization that made it, under CC BY-SA 4.0.',
+      'unfoldingWord and the church organizations it serves with, in 3 languages, each resource under CC BY-SA 4.0 with the name of the organization that made it.',
     );
     const stories = summary.byType.find((row) => row.type === 'stories');
     assert.deepEqual(stories, { type: 'stories', title: 'Open Bible Stories', releases: 4, languages: 3 });
@@ -46,7 +46,7 @@ export default scenario(
     );
     assert.deepEqual(summary.partner, {
       title: 'Partner',
-      body: 'These resources are free because partners make them so. You can help extend the reach into the unreached.',
+      body: 'These resources are free because partners make them so, and you can help extend the reach into the unreached.',
       link: 'Give at unfoldingword.org',
       url: 'https://unfoldingword.org/Give',
     });
