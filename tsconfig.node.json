@@ -24,6 +24,7 @@
   "include": [
     "sim/**/*.ts",
     "scripts/**/*.ts",
+    "plugins/**/*.ts",
     "tests/**/*.ts",
     "src/lib/**/*.test.ts",
     "eslint.config.ts",

@@ -1,4 +1,5 @@
 import type { ExpoConfig } from 'expo/config';
+import { withDataExtractionRules } from './plugins/data-extraction-rules/index.ts';
 import { locales } from './src/lib/strings/locales.ts';
 
 const iosBundleIdentifier = 'com.unfoldingword.iosapp';
@@ -156,4 +157,4 @@ const config: ExpoConfig = {
   ],
 };
 
-export default config;
+export default withDataExtractionRules(config);

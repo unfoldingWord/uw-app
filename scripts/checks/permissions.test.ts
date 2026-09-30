@@ -5,6 +5,7 @@ import { nativeConfigOf, permissionFindings } from './permissions.ts';
 function introspected(options: {
   permissions: { name: string; remove?: boolean }[];
   allowBackup?: string;
+  dataExtractionRules?: string | null;
   infoPlist?: Record<string, unknown>;
   entitlements?: Record<string, unknown>;
   intentData?: { scheme: string; mimeType?: string }[];
@@ -30,7 +31,15 @@ function introspected(options: {
               })),
               application: [
                 {
-                  $: { 'android:allowBackup': options.allowBackup },
+                  $: {
+                    'android:allowBackup': options.allowBackup,
+                    ...(options.dataExtractionRules === null
+                      ? {}
+                      : {
+                          'android:dataExtractionRules':
+                            options.dataExtractionRules ?? '@xml/data_extraction_rules',
+                        }),
+                  },
                   activity: [
                     {
                       'intent-filter': [
@@ -202,6 +211,15 @@ describe('permissionFindings', () => {
     expect(permissionFindings(config)).toEqual([
       'android.permission.NEARBY_WIFI_DEVICES is not in android.blockedPermissions, so a library manifest could still merge it in',
       'android.permission.INTERNET is admitted and also in android.blockedPermissions; keep it in one list',
+    ]);
+  });
+
+  it('refuses an application that names no data extraction rules, so Android 12 and later migrates the app to a new phone', () => {
+    const config = nativeConfigOf(
+      introspected({ permissions: blocked, allowBackup: 'false', dataExtractionRules: null }),
+    );
+    expect(permissionFindings(config)).toEqual([
+      'android:dataExtractionRules is not @xml/data_extraction_rules, so Android 12 and later copies notes, groups and names to a new phone in a device-to-device transfer',
     ]);
   });
 });

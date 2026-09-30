@@ -38,6 +38,13 @@ recorded run on a phone; **blocked** names the missing input and its owner.
 - **Short link domain** for the "get the app" link in share-out (SH-4): Product (PRD 15 and 17).
 - **Audio as release assets.** DCS does not yet carry audio in burritos (PRD 15); ST-4 and LA-4 run on a
   provisional fixture flavor.
+- **No phone migration on Android 12 and later** (issue #5). `android:allowBackup="false"` stops cloud backup
+  only; device-to-device migration also needs data extraction rules. The config plugin
+  `plugins/data-extraction-rules` sets `android:dataExtractionRules` and writes
+  `res/xml/data_extraction_rules.xml`, which excludes every domain from `cloud-backup` and `device-transfer`;
+  the `permissions` check asserts both, and an `expo prebuild --platform android` on 2026-09-30 wrote them
+  (the file matched the plugin's copy). Still needed: a recorded run on an Android 12 or later phone showing
+  the app absent from a device-to-device transfer, in `docs/progress_tracker.md`.
 - **Opening a burrito file from another app** (SH-3 on a phone). Wired in I1 but not run on a phone: the
   Languages modal has "Import from a file" (the Picker port over `expo-document-picker`), `app.config.ts`
   registers `CFBundleDocumentTypes` for `public.zip-archive` and an Android `VIEW` intent filter for

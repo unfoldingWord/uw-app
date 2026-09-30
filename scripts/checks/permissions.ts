@@ -17,6 +17,8 @@ export type IntentFilter = { actions: readonly string[]; data: readonly IntentDa
 
 const appScheme = 'unfoldingword';
 
+const dataExtractionRulesResource = '@xml/data_extraction_rules';
+
 const appStoreRecord = { id: '925570688', bundleIdentifier: 'com.unfoldingword.iosapp' } as const;
 
 const importedMimeTypes: readonly string[] = [
@@ -34,6 +36,7 @@ const viewAction = 'android.intent.action.VIEW';
 export type NativeConfig = {
   androidPermissions: readonly ManifestPermission[];
   androidAllowBackup: string | undefined;
+  androidDataExtractionRules: string | undefined;
   androidIntentFilters: readonly IntentFilter[];
   infoPlist: Readonly<Record<string, unknown>>;
   entitlements: Readonly<Record<string, unknown>>;
@@ -73,6 +76,7 @@ export function nativeConfigOf(
   const applicationNode = list(manifest.application)[0];
   const application = attributes(applicationNode);
   const allowBackup = application['android:allowBackup'];
+  const dataExtractionRules = application['android:dataExtractionRules'];
   const filters = list(record(applicationNode).activity)
     .flatMap((activity) => list(record(activity)['intent-filter']))
     .map((filter) => ({
@@ -90,6 +94,7 @@ export function nativeConfigOf(
   return {
     androidPermissions: permissions,
     androidAllowBackup: typeof allowBackup === 'string' ? allowBackup : undefined,
+    androidDataExtractionRules: typeof dataExtractionRules === 'string' ? dataExtractionRules : undefined,
     androidIntentFilters: filters,
     infoPlist: record(ios.infoPlist),
     entitlements: record(ios.entitlements),
@@ -185,6 +190,11 @@ export function permissionFindings(config: NativeConfig): string[] {
   findings.push(...libraryPermissionFindings(config.libraryPermissions, removed));
   if (config.androidAllowBackup !== 'false') {
     findings.push('android:allowBackup is not "false", so Android backs up notes, groups and names');
+  }
+  if (config.androidDataExtractionRules !== dataExtractionRulesResource) {
+    findings.push(
+      `android:dataExtractionRules is not ${dataExtractionRulesResource}, so Android 12 and later copies notes, groups and names to a new phone in a device-to-device transfer`,
+    );
   }
   for (const key of Object.keys(config.infoPlist)) {
     if (usageDescription.test(key) && !iosAdmittedUsageDescriptions.includes(key)) {
