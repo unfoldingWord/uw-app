@@ -9,14 +9,16 @@ name: First launch and onboarding through to Home
 - extendedWaitUntil:
     visible: 'Continue in English'
     timeout: 90000
-- assertVisible: 'Choose your language'
 - takeScreenshot: onboarding-1-welcome
+- assertVisible: 'Choose your language'
 - tapOn: 'Choose your language'
 - extendedWaitUntil:
     visible: 'Search languages'
     timeout: 15000
 - takeScreenshot: onboarding-2-choose-language
-- tapOn: 'Back'
+- tapOn:
+    text: 'Back'
+    above: 'Search languages'
 - extendedWaitUntil:
     visible: 'Continue in English'
     timeout: 15000

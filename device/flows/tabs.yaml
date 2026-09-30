@@ -3,7 +3,9 @@ name: The three tabs Home, Study and Formation
 ---
 - runFlow: common/start.yaml
 - takeScreenshot: tabs-1-home
-- tapOn: 'Study'
+- tapOn:
+    text: 'Study'
+    rightOf: 'Home'
 - extendedWaitUntil:
     visible: 'Library'
     timeout: 15000
@@ -17,7 +19,9 @@ name: The three tabs Home, Study and Formation
 - waitForAnimationToEnd:
     timeout: 5000
 - takeScreenshot: tabs-3-formation
-- tapOn: 'Home'
+- tapOn:
+    text: 'Home'
+    leftOf: 'Study'
 - extendedWaitUntil:
     visible: 'Switch theme'
     timeout: 15000
