@@ -220,7 +220,7 @@ These exist so a leader can get help without a technician, and so the team can r
 | DX-1 | **Journal.** Every event in the app, including failures, is recorded in a bounded, append-only journal on the device. Nothing in it identifies the leader. | Must |
 | DX-2 | **Share the journal.** From Settings, a leader can share the journal and a snapshot of the device's state out through the share sheet, the same way a passage is shared. The screen says in one sentence what the file contains. | Must |
 | DX-3 | **Replay.** A shared journal rebuilds the device in the sim to the same snapshot, so a report from the field becomes a reproducible scenario. | Must |
-| DX-4 | **Proven in the sim.** Every Must requirement in this document has a scenario in the sim that fails without it, named for the requirement ID. | Must |
+| DX-4 | **Proven in the sim.** Every Must requirement in this document has a scenario in the sim that fails without it, named for the requirement ID. A requirement the sim cannot see, because it renders nothing (SE-2: accessible names, dynamic type, contrast), is proven instead by a test that names it, listed with its reason in `testProvenRequirements` in `sim/trace.ts`, and checked on a phone. | Must |
 
 ---
 

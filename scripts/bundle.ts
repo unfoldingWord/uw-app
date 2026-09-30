@@ -49,7 +49,7 @@ if (!existsSync(rootLayout)) {
     } else if (forbidden.length > 0) {
       failed = true;
       console.log(
-        `bundle ${platform}: FAIL, the native bundle holds ${forbidden.length} QA harness modules (docs/exceptions.md):`,
+        `bundle ${platform}: FAIL, the native bundle holds ${forbidden.length} QA harness modules (ADR 0008):`,
       );
       for (const path of forbidden.slice(0, 20)) {
         console.log(`  ${path}`);

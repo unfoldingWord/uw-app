@@ -85,13 +85,12 @@ const renderingModules = ['expo-blur', 'expo-haptics', 'expo-font', 'expo-glass-
 const renderingApis: RestrictedPattern = {
   regex: `^(${renderingModules.map(escaped).join('|')})(/.*)?$`,
   message:
-    'Blur, haptics and fonts are reached through the glass primitives and useThemeFonts in src/shared, never directly (docs/exceptions.md).',
+    'Blur, haptics and fonts are reached through the glass primitives and useThemeFonts in src/shared, never directly (AGENTS.md rule 2).',
 };
 
 const designSystemAssets: RestrictedPattern = {
   regex: '^@design-system(/|$)',
-  message:
-    'Only src/shared/fonts imports from design-system/, and only its fonts (AGENTS.md section 3, docs/exceptions.md).',
+  message: 'Only src/shared/fonts imports from design-system/, and only its fonts (AGENTS.md rule 2).',
 };
 
 const platformFromApplication: RestrictedPattern = {
@@ -195,7 +194,7 @@ export const layers: Layer[] = [
       {
         regex: '^@design-system/(?!assets/logo/logo-horizontal-(color|reversed)\\.png$)',
         message:
-          'src/shared/ui/Logo.tsx imports only the two horizontal lockups from design-system/ (AGENTS.md section 3, docs/exceptions.md).',
+          'src/shared/ui/Logo.tsx imports only the two horizontal lockups from design-system/ (AGENTS.md rule 2).',
       },
       simFromApplication,
       deviceApis,
@@ -239,7 +238,7 @@ export const layers: Layer[] = [
       {
         regex: '^(?!@sim/web/ports$)',
         message:
-          'src/platform/ports.web.ts only re-exports the QA render harness from @sim/web/ports (docs/exceptions.md).',
+          'src/platform/ports.web.ts only re-exports the QA render harness from @sim/web/ports (AGENTS.md rule 2).',
       },
     ],
   },
@@ -256,13 +255,12 @@ export const layers: Layer[] = [
       {
         regex: '^@lib/(?!ports$|domain(/|$))',
         message:
-          'src/platform never imports application code; it sees only the types of @lib/ports and @lib/domain (AGENTS.md rule 2, docs/exceptions.md).',
+          'src/platform never imports application code; it sees only the types of @lib/ports and @lib/domain (AGENTS.md rule 2).',
       },
       {
         regex: '^@lib/(ports$|domain(/|$))',
         allowTypeImports: true,
-        message:
-          'src/platform imports @lib/ports and @lib/domain as types only (AGENTS.md rule 2, docs/exceptions.md).',
+        message: 'src/platform imports @lib/ports and @lib/domain as types only (AGENTS.md rule 2).',
       },
     ],
   },

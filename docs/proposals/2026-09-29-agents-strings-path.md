@@ -1,7 +1,7 @@
 # Correct where a new string goes in AGENTS.md rule 1
 
-Status: applied as a doc-only correction on 2026-09-29 (T13) and recorded in `docs/progress_tracker.md`;
-a human reviewer may revert it. No code changes.
+Status: accepted in issue #6 (2026-09-30). Applied as a doc-only correction on 2026-09-29 (T13) and recorded
+in `docs/progress_tracker.md`. No code changes.
 
 ## Problem
 

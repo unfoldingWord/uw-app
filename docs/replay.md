@@ -51,8 +51,8 @@ with no `AppOpened` yet; a restart in replay journals the same event at the same
 ## The rules a module follows
 
 1. **Register in one place.** A module is `defineModule({ events, owns, create })` in its own folder under
-   `src/lib/<module>/`, and one line in `kernelModules` in `src/lib/kernel.ts` (an exception to rule 4 while
-   the scaffold PR is open, see `docs/exceptions.md`). `events` lists every type it
+   `src/lib/<module>/`, and one line in `kernelModules` in `src/lib/kernel.ts` (a new module is an
+   architecture change with a proposal). `events` lists every type it
    emits; no two modules list the same type, and the kernel refuses an emit of a type the module does not own.
    `Failure` may be emitted by any module. `owns` lists its tables, directories and preference keys.
 2. **A `redo` command emits its root event first**, before anything that can fail, and then only `follows`

@@ -1,5 +1,7 @@
 # Import a burrito file on the phone
 
+Status: accepted in issue #6 (2026-09-30), as built; recorded in ADR 0009. architecture.md and AGENTS.md section 3 list the Picker port.
+
 ## Problem
 
 SH-3 asks that the app import a burrito the leader opens from a file, through the same install path as a
