@@ -177,7 +177,7 @@ export const es419: LocaleTable = {
   'resource.images': 'Imágenes de las historias',
   'resource.images.about': 'Las comparten todos los idiomas y se descargan una sola vez.',
   'resource.audio': 'Audio',
-  'resource.audio.about': 'Una descarga aparte para cada recurso.',
+  'resource.audio.about': 'Cada recurso tiene su propio paquete de audio.',
   'resource.hebrew': 'Antiguo Testamento en hebreo',
   'resource.greek': 'Nuevo Testamento en griego',
   'resource.original.about': 'Texto simple, fuera del paquete de idioma.',
@@ -189,7 +189,7 @@ export const es419: LocaleTable = {
   'article.notDownloaded': 'Este artículo todavía no está en este teléfono.',
   'article.linkMissing': 'Este enlace lleva a algo que no está en este teléfono.',
   'search.placeholder': 'Referencia o título, como Rut 2 o pacto',
-  'search.label': 'Buscar pasajes, palabras, lecciones e historias',
+  'search.label': 'Buscar pasajes, artículos e historias',
   'search.empty': 'Escribe una referencia como Rut 2, o el título de una palabra o una historia.',
   'search.noResults': 'Nada en este teléfono coincide con {query}.',
   'search.passages': 'Pasajes',
@@ -450,8 +450,8 @@ export const es419: LocaleTable = {
     'El archivo contiene un registro de lo que hizo la aplicación en este teléfono, un resumen de lo que hay en él y los pasajes, artículos e historias que abriste o guardaste, sin nombres, notas ni identificadores.',
   'diagnostics.includeReading': 'Incluir lo que leí',
   'failure.http.offline': 'Estás sin conexión. Intenta de nuevo cuando tengas conexión.',
-  'failure.http.timeout': 'La biblioteca tardó demasiado en responder. Intenta de nuevo en un momento.',
-  'failure.http.status': 'La biblioteca no respondió como se esperaba. Intenta de nuevo más tarde.',
+  'failure.http.timeout': 'El catálogo tardó demasiado en responder. Intenta de nuevo en un momento.',
+  'failure.http.status': 'El catálogo no respondió como se esperaba. Intenta de nuevo más tarde.',
   'failure.http.host-refused': 'La aplicación solo se conecta a los lugares que conoce.',
   'failure.http.cancelled': 'Esto se detuvo antes de terminar. Puedes intentar de nuevo.',
   'failure.files.not-found': 'Ese archivo ya no está en este teléfono.',
@@ -459,8 +459,8 @@ export const es419: LocaleTable = {
   'failure.files.io': 'El teléfono no pudo guardar esto. Intenta de nuevo.',
   'failure.db.migration-failed':
     'La aplicación no pudo actualizar sus registros. Comparte el diagnóstico para que alguien te ayude.',
-  'failure.db.io': 'La aplicación no pudo leer sus registros. Intenta de nuevo.',
-  'failure.kv.io': 'No se pudo guardar este ajuste. Intenta de nuevo.',
+  'failure.db.io': 'La aplicación no pudo leer ni guardar sus registros. Intenta de nuevo.',
+  'failure.kv.io': 'No se pudo guardar esta preferencia. Intenta de nuevo.',
   'failure.journal.persist-failed':
     'No se pudo conservar el registro de diagnóstico. Todo lo demás sigue funcionando.',
   'failure.journal.event-rejected': 'Se omitió una entrada del diagnóstico. Todo lo demás sigue funcionando.',
@@ -470,11 +470,11 @@ export const es419: LocaleTable = {
   'failure.kernel.observer-failed':
     'Una parte de la aplicación no terminó de actualizarse. Comparte el diagnóstico para que alguien te ayude.',
   'failure.catalog.invalid-response':
-    'La lista de la biblioteca llegó en una forma que la aplicación no puede leer. Intenta de nuevo más tarde.',
+    'El catálogo llegó en una forma que la aplicación no puede leer. Intenta de nuevo más tarde.',
   'failure.pack.not-found': 'Este recurso ya no está publicado. Busca actualizaciones más tarde.',
   'failure.pack.no-space':
     'No hay espacio suficiente para este paquete. Quita otro paquete e intenta de nuevo.',
-  'failure.pack.checksum-mismatch': 'La descarga no llegó completa. Intenta de nuevo.',
+  'failure.pack.checksum-mismatch': 'El paquete no llegó completo. Intenta de nuevo.',
   'failure.pack.invalid-burrito': 'Este archivo no es un recurso que la aplicación pueda leer.',
   'failure.pack.unknown-flavor': 'Este recurso es de un tipo que la aplicación todavía no puede abrir.',
   'failure.pack.no-provenance':

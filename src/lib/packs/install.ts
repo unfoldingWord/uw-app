@@ -216,15 +216,15 @@ export async function resolveSource(
         },
       };
     case 'peer': {
-      const { session } = source;
-      const offers = session.offered().map((burrito): Offer => ({
+      const { delivery } = source;
+      const offers = delivery.offered().map((burrito): Offer => ({
         ref: refOf(burrito),
         revision: burrito.commit,
         row: burrito.row,
         bytes: burrito.bytes,
         choice: { ...refOf(burrito), row: burrito.row, bytes: burrito.bytes },
         async fetch(stage, index, onBytes) {
-          const receipt = await session.receive(refOf(burrito), onBytes);
+          const receipt = await delivery.receive(refOf(burrito), onBytes);
           if (!receipt.ok) {
             return receipt;
           }
@@ -502,7 +502,7 @@ export function createInstaller(context: InstallerContext): Installer {
       bytes: burritos.reduce((sum, item) => sum + item.bytes, 0),
       burritos,
     };
-    await ports.db.transaction((session) => writeInstalledPack(session, pack));
+    await ports.db.transaction((transaction) => writeInstalledPack(transaction, pack));
     context.commit(pack);
     return { pack, roots: burritos.map((burrito) => burrito.root), failed };
   }

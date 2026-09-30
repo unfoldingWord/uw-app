@@ -23,11 +23,11 @@ export async function runMigrations(db: Db, migrations: readonly Migration[]): P
         continue;
       }
       current = migration.id;
-      await db.transaction(async (session) => {
+      await db.transaction(async (transaction) => {
         for (const statement of migration.statements) {
-          await session.exec(statement);
+          await transaction.exec(statement);
         }
-        await session.run(`INSERT INTO ${migrationsTable} (id) VALUES (?)`, [migration.id]);
+        await transaction.run(`INSERT INTO ${migrationsTable} (id) VALUES (?)`, [migration.id]);
       });
       applied.push(migration.id);
     }

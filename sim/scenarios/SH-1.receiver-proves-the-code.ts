@@ -49,10 +49,10 @@ export default scenario(
     assert.ok(typed.ok, typed.ok ? '' : typed.code);
     assert.equal(typed.platform, 'ios');
     const accepted = await friend.kernel.transfer.accept();
-    assert.ok(accepted.ok && accepted.session, accepted.ok ? '' : accepted.code);
+    assert.ok(accepted.ok && accepted.delivery, accepted.ok ? '' : accepted.code);
     const sent = await sending;
     assert.ok(sent.ok, sent.ok ? '' : sent.code);
-    const installed = await friend.kernel.packs.install(fromPeer(accepted.session));
+    const installed = await friend.kernel.packs.install(fromPeer(accepted.delivery));
     assert.ok(installed.ok && installed.pack.source === 'peer');
 
     const blank = await friend.kernel.transfer.connectAt('', offered.code);

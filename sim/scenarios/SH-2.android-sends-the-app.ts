@@ -64,7 +64,7 @@ export default scenario(
     await fresh.start();
     const appOnly = await transferBetween(android, fresh, { app: true });
     assert.equal(appOnly.offered.offer.resources.length, 0, 'the app can go alone');
-    assert.ok(appOnly.accepted.ok && appOnly.accepted.session === undefined);
+    assert.ok(appOnly.accepted.ok && appOnly.accepted.delivery === undefined);
     assert.equal(appOnly.installed, undefined);
     assert.deepEqual(fresh.kernel.transfer.receivedApp()?.state, 'ready-to-install');
 

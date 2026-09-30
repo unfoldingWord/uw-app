@@ -197,16 +197,16 @@ function number(row: DbRow | undefined): number {
   return typeof value === 'number' ? value : 0;
 }
 
-async function storedBytes(session: DbTransaction, table: string): Promise<number> {
-  const data = await session.get(`SELECT COALESCE(SUM(LENGTH(block)), 0) AS total FROM ${table}_data`);
+async function storedBytes(transaction: DbTransaction, table: string): Promise<number> {
+  const data = await transaction.get(`SELECT COALESCE(SUM(LENGTH(block)), 0) AS total FROM ${table}_data`);
   const columns = [0, 1, 2, 3, 4, 5].map((column) => `LENGTH(CAST(c${column} AS BLOB))`).join(' + ');
-  const content = await session.get(`SELECT COALESCE(SUM(${columns}), 0) AS total FROM ${table}_content`);
-  const sizes = await session.get(`SELECT COALESCE(SUM(LENGTH(sz)), 0) AS total FROM ${table}_docsize`);
+  const content = await transaction.get(`SELECT COALESCE(SUM(${columns}), 0) AS total FROM ${table}_content`);
+  const sizes = await transaction.get(`SELECT COALESCE(SUM(LENGTH(sz)), 0) AS total FROM ${table}_docsize`);
   return number(data) + number(content) + number(sizes);
 }
 
-async function optimize(session: DbTransaction, table: string): Promise<void> {
-  await session.run(`INSERT INTO ${table} (${table}) VALUES ('optimize')`);
+async function optimize(transaction: DbTransaction, table: string): Promise<void> {
+  await transaction.run(`INSERT INTO ${table} (${table}) VALUES ('optimize')`);
 }
 
 async function insertBatch(
@@ -228,8 +228,8 @@ async function insertBatch(
     entry.kind,
     entry.target,
   ]);
-  await db.transaction((session) =>
-    session.run(
+  await db.transaction((transaction) =>
+    transaction.run(
       `INSERT INTO ${table} (body, language, generation, root, kind, target) VALUES ${values}`,
       params,
     ),
@@ -237,12 +237,15 @@ async function insertBatch(
 }
 
 async function removeGenerations(
-  session: DbTransaction,
+  transaction: DbTransaction,
   language: string,
   keep: number | undefined,
 ): Promise<void> {
   for (const table of Object.values(fullTextTables)) {
-    await session.run(`DELETE FROM ${table} WHERE language = ? AND generation != ?`, [language, keep ?? -1]);
+    await transaction.run(`DELETE FROM ${table} WHERE language = ? AND generation != ?`, [
+      language,
+      keep ?? -1,
+    ]);
   }
 }
 
@@ -265,10 +268,10 @@ export async function buildIndex(
     first.map((entry) => entry.body),
   );
   const table = fullTextTables[tokenizer];
-  const before = await db.transaction(async (session) => {
-    await removeGenerations(session, language, previous?.generation);
-    await optimize(session, table);
-    return storedBytes(session, table);
+  const before = await db.transaction(async (transaction) => {
+    await removeGenerations(transaction, language, previous?.generation);
+    await optimize(transaction, table);
+    return storedBytes(transaction, table);
   });
   let count = first.length;
   await insertBatch(db, table, language, generation, first);
@@ -284,12 +287,12 @@ export async function buildIndex(
   }
   await insertBatch(db, table, language, generation, batch);
   const kept = previous !== undefined && previous.tokenizer === tokenizer ? previous.bytes : 0;
-  return db.transaction(async (session) => {
-    await removeGenerations(session, language, generation);
-    await optimize(session, table);
-    const bytes = Math.max(0, (await storedBytes(session, table)) - before + kept);
-    await session.run('DELETE FROM corpus_indexes WHERE language = ?', [language]);
-    await session.run(
+  return db.transaction(async (transaction) => {
+    await removeGenerations(transaction, language, generation);
+    await optimize(transaction, table);
+    const bytes = Math.max(0, (await storedBytes(transaction, table)) - before + kept);
+    await transaction.run('DELETE FROM corpus_indexes WHERE language = ?', [language]);
+    await transaction.run(
       'INSERT INTO corpus_indexes (language, entries, bytes, tokenizer, generation) VALUES (?, ?, ?, ?, ?)',
       [language, count, bytes, tokenizer, generation],
     );

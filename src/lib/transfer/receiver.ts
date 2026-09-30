@@ -1,6 +1,6 @@
 import { resourceKey, type ReleaseRef } from '../domain/release';
 import type { ModulePorts } from '../module';
-import type { PeerBurrito, PeerSession } from '../packs/source';
+import type { PeerBurrito, PeerDelivery } from '../packs/source';
 import { removeIfPresent } from '../packs/tree';
 import type { DevicePlatform } from '../ports';
 import { incomingDirectory, progressed, receivedAppDirectory, receivedAppPath, type Run } from './active';
@@ -100,11 +100,11 @@ export async function receiveAccepted(run: Run, wire: Wire, chosen: Chosen): Pro
   return { archives, app };
 }
 
-export function receivedSession(
+export function receivedDelivery(
   ports: ModulePorts,
   resources: readonly WireResource[],
   archives: ReadonlyMap<string, string>,
-): PeerSession {
+): PeerDelivery {
   const offered: PeerBurrito[] = resources.map((item) => ({
     publisher: item.publisher,
     resource: item.resource,

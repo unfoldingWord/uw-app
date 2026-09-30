@@ -262,7 +262,7 @@ describe('what a module is handed (docs/replay.md rules 4 and 5, AGENTS.md rule 
     expect(await rejection(ports.db.exec('PRAGMA writable_schema = 1'))).toBe('kernel.not-owned');
     expect(
       await rejection(
-        ports.db.transaction((session) => session.run("UPDATE catalog_releases SET tag = 'x'")),
+        ports.db.transaction((transaction) => transaction.run("UPDATE catalog_releases SET tag = 'x'")),
       ),
     ).toBe('kernel.not-owned');
     expect(await ports.db.all('SELECT pack FROM packs')).toEqual([]);

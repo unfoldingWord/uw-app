@@ -175,7 +175,7 @@ export const ptBR: LocaleTable = {
   'resource.images': 'Imagens das histórias',
   'resource.images.about': 'Compartilhadas por todos os idiomas e baixadas uma só vez.',
   'resource.audio': 'Áudio',
-  'resource.audio.about': 'Um download separado para cada recurso.',
+  'resource.audio.about': 'Cada recurso tem seu próprio pacote de áudio.',
   'resource.hebrew': 'Antigo Testamento em hebraico',
   'resource.greek': 'Novo Testamento em grego',
   'resource.original.about': 'Texto simples, fora do pacote de idioma.',
@@ -187,7 +187,7 @@ export const ptBR: LocaleTable = {
   'article.notDownloaded': 'Este artigo ainda não está neste celular.',
   'article.linkMissing': 'Este link leva a algo que não está neste celular.',
   'search.placeholder': 'Referência ou título, como Rute 2 ou aliança',
-  'search.label': 'Buscar passagens, palavras, lições e histórias',
+  'search.label': 'Buscar passagens, artigos e histórias',
   'search.empty': 'Digite uma referência como Rute 2, ou o título de uma palavra ou história.',
   'search.noResults': 'Nada neste celular corresponde a {query}.',
   'search.passages': 'Passagens',
@@ -450,8 +450,8 @@ export const ptBR: LocaleTable = {
     'O arquivo traz um registro do que o aplicativo fez neste celular, um resumo do que há nele e as passagens, os artigos e as histórias que você abriu ou salvou, sem nomes, notas ou identificadores.',
   'diagnostics.includeReading': 'Incluir o que eu li',
   'failure.http.offline': 'Você está off-line. Tente de novo quando estiver conectado.',
-  'failure.http.timeout': 'A biblioteca demorou demais para responder. Tente de novo em um instante.',
-  'failure.http.status': 'A biblioteca não respondeu como esperado. Tente de novo mais tarde.',
+  'failure.http.timeout': 'O catálogo demorou demais para responder. Tente de novo em um instante.',
+  'failure.http.status': 'O catálogo não respondeu como esperado. Tente de novo mais tarde.',
   'failure.http.host-refused': 'O aplicativo só se conecta aos lugares que conhece.',
   'failure.http.cancelled': 'Isso parou antes de terminar. Você pode tentar de novo.',
   'failure.files.not-found': 'Esse arquivo não está mais neste celular.',
@@ -459,8 +459,8 @@ export const ptBR: LocaleTable = {
   'failure.files.io': 'O celular não conseguiu salvar isto. Tente de novo.',
   'failure.db.migration-failed':
     'O aplicativo não conseguiu atualizar seus registros. Compartilhe o diagnóstico para alguém poder ajudar.',
-  'failure.db.io': 'O aplicativo não conseguiu ler seus registros. Tente de novo.',
-  'failure.kv.io': 'Não foi possível salvar esta configuração. Tente de novo.',
+  'failure.db.io': 'O aplicativo não conseguiu ler nem salvar seus registros. Tente de novo.',
+  'failure.kv.io': 'Não foi possível salvar esta preferência. Tente de novo.',
   'failure.journal.persist-failed':
     'O registro de diagnóstico não pôde ser mantido. Todo o resto continua funcionando.',
   'failure.journal.event-rejected':
@@ -471,10 +471,10 @@ export const ptBR: LocaleTable = {
   'failure.kernel.observer-failed':
     'Uma parte do aplicativo não terminou de se atualizar. Compartilhe o diagnóstico para alguém poder ajudar.',
   'failure.catalog.invalid-response':
-    'A lista da biblioteca chegou em um formato que o aplicativo não consegue ler. Tente de novo mais tarde.',
+    'O catálogo chegou em um formato que o aplicativo não consegue ler. Tente de novo mais tarde.',
   'failure.pack.not-found': 'Este recurso não está mais publicado. Procure atualizações mais tarde.',
   'failure.pack.no-space': 'Não há espaço suficiente para este pacote. Remova outro pacote e tente de novo.',
-  'failure.pack.checksum-mismatch': 'O download não chegou inteiro. Tente de novo.',
+  'failure.pack.checksum-mismatch': 'O pacote não chegou inteiro. Tente de novo.',
   'failure.pack.invalid-burrito': 'Este arquivo não é um recurso que o aplicativo consegue ler.',
   'failure.pack.unknown-flavor': 'Este recurso é de um tipo que o aplicativo ainda não consegue abrir.',
   'failure.pack.no-provenance': 'Este recurso não diz quem o publicou, então o aplicativo não o instala.',

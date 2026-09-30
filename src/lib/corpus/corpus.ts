@@ -193,9 +193,9 @@ export const corpusModule = defineModule<CorpusApi>({
     const dropPack = async (pack: string): Promise<void> => {
       const entries = entriesOf(pack);
       await readsSettled();
-      await db.transaction(async (session) => {
+      await db.transaction(async (transaction) => {
         for (const entry of entries) {
-          await removeRoot(session, entry.root);
+          await removeRoot(transaction, entry.root);
         }
       });
       library.remove(entries.map((entry) => entry.root));
@@ -223,12 +223,12 @@ export const corpusModule = defineModule<CorpusApi>({
       const found = await analyses(source, known);
       const gone = previous.filter((entry) => !wanted.has(entry.root));
       await readsSettled();
-      await db.transaction(async (session) => {
+      await db.transaction(async (transaction) => {
         for (const entry of gone) {
-          await removeRoot(session, entry.root);
+          await removeRoot(transaction, entry.root);
         }
         for (const analysis of found) {
-          await saveEntry(session, analysis.entry, analysis.titles);
+          await saveEntry(transaction, analysis.entry, analysis.titles);
         }
       });
       library.remove(gone.map((entry) => entry.root));

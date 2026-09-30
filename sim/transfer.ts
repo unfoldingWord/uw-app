@@ -64,9 +64,9 @@ export async function transferBetween(
   }
   const accepted = await receiver.kernel.transfer.accept(selection);
   const sent = await sending;
-  const session = accepted.ok ? accepted.session : undefined;
+  const delivery = accepted.ok ? accepted.delivery : undefined;
   const installed =
-    session === undefined ? undefined : await receiver.kernel.packs.install(fromPeer(session));
+    delivery === undefined ? undefined : await receiver.kernel.packs.install(fromPeer(delivery));
   return { offered, incoming, accepted, sent, installed };
 }
 

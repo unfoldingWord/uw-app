@@ -17,7 +17,7 @@ export function corpusView(files: Files, db: Db): CorpusView {
   const library = createLibrary(files);
   const known = new Map<string, string>();
 
-  const sync = async (): Promise<void> => {
+  const catchUp = async (): Promise<void> => {
     const entries = await loadEntries(db);
     const titles = await loadTitles(db);
     const current = new Set(entries.map((entry) => entry.root));
@@ -34,19 +34,19 @@ export function corpusView(files: Files, db: Db): CorpusView {
 
   return {
     contents: async (language) => {
-      await sync();
+      await catchUp();
       return contentsOf(library, language);
     },
     story: async (number, language) => {
-      await sync();
+      await catchUp();
       return assembleStory(library, number, language);
     },
     movements: async (story, language) => {
-      await sync();
+      await catchUp();
       return assembleMovements(library, story, language);
     },
     article: async (id, language) => {
-      await sync();
+      await catchUp();
       return assembleArticle(library, id, language);
     },
   };

@@ -35,7 +35,7 @@ export function createSqlDb(engine: SqlEngine): MemoryDb {
     }
   }
 
-  const session: DbTransaction = {
+  const connection: DbTransaction = {
     exec: async (sql) => {
       guard(sql);
       engine.exec(sql);
@@ -55,15 +55,15 @@ export function createSqlDb(engine: SqlEngine): MemoryDb {
   }
 
   return {
-    exec: (sql) => serialized(() => session.exec(sql)),
-    run: (sql, params) => serialized(() => session.run(sql, params)),
-    all: (sql, params) => serialized(() => session.all(sql, params)),
-    get: (sql, params) => serialized(() => session.get(sql, params)),
+    exec: (sql) => serialized(() => connection.exec(sql)),
+    run: (sql, params) => serialized(() => connection.run(sql, params)),
+    all: (sql, params) => serialized(() => connection.all(sql, params)),
+    get: (sql, params) => serialized(() => connection.get(sql, params)),
     transaction: (work) =>
       serialized(async () => {
         engine.exec('BEGIN IMMEDIATE');
         try {
-          const result = await work(session);
+          const result = await work(connection);
           engine.exec('COMMIT');
           return result;
         } catch (error) {

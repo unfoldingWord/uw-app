@@ -139,7 +139,7 @@ The Android app file one phone sends another so it can be installed without a st
 _Avoid_: APK (in copy), binary, installer
 
 **Link**:
-An open connection between two peers over the Transport port, carrying the bytes of one transfer. In code, `TransportLink`.
+An open connection between two peers over the Transport port, carrying the bytes of one transfer. In code, `TransportLink`. What an accepted transfer hands Packs, each archive as the file it was received into, is a `PeerDelivery`.
 _Avoid_: socket, channel, session (that is formation)
 
 **Offer**:
@@ -191,6 +191,10 @@ _Avoid_: log line, message, action
 **Journal**:
 The bounded, append-only record of events on a device, including failures. It leaves the device only through Share.
 _Avoid_: log, history, telemetry (telemetry is derived from it)
+
+**Diagnostics file**:
+The one file a leader shares from Settings so someone can help: the journal written out as a document, and the snapshot beside it. `npm run replay` rebuilds a device from it. In code the journal half is `JournalExport`, written by `journal.export()` and read by `parseJournalExport`; "export" names only that code, never a word a leader sees, and the file leaves the device only through Share.
+_Avoid_: log file, dump, backup
 
 **Snapshot**:
 The whole state of a device folded into one document: packs, corpus summary, groups, preferences, journal tail.

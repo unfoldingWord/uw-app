@@ -109,7 +109,7 @@ with no `AppOpened` yet; a restart in replay journals the same event at the same
   except for at most ten `PackInstallProgressed` events per install; byte counts live in
   `packs.installing()` and the snapshot.
 - **The other phone.** A receiving Transfer takes every archive into `transfer/incoming/` and verifies it
-  before it hands Packs a peer session, so a receiver's journal reads `TransferAccepted`, at most ten
+  before it hands Packs a peer delivery, so a receiver's journal reads `TransferAccepted`, at most ten
   `TransferProgressed`, `TransferCompleted`, and only then `PackInstallStarted` with source `peer`. Replay
   appends the Transfer events as recorded and redoes the install from the fixtures, in the same order. A
   transfer id is minted on the phone and appears only in `verbatim` events, so replay plays back only the ids

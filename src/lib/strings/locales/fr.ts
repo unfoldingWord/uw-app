@@ -176,7 +176,7 @@ export const fr: LocaleTable = {
   'resource.images': 'Images des histoires',
   'resource.images.about': 'Partagées par toutes les langues et téléchargées une seule fois.',
   'resource.audio': 'Audio',
-  'resource.audio.about': 'Un téléchargement à part pour chaque ressource.',
+  'resource.audio.about': 'Chaque ressource a son propre pack audio.',
   'resource.hebrew': 'Ancien Testament en hébreu',
   'resource.greek': 'Nouveau Testament en grec',
   'resource.original.about': 'Texte brut, en dehors du pack de langue.',
@@ -188,7 +188,7 @@ export const fr: LocaleTable = {
   'article.notDownloaded': 'Cet article n’est pas encore sur ce téléphone.',
   'article.linkMissing': 'Ce lien mène à quelque chose qui n’est pas sur ce téléphone.',
   'search.placeholder': 'Référence ou titre, comme Ruth 2 ou alliance',
-  'search.label': 'Rechercher des passages, des mots, des leçons et des histoires',
+  'search.label': 'Rechercher des passages, des articles et des histoires',
   'search.empty': 'Tapez une référence comme Ruth 2, ou le titre d’un mot ou d’une histoire.',
   'search.noResults': 'Rien sur ce téléphone ne correspond à {query}.',
   'search.passages': 'Passages',
@@ -463,8 +463,8 @@ export const fr: LocaleTable = {
     'Le fichier contient un relevé de ce que l’application a fait sur ce téléphone, un résumé de ce qu’il contient et les passages, articles et histoires que vous avez ouverts ou enregistrés, sans noms, notes ni identifiants.',
   'diagnostics.includeReading': 'Inclure ce que j’ai lu',
   'failure.http.offline': 'Vous êtes hors ligne. Réessayez une fois connecté.',
-  'failure.http.timeout': 'La bibliothèque a mis trop de temps à répondre. Réessayez dans un instant.',
-  'failure.http.status': 'La bibliothèque n’a pas répondu comme prévu. Réessayez plus tard.',
+  'failure.http.timeout': 'Le catalogue a mis trop de temps à répondre. Réessayez dans un instant.',
+  'failure.http.status': 'Le catalogue n’a pas répondu comme prévu. Réessayez plus tard.',
   'failure.http.host-refused': 'L’application se connecte seulement aux adresses qu’elle connaît.',
   'failure.http.cancelled': 'Cela s’est arrêté avant la fin. Vous pouvez réessayer.',
   'failure.files.not-found': 'Ce fichier n’est plus sur ce téléphone.',
@@ -472,8 +472,8 @@ export const fr: LocaleTable = {
   'failure.files.io': 'Le téléphone n’a pas pu enregistrer ceci. Réessayez.',
   'failure.db.migration-failed':
     'L’application n’a pas pu mettre à jour ses données. Partagez le diagnostic pour qu’on puisse vous aider.',
-  'failure.db.io': 'L’application n’a pas pu lire ses données. Réessayez.',
-  'failure.kv.io': 'Ce réglage n’a pas pu être enregistré. Réessayez.',
+  'failure.db.io': 'L’application n’a pas pu lire ni enregistrer ses données. Réessayez.',
+  'failure.kv.io': 'Cette préférence n’a pas pu être enregistrée. Réessayez.',
   'failure.journal.persist-failed':
     'Le relevé de diagnostic n’a pas pu être conservé. Tout le reste fonctionne.',
   'failure.journal.event-rejected':
@@ -484,10 +484,10 @@ export const fr: LocaleTable = {
   'failure.kernel.observer-failed':
     'Une partie de l’application n’a pas fini de se mettre à jour. Partagez le diagnostic pour qu’on puisse vous aider.',
   'failure.catalog.invalid-response':
-    'La liste de la bibliothèque est arrivée sous une forme illisible pour l’application. Réessayez plus tard.',
+    'Le catalogue est arrivé sous une forme illisible pour l’application. Réessayez plus tard.',
   'failure.pack.not-found': 'Cette ressource n’est plus publiée. Recherchez des mises à jour plus tard.',
   'failure.pack.no-space': 'Il n’y a pas assez d’espace pour ce pack. Retirez un autre pack, puis réessayez.',
-  'failure.pack.checksum-mismatch': 'Le téléchargement n’est pas arrivé en entier. Réessayez.',
+  'failure.pack.checksum-mismatch': 'Le pack n’est pas arrivé en entier. Réessayez.',
   'failure.pack.invalid-burrito': 'Ce fichier n’est pas une ressource que l’application peut lire.',
   'failure.pack.unknown-flavor': 'Cette ressource est d’un type que l’application ne peut pas encore ouvrir.',
   'failure.pack.no-provenance':

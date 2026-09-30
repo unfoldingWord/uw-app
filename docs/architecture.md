@@ -61,7 +61,7 @@ Each is a deep module: small interface, tests at the interface, internals free t
 
 **Formation.** `tracks(language)`, `session(track, n)`, `groups()`, `create(group)`, `advance(group, step)`. A state machine over positions. Language fallback (plain stories when movements are absent, English movements alongside when asked) is decided here, once.
 
-**Transfer.** Sender: `offer(plan)` advertises under a short code, `run(transfer)` sends what the receiver accepts. Receiver: `discover()`, `connect(peer)` (or `connectAt(address, code)` for a typed or scanned address) sends the pairing code and shows the offer, `accept(selection)` receives and verifies every archive and returns a peer session that hands Packs each archive as the file it was received into (`{ ok: true, path }`), never its bytes; then it is just `packs.install(fromPeer(session))`. Either side: `cancel()`, `current()`. On Android the receiver hands a received app package to the system installer with `installApp()`. A state machine over the Transport port, speaking a small versioned protocol (`src/lib/transfer/protocol.ts`). Carries burritos, and on Android the app package.
+**Transfer.** Sender: `offer(plan)` advertises under a short code, `run(transfer)` sends what the receiver accepts. Receiver: `discover()`, `connect(peer)` (or `connectAt(address, code)` for a typed or scanned address) sends the pairing code and shows the offer, `accept(selection)` receives and verifies every archive and returns a peer delivery (`PeerDelivery`) that hands Packs each archive as the file it was received into (`{ ok: true, path }`), never its bytes; then it is just `packs.install(fromPeer(delivery))`. Either side: `cancel()`, `current()`. On Android the receiver hands a received app package to the system installer with `installApp()`. A state machine over the Transport port, speaking a small versioned protocol (`src/lib/transfer/protocol.ts`). Carries burritos, and on Android the app package.
 
 **Share.** `passage(passage)`, `story(story)`, `audio(clip)`, `journal(report)`, each with the locale for its words. Builds payloads with provenance and the link from content the corpus already returned, hands them to ShareSheet.
 
@@ -104,7 +104,7 @@ The cockpit, once scaffolded:
 ```
 npm run sim -- <scenario>        run one scenario and print its snapshot and journal
 npm run sim -- all               every scenario
-npm run replay -- <journal.json> rebuild a device from an exported journal, print the snapshot
+npm run replay -- <journal.json> rebuild a device from a shared diagnostics file, print the snapshot
 npm run trace                    Must requirement IDs against scenarios and tests: fails on any without a scenario
 npm run contract                 validate every fixture burrito, and a live release when online
 npm run verify                   lint, typecheck (including lib with no DOM), test, knip, checks, trace, contract

@@ -48,7 +48,7 @@ export type DbTransaction = {
 };
 
 export type Db = DbTransaction & {
-  transaction<T>(work: (session: DbTransaction) => Promise<T>): Promise<T>;
+  transaction<T>(work: (transaction: DbTransaction) => Promise<T>): Promise<T>;
 };
 
 export type Migration = { id: string; statements: readonly string[] };

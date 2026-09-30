@@ -35,7 +35,7 @@ export function createIndexing({ library, db, emit }: IndexingContext): Indexing
     if (library.indexRow(language) === undefined) {
       return;
     }
-    await db.transaction((session) => clearIndex(session, language));
+    await db.transaction((transaction) => clearIndex(transaction, language));
     library.setIndex({ language, built: false });
   };
 
@@ -64,7 +64,7 @@ export function createIndexing({ library, db, emit }: IndexingContext): Indexing
     async reindex(language) {
       await emit({ type: 'IndexStarted', payload: { language } });
       return queued(async () => {
-        await db.transaction((session) => setWanted(session, language, true));
+        await db.transaction((transaction) => setWanted(transaction, language, true));
         wanted.add(language);
         await build(language);
         return library.index(language);
@@ -85,9 +85,9 @@ export function createIndexing({ library, db, emit }: IndexingContext): Indexing
     async drop(language) {
       await emit({ type: 'IndexDropped', payload: { language } });
       await queued(async () => {
-        await db.transaction(async (session) => {
-          await setWanted(session, language, false);
-          await clearIndex(session, language);
+        await db.transaction(async (transaction) => {
+          await setWanted(transaction, language, false);
+          await clearIndex(transaction, language);
         });
         wanted.delete(language);
         library.setIndex({ language, built: false });

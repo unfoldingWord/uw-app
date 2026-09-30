@@ -173,7 +173,7 @@ export const sw: LocaleTable = {
   'resource.images': 'Picha za hadithi',
   'resource.images.about': 'Zinatumiwa na lugha zote na zinapakuliwa mara moja tu.',
   'resource.audio': 'Sauti',
-  'resource.audio.about': 'Upakuaji wa pekee kwa kila nyenzo.',
+  'resource.audio.about': 'Kila nyenzo ina kifurushi chake cha sauti.',
   'resource.hebrew': 'Agano la Kale kwa Kiebrania',
   'resource.greek': 'Agano Jipya kwa Kigiriki',
   'resource.original.about': 'Maandishi matupu, nje ya kifurushi cha lugha.',
@@ -185,7 +185,7 @@ export const sw: LocaleTable = {
   'article.notDownloaded': 'Makala hii bado haiko kwenye simu hii.',
   'article.linkMissing': 'Kiungo hiki kinaelekea kitu ambacho hakiko kwenye simu hii.',
   'search.placeholder': 'Rejea au kichwa, kama Ruthu 2 au agano',
-  'search.label': 'Tafuta vifungu, maneno, masomo na hadithi',
+  'search.label': 'Tafuta vifungu, makala na hadithi',
   'search.empty': 'Andika rejea kama Ruthu 2, au kichwa cha neno au hadithi.',
   'search.noResults': 'Hakuna kitu kwenye simu hii kinacholingana na {query}.',
   'search.passages': 'Vifungu',
@@ -436,8 +436,8 @@ export const sw: LocaleTable = {
     'Faili hili lina kumbukumbu ya kile programu ilichofanya kwenye simu hii, muhtasari wa kilichomo na vifungu, makala na hadithi ulizofungua au kuhifadhi, bila majina, maelezo wala vitambulisho.',
   'diagnostics.includeReading': 'Jumuisha nilichosoma',
   'failure.http.offline': 'Uko nje ya mtandao. Jaribu tena ukiunganishwa.',
-  'failure.http.timeout': 'Maktaba imechelewa kujibu. Jaribu tena baada ya muda mfupi.',
-  'failure.http.status': 'Maktaba haikujibu kama ilivyotarajiwa. Jaribu tena baadaye.',
+  'failure.http.timeout': 'Katalogi imechelewa kujibu. Jaribu tena baada ya muda mfupi.',
+  'failure.http.status': 'Katalogi haikujibu kama ilivyotarajiwa. Jaribu tena baadaye.',
   'failure.http.host-refused': 'Programu inaunganishwa tu na mahali inapopajua.',
   'failure.http.cancelled': 'Hili lilisimama kabla ya kumalizika. Unaweza kujaribu tena.',
   'failure.files.not-found': 'Faili hilo halipo tena kwenye simu hii.',
@@ -445,8 +445,8 @@ export const sw: LocaleTable = {
   'failure.files.io': 'Simu haikuweza kuhifadhi hiki. Jaribu tena.',
   'failure.db.migration-failed':
     'Programu haikuweza kusasisha kumbukumbu zake. Shiriki uchunguzi ili mtu aweze kusaidia.',
-  'failure.db.io': 'Programu haikuweza kusoma kumbukumbu zake. Jaribu tena.',
-  'failure.kv.io': 'Mpangilio huu haukuweza kuhifadhiwa. Jaribu tena.',
+  'failure.db.io': 'Programu haikuweza kusoma wala kuhifadhi kumbukumbu zake. Jaribu tena.',
+  'failure.kv.io': 'Chaguo hili halikuweza kuhifadhiwa. Jaribu tena.',
   'failure.journal.persist-failed':
     'Kumbukumbu ya uchunguzi haikuweza kuhifadhiwa. Mengine yote bado yanafanya kazi.',
   'failure.journal.event-rejected':
@@ -457,11 +457,11 @@ export const sw: LocaleTable = {
   'failure.kernel.observer-failed':
     'Sehemu ya programu haikumaliza kusasisha. Shiriki uchunguzi ili mtu aweze kusaidia.',
   'failure.catalog.invalid-response':
-    'Orodha ya maktaba imefika katika muundo ambao programu haiwezi kusoma. Jaribu tena baadaye.',
+    'Katalogi imefika katika muundo ambao programu haiwezi kusoma. Jaribu tena baadaye.',
   'failure.pack.not-found': 'Nyenzo hii haichapishwi tena. Tafuta masasisho baadaye.',
   'failure.pack.no-space':
     'Hakuna nafasi ya kutosha kwa kifurushi hiki. Ondoa kifurushi kingine, kisha ujaribu tena.',
-  'failure.pack.checksum-mismatch': 'Upakuaji haukufika kamili. Jaribu tena.',
+  'failure.pack.checksum-mismatch': 'Kifurushi hakikufika kamili. Jaribu tena.',
   'failure.pack.invalid-burrito': 'Faili hili si nyenzo ambayo programu inaweza kusoma.',
   'failure.pack.unknown-flavor': 'Nyenzo hii ni ya aina ambayo programu bado haiwezi kufungua.',
   'failure.pack.no-provenance': 'Nyenzo hii haisemi nani aliichapisha, kwa hiyo programu haiisakinishi.',

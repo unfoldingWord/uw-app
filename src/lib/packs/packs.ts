@@ -220,7 +220,7 @@ export const packsModule = defineModule<PacksApi>({
         installed.delete(pack);
         failures.delete(pack);
         try {
-          await ports.db.transaction((session) => deleteInstalledPack(session, pack));
+          await ports.db.transaction((transaction) => deleteInstalledPack(transaction, pack));
           await ports.files.remove(packDirectory(pack));
           return { ok: true, pack };
         } catch (error) {
