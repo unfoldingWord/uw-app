@@ -31,7 +31,7 @@ describe('catalog interface (LA-1, LA-7)', () => {
     const { device } = await phone();
     expect(await device.kernel.catalog.refresh()).toEqual({
       ok: true,
-      releases: 23,
+      releases: 24,
       languages: 3,
       dropped: 0,
     });
@@ -46,10 +46,8 @@ describe('catalog interface (LA-1, LA-7)', () => {
       'CatalogRefreshed',
     ]);
     await device.restart();
-    expect(device.kernel.catalog.all()).toHaveLength(23);
-    expect(device.kernel.catalog.releases('qaa').map((release) => release.resource)).toContain(
-      'qaa_ult-audio',
-    );
+    expect(device.kernel.catalog.all()).toHaveLength(24);
+    expect(device.kernel.catalog.releases('qaa').map((release) => release.resource)).toContain('qaa_ult');
   });
 
   it('records offline, timeout, refused hosts and non-2xx answers as failures and keeps the known catalog', async () => {
@@ -62,7 +60,7 @@ describe('catalog interface (LA-1, LA-7)', () => {
     expect(lastFailure(device)).toEqual({ code: 'http.status', context: { step: 'catalog', status: 503 } });
     device.adapters.http.setOnline(false);
     expect(await device.kernel.catalog.refresh()).toEqual({ ok: false, code: 'http.offline' });
-    expect(device.kernel.catalog.all()).toHaveLength(23);
+    expect(device.kernel.catalog.all()).toHaveLength(24);
   });
 
   it('refuses a document that is not a catalog, and skips entries it cannot key', async () => {
@@ -70,7 +68,7 @@ describe('catalog interface (LA-1, LA-7)', () => {
     await device.kernel.catalog.refresh();
     world.network.serve(catalogPageUrl(1), { body: '<html>maintenance</html>' });
     expect(await device.kernel.catalog.refresh()).toEqual({ ok: false, code: 'catalog.invalid-response' });
-    expect(device.kernel.catalog.all()).toHaveLength(23);
+    expect(device.kernel.catalog.all()).toHaveLength(24);
     world.network.serve(catalogPageUrl(1), {
       body: JSON.stringify({
         ok: true,
@@ -115,7 +113,7 @@ describe('catalog interface (LA-1, LA-7)', () => {
   it('serves the fixture catalog the way DCS pages it: x-total-count, a Link header, last_updated', async () => {
     const { device } = await phone();
     const first = await device.adapters.http.request({ url: catalogPageUrl(1), timeoutMs: 1000 });
-    expect(first.kind === 'response' && first.headers['x-total-count']).toBe('23');
+    expect(first.kind === 'response' && first.headers['x-total-count']).toBe('21');
     expect(first.kind === 'response' && first.headers['link']).toBeUndefined();
     const body =
       first.kind === 'response' ? (JSON.parse(new TextDecoder().decode(first.body)) as object) : {};
@@ -129,7 +127,7 @@ describe('catalog interface (LA-1, LA-7)', () => {
     await new Promise((resolve) => setImmediate(resolve));
     const newer = device.kernel.catalog.refresh();
     release();
-    expect(await older).toMatchObject({ ok: true, releases: 23 });
+    expect(await older).toMatchObject({ ok: true, releases: 24 });
     world.network.serve(catalogPageUrl(1), { body: JSON.stringify({ ok: true, data: [entry('qaa_obs')] }) });
     expect(await newer).toEqual({ ok: true, releases: 1, languages: 1, dropped: 0 });
     expect(device.kernel.catalog.all()).toHaveLength(1);

@@ -28,7 +28,7 @@ export default scenario(
 
     const publishers = phone.kernel.catalog
       .releases('qaa')
-      .filter((release) => release.resource === 'qaa_obs')
+      .filter((release) => release.resource === 'qaa_obs' && release.row === 'stories')
       .map((release) => release.publisher);
     assert.deepEqual(publishers, ['unfoldingWord', 'Door43-Catalog'], 'unfoldingWord is listed first');
 

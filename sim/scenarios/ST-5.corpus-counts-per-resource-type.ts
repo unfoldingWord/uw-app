@@ -16,7 +16,7 @@ export default scenario(
 
     await installFromCatalog(
       device,
-      [languagePackId('qaa'), languagePackId('qab'), audioPackId('qaa', 'qaa_ult-audio')],
+      [languagePackId('qaa'), languagePackId('qab'), audioPackId('qaa', 'qaa_ult')],
       withFormation,
     );
 

@@ -75,7 +75,8 @@ describe('packs interface (LA-2, LA-6, LA-7, SH-3)', () => {
     const before = await device.kernel.packs.status('qaa');
     expect(before).toMatchObject({ pack: 'language:qaa', installed: [], complete: false });
     expect(before.missing).toHaveLength(11);
-    await device.kernel.packs.install(fromCatalog(device.kernel.catalog.releases('qaa')), {
+    const texts = device.kernel.catalog.releases('qaa').filter((release) => release.kind === 'language');
+    await device.kernel.packs.install(fromCatalog(texts), {
       resources: [{ publisher: 'unfoldingWord', resource: 'qaa_ult' }],
     });
     const partial = await device.kernel.packs.status('qaa');
@@ -96,7 +97,7 @@ describe('packs interface (LA-2, LA-6, LA-7, SH-3)', () => {
       code: 'http.offline',
     });
     device.adapters.http.setOnline(true);
-    const url = archiveUrlOf({ publisher: 'unfoldingWord', resource: 'obs-images', tag: 'v1' });
+    const url = archiveUrlOf({ publisher: 'unfoldingWord', resource: 'en_obs', tag: 'v9' });
     device.adapters.http.script(url, { status: 404 });
     expect(await device.kernel.packs.installFromCatalog(imagePackId)).toMatchObject({
       ok: false,

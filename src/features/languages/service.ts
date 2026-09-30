@@ -51,6 +51,7 @@ export type LanguagesService = {
   download(language: string): Promise<InstallOutcome>;
   missing(): Promise<readonly MissingResource[]>;
   downloadImages(): Promise<InstallOutcome>;
+  imagesAvailable(): boolean;
   audio(language: string): readonly OptionalDownload[];
   originals(): readonly OptionalDownload[];
   more(): readonly MoreDownload[];
@@ -178,6 +179,9 @@ export function createLanguagesService(kernel: Kernel): LanguagesService {
         )?.code,
       }));
     },
+    imagesAvailable: () =>
+      installedPacks(kernel).has(imagePackId) ||
+      kernel.catalog.all().some((release) => release.pack === imagePackId),
     downloadImages: () => kernel.packs.installFromCatalog(imagePackId),
     audio: (language) =>
       optional(kernel.catalog.releases(language).filter((release) => release.kind === 'audio')),

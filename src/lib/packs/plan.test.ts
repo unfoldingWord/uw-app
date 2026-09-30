@@ -22,6 +22,8 @@ function release(publisher: string, resource: string, row: ResourceRow, language
     bytes: undefined,
     autonym: language,
     direction: 'ltr',
+    assets: [],
+    built: undefined,
   };
 }
 

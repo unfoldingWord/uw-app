@@ -43,8 +43,8 @@ export default scenario(
     assert.ok(sent.length > 0);
     assert.deepEqual(
       [...new Set(sent.map((request) => hostOf(request.url)))].sort(),
-      ['git.door43.org', 'unfoldingword.org'],
-      'the only hosts are the catalog, its downloads and unfoldingWord',
+      ['cdn.door43.org', 'git.door43.org', 'unfoldingword.org'],
+      'the only hosts are the catalog, its downloads, the story pictures and unfoldingWord',
     );
     assert.deepEqual(
       sent.filter(

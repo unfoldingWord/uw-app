@@ -37,7 +37,11 @@ export type BurritoInput = {
 };
 
 const scriptureBurritoVersion = '1.0.0';
-const licenceIngredient = 'LICENSE.md';
+export const licenceIngredient = 'LICENSE.md';
+
+export type MetadataInput = Omit<BurritoInput, 'ingredients' | 'licence'> & {
+  readonly licence: Omit<BurritoInput['licence'], 'text'>;
+};
 
 function entryFor(ingredient: IngredientInput): IngredientEntry {
   return {
@@ -49,7 +53,6 @@ function entryFor(ingredient: IngredientInput): IngredientEntry {
 }
 
 export function buildBurrito(input: BurritoInput): BurritoFiles {
-  const repository = `${input.publisher}/${input.resource}`;
   const ingredients: IngredientInput[] = [
     ...input.ingredients,
     { path: licenceIngredient, bytes: utf8(input.licence.text), mimeType: mimeTypes.markdown },
@@ -63,7 +66,17 @@ export function buildBurrito(input: BurritoInput): BurritoFiles {
     entries[key] = entryFor(ingredient);
     files.set(key, ingredient.bytes);
   }
-  const metadata: BurritoMetadata = {
+  const metadata = burritoMetadata(input, entries);
+  files.set(metadataPath, utf8(`${JSON.stringify(metadata, null, 2)}\n`));
+  return files;
+}
+
+export function burritoMetadata(
+  input: MetadataInput,
+  entries: Readonly<Record<string, IngredientEntry>>,
+): BurritoMetadata {
+  const repository = `${input.publisher}/${input.resource}`;
+  return {
     format: burritoFormat,
     meta: {
       version: scriptureBurritoVersion,
@@ -100,8 +113,6 @@ export function buildBurrito(input: BurritoInput): BurritoFiles {
           : { statement: input.licence.statement, mimetype: 'text/plain', lang: input.language.tag },
       ],
     },
-    ingredients: entries,
+    ingredients: { ...entries },
   };
-  files.set(metadataPath, utf8(`${JSON.stringify(metadata, null, 2)}\n`));
-  return files;
 }

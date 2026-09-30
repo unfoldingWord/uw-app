@@ -20,6 +20,7 @@ import type { EventDraft } from '../journal/journal';
 import type { ModulePorts } from '../module';
 import type { HttpDownloaded } from '../ports';
 import { checkBurrito, type CheckedBurrito } from './burrito';
+import { buildAudioPack, buildImagePack, type BuiltDirectory } from './built';
 import {
   burritoRoot,
   collectGarbage,
@@ -37,7 +38,8 @@ const archiveTimeoutMs = 120_000;
 
 const reportedSteps = 10;
 
-type Fetched = { ok: true; path: string; temporary: boolean } | { ok: false; code: FailureCode };
+type Fetched =
+  { ok: true; path: string; temporary: boolean } | BuiltDirectory | { ok: false; code: FailureCode };
 
 type Offer = {
   ref: ReleaseRef;
@@ -48,7 +50,12 @@ type Offer = {
   fetch(stage: string, index: number, onBytes: (bytes: number) => void): Promise<Fetched>;
 };
 
-export type Resolved = { kind: PackSourceKind; offers: readonly Offer[]; announce: boolean };
+export type Resolved = {
+  kind: PackSourceKind;
+  offers: readonly Offer[];
+  announce: boolean;
+  replayed?: boolean;
+};
 
 type Resolution = { ok: true; resolved: Resolved } | { ok: false; code: FailureCode };
 
@@ -107,7 +114,21 @@ function downloadProblem(outcome: HttpDownloaded): FailureCode | undefined {
   }
 }
 
+function builtOffer(ports: ModulePorts, choice: CatalogChoice): Offer {
+  const build = choice.built === 'images' ? buildImagePack : buildAudioPack;
+  return {
+    ref: refOf(choice),
+    row: choice.row,
+    bytes: choice.bytes,
+    choice,
+    fetch: (stage, index, onBytes) => build(ports, choice, `${stage}/${index}`, onBytes),
+  };
+}
+
 export function catalogOffer(ports: ModulePorts, choice: CatalogChoice): Offer {
+  if (choice.built !== undefined) {
+    return builtOffer(ports, choice);
+  }
   return {
     ref: refOf(choice),
     row: choice.row,
@@ -316,6 +337,26 @@ export function createInstaller(context: InstallerContext): Installer {
     }
   }
 
+  async function unpackFetched(fetched: { path: string; temporary: boolean }, into: string) {
+    const needed = await unpackedBytes(files, fetched.path);
+    if (needed !== undefined && needed > (await files.freeSpace())) {
+      throw new InstallFailure('pack.no-space');
+    }
+    const unpacked = await unpackArchive(files, fetched.path, { into });
+    if (fetched.temporary) {
+      await removeIfPresent(files, fetched.path);
+    }
+    if (!unpacked.ok || unpacked.directory === undefined) {
+      throw new InstallFailure('pack.invalid-burrito');
+    }
+    return {
+      ok: true as const,
+      directory: unpacked.directory,
+      facts: unpacked.facts,
+      written: unpacked.written,
+    };
+  }
+
   async function verifyOnDisk(
     directory: string,
     burrito: CheckedBurrito,
@@ -342,21 +383,11 @@ export function createInstaller(context: InstallerContext): Installer {
     install: string,
     offer: Offer,
     target: Target,
-    fetched: { path: string; temporary: boolean },
+    fetched: { path: string; temporary: boolean } | BuiltDirectory,
     index: number,
     stage: string,
   ): Promise<InstalledBurrito> {
-    const needed = await unpackedBytes(files, fetched.path);
-    if (needed !== undefined && needed > (await files.freeSpace())) {
-      throw new InstallFailure('pack.no-space');
-    }
-    const unpacked = await unpackArchive(files, fetched.path, { into: `${stage}/${index}` });
-    if (fetched.temporary) {
-      await removeIfPresent(files, fetched.path);
-    }
-    if (!unpacked.ok || unpacked.directory === undefined) {
-      throw new InstallFailure('pack.invalid-burrito');
-    }
+    const unpacked = 'directory' in fetched ? fetched : await unpackFetched(fetched, `${stage}/${index}`);
     const checked = checkBurrito(unpacked.facts, offer.choice);
     if (!checked.ok) {
       throw new InstallFailure(checked.code);
@@ -459,7 +490,7 @@ export function createInstaller(context: InstallerContext): Installer {
       await context.emit({ type: 'Failure', payload: { code: target, context: { step: 'install' } } });
       return { ok: false, install: undefined, pack: plan.pack, code: target };
     }
-    const offers = requiredFirst(chosen, target, resolved);
+    const offers = resolved.replayed === true ? chosen : requiredFirst(chosen, target, resolved);
     const install = ports.ids.next();
     if (resolved.announce) {
       await context.emit({ type: 'ImportReceived', payload: { install } });

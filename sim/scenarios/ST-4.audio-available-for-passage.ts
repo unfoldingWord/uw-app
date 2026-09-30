@@ -25,7 +25,7 @@ export default scenario(
     const silent = await corpus.passage(reference('RUT 1:16'), { language: 'qaa' });
     assert.deepEqual(silent?.audio, [], 'no audio bar before the audio pack is downloaded');
 
-    const audioPack = audioPackId('qaa', 'qaa_ult-audio');
+    const audioPack = audioPackId('qaa', 'qaa_ult');
     await installFromCatalog(device, [audioPack]);
     const ruth = await corpus.passage(reference('RUT 1:16'), { language: 'qaa' });
     assert.equal(ruth?.audio.length, 1);
@@ -33,8 +33,8 @@ export default scenario(
     assert.ok(clip);
     assert.equal(clip.book, 'RUT');
     assert.equal(clip.chapter, 1);
-    assert.equal(clip.mimeType, 'audio/mpeg');
-    assert.equal(clip.provenance.resource, 'qaa_ult-audio');
+    assert.equal(clip.mimeType, 'audio/mp4');
+    assert.equal(clip.provenance.resource, 'qaa_ult');
     assert.match(clip.provenance.licence, /CC BY-SA 4\.0/);
     assert.ok(await device.adapters.files.exists(clip.path), `${clip.path} is on the device`);
 

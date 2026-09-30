@@ -3,7 +3,7 @@ import { readCatalogReleases } from '../catalog/store';
 import type { CatalogRelease } from '../catalog/types';
 import { failureCodeOf } from '../domain/failures';
 import { languagePackId, packDirectory, packsDirectory, type PackId, type ResourceRow } from '../domain/pack';
-import { refOf, resourceKey } from '../domain/release';
+import { refOf, resourceKey, type ReleaseRef } from '../domain/release';
 import { defineModule } from '../module';
 import type { PickedFile } from '../ports';
 import { catalogOffer, createInstaller, resolveSource, type FailedRelease, type Resolved } from './install';
@@ -325,10 +325,19 @@ export const packsModule = defineModule<PacksApi>({
       }),
       redo: {
         PackInstallStarted: async (event) => {
+          const known = await catalogReleases().catch(() => []);
+          const choiceOf = (ref: ReleaseRef) =>
+            known.find(
+              (release) =>
+                release.pack === event.payload.pack &&
+                resourceKey(release) === resourceKey(ref) &&
+                release.tag === ref.tag,
+            ) ?? refOf(ref);
           const resolved: Resolved = {
             kind: event.payload.source,
-            offers: event.payload.releases.map((ref) => catalogOffer(ports, refOf(ref))),
+            offers: event.payload.releases.map((ref) => catalogOffer(ports, choiceOf(ref))),
             announce: false,
+            replayed: true,
           };
           await serial(() => installer.prepare(resolved, { pack: event.payload.pack }));
         },

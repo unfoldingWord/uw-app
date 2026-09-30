@@ -86,7 +86,7 @@ export default scenario(
       'the English names are kept on the phone for offline use',
     );
     assert.deepEqual(phone.kernel.snapshot().modules.catalog, {
-      releases: 23,
+      releases: 24,
       languages: [
         { language: 'en', resources: 2, installed: false },
         { language: 'qaa', resources: 14, installed: false },

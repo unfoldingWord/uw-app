@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import { audioPackId, languagePackId } from '@lib/domain/pack';
+import { admittedRows } from '@lib/burrito/flavors';
+import { validate } from '@lib/burrito/validate';
 import { fromCatalog } from '@lib/packs/source';
+import { readBurrito } from '@lib/packs/tree';
 import { scenario } from '../scenario';
 
 export default scenario(
@@ -11,8 +14,10 @@ export default scenario(
     await phone.start();
     await phone.kernel.catalog.refresh();
     const language = languagePackId('qaa');
-    const audio = audioPackId('qaa', 'qaa_ult-audio');
-    const audioRelease = phone.kernel.catalog.releases('qaa').find((release) => release.row === 'audio');
+    const audio = audioPackId('qaa', 'qaa_ult');
+    const audioRelease = phone.kernel.catalog
+      .releases('qaa')
+      .find((release) => release.row === 'audio' && release.resource === 'qaa_ult');
     assert.equal(audioRelease?.pack, audio);
 
     assert.ok((await phone.kernel.packs.installFromCatalog(language)).ok);
@@ -25,10 +30,29 @@ export default scenario(
     assert.equal(installedAudio.language, 'qaa');
     assert.deepEqual(
       installedAudio.burritos.map((burrito) => burrito.root),
-      [`packs/audio/qaa/qaa_ult-audio/${outcome.install ?? ''}/unfoldingWord/qaa_ult-audio`],
+      [`packs/audio/qaa/qaa_ult/${outcome.install ?? ''}/unfoldingWord/qaa_ult`],
     );
+    const root = installedAudio.burritos[0]?.root ?? '';
     assert.ok(
-      phone.adapters.files.tree().some((path) => path.endsWith('.mp3') && path.startsWith('packs/audio/')),
+      phone.adapters.files.tree().includes(`${root}/ingredients/RUT/RUT_001.m4a`),
+      'the chapter asset is written into the burrito the app builds, keyed by book and chapter',
+    );
+    const report = validate(await readBurrito(phone.adapters.files, root), { rows: admittedRows });
+    assert.ok(report.ok && report.row.id === 'audio' && report.row.status === 'app-written');
+    assert.equal(report.metadata.ingredients['ingredients/RUT/RUT_001.m4a']?.mimeType, 'audio/mp4');
+
+    const stories = audioPackId('qaa', 'qaa_obs');
+    const told = await phone.kernel.packs.installFromCatalog(stories);
+    assert.ok(told.ok, told.ok ? '' : told.code);
+    const storyRoot = told.pack.burritos[0]?.root ?? '';
+    const storyReport = validate(await readBurrito(phone.adapters.files, storyRoot), { rows: admittedRows });
+    assert.ok(storyReport.ok);
+    assert.deepEqual(
+      Object.entries(storyReport.metadata.ingredients)
+        .filter(([, entry]) => entry.mimeType.startsWith('audio/'))
+        .map(([key, entry]) => [key, entry.scope]),
+      [['ingredients/OBS/OBS_01.m4a', { OBS: ['1'] }]],
+      'story audio is keyed by story, one asset per story',
     );
 
     const text = phone.kernel.catalog.releases('qaa').find((release) => release.resource === 'qaa_ult');
@@ -45,7 +69,7 @@ export default scenario(
     assert.ok((await phone.kernel.packs.remove(language)).ok);
     assert.deepEqual(
       phone.kernel.packs.installed().map((pack) => pack.pack),
-      [audio],
+      [stories, audio],
       'removing the language pack leaves its audio',
     );
   },

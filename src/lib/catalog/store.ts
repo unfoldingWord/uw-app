@@ -1,6 +1,8 @@
 import { packKinds, resourceRows, type PackKind, type ResourceRow } from '../domain/pack';
 import type { DbTransaction, DbRow, SqlValue } from '../ports';
-import type { CatalogRelease, LanguageName } from './types';
+import { isRecord } from '../burrito/metadata';
+import { withBuiltReleases } from './built';
+import type { CatalogRelease, LanguageName, ReleaseAsset } from './types';
 
 export const catalogTables = ['catalog_releases', 'catalog_languages'] as const;
 
@@ -20,6 +22,7 @@ const columns = [
   'bytes',
   'autonym',
   'direction',
+  'assets',
 ] as const;
 
 function valuesOf(release: CatalogRelease): SqlValue[] {
@@ -39,6 +42,7 @@ function valuesOf(release: CatalogRelease): SqlValue[] {
     release.bytes ?? null,
     release.autonym,
     release.direction,
+    JSON.stringify(release.assets),
   ];
 }
 
@@ -49,6 +53,24 @@ function textOf(row: DbRow, column: string): string {
 
 function oneOf<T extends string>(values: readonly T[], value: unknown): T | undefined {
   return values.find((item) => item === value);
+}
+
+function assetsOf(value: SqlValue | undefined): ReleaseAsset[] {
+  if (typeof value !== 'string') {
+    return [];
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(value);
+  } catch {
+    return [];
+  }
+  const items: readonly unknown[] = Array.isArray(parsed) ? parsed : [];
+  return items.flatMap((item) =>
+    isRecord(item) && typeof item.name === 'string' && typeof item.url === 'string'
+      ? [{ name: item.name, url: item.url, bytes: typeof item.bytes === 'number' ? item.bytes : undefined }]
+      : [],
+  );
 }
 
 function releaseOf(row: DbRow): CatalogRelease {
@@ -69,12 +91,14 @@ function releaseOf(row: DbRow): CatalogRelease {
     bytes: typeof bytes === 'number' ? bytes : undefined,
     autonym: textOf(row, 'autonym'),
     direction: row.direction === 'rtl' ? 'rtl' : 'ltr',
+    assets: assetsOf(row.assets),
+    built: undefined,
   };
 }
 
 export async function readCatalogReleases(db: DbTransaction): Promise<CatalogRelease[]> {
   const rows = await db.all(`SELECT ${columns.join(', ')} FROM catalog_releases ORDER BY position`);
-  return rows.map(releaseOf);
+  return withBuiltReleases(rows.map(releaseOf));
 }
 
 export async function replaceCatalogReleases(
@@ -83,7 +107,8 @@ export async function replaceCatalogReleases(
 ): Promise<void> {
   await session.run('DELETE FROM catalog_releases');
   const placeholders = [...columns, 'position'].map(() => '?').join(', ');
-  for (const [position, release] of releases.entries()) {
+  const stored = releases.filter((release) => release.built === undefined);
+  for (const [position, release] of stored.entries()) {
     await session.run(
       `INSERT INTO catalog_releases (${columns.join(', ')}, position) VALUES (${placeholders})`,
       [...valuesOf(release), position],

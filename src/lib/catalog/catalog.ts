@@ -5,6 +5,7 @@ import { defineModule } from '../module';
 import type { ModulePorts } from '../module';
 import type { HttpResponse } from '../ports';
 import { readInstalledPacks } from '../packs/store';
+import { withBuiltReleases } from './built';
 import { languagesOf, releasesIn, searchLanguages } from './languages';
 import { compareReleases, normalizeLanguageNames, normalizePage, uniqueReleases } from './normalize';
 import {
@@ -93,7 +94,7 @@ async function fetchCatalog(ports: ModulePorts): Promise<Fetched> {
       break;
     }
   }
-  return { ok: true, releases: uniqueReleases(releases), dropped };
+  return { ok: true, releases: withBuiltReleases(uniqueReleases(releases)), dropped };
 }
 
 async function fetchLanguageNames(ports: ModulePorts): Promise<Map<string, LanguageName> | undefined> {

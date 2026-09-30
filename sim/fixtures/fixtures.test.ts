@@ -2,7 +2,14 @@ import { fixtureRows } from './rows';
 import { readArchive } from '@lib/burrito/archive';
 import { validate } from '@lib/burrito/validate';
 import { describe, expect, it } from 'vitest';
-import { archiveDirectory, catalogFile, generateFixtures, languagesFile, routesFile } from './generate.ts';
+import {
+  archiveDirectory,
+  assetsDirectory,
+  catalogFile,
+  generateFixtures,
+  languagesFile,
+  routesFile,
+} from './generate.ts';
 import { fixtureResponses, generatedFilesOnDisk } from './load.ts';
 import { fixtureReleases } from './releases.ts';
 
@@ -11,7 +18,10 @@ const maximumFixtureBytes = 400_000;
 describe('fixtures', () => {
   it('rebuild to exactly the checked-in bytes, with nothing stale left on disk', async () => {
     const generated = await generateFixtures();
-    const onDisk = generatedFilesOnDisk([archiveDirectory], [catalogFile, languagesFile, routesFile]);
+    const onDisk = generatedFilesOnDisk(
+      [archiveDirectory, assetsDirectory],
+      [catalogFile, languagesFile, routesFile],
+    );
     expect([...onDisk.keys()].sort()).toEqual([...generated.keys()].sort());
     for (const [file, bytes] of generated) {
       expect(onDisk.get(file), file).toEqual(bytes);
@@ -40,18 +50,7 @@ describe('fixtures', () => {
       return report.row.id;
     });
     expect(new Set(rows)).toEqual(
-      new Set([
-        'text',
-        'notes',
-        'wordLinks',
-        'questions',
-        'articles',
-        'stories',
-        'storyHelps',
-        'formation',
-        'audio',
-        'images',
-      ]),
+      new Set(['text', 'notes', 'wordLinks', 'questions', 'articles', 'stories', 'storyHelps', 'formation']),
     );
   });
 
@@ -62,7 +61,7 @@ describe('fixtures', () => {
     expect(qab.sort()).toEqual(['Open Bible Stories', 'TSV OBS Study Questions']);
   });
 
-  it('override one image inside the qaa stories burrito, under the image pack name', () => {
+  it('override one image inside the qaa stories burrito, under the CDN picture name', () => {
     const files = (resource: string, publisher = 'unfoldingWord') => {
       const response = fixtureResponses().find(
         (route) => route.file === `sb/${publisher}/${resource}/v1.zip`,
@@ -71,7 +70,9 @@ describe('fixtures', () => {
       return read?.ok ? read.files : new Map<string, Uint8Array>();
     };
     const override = files('qaa_obs').get('ingredients/images/obs-en-01-01.jpg');
-    const shared = files('obs-images').get('ingredients/images/obs-en-01-01.jpg');
+    const shared = fixtureResponses().find(
+      (route) => route.url === 'https://cdn.door43.org/obs/jpg/360px/obs-en-01-01.jpg',
+    )?.bytes;
     expect(override).toBeDefined();
     expect(shared).toBeDefined();
     expect(override).not.toEqual(shared);

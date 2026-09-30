@@ -39,6 +39,8 @@ describe('catalog normalization (LA-1)', () => {
       bytes: undefined,
       autonym: 'Español Latin America',
       direction: 'ltr',
+      assets: [],
+      built: undefined,
     });
   });
 

@@ -45,7 +45,7 @@ export default scenario(
     const services = servicesOf(device);
     assert.equal(services.formation.listen(session.play.audio), undefined, 'no story audio, no player');
 
-    await installFromCatalog(device, [audioPackId('qaa', 'qaa_ult-audio')]);
+    await installFromCatalog(device, [audioPackId('qaa', 'qaa_ult')]);
     const ruth = parseReference('RUT 1:1');
     assert.ok(ruth.ok);
     const [clip] = (await device.kernel.corpus.passage(ruth.reference, { language: 'qaa' }))?.audio ?? [];

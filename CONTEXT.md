@@ -26,6 +26,10 @@ _Avoid_: index, feed, DCS (that is the upstream, not the catalog)
 One Scripture Burrito: a directory or archive with a metadata file and ingredients. The file form of one resource.
 _Avoid_: bundle, zip, archive, container
 
+**App-written Burrito**:
+A burrito the app writes itself around assets the catalog lists, because DCS generates no archive for them: the Image Pack from the pictures `en_obs` cites, and an Audio Pack from a release's audio assets (ADR 0006). It passes the same validator as a DCS burrito.
+_Avoid_: converted, generated, synthetic
+
 **Pack**:
 A set of resources installed on the device and replaced as one unit. Three kinds: **Language Pack** (every text resource for one language), **Image Pack** (the Open Bible Stories images, shared across languages), **Audio Pack** (audio for one resource in one language).
 _Avoid_: bundle, download, library (that is a screen)

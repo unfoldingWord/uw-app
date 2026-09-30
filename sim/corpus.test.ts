@@ -106,16 +106,16 @@ describe('corpus stories', () => {
       [
         2,
         expect.stringMatching(
-          /^packs\/image\/obs\/[^/]+\/unfoldingWord\/obs-images\/ingredients\/images\/obs-en-01-02\.jpg$/,
+          /^packs\/image\/obs\/[^/]+\/unfoldingWord\/en_obs\/ingredients\/images\/obs-en-01-02\.jpg$/,
         ),
-        'obs-images',
+        'en_obs',
       ],
       [
         3,
         expect.stringMatching(
-          /^packs\/image\/obs\/[^/]+\/unfoldingWord\/obs-images\/ingredients\/images\/obs-en-01-03\.jpg$/,
+          /^packs\/image\/obs\/[^/]+\/unfoldingWord\/en_obs\/ingredients\/images\/obs-en-01-03\.jpg$/,
         ),
-        'obs-images',
+        'en_obs',
       ],
     ]);
     for (const frame of story?.frames ?? []) {

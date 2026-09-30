@@ -17,7 +17,7 @@ What the app accepts, stated so that both sides of the seam can check it: this r
 - Archive layout: one top-level directory named for the repository, holding `metadata.json`, `ingredients/`, and repository files that are not part of the burrito (`README.md`, `LICENSE.md`, `.github/`, `.gitea/`, `.gitignore`). The Packs module keeps the burrito and discards the rest.
 - The app never reads a Resource Container. If a release has no burrito archive, it is absent from the app; that is a supply gap to raise upstream, never a parser to write here.
 
-Two asks of the DCS team remain, both narrow: the archive for the five-movement formation repository (`en_obs-tf` v4) fails to generate today (HTTP 500), and audio is published as release assets rather than in a burrito. Exposing the archive URL in the catalog entry would remove the derivation, but nothing waits on it.
+One ask of the DCS team remains: the archive for the five-movement formation repository (`en_obs-tf` v4) fails to generate today (HTTP 500). Audio and the story pictures are no longer asks: the app writes a burrito around the release assets and the CDN pictures (ADR 0006). Exposing the archive URL in the catalog entry would remove the derivation, but nothing waits on it.
 
 ## Flavors the app admits
 
@@ -35,11 +35,12 @@ Observed on 2026-09-29 in GitHub Actions run 36618141715, which paged the whole 
 | Story helps | peripheral | x-obsnotes, x-obsquestions | one unscoped `OBS.tsv`. The catalog calls them `parascriptural/x-notes` and `x-questions` | Helps on Stories |
 | Story helps | parascriptural | x-bcvnotes, x-bcvquestions, x-bcvarticles, when no TSV names a book other than `OBS` | one `OBS.tsv`, scoped `{OBS: []}` for `obs-twl` (whose links stay `rc://`) | Helps on Stories |
 | Theological formation | to pin | the catalog lists `en_obs-tf` v4 as `peripheral/x-OBSTheologicalFormation`; its `sb` archive still returns HTTP 500. Provisional form in [the proposal](proposals/2026-09-29-provisional-flavors.md) | | Movements on Stories |
-| Audio | to pin | audio is not in any burrito: DCS publishes it as release assets, one `.m4a` per story (`ahr_obs_v1_01_128kbps.m4a`), flagged by `attachment_types.audio`. Provisional form in [the proposal](proposals/2026-09-29-provisional-flavors.md) | | Audio Pack |
+| Audio (written by the app, ADR 0006) | scripture | audioTranslation | DCS publishes audio as release assets, one `.m4a` per story (`ahr_obs_v1_01_128kbps.m4a`) or chapter, flagged by `attachment_types.audio`. The app downloads them and writes the burrito: `ingredients/OBS/OBS_NN.m4a` scoped `{OBS: [n]}` for Open Bible Stories, `ingredients/BBB/BBB_CCC.m4a` scoped `{BBB: [c]}` for a Bible, `audio/mp4` (or `audio/mpeg`), provenance from the release's catalog entry and licence from the `LICENSE.md` at its tag. One asset per story or chapter: the first by name when several bit rates are listed | Audio Pack |
+| Story images (written by the app, ADR 0006) | peripheral | x-obsImages | The app downloads every 360px picture the `unfoldingWord/en_obs` stories cite (`https://cdn.door43.org/obs/jpg/360px/obs-en-NN-NN.jpg`, 598 on the live release) to `ingredients/images/<basename>`, `image/jpeg`, language `zxx`, with provenance and licence from the `en_obs` release it read them from. A language overrides one by carrying `ingredients/images/<basename>` in its own stories burrito | Image Pack |
 
 Words and Word Links are both `x-bcvarticles` with the same layout, so the only thing that tells them apart in the burrito is the repository code in `identification.primary`: `tw` is Words, anything else is Word Links. The catalog subject (`Translation Words`, `TSV Translation Words Links`) agrees.
 
-Two rows are open and block the corresponding requirements (FO-2, ST-4) until DCS generates them. The validator treats them as unknown flavors, not failures, so the rest of the supply is usable meanwhile. Not yet sampled: `en_obs-sn` (expected `x-obsnotes`), the one non-TSV `OBS Translation Questions` release (`peripheral/x-OBSTranslationQuestions`, ignored today), the 16 `ts` OBS repositories, `en_t4t`, `en_bsb` and the Arabic and Russian Bibles.
+One row is open and blocks FO-2 on live data until DCS generates it: formation, which is also left out of the default language pack until then. The validator treats them as unknown flavors, not failures, so the rest of the supply is usable meanwhile. Not yet sampled: `en_obs-sn` (expected `x-obsnotes`), the one non-TSV `OBS Translation Questions` release (`peripheral/x-OBSTranslationQuestions`, ignored today), the 16 `ts` OBS repositories, `en_t4t`, `en_bsb` and the Arabic and Russian Bibles.
 
 ## What every burrito must carry
 
@@ -56,7 +57,7 @@ Two rows are open and block the corresponding requirements (FO-2, ST-4) until DC
 
 ## What the app adds
 
-A transfer sends each installed burrito as it arrived from DCS, byte for byte, and must pass the same validator; the app adds nothing to it. What the metadata cannot say (the tag) travels in the transfer offer beside the commit, never in a sidecar file. `buildBurrito` in `src/lib/burrito/build.ts` writes the same shape as `go-rc2sb` and is used by the fixtures and tests.
+The app writes exactly two kinds of burrito itself, around assets the catalog lists (ADR 0006): the Image Pack and an Audio Pack, in the rows above. They are written into the install's staging directory, checked by the same validator as a DCS burrito (rows `status: 'app-written'`), and never carry anything that did not come from the catalog entry, the release's assets or its repository licence. A transfer sends each installed burrito as it arrived from DCS, byte for byte, and must pass the same validator; the app adds nothing to it. What the metadata cannot say (the tag) travels in the transfer offer beside the commit, never in a sidecar file. `buildBurrito` in `src/lib/burrito/build.ts` writes the same shape as `go-rc2sb` and is used by the fixtures and tests.
 
 ## The validator
 

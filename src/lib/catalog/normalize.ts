@@ -3,8 +3,9 @@ import { comparePublishers, compareText } from '../order';
 import { fieldValidators } from '../domain/fields';
 import { packIdOf, packKindOf } from '../domain/pack';
 import { archiveUrlOf, resourceKey } from '../domain/release';
+import { isAllowedUrl } from '../network';
 import { rowOfSubject } from './subjects';
-import type { CatalogRelease, LanguageName } from './types';
+import type { CatalogRelease, LanguageName, ReleaseAsset } from './types';
 
 export type CatalogPage =
   { ok: true; releases: readonly CatalogRelease[]; entries: number; dropped: number } | { ok: false };
@@ -21,6 +22,29 @@ function field(entry: Record<string, unknown>, name: string): string | undefined
 function publishedOf(entry: Record<string, unknown>): string {
   const release = isRecord(entry.release) ? entry.release : {};
   return text(entry.released) ?? text(release.published_at) ?? '';
+}
+
+const audioAssetName = /\.(m4a|mp3)$/i;
+
+function audioAssetsOf(entry: Record<string, unknown>): ReleaseAsset[] {
+  const attachments = isRecord(entry.attachment_types) ? entry.attachment_types : {};
+  const release = isRecord(entry.release) ? entry.release : {};
+  if (attachments.audio !== true || !Array.isArray(release.assets)) {
+    return [];
+  }
+  const assets: readonly unknown[] = release.assets;
+  return assets.flatMap((asset) => {
+    if (!isRecord(asset)) {
+      return [];
+    }
+    const name = text(asset.name);
+    const url = text(asset.browser_download_url);
+    if (name === undefined || url === undefined || !audioAssetName.test(name) || !isAllowedUrl(url)) {
+      return [];
+    }
+    const size = asset.size;
+    return [{ name, url, bytes: typeof size === 'number' && size >= 0 ? size : undefined }];
+  });
 }
 
 export function normalizeEntry(entry: unknown): CatalogRelease | undefined {
@@ -68,6 +92,8 @@ export function normalizeEntry(entry: unknown): CatalogRelease | undefined {
     bytes: undefined,
     autonym: field(entry, 'language_title') ?? language,
     direction: field(entry, 'language_direction') === 'rtl' ? 'rtl' : 'ltr',
+    assets: audioAssetsOf(entry),
+    built: undefined,
   };
 }
 
