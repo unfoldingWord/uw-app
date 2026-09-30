@@ -8,7 +8,11 @@ appId: ${APP_ID}
 - extendedWaitUntil:
     visible: 'Continue in English'
     timeout: 90000
-- tapOn: 'Continue in English'
+- waitForAnimationToEnd:
+    timeout: 5000
+- tapOn:
+    text: 'Continue in English'
+    retryTapIfNoChange: true
 - extendedWaitUntil:
     visible: 'Switch theme'
     timeout: 30000
