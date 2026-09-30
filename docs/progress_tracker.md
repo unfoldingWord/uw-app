@@ -3,6 +3,44 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-30 U1 script faces, reduce motion, blur nesting, dynamic type and touch targets (#35, #36, #38, #39, #40)
+
+Node v22.22.2; Chromium through playwright-core for the shots. Nothing ran on a phone.
+
+- Red first: `src/shared/theme/script.test.ts` failed to import, then caught `withScript` dropping a semibold
+  title to weight 400, then (after the first `ur` and `hi` shots) failed on Nastaliq line height and script
+  tracking; SE-1 failed on the missing `onLocale`, then on the missing `setReducedMotion` and settings entry;
+  `src/shared/glass/blurLayers.test.ts`, `pressGate.test.ts` (`touchSlop`) and both `touchExtent.test.ts`
+  failed before their code; the new large-text shots reported the three tab labels escaping their 52 px pill
+  by 2 px on Home, Study and Formation.
+- #35: the theme carries the app locale (root layout, through `createSettingsService(kernel).locale()` and
+  `onLocale`). `src/shared/theme/script.ts` picks the face from the characters shown: ThemedText, the glass
+  button, chip and input, and the Settings, About and Formation Line primitives; Formation blocks go through
+  `contentText` keyed on the content language. Study keeps its imports through a re-export. Nastaliq gets a
+  line twice the font size and script faces drop letter spacing (exceptions row). Shots in `rtl` (ar), `ur`
+  and `hi` show Noto Sans Arabic, Noto Nastaliq Urdu and Noto Sans Devanagari; the Urdu header overlap and the
+  spaced Devanagari overlines seen in the first run are gone in the second.
+- #36: the root layout reads `AccessibilityInfo.isReduceMotionEnabled` and `reduceMotionChanged`; a
+  `settings.reducedMotion` override sits beside Reduce blur. In the harness (Chromium set to
+  `prefers-reduced-motion: reduce`) the Settings toggle reads on, so the system value reaches the theme on web.
+- #38: `GlassLayer` context; glass inside a `GlassSurface` renders no BlurView. Library shots look the same
+  before and after. The BlurView count per screen and frame times were not measured; the reduced-blur default
+  is unchanged.
+- #39: tab items and the Home Formation tile take `minHeight`; the tab clearance follows the measured bar.
+  The harness `large-text` mode zooms text 2x (the Android maximum font scale), a proxy only: React Native Web
+  ignores the platform font scale, `maxFontSizeMultiplier` and `adjustsFontSizeToFit`.
+- #40: `touchSlop` on Choice, MovementChip, both Toggles, GlassButton and GlassIconButton; the shots audit
+  counts the hit slop the controls declare.
+- `npm run verify`: green (670 tests in 66 files, 7 checks, 52 scenarios, trace 0 unproven, contract 21 fixture
+  burritos, live skipped offline, bundle android 1914 and iOS 1781 modules).
+- `npm run shots` before: 101 shots, 0 errors, 0 unnamed, 0 overflow, 383 controls under 44 px by drawn box.
+  After: 168 shots (new `ur`, `hi` and `large-text` modes), 0 errors, 0 unnamed, 0 overflow, 0 text boxes
+  escaping their parent, 124 targets under 44 px counting hit slop (92 in the original four modes). What is
+  left is in Study (the Choices chips and inline word links) and the Formation notes text area.
+- Not verified: anything on a phone (ar, ur and hi fonts on iOS and Android, Reduce Motion from the OS
+  setting, dynamic type at the platform maximum on both platforms, blur frame time on an Android 12 phone with
+  2 GB of RAM).
+
 ## 2026-09-30 N2 Transport radio and the Android app package (issues #2 and #3)
 
 Node v22.22.2. Nothing ran on a phone. No Swift or Kotlin was compiled: the sandbox has no Xcode, Android SDK
