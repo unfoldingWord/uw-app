@@ -10,7 +10,7 @@ export default scenario(
   'SH-4',
   'a passage and a story go out as text, and a chapter as audio where it exists, each with a link to get the app',
   async (world) => {
-    const phone = world.device('phone');
+    const phone = world.device('phone', { localeGate: 'drafts' });
     await phone.start();
     await installFromCatalog(phone, [languagePackId('qaa'), audioPackId('qaa', 'qaa_ult-audio')]);
     phone.adapters.http.setOnline(false);

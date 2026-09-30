@@ -1,6 +1,7 @@
 import type { JournalResume } from '@lib/journal/journal';
 import { createKernel, type Kernel } from '@lib/kernel';
 import type { AppPackage, Clock, DeviceLocale, DevicePlatform, Ids } from '@lib/ports';
+import type { LocaleGate } from '@lib/strings/locales';
 import { createMemoryAudio, type MemoryAudio } from './adapters/audio';
 import { createMemoryDb, type MemoryDb } from './adapters/db';
 import { createMemoryFiles, type MemoryFiles } from './adapters/files';
@@ -21,6 +22,7 @@ export type DeviceOptions = {
   clock?: Clock;
   ids?: Ids;
   resume?: JournalResume;
+  localeGate?: LocaleGate;
 };
 
 export type SimAdapters = {
@@ -81,6 +83,7 @@ export function createSimDevice(name: string, world: DeviceWorld, options: Devic
       migrations,
       ...(options.journalLimit === undefined ? {} : { journalLimit: options.journalLimit }),
       ...(options.resume === undefined ? {} : { resume: options.resume }),
+      ...(options.localeGate === undefined ? {} : { localeGate: options.localeGate }),
     });
   let kernel = boot();
   return {

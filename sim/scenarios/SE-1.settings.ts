@@ -8,7 +8,7 @@ export default scenario(
   'SE-1',
   'settings hold the app language apart from the content language, the theme, the first name, the full-text index, storage, licence and About',
   async (world) => {
-    const phone = world.device('phone', { locale: { tag: 'fr-FR', region: 'FR' } });
+    const phone = world.device('phone', { locale: { tag: 'fr-FR', region: 'FR' }, localeGate: 'drafts' });
     await phone.start();
     const services = servicesOf(phone);
     assert.equal(services.settings.locale(), 'fr', 'the app language starts from the device locale');

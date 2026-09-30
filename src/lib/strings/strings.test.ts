@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { englishAreas } from './en/index';
-import { direction, locales, needsDirectionChange, resolveLocale, type Locale } from './locales';
+import {
+  direction,
+  localeSignOffs,
+  locales,
+  needsDirectionChange,
+  offeredLocales,
+  releaseGate,
+  resolveLocale,
+  type Locale,
+  type LocaleSignOffs,
+} from './locales';
 import { tables } from './locales/index';
 import { createStrings, stringsModule, type LocaleTables } from './strings';
 import { english, type LocaleTable } from './table';
@@ -192,20 +202,56 @@ describe('locales', () => {
   });
 
   it('maps device locale tags to a registered locale, in the order the device prefers them', () => {
-    expect(resolveLocale(['es-MX'])).toBe('es-419');
-    expect(resolveLocale(['es'])).toBe('es-419');
-    expect(resolveLocale(['pt'])).toBe('pt-BR');
-    expect(resolveLocale(['pt-PT'])).toBe('pt-BR');
-    expect(resolveLocale(['zh-CN'])).toBe('zh-Hans');
-    expect(resolveLocale(['zh-Hans-CN'])).toBe('zh-Hans');
-    expect(resolveLocale(['sw_KE'])).toBe('sw');
-    expect(resolveLocale(['fa-IR'])).toBe('fa');
-    expect(resolveLocale(['ur-PK'])).toBe('ur');
-    expect(resolveLocale(['in-ID'])).toBe('id');
-    expect(resolveLocale(['de-DE', 'fr-CA'])).toBe('fr');
-    expect(resolveLocale(['de-DE'])).toBe('en');
-    expect(resolveLocale([])).toBe('en');
-    expect(resolveLocale(['pt-BR'])).toBe('pt-BR');
-    expect(resolveLocale(['my-MM'])).toBe('my');
+    expect(resolveLocale(['es-MX'], locales)).toBe('es-419');
+    expect(resolveLocale(['es'], locales)).toBe('es-419');
+    expect(resolveLocale(['pt'], locales)).toBe('pt-BR');
+    expect(resolveLocale(['pt-PT'], locales)).toBe('pt-BR');
+    expect(resolveLocale(['zh-CN'], locales)).toBe('zh-Hans');
+    expect(resolveLocale(['zh-Hans-CN'], locales)).toBe('zh-Hans');
+    expect(resolveLocale(['sw_KE'], locales)).toBe('sw');
+    expect(resolveLocale(['fa-IR'], locales)).toBe('fa');
+    expect(resolveLocale(['ur-PK'], locales)).toBe('ur');
+    expect(resolveLocale(['in-ID'], locales)).toBe('id');
+    expect(resolveLocale(['de-DE', 'fr-CA'], locales)).toBe('fr');
+    expect(resolveLocale(['de-DE'], locales)).toBe('en');
+    expect(resolveLocale([], locales)).toBe('en');
+    expect(resolveLocale(['pt-BR'], locales)).toBe('pt-BR');
+    expect(resolveLocale(['my-MM'], locales)).toBe('my');
+  });
+
+  it('offers English and the signed-off locales only, unless the drafts gate is set', () => {
+    const unsigned = Object.fromEntries(
+      locales.flatMap((locale) => (locale === 'en' ? [] : [[locale, null]])),
+    );
+    const none = unsigned as LocaleSignOffs;
+    expect(offeredLocales('reviewed', none)).toEqual(['en']);
+    expect(offeredLocales('reviewed', { ...none, sw: '2026-10-02', ar: '2026-10-05' })).toEqual([
+      'en',
+      'ar',
+      'sw',
+    ]);
+    expect(offeredLocales('drafts', none)).toEqual(locales);
+    expect(offeredLocales()).toEqual(offeredLocales('reviewed', localeSignOffs));
+    expect(releaseGate).toBe('reviewed');
+  });
+
+  it('resolves a device or a stored choice to English when its locale is not offered', () => {
+    expect(resolveLocale(['fr-FR'], ['en'])).toBe('en');
+    expect(resolveLocale(['fr-FR', 'es-MX'], ['en', 'es-419'])).toBe('es-419');
+    expect(resolveLocale(['ar-EG'], ['en'])).toBe('en');
+    expect(resolveLocale(['ar-EG'], locales)).toBe('ar');
+  });
+
+  it('lists and accepts only the offered locales, while every drafted table stays readable', () => {
+    const released = createStrings(tables, 'reviewed');
+    expect(released.locales).toEqual(offeredLocales('reviewed'));
+    expect(released.isLocale('en')).toBe(true);
+    expect(released.isLocale('fr')).toBe(localeSignOffs.fr !== null);
+    expect(released.resolveLocale(['fr-FR'])).toBe(localeSignOffs.fr === null ? 'en' : 'fr');
+    expect(released.completeness().map((row) => row.locale)).toEqual([...locales]);
+    const drafts = createStrings(tables, 'drafts');
+    expect(drafts.locales).toEqual(locales);
+    expect(drafts.isLocale('ar')).toBe(true);
+    expect(drafts.t('common.back', 'fr')).not.toBe(drafts.t('common.back', 'en'));
   });
 });

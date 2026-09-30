@@ -90,10 +90,48 @@ function localeOfTag(tag: string): Locale | undefined {
   return localeOfLanguage[language];
 }
 
-export function resolveLocale(tags: readonly string[]): Locale {
+export type DraftedLocale = Exclude<Locale, 'en'>;
+
+export type LocaleSignOffs = { readonly [L in DraftedLocale]: string | null };
+
+export const localeSignOffs: LocaleSignOffs = Object.freeze({
+  'es-419': null,
+  fr: null,
+  hi: null,
+  ru: null,
+  ar: null,
+  'zh-Hans': null,
+  sw: null,
+  'pt-BR': null,
+  id: null,
+  vi: null,
+  bn: null,
+  ur: null,
+  fa: null,
+  my: null,
+  nl: null,
+});
+
+export type LocaleGate = 'reviewed' | 'drafts';
+
+export const releaseGate: LocaleGate = 'reviewed';
+
+export function offeredLocales(
+  gate: LocaleGate = releaseGate,
+  signOffs: LocaleSignOffs = localeSignOffs,
+): readonly Locale[] {
+  return gate === 'drafts'
+    ? locales
+    : locales.filter((locale) => locale === 'en' || signOffs[locale] !== null);
+}
+
+export function resolveLocale(
+  tags: readonly string[],
+  offered: readonly Locale[] = offeredLocales(),
+): Locale {
   for (const tag of tags) {
     const locale = localeOfTag(tag);
-    if (locale !== undefined) {
+    if (locale !== undefined && offered.includes(locale)) {
       return locale;
     }
   }

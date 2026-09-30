@@ -22,7 +22,7 @@ export default scenario(
       nameHint: 'Stays on this phone. Used only to greet you.',
     });
 
-    const french = world.device('french', { locale: { tag: 'fr-FR', region: 'FR' } });
+    const french = world.device('french', { locale: { tag: 'fr-FR', region: 'FR' }, localeGate: 'drafts' });
     await french.start();
     const copy = servicesOf(french).onboarding.copy();
     assert.equal(copy.logo, 'unfoldingWord', 'the name is the same in every locale');
