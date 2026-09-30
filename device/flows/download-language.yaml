@@ -1,4 +1,4 @@
-appId: org.unfoldingword.app
+appId: ${APP_ID}
 name: Download English from the catalog and read it in Study
 tags:
   - optional

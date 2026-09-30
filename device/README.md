@@ -42,10 +42,10 @@ npm ci
 npx expo prebuild --platform android --no-install --clean
 (cd android && ./gradlew :app:assembleRelease -PreactNativeArchitectures=x86_64)
 adb install -r android/app/build/outputs/apk/release/app-release.apk
-maestro test --exclude-tags optional device/flows
+maestro test -e APP_ID=org.unfoldingword.app --exclude-tags optional device/flows
 ```
 
-iOS, on a Mac with Xcode 16 or later and a booted iPhone simulator:
+iOS, on a Mac with Xcode 26 or later and a booted iPhone simulator:
 
 ```
 npm ci
@@ -54,10 +54,11 @@ xcodebuild -workspace ios/unfoldingWord.xcworkspace -scheme unfoldingWord -confi
   -sdk iphonesimulator -destination "id=<simulator udid>" -derivedDataPath build \
   ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO build
 xcrun simctl install booted build/Build/Products/Release-iphonesimulator/unfoldingWord.app
-maestro test --exclude-tags optional device/flows
+maestro test -e APP_ID="$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' build/Build/Products/Release-iphonesimulator/unfoldingWord.app/Info.plist)" \
+  --exclude-tags optional device/flows
 ```
 
-Run one flow with `maestro test device/flows/theme.yaml`, and the optional download with
+Every flow reads the app id from `APP_ID`, because the iOS bundle identifier and the Android package differ. Run one flow with `maestro test -e APP_ID=… device/flows/theme.yaml`, and the optional download with
 `maestro test --include-tags optional device/flows`. Screenshots are written to the directory you run
 Maestro from. Git ignores `android/` and `ios/`; delete the `build/` folder xcodebuild leaves when you are done.
 

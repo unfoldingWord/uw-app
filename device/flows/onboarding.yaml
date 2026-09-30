@@ -1,4 +1,4 @@
-appId: org.unfoldingword.app
+appId: ${APP_ID}
 name: First launch and onboarding through to Home
 ---
 - launchApp:
