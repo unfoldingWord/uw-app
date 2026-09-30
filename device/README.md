@@ -69,3 +69,10 @@ Target controls by their accessible name, the same English string a screen reade
 whole name as a regular expression, so escape parentheses and use `.*` for a name that carries a value, as
 in `Change language, now .*`. Wait with `extendedWaitUntil` and a timeout rather than a fixed sleep, and mark
 anything the system may or may not show, such as a permission prompt, `optional: true`.
+
+## When a pass fails
+
+`device/ci/android.sh` and `device/ci/ios.sh` run every flow once, and if that pass fails they run every flow a
+second time and report the second result. Both passes print their failed steps. The second pass exists because
+Maestro's driver drops view-hierarchy calls on the software-rendered API 30 emulator and a tap can land while a
+screen is still animating; a regression in the app fails both passes. Screenshots are printed from the last pass.

@@ -22,7 +22,11 @@ name: First launch and onboarding through to Home
 - extendedWaitUntil:
     visible: 'Continue in English'
     timeout: 15000
-- tapOn: 'Continue in English'
+- waitForAnimationToEnd:
+    timeout: 5000
+- tapOn:
+    text: 'Continue in English'
+    retryTapIfNoChange: true
 - extendedWaitUntil:
     visible: 'Switch theme'
     timeout: 30000

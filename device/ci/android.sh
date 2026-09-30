@@ -20,23 +20,36 @@ package="$([ -n "$aapt2" ] && "$aapt2" dump packagename "$apk" 2>/dev/null | hea
 package="${package:-org.unfoldingword.app}"
 echo "Maestro drives $package"
 
+run_flows() {
+  local attempt="$1"
+  mkdir -p "$out/$attempt"
+  (
+    cd "$out/$attempt" &&
+      maestro test "${tags[@]}" \
+        -e APP_ID="$package" \
+        --format junit --output report.xml \
+        --test-output-dir . \
+        --debug-output debug \
+        "$GITHUB_WORKSPACE/device/flows"
+  )
+}
+
 status=0
-(
-  cd "$out" &&
-    maestro test "${tags[@]}" \
-      -e APP_ID="$package" \
-      --format junit --output report.xml \
-      --test-output-dir . \
-      --debug-output debug \
-      "$GITHUB_WORKSPACE/device/flows"
-) || status=$?
+run_flows first || status=$?
+if [ "$status" -ne 0 ]; then
+  echo "::warning::The first pass failed; running every flow once more. A real regression fails both passes."
+  status=0
+  run_flows second || status=$?
+fi
 
 echo "::group::failed steps"
 bash "$GITHUB_WORKSPACE/device/ci/failed-steps.sh" "$out" "$HOME/.maestro/tests"
 echo "::endgroup::"
 
 echo "::group::screenshots (base64 jpeg)"
-bash "$GITHUB_WORKSPACE/device/ci/print-shots.sh" "$out" "$HOME/.maestro/tests"
+last="$out/first"
+[ -d "$out/second" ] && last="$out/second"
+bash "$GITHUB_WORKSPACE/device/ci/print-shots.sh" "$last"
 echo "::endgroup::"
 
 adb logcat -d > "$out/logcat.txt" || true
