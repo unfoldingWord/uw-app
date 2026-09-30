@@ -3,6 +3,38 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-30 U2 share privacy, refused writes, invitation, locale gate (issues #20, #25, #27, #51, #56)
+
+Node v22.22.2. Nothing ran on a phone, and no screen was rendered (`npm run shots` was not run).
+
+- Red first: PA-2 and HO-7 failed on a tap that left the invitation due and on the missing `opensBrowser`
+  word (#56, #25). The new `DX-1.a-refused-write-is-a-failure` failed with an unhandled `db.io` rejection from
+  `study.save` (#27); the mint ledger test in `sim/kernel-reactions.test.ts` failed with "emitted Failure
+  before an event carried the id it minted" with the `compose.ts` change backed out. DX-2 failed on the
+  missing `reading` field of the shared file (#20), and the `mintedIds` test for a left-out bookmark failed
+  with the `sim/replay.ts` change backed out. `SE-1.unreviewed-locales-are-not-offered` failed with
+  `'fr' !== 'en'` and the `locale-signoff` check failed with no sign-off table (#51). The `settleAsync`,
+  `leaveOutReading`, `offeredLocales` and `signOffFindings` unit tests were written alongside their code.
+- #56: a tap journals `InvitationTapped` then `InvitationDismissed`. #25: both invitation links carry
+  `common.opensBrowser` as their hint.
+- #27: Bookmarks and Formation write first, emit on success, and on failure emit `Failure` (`db.io`,
+  `context.type` the event withheld) and return `{ ok: false, code }`. The memory Db's `failWrites` takes a
+  pattern. `useAsyncValue` reports `failure` and keeps the known value. Story screen shows a refused bookmark
+  in place.
+- #20: the diagnostics file leaves reading out by default; "Include what I read" keeps it. Three event
+  fields became optional. A left-out file replays without error and rebuilds all but bookmarks and the last
+  passage (`docs/replay.md`).
+- #51: only English and signed-off locales are offered (none today); sim devices may pass
+  `localeGate: 'drafts'`, which ON-1, HO-2, SE-1 and SH-4 now do.
+- One `npm run verify` run failed in vitest with `Failed to load tsconfig 'expo/tsconfig.base.json'` in 16
+  files while other worktrees were busy; the file exists, `npm run test` alone passed straight after, and the
+  rerun of `npm run verify` was green (INFERRED: a transient read failure under load).
+- `npm run verify`: green (669 tests in 64 files, 54 scenarios, 8 checks, trace 0 unproven, contract 21
+  fixture burritos, live skipped offline with HTTP 403; bundle android 1913 and iOS 1780 modules).
+- Not verified: the Story, Diagnostics, Groups, Session and Home invitation screens in light, dark and
+  reduced-blur; the screen reader reading the new hints and the toggle; the new strings in fifteen locales
+  (drafted, not reviewed).
+
 ## 2026-09-30 U1 script faces, reduce motion, blur nesting, dynamic type and touch targets (#35, #36, #38, #39, #40)
 
 Node v22.22.2; Chromium through playwright-core for the shots. Nothing ran on a phone.
