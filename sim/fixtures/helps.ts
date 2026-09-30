@@ -74,6 +74,15 @@ export const bookNotes: Readonly<Record<string, HelpsTable>> = {
         '1',
         'Walking is a metaphor for how a person lives. Alternate translation: "you live according to the truth"',
       ],
+      [
+        '1:3',
+        'j004',
+        '',
+        '',
+        'ἐρχομένων ἀδελφῶν',
+        '1',
+        'These brothers were believers who had visited Gaius and then come to John.',
+      ],
     ],
   },
 };

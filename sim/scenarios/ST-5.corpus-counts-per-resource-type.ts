@@ -24,7 +24,7 @@ export default scenario(
     assert.deepEqual(corpus.summary('qaa'), {
       literal: count(2),
       simplified: count(2),
-      notes: count(6),
+      notes: count(7),
       wordLinks: count(6),
       questions: count(4),
       words: count(6),

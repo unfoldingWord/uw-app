@@ -108,6 +108,17 @@ export default scenario(
     assert.ok(beloved);
     assert.deepEqual(wordsAt(letter, beloved.words), ['beloved']);
 
+    const walking = await corpus.passage(reference('3JN 1:3'), { language: 'qaa' });
+    assert.ok(walking);
+    assert.deepEqual(
+      walking.notes.map((note) => [note.id, wordsAt(walking, note.words).join(' ')]),
+      [
+        ['j003', 'walk in truth'],
+        ['j004', 'brothers came'],
+      ],
+      'a quote in original order attaches where the target reorders its words',
+    );
+
     const chapter = await corpus.passage(reference('RUT 1'), { language: 'qaa' });
     assert.equal(chapter?.text.verses.length, 5);
     assert.equal(await corpus.passage(reference('RUT 2:1'), { language: 'qaa' }), undefined);
@@ -120,6 +131,7 @@ export default scenario(
         { reference: 'RUT 1:16', language: 'qaa' },
         { reference: 'RUT 1:1-4', language: 'qaa' },
         { reference: '3JN 1:1', language: 'qaa' },
+        { reference: '3JN 1:3', language: 'qaa' },
         { reference: 'RUT 1', language: 'qaa' },
       ],
     );
