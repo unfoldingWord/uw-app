@@ -1,0 +1,2905 @@
+[
+  {
+    "shot": "onboarding",
+    "mode": "light",
+    "file": "shots/onboarding--light.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "onboarding-languages",
+    "mode": "light",
+    "file": "shots/onboarding-languages--light.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "home",
+    "mode": "light",
+    "file": "shots/home--light.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study",
+    "mode": "light",
+    "file": "shots/study--light.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "Close to the original",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Everyday words",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Notes",
+        "width": 58,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Word links",
+        "width": 82,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Questions",
+        "width": 80,
+        "height": 30
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-passage",
+    "mode": "light",
+    "file": "shots/study-passage--light.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "Close to the original",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Everyday words",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Notes",
+        "width": 58,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Word links",
+        "width": 82,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Questions",
+        "width": 80,
+        "height": 30
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-chapter",
+    "mode": "light",
+    "file": "shots/study-chapter--light.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "Close to the original",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Everyday words",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Notes",
+        "width": 58,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Word links",
+        "width": 82,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Questions",
+        "width": 80,
+        "height": 30
+      },
+      {
+        "role": "link",
+        "name": "Ruth 1:16",
+        "width": 48,
+        "height": 15
+      },
+      {
+        "role": "link",
+        "name": "Translate names",
+        "width": 252,
+        "height": 31
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-library",
+    "mode": "light",
+    "file": "shots/study-library--light.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-search",
+    "mode": "light",
+    "file": "shots/study-search--light.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-article",
+    "mode": "light",
+    "file": "shots/study-article--light.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "link",
+        "name": "love",
+        "width": 27,
+        "height": 19
+      },
+      {
+        "role": "link",
+        "name": "truth, true",
+        "width": 65,
+        "height": 19
+      },
+      {
+        "role": "link",
+        "name": "Ruth 1:16",
+        "width": 58,
+        "height": 19
+      },
+      {
+        "role": "link",
+        "name": "3 John 1:1",
+        "width": 63,
+        "height": 19
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-story",
+    "mode": "light",
+    "file": "shots/study-story--light.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation",
+    "mode": "light",
+    "file": "shots/formation--light.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation-groups",
+    "mode": "light",
+    "file": "shots/formation-groups--light.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation-session",
+    "mode": "light",
+    "file": "shots/formation-session--light.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "textarea",
+        "name": "Session notes · Tuesday group",
+        "width": 244,
+        "height": 40
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation-session-end",
+    "mode": "light",
+    "file": "shots/formation-session-end--light.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "textarea",
+        "name": "Session notes · Tuesday group",
+        "width": 244,
+        "height": 40
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "impact",
+    "mode": "light",
+    "file": "shots/impact--light.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "share",
+    "mode": "light",
+    "file": "shots/share--light.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer",
+    "mode": "light",
+    "file": "shots/transfer--light.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer-send",
+    "mode": "light",
+    "file": "shots/transfer-send--light.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer-receive",
+    "mode": "light",
+    "file": "shots/transfer-receive--light.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer-typed",
+    "mode": "light",
+    "file": "shots/transfer-typed--light.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-search-reference",
+    "mode": "light",
+    "file": "shots/study-search-reference--light.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-audio",
+    "mode": "light",
+    "file": "shots/study-audio--light.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "Close to the original",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Everyday words",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Notes",
+        "width": 58,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Word links",
+        "width": 82,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Questions",
+        "width": 80,
+        "height": 30
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-word-links",
+    "mode": "light",
+    "file": "shots/study-word-links--light.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "Close to the original",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Everyday words",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Notes",
+        "width": 58,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Word links",
+        "width": 82,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Questions",
+        "width": 80,
+        "height": 30
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "languages",
+    "mode": "light",
+    "file": "shots/languages--light.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "settings",
+    "mode": "light",
+    "file": "shots/settings--light.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "about",
+    "mode": "light",
+    "file": "shots/about--light.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "licence",
+    "mode": "light",
+    "file": "shots/licence--light.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "privacy",
+    "mode": "light",
+    "file": "shots/privacy--light.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "diagnostics",
+    "mode": "light",
+    "file": "shots/diagnostics--light.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "switch",
+        "name": "Include what I read",
+        "width": 48,
+        "height": 28
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "onboarding",
+    "mode": "dark",
+    "file": "shots/onboarding--dark.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "onboarding-languages",
+    "mode": "dark",
+    "file": "shots/onboarding-languages--dark.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "home",
+    "mode": "dark",
+    "file": "shots/home--dark.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study",
+    "mode": "dark",
+    "file": "shots/study--dark.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "Close to the original",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Everyday words",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Notes",
+        "width": 58,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Word links",
+        "width": 82,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Questions",
+        "width": 80,
+        "height": 30
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-passage",
+    "mode": "dark",
+    "file": "shots/study-passage--dark.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "Close to the original",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Everyday words",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Notes",
+        "width": 58,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Word links",
+        "width": 82,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Questions",
+        "width": 80,
+        "height": 30
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-chapter",
+    "mode": "dark",
+    "file": "shots/study-chapter--dark.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "Close to the original",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Everyday words",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Notes",
+        "width": 58,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Word links",
+        "width": 82,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Questions",
+        "width": 80,
+        "height": 30
+      },
+      {
+        "role": "link",
+        "name": "Ruth 1:16",
+        "width": 48,
+        "height": 15
+      },
+      {
+        "role": "link",
+        "name": "Translate names",
+        "width": 252,
+        "height": 31
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-library",
+    "mode": "dark",
+    "file": "shots/study-library--dark.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-search",
+    "mode": "dark",
+    "file": "shots/study-search--dark.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-article",
+    "mode": "dark",
+    "file": "shots/study-article--dark.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "link",
+        "name": "love",
+        "width": 27,
+        "height": 19
+      },
+      {
+        "role": "link",
+        "name": "truth, true",
+        "width": 65,
+        "height": 19
+      },
+      {
+        "role": "link",
+        "name": "Ruth 1:16",
+        "width": 58,
+        "height": 19
+      },
+      {
+        "role": "link",
+        "name": "3 John 1:1",
+        "width": 63,
+        "height": 19
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-story",
+    "mode": "dark",
+    "file": "shots/study-story--dark.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation",
+    "mode": "dark",
+    "file": "shots/formation--dark.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation-groups",
+    "mode": "dark",
+    "file": "shots/formation-groups--dark.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation-session",
+    "mode": "dark",
+    "file": "shots/formation-session--dark.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "textarea",
+        "name": "Session notes · Tuesday group",
+        "width": 244,
+        "height": 40
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation-session-end",
+    "mode": "dark",
+    "file": "shots/formation-session-end--dark.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "textarea",
+        "name": "Session notes · Tuesday group",
+        "width": 244,
+        "height": 40
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "impact",
+    "mode": "dark",
+    "file": "shots/impact--dark.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "share",
+    "mode": "dark",
+    "file": "shots/share--dark.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer",
+    "mode": "dark",
+    "file": "shots/transfer--dark.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer-send",
+    "mode": "dark",
+    "file": "shots/transfer-send--dark.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer-receive",
+    "mode": "dark",
+    "file": "shots/transfer-receive--dark.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer-typed",
+    "mode": "dark",
+    "file": "shots/transfer-typed--dark.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-search-reference",
+    "mode": "dark",
+    "file": "shots/study-search-reference--dark.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-audio",
+    "mode": "dark",
+    "file": "shots/study-audio--dark.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "Close to the original",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Everyday words",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Notes",
+        "width": 58,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Word links",
+        "width": 82,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Questions",
+        "width": 80,
+        "height": 30
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-word-links",
+    "mode": "dark",
+    "file": "shots/study-word-links--dark.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "Close to the original",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Everyday words",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Notes",
+        "width": 58,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Word links",
+        "width": 82,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Questions",
+        "width": 80,
+        "height": 30
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "languages",
+    "mode": "dark",
+    "file": "shots/languages--dark.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "settings",
+    "mode": "dark",
+    "file": "shots/settings--dark.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "about",
+    "mode": "dark",
+    "file": "shots/about--dark.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "licence",
+    "mode": "dark",
+    "file": "shots/licence--dark.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "privacy",
+    "mode": "dark",
+    "file": "shots/privacy--dark.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "diagnostics",
+    "mode": "dark",
+    "file": "shots/diagnostics--dark.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "switch",
+        "name": "Include what I read",
+        "width": 48,
+        "height": 28
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "onboarding",
+    "mode": "reduced-blur",
+    "file": "shots/onboarding--reduced-blur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "onboarding-languages",
+    "mode": "reduced-blur",
+    "file": "shots/onboarding-languages--reduced-blur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "home",
+    "mode": "reduced-blur",
+    "file": "shots/home--reduced-blur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study",
+    "mode": "reduced-blur",
+    "file": "shots/study--reduced-blur.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "Close to the original",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Everyday words",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Notes",
+        "width": 58,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Word links",
+        "width": 82,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Questions",
+        "width": 80,
+        "height": 30
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-passage",
+    "mode": "reduced-blur",
+    "file": "shots/study-passage--reduced-blur.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "Close to the original",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Everyday words",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Notes",
+        "width": 58,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Word links",
+        "width": 82,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Questions",
+        "width": 80,
+        "height": 30
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-chapter",
+    "mode": "reduced-blur",
+    "file": "shots/study-chapter--reduced-blur.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "Close to the original",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Everyday words",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Notes",
+        "width": 58,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Word links",
+        "width": 82,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Questions",
+        "width": 80,
+        "height": 30
+      },
+      {
+        "role": "link",
+        "name": "Ruth 1:16",
+        "width": 48,
+        "height": 15
+      },
+      {
+        "role": "link",
+        "name": "Translate names",
+        "width": 252,
+        "height": 31
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-library",
+    "mode": "reduced-blur",
+    "file": "shots/study-library--reduced-blur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-search",
+    "mode": "reduced-blur",
+    "file": "shots/study-search--reduced-blur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-article",
+    "mode": "reduced-blur",
+    "file": "shots/study-article--reduced-blur.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "link",
+        "name": "love",
+        "width": 27,
+        "height": 19
+      },
+      {
+        "role": "link",
+        "name": "truth, true",
+        "width": 65,
+        "height": 19
+      },
+      {
+        "role": "link",
+        "name": "Ruth 1:16",
+        "width": 58,
+        "height": 19
+      },
+      {
+        "role": "link",
+        "name": "3 John 1:1",
+        "width": 63,
+        "height": 19
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-story",
+    "mode": "reduced-blur",
+    "file": "shots/study-story--reduced-blur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation",
+    "mode": "reduced-blur",
+    "file": "shots/formation--reduced-blur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation-groups",
+    "mode": "reduced-blur",
+    "file": "shots/formation-groups--reduced-blur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation-session",
+    "mode": "reduced-blur",
+    "file": "shots/formation-session--reduced-blur.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "textarea",
+        "name": "Session notes · Tuesday group",
+        "width": 244,
+        "height": 40
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation-session-end",
+    "mode": "reduced-blur",
+    "file": "shots/formation-session-end--reduced-blur.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "textarea",
+        "name": "Session notes · Tuesday group",
+        "width": 244,
+        "height": 40
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "impact",
+    "mode": "reduced-blur",
+    "file": "shots/impact--reduced-blur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "share",
+    "mode": "reduced-blur",
+    "file": "shots/share--reduced-blur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer",
+    "mode": "reduced-blur",
+    "file": "shots/transfer--reduced-blur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer-send",
+    "mode": "reduced-blur",
+    "file": "shots/transfer-send--reduced-blur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer-receive",
+    "mode": "reduced-blur",
+    "file": "shots/transfer-receive--reduced-blur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer-typed",
+    "mode": "reduced-blur",
+    "file": "shots/transfer-typed--reduced-blur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-search-reference",
+    "mode": "reduced-blur",
+    "file": "shots/study-search-reference--reduced-blur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-audio",
+    "mode": "reduced-blur",
+    "file": "shots/study-audio--reduced-blur.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "Close to the original",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Everyday words",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Notes",
+        "width": 58,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Word links",
+        "width": 82,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Questions",
+        "width": 80,
+        "height": 30
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-word-links",
+    "mode": "reduced-blur",
+    "file": "shots/study-word-links--reduced-blur.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "Close to the original",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Everyday words",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "Notes",
+        "width": 58,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Word links",
+        "width": 82,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "Questions",
+        "width": 80,
+        "height": 30
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "languages",
+    "mode": "reduced-blur",
+    "file": "shots/languages--reduced-blur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "settings",
+    "mode": "reduced-blur",
+    "file": "shots/settings--reduced-blur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "about",
+    "mode": "reduced-blur",
+    "file": "shots/about--reduced-blur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "licence",
+    "mode": "reduced-blur",
+    "file": "shots/licence--reduced-blur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "privacy",
+    "mode": "reduced-blur",
+    "file": "shots/privacy--reduced-blur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "diagnostics",
+    "mode": "reduced-blur",
+    "file": "shots/diagnostics--reduced-blur.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "switch",
+        "name": "Include what I read",
+        "width": 48,
+        "height": 28
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "onboarding",
+    "mode": "rtl",
+    "file": "shots/onboarding--rtl.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "home",
+    "mode": "rtl",
+    "file": "shots/home--rtl.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study",
+    "mode": "rtl",
+    "file": "shots/study--rtl.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "قريب من الأصل",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "كلمات يومية",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "الملاحظات",
+        "width": 79,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "روابط الكلمات",
+        "width": 98,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "الأسئلة",
+        "width": 60,
+        "height": 30
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-passage",
+    "mode": "rtl",
+    "file": "shots/study-passage--rtl.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "قريب من الأصل",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "كلمات يومية",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "الملاحظات",
+        "width": 79,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "روابط الكلمات",
+        "width": 98,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "الأسئلة",
+        "width": 60,
+        "height": 30
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-chapter",
+    "mode": "rtl",
+    "file": "shots/study-chapter--rtl.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "قريب من الأصل",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "كلمات يومية",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "الملاحظات",
+        "width": 79,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "روابط الكلمات",
+        "width": 98,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "الأسئلة",
+        "width": 60,
+        "height": 30
+      },
+      {
+        "role": "link",
+        "name": "Ruth 1:16",
+        "width": 48,
+        "height": 15
+      },
+      {
+        "role": "link",
+        "name": "Translate names",
+        "width": 252,
+        "height": 31
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-library",
+    "mode": "rtl",
+    "file": "shots/study-library--rtl.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-search",
+    "mode": "rtl",
+    "file": "shots/study-search--rtl.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-article",
+    "mode": "rtl",
+    "file": "shots/study-article--rtl.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "link",
+        "name": "love",
+        "width": 27,
+        "height": 19
+      },
+      {
+        "role": "link",
+        "name": "truth, true",
+        "width": 65,
+        "height": 19
+      },
+      {
+        "role": "link",
+        "name": "Ruth 1:16",
+        "width": 58,
+        "height": 19
+      },
+      {
+        "role": "link",
+        "name": "3 John 1:1",
+        "width": 63,
+        "height": 19
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-story",
+    "mode": "rtl",
+    "file": "shots/study-story--rtl.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation",
+    "mode": "rtl",
+    "file": "shots/formation--rtl.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation-groups",
+    "mode": "rtl",
+    "file": "shots/formation-groups--rtl.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation-session",
+    "mode": "rtl",
+    "file": "shots/formation-session--rtl.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "impact",
+    "mode": "rtl",
+    "file": "shots/impact--rtl.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "share",
+    "mode": "rtl",
+    "file": "shots/share--rtl.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer",
+    "mode": "rtl",
+    "file": "shots/transfer--rtl.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer-typed",
+    "mode": "rtl",
+    "file": "shots/transfer-typed--rtl.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "languages",
+    "mode": "rtl",
+    "file": "shots/languages--rtl.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "settings",
+    "mode": "rtl",
+    "file": "shots/settings--rtl.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "about",
+    "mode": "rtl",
+    "file": "shots/about--rtl.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "licence",
+    "mode": "rtl",
+    "file": "shots/licence--rtl.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "privacy",
+    "mode": "rtl",
+    "file": "shots/privacy--rtl.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "diagnostics",
+    "mode": "rtl",
+    "file": "shots/diagnostics--rtl.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "switch",
+        "name": "تضمين ما قرأته",
+        "width": 48,
+        "height": 28
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "onboarding",
+    "mode": "ur",
+    "file": "shots/onboarding--ur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "home",
+    "mode": "ur",
+    "file": "shots/home--ur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study",
+    "mode": "ur",
+    "file": "shots/study--ur.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "اصل کے قریب",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "روزمرہ کے الفاظ",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "نوٹس",
+        "width": 54,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "الفاظ کے روابط",
+        "width": 103,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "سوالات",
+        "width": 64,
+        "height": 30
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-passage",
+    "mode": "ur",
+    "file": "shots/study-passage--ur.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "اصل کے قریب",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "روزمرہ کے الفاظ",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "نوٹس",
+        "width": 54,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "الفاظ کے روابط",
+        "width": 103,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "سوالات",
+        "width": 64,
+        "height": 30
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-chapter",
+    "mode": "ur",
+    "file": "shots/study-chapter--ur.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "اصل کے قریب",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "روزمرہ کے الفاظ",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "نوٹس",
+        "width": 54,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "الفاظ کے روابط",
+        "width": 103,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "سوالات",
+        "width": 64,
+        "height": 30
+      },
+      {
+        "role": "link",
+        "name": "Ruth 1:16",
+        "width": 48,
+        "height": 15
+      },
+      {
+        "role": "link",
+        "name": "Translate names",
+        "width": 252,
+        "height": 31
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-library",
+    "mode": "ur",
+    "file": "shots/study-library--ur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-search",
+    "mode": "ur",
+    "file": "shots/study-search--ur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-article",
+    "mode": "ur",
+    "file": "shots/study-article--ur.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "link",
+        "name": "love",
+        "width": 27,
+        "height": 19
+      },
+      {
+        "role": "link",
+        "name": "truth, true",
+        "width": 65,
+        "height": 19
+      },
+      {
+        "role": "link",
+        "name": "Ruth 1:16",
+        "width": 58,
+        "height": 19
+      },
+      {
+        "role": "link",
+        "name": "3 John 1:1",
+        "width": 63,
+        "height": 19
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-story",
+    "mode": "ur",
+    "file": "shots/study-story--ur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation",
+    "mode": "ur",
+    "file": "shots/formation--ur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation-groups",
+    "mode": "ur",
+    "file": "shots/formation-groups--ur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation-session",
+    "mode": "ur",
+    "file": "shots/formation-session--ur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "impact",
+    "mode": "ur",
+    "file": "shots/impact--ur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "share",
+    "mode": "ur",
+    "file": "shots/share--ur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer",
+    "mode": "ur",
+    "file": "shots/transfer--ur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer-typed",
+    "mode": "ur",
+    "file": "shots/transfer-typed--ur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "languages",
+    "mode": "ur",
+    "file": "shots/languages--ur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "settings",
+    "mode": "ur",
+    "file": "shots/settings--ur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "about",
+    "mode": "ur",
+    "file": "shots/about--ur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "licence",
+    "mode": "ur",
+    "file": "shots/licence--ur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "privacy",
+    "mode": "ur",
+    "file": "shots/privacy--ur.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "diagnostics",
+    "mode": "ur",
+    "file": "shots/diagnostics--ur.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "switch",
+        "name": "جو میں نے پڑھا وہ شامل کریں",
+        "width": 48,
+        "height": 28
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "onboarding",
+    "mode": "hi",
+    "file": "shots/onboarding--hi.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "home",
+    "mode": "hi",
+    "file": "shots/home--hi.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study",
+    "mode": "hi",
+    "file": "shots/study--hi.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "मूल के करीब",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "रोज़मर्रा के शब्द",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "टिप्पणियाँ",
+        "width": 64,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "शब्द लिंक",
+        "width": 65,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "प्रश्न",
+        "width": 44,
+        "height": 30
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-passage",
+    "mode": "hi",
+    "file": "shots/study-passage--hi.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "मूल के करीब",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "रोज़मर्रा के शब्द",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "टिप्पणियाँ",
+        "width": 64,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "शब्द लिंक",
+        "width": 65,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "प्रश्न",
+        "width": 44,
+        "height": 30
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-chapter",
+    "mode": "hi",
+    "file": "shots/study-chapter--hi.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "button",
+        "name": "मूल के करीब",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "रोज़मर्रा के शब्द",
+        "width": 157,
+        "height": 36
+      },
+      {
+        "role": "button",
+        "name": "टिप्पणियाँ",
+        "width": 64,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "शब्द लिंक",
+        "width": 65,
+        "height": 30
+      },
+      {
+        "role": "button",
+        "name": "प्रश्न",
+        "width": 44,
+        "height": 30
+      },
+      {
+        "role": "link",
+        "name": "Ruth 1:16",
+        "width": 48,
+        "height": 15
+      },
+      {
+        "role": "link",
+        "name": "Translate names",
+        "width": 252,
+        "height": 31
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-library",
+    "mode": "hi",
+    "file": "shots/study-library--hi.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-search",
+    "mode": "hi",
+    "file": "shots/study-search--hi.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-article",
+    "mode": "hi",
+    "file": "shots/study-article--hi.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "link",
+        "name": "love",
+        "width": 27,
+        "height": 19
+      },
+      {
+        "role": "link",
+        "name": "truth, true",
+        "width": 65,
+        "height": 19
+      },
+      {
+        "role": "link",
+        "name": "Ruth 1:16",
+        "width": 58,
+        "height": 19
+      },
+      {
+        "role": "link",
+        "name": "3 John 1:1",
+        "width": 63,
+        "height": 19
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-story",
+    "mode": "hi",
+    "file": "shots/study-story--hi.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation",
+    "mode": "hi",
+    "file": "shots/formation--hi.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation-groups",
+    "mode": "hi",
+    "file": "shots/formation-groups--hi.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation-session",
+    "mode": "hi",
+    "file": "shots/formation-session--hi.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "textarea",
+        "name": "सत्र की टिप्पणियाँ · Tuesday group",
+        "width": 244,
+        "height": 40
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "impact",
+    "mode": "hi",
+    "file": "shots/impact--hi.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "share",
+    "mode": "hi",
+    "file": "shots/share--hi.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer",
+    "mode": "hi",
+    "file": "shots/transfer--hi.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer-typed",
+    "mode": "hi",
+    "file": "shots/transfer-typed--hi.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "languages",
+    "mode": "hi",
+    "file": "shots/languages--hi.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "settings",
+    "mode": "hi",
+    "file": "shots/settings--hi.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "about",
+    "mode": "hi",
+    "file": "shots/about--hi.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "licence",
+    "mode": "hi",
+    "file": "shots/licence--hi.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "privacy",
+    "mode": "hi",
+    "file": "shots/privacy--hi.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "diagnostics",
+    "mode": "hi",
+    "file": "shots/diagnostics--hi.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "switch",
+        "name": "मैंने जो पढ़ा उसे शामिल करें",
+        "width": 48,
+        "height": 28
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "onboarding",
+    "mode": "large-text",
+    "file": "shots/onboarding--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "onboarding-languages",
+    "mode": "large-text",
+    "file": "shots/onboarding-languages--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "home",
+    "mode": "large-text",
+    "file": "shots/home--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study",
+    "mode": "large-text",
+    "file": "shots/study--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-passage",
+    "mode": "large-text",
+    "file": "shots/study-passage--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-chapter",
+    "mode": "large-text",
+    "file": "shots/study-chapter--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-library",
+    "mode": "large-text",
+    "file": "shots/study-library--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-search",
+    "mode": "large-text",
+    "file": "shots/study-search--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-article",
+    "mode": "large-text",
+    "file": "shots/study-article--large-text.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "link",
+        "name": "love",
+        "width": 55,
+        "height": 36
+      },
+      {
+        "role": "link",
+        "name": "Ruth 1:16",
+        "width": 116,
+        "height": 36
+      },
+      {
+        "role": "link",
+        "name": "3 John 1:1",
+        "width": 127,
+        "height": 36
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-story",
+    "mode": "large-text",
+    "file": "shots/study-story--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation",
+    "mode": "large-text",
+    "file": "shots/formation--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation-groups",
+    "mode": "large-text",
+    "file": "shots/formation-groups--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation-session",
+    "mode": "large-text",
+    "file": "shots/formation-session--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "formation-session-end",
+    "mode": "large-text",
+    "file": "shots/formation-session-end--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "impact",
+    "mode": "large-text",
+    "file": "shots/impact--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "share",
+    "mode": "large-text",
+    "file": "shots/share--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer",
+    "mode": "large-text",
+    "file": "shots/transfer--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer-send",
+    "mode": "large-text",
+    "file": "shots/transfer-send--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer-receive",
+    "mode": "large-text",
+    "file": "shots/transfer-receive--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "transfer-typed",
+    "mode": "large-text",
+    "file": "shots/transfer-typed--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-search-reference",
+    "mode": "large-text",
+    "file": "shots/study-search-reference--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-audio",
+    "mode": "large-text",
+    "file": "shots/study-audio--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "study-word-links",
+    "mode": "large-text",
+    "file": "shots/study-word-links--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "languages",
+    "mode": "large-text",
+    "file": "shots/languages--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "settings",
+    "mode": "large-text",
+    "file": "shots/settings--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "about",
+    "mode": "large-text",
+    "file": "shots/about--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "licence",
+    "mode": "large-text",
+    "file": "shots/licence--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "privacy",
+    "mode": "large-text",
+    "file": "shots/privacy--large-text.png",
+    "unnamed": [],
+    "small": [],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "shot": "diagnostics",
+    "mode": "large-text",
+    "file": "shots/diagnostics--large-text.png",
+    "unnamed": [],
+    "small": [
+      {
+        "role": "switch",
+        "name": "Include what I read",
+        "width": 48,
+        "height": 28
+      }
+    ],
+    "escaped": [],
+    "overflow": false,
+    "errors": []
+  }
+]

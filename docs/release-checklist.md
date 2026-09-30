@@ -52,6 +52,16 @@ recorded run on a phone; **blocked** names the missing input and its owner.
   outside Expo needs its own proposal. A file opened before onboarding is finished is dropped, because the
   Languages modal is behind the onboarding guard. Proposal: `docs/proposals/2026-09-29-file-import.md`.
 
+## Visual evidence
+
+`docs/shots/` holds the render harness's contact sheets (light, dark, reduced blur, right to left, Urdu, Hindi
+and large text) and its `report.json`, so a reviewer sees every screen without rebuilding. They are refreshed
+on each release: run `npm run shots`, then `npm run shots:publish`, which downscales each sheet to 760 px wide,
+fails on one over 1.5 MB, and copies the report with repository-relative paths; commit the result with the
+release. `.github/workflows/shots.yml` runs the same harness on every pull request and uploads every
+screenshot as the `shots` artifact. A contact sheet is the web render of the real screens over the sim's
+memory adapters (ADR 0008), not a phone run.
+
 ## Signing note
 
 The preview profile's APK is signed with the EAS-managed key for `org.unfoldingword.app`, the placeholder Android package until the DRI names the existing Play listing's package (row 5). The Play Store build

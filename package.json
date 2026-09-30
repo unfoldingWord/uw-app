@@ -25,7 +25,8 @@
     "fixtures": "tsx sim/fixtures/build.ts",
     "bundle": "tsx scripts/bundle.ts",
     "icons": "tsx scripts/icons/cli.ts",
-    "shots": "tsx scripts/shots/cli.ts"
+    "shots": "tsx scripts/shots/cli.ts",
+    "shots:publish": "tsx scripts/shots/publish.ts"
   },
   "dependencies": {
     "@noble/hashes": "^2.4.0",
