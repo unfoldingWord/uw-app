@@ -58,6 +58,8 @@ export const about = {
   'settings.theme.about': 'Light, dark or follow the phone.',
   'settings.reducedBlur': 'Reduce blur',
   'settings.reducedBlur.about': 'Plainer glass that runs lighter on older phones.',
+  'settings.reducedMotion': 'Reduce motion',
+  'settings.reducedMotion.about': 'Keeps the glass still instead of drifting and breathing.',
   'settings.firstName': 'First name',
   'settings.firstName.about': 'Used only in the greeting, only on this phone.',
   'settings.fullText': 'Search inside every text',

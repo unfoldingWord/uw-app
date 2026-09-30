@@ -402,6 +402,8 @@ export const ur: LocaleTable = {
   'settings.theme.about': 'ہلکی، گہری یا فون کے مطابق۔',
   'settings.reducedBlur': 'دھندلاہٹ کم کریں',
   'settings.reducedBlur.about': 'سادہ شیشہ، جو پرانے فون پر ہلکا چلتا ہے۔',
+  'settings.reducedMotion': 'حرکت کم کریں',
+  'settings.reducedMotion.about': 'شیشہ تیرنے اور ہلنے کے بجائے ساکن رہتا ہے۔',
   'settings.firstName': 'پہلا نام',
   'settings.firstName.about': 'صرف سلام میں، صرف اس فون پر استعمال ہوتا ہے۔',
   'settings.fullText': 'ہر متن کے اندر تلاش کریں',

@@ -55,12 +55,19 @@ export default scenario(
 
     await services.settings.setTheme('dark');
     await services.settings.setReducedBlur(true);
+    assert.equal(services.settings.reducedMotion(), undefined, 'reduce motion follows the phone until chosen');
+    const heard: unknown[] = [];
+    const stopHearing = services.settings.onAppearance((next) => heard.push(next.reducedMotion));
+    assert.equal(await services.settings.setReducedMotion(true), true);
+    stopHearing();
+    assert.deepEqual(heard, [true], 'the root layout hears the reduce motion override');
     assert.equal(await services.settings.setName('Jesse'), true);
     await phone.restart();
     let settings = servicesOf(phone).settings;
     assert.equal(settings.locale(), 'sw');
     assert.equal(settings.theme(), 'dark');
-    assert.deepEqual(settings.appearance(), { scheme: 'dark', reducedBlur: true });
+    assert.deepEqual(settings.appearance(), { scheme: 'dark', reducedBlur: true, reducedMotion: true });
+    assert.equal(settings.reducedMotion(), true, 'the override survives a restart');
     assert.equal(settings.name(), 'Jesse');
     assert.equal(JSON.stringify(phone.kernel.journal.export()).includes('Jesse'), false);
 
@@ -137,6 +144,7 @@ export default scenario(
         'appLanguage',
         'theme',
         'reducedBlur',
+        'reducedMotion',
         'firstName',
         'fullText',
         'storage',

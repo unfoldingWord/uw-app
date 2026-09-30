@@ -381,6 +381,8 @@ export const vi: LocaleTable = {
   'settings.theme.about': 'Sáng, tối hoặc theo điện thoại.',
   'settings.reducedBlur': 'Giảm làm mờ',
   'settings.reducedBlur.about': 'Hiệu ứng kính đơn giản hơn, nhẹ hơn trên điện thoại cũ.',
+  'settings.reducedMotion': 'Giảm chuyển động',
+  'settings.reducedMotion.about': 'Kính đứng yên thay vì trôi và nhấp nháy.',
   'settings.firstName': 'Tên',
   'settings.firstName.about': 'Chỉ dùng trong lời chào, chỉ trên điện thoại này.',
   'settings.fullText': 'Tìm trong mọi bản văn',

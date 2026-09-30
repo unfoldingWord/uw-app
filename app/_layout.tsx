@@ -2,7 +2,7 @@ import Stack from 'expo-router/stack';
 import { hide, preventAutoHideAsync } from 'expo-splash-screen';
 import { useEffect, useState, type ReactNode } from 'react';
 import { reloadAppAsync } from 'expo';
-import { AppState, I18nManager, Platform, useColorScheme } from 'react-native';
+import { AccessibilityInfo, AppState, I18nManager, Platform, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { createHomeService } from '@features/home/service';
 import { createOnboardingService } from '@features/onboarding/service';
@@ -135,15 +135,42 @@ function Routes({ needed }: { needed: boolean }) {
   );
 }
 
+function useSystemReducedMotion(): boolean {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    let live = true;
+    void AccessibilityInfo.isReduceMotionEnabled()
+      .then((enabled) => {
+        if (live) {
+          setReduced(enabled);
+        }
+      })
+      .catch(() => false);
+    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduced);
+    return () => {
+      live = false;
+      subscription.remove();
+    };
+  }, []);
+  return reduced;
+}
+
 type AppShellProps = { appearance: Appearance; locale: string | undefined; children?: ReactNode };
 
 function AppShell({ appearance, locale, children }: AppShellProps) {
   const system = useColorScheme();
   const scheme: Scheme = appearance.scheme ?? (system === 'dark' ? 'dark' : 'light');
   const reducedBlur = appearance.reducedBlur ?? reducedBlurByDefault();
+  const systemMotion = useSystemReducedMotion();
+  const reducedMotion = appearance.reducedMotion ?? systemMotion;
   return (
     <SafeAreaProvider>
-      <ThemeProvider scheme={scheme} reducedBlur={reducedBlur} {...(locale === undefined ? {} : { locale })}>
+      <ThemeProvider
+        scheme={scheme}
+        reducedBlur={reducedBlur}
+        reducedMotion={reducedMotion}
+        {...(locale === undefined ? {} : { locale })}
+      >
         {children}
       </ThemeProvider>
     </SafeAreaProvider>

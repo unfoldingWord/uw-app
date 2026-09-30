@@ -452,6 +452,8 @@ export const ru: LocaleTable = {
   'settings.theme.about': 'Светлая, тёмная или как на телефоне.',
   'settings.reducedBlur': 'Меньше размытия',
   'settings.reducedBlur.about': 'Более простое стекло, которое легче работает на старых телефонах.',
+  'settings.reducedMotion': 'Уменьшить движение',
+  'settings.reducedMotion.about': 'Стекло остаётся неподвижным, без плавания и пульсации.',
   'settings.firstName': 'Имя',
   'settings.firstName.about': 'Используется только в приветствии и только на этом телефоне.',
   'settings.fullText': 'Искать во всех текстах',

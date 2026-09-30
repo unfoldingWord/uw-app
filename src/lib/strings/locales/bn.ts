@@ -400,6 +400,8 @@ export const bn: LocaleTable = {
   'settings.theme.about': 'হালকা, গাঢ় বা ফোনের মতো।',
   'settings.reducedBlur': 'ঝাপসা কমান',
   'settings.reducedBlur.about': 'সহজ কাচ, পুরোনো ফোনে হালকাভাবে চলে।',
+  'settings.reducedMotion': 'গতি কমান',
+  'settings.reducedMotion.about': 'কাচ ভাসা ও নড়াচড়ার বদলে স্থির থাকে।',
   'settings.firstName': 'প্রথম নাম',
   'settings.firstName.about': 'শুধু শুভেচ্ছায়, শুধু এই ফোনে ব্যবহার হয়।',
   'settings.fullText': 'সব পাঠের ভেতরে খুঁজুন',

@@ -409,6 +409,8 @@ export const nl: LocaleTable = {
   'settings.theme.about': 'Licht, donker of zoals de telefoon.',
   'settings.reducedBlur': 'Minder vervaging',
   'settings.reducedBlur.about': 'Eenvoudiger glas dat lichter werkt op oudere telefoons.',
+  'settings.reducedMotion': 'Minder beweging',
+  'settings.reducedMotion.about': 'Het glas blijft stil in plaats van te zweven en te ademen.',
   'settings.firstName': 'Voornaam',
   'settings.firstName.about': 'Alleen gebruikt in de begroeting, alleen op deze telefoon.',
   'settings.fullText': 'Zoeken in alle teksten',

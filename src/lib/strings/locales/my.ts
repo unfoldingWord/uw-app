@@ -389,6 +389,8 @@ export const my: LocaleTable = {
   'settings.theme.about': 'အလင်း၊ အမှောင် သို့မဟုတ် ဖုန်းအတိုင်း။',
   'settings.reducedBlur': 'မှုန်ဝါးမှု လျှော့ရန်',
   'settings.reducedBlur.about': 'ဖုန်းအဟောင်းများတွင် ပေါ့ပါးစွာ အလုပ်လုပ်သော ရိုးရှင်းသည့် ဖန်။',
+  'settings.reducedMotion': 'လှုပ်ရှားမှု လျှော့ပါ',
+  'settings.reducedMotion.about': 'မှန်သည် လွင့်မျောခြင်းမရှိဘဲ ငြိမ်နေပါသည်။',
   'settings.firstName': 'အမည်',
   'settings.firstName.about': 'နှုတ်ဆက်ရာတွင်သာ၊ ဤဖုန်းပေါ်တွင်သာ သုံးပါသည်။',
   'settings.fullText': 'စာသားအားလုံးထဲတွင် ရှာရန်',

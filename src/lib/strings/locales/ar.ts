@@ -472,6 +472,8 @@ export const ar: LocaleTable = {
   'settings.theme.about': 'فاتح أو داكن أو مثل الهاتف.',
   'settings.reducedBlur': 'تقليل التمويه',
   'settings.reducedBlur.about': 'زجاج أبسط يعمل بخفة على الهواتف القديمة.',
+  'settings.reducedMotion': 'تقليل الحركة',
+  'settings.reducedMotion.about': 'يبقى الزجاج ثابتًا بدل أن يطفو ويتحرك.',
   'settings.firstName': 'الاسم الأول',
   'settings.firstName.about': 'يُستخدم في التحية فقط، وعلى هذا الهاتف فقط.',
   'settings.fullText': 'البحث داخل كل النصوص',

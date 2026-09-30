@@ -430,6 +430,8 @@ export const fr: LocaleTable = {
   'settings.theme.about': 'Clair, sombre ou comme le téléphone.',
   'settings.reducedBlur': 'Réduire le flou',
   'settings.reducedBlur.about': 'Un verre plus simple, plus léger pour les téléphones anciens.',
+  'settings.reducedMotion': 'Réduire les animations',
+  'settings.reducedMotion.about': 'Le verre reste immobile au lieu de flotter et de respirer.',
   'settings.firstName': 'Prénom',
   'settings.firstName.about': 'Utilisé seulement dans la salutation, seulement sur ce téléphone.',
   'settings.fullText': 'Rechercher dans tous les textes',

@@ -417,6 +417,8 @@ export const es419: LocaleTable = {
   'settings.theme.about': 'Claro, oscuro o igual que el teléfono.',
   'settings.reducedBlur': 'Reducir el desenfoque',
   'settings.reducedBlur.about': 'Un vidrio más simple que funciona mejor en teléfonos antiguos.',
+  'settings.reducedMotion': 'Reducir el movimiento',
+  'settings.reducedMotion.about': 'El vidrio se queda quieto en lugar de flotar y moverse.',
   'settings.firstName': 'Nombre',
   'settings.firstName.about': 'Se usa solo en el saludo, solo en este teléfono.',
   'settings.fullText': 'Buscar dentro de todos los textos',

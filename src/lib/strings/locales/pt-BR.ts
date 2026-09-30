@@ -416,6 +416,8 @@ export const ptBR: LocaleTable = {
   'settings.theme.about': 'Claro, escuro ou igual ao celular.',
   'settings.reducedBlur': 'Reduzir o desfoque',
   'settings.reducedBlur.about': 'Um vidro mais simples, mais leve em celulares antigos.',
+  'settings.reducedMotion': 'Reduzir movimento',
+  'settings.reducedMotion.about': 'O vidro fica parado em vez de flutuar e pulsar.',
   'settings.firstName': 'Primeiro nome',
   'settings.firstName.about': 'Usado só no cumprimento, só neste celular.',
   'settings.fullText': 'Buscar dentro de todos os textos',

@@ -11,6 +11,7 @@ export const preferenceSchemas = {
   'home.theme': ['system', 'light', 'dark'],
   'settings.locale': freeText,
   'settings.reducedBlur': ['on', 'off'],
+  'settings.reducedMotion': ['on', 'off'],
   'study.language': languageValue,
   'study.reading': ['literal', 'simplified'],
   'formation.englishMovements': ['on', 'off'],

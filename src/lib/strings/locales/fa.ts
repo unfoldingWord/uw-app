@@ -401,6 +401,8 @@ export const fa: LocaleTable = {
   'settings.theme.about': 'روشن، تیره یا مطابق گوشی.',
   'settings.reducedBlur': 'کاهش تاری',
   'settings.reducedBlur.about': 'شیشه‌ای ساده‌تر که روی گوشی‌های قدیمی سبک‌تر کار می‌کند.',
+  'settings.reducedMotion': 'کاهش حرکت',
+  'settings.reducedMotion.about': 'شیشه به‌جای شناور شدن و تپیدن، ثابت می‌ماند.',
   'settings.firstName': 'نام کوچک',
   'settings.firstName.about': 'فقط در سلام و فقط روی این گوشی به کار می‌رود.',
   'settings.fullText': 'جست‌وجو درون همهٔ متن‌ها',

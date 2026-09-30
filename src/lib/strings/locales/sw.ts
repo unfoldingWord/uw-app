@@ -404,6 +404,8 @@ export const sw: LocaleTable = {
   'settings.theme.about': 'Mwanga, giza au kama simu.',
   'settings.reducedBlur': 'Punguza ukungu',
   'settings.reducedBlur.about': 'Kioo rahisi zaidi kinachofanya kazi vizuri kwenye simu za zamani.',
+  'settings.reducedMotion': 'Punguza mwendo',
+  'settings.reducedMotion.about': 'Kioo kinabaki kimetulia badala ya kuelea na kupumua.',
   'settings.firstName': 'Jina la kwanza',
   'settings.firstName.about': 'Linatumika kwenye salamu tu, kwenye simu hii tu.',
   'settings.fullText': 'Tafuta ndani ya maandiko yote',

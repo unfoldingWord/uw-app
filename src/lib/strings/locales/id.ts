@@ -384,6 +384,8 @@ export const id: LocaleTable = {
   'settings.theme.about': 'Terang, gelap, atau ikuti ponsel.',
   'settings.reducedBlur': 'Kurangi buram',
   'settings.reducedBlur.about': 'Kaca yang lebih sederhana dan lebih ringan di ponsel lama.',
+  'settings.reducedMotion': 'Kurangi gerakan',
+  'settings.reducedMotion.about': 'Kaca tetap diam, tidak melayang dan berdenyut.',
   'settings.firstName': 'Nama depan',
   'settings.firstName.about': 'Hanya dipakai dalam sapaan, hanya di ponsel ini.',
   'settings.fullText': 'Cari di dalam semua teks',

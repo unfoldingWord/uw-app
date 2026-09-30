@@ -404,6 +404,8 @@ export const hi: LocaleTable = {
   'settings.theme.about': 'हल्की, गहरी या फ़ोन के अनुसार।',
   'settings.reducedBlur': 'धुंधलापन कम करें',
   'settings.reducedBlur.about': 'सादा काँच, जो पुराने फ़ोन पर हल्का चलता है।',
+  'settings.reducedMotion': 'गति कम करें',
+  'settings.reducedMotion.about': 'काँच तैरने और हिलने के बजाय स्थिर रहता है।',
   'settings.firstName': 'पहला नाम',
   'settings.firstName.about': 'केवल अभिवादन में, केवल इस फ़ोन पर उपयोग होता है।',
   'settings.fullText': 'हर पाठ के भीतर खोजें',

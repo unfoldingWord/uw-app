@@ -53,6 +53,10 @@ Change a value in place; set it to `null` to fall back to English for that key w
   `study.helps.chapterIntro` label the book and chapter introductions shown first among the notes. The word
   for "book" should be the one used for a book of the Bible (ar uses سفر), and "chapter" the one the Bible
   text itself uses (fa and ur باب, id pasal).
+- **Drafted with the Reduce motion override (issue #36).** `settings.reducedMotion` and
+  `settings.reducedMotion.about`, drafted in every locale at once. The setting stops the glass from drifting,
+  floating and breathing; the word should be the one the phone's own accessibility settings use for Reduce
+  Motion in that language.
 - **Search examples.** `search.placeholder` and `search.empty` use Ruth 2 and covenant as examples; the book
   name and the word should be the ones a reader in that language would type.
 

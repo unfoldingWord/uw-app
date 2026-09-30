@@ -371,6 +371,8 @@ export const zhHans: LocaleTable = {
   'settings.theme.about': '浅色、深色或跟随手机。',
   'settings.reducedBlur': '减少模糊',
   'settings.reducedBlur.about': '更简洁的玻璃效果，在旧手机上更流畅。',
+  'settings.reducedMotion': '减少动态效果',
+  'settings.reducedMotion.about': '玻璃保持静止，不再漂浮和律动。',
   'settings.firstName': '名字',
   'settings.firstName.about': '只用于问候，只保存在这部手机上。',
   'settings.fullText': '在所有文本中搜索',
