@@ -164,16 +164,12 @@ describe('validate', () => {
     }
   });
 
-  it('requires config.yaml beside each Academy section and lists it as YAML', () => {
+  it('admits an Academy section with no config.yaml and requires a config.yaml it lists to be YAML', () => {
     const withoutConfig = burrito({
       ...rowInputs.articles,
-      ingredients: [markdown('translate/figs-metaphor/01.md')],
+      ingredients: [markdown('checking/acceptable/01.md')],
     });
-    expect(failure(validate(withoutConfig))).toEqual({
-      kind: 'invalid',
-      rule: 'row-ingredients',
-      path: 'ingredients/translate/config.yaml',
-    });
+    expect(validate(withoutConfig).ok).toBe(true);
     const mislabelled = burrito({
       ...rowInputs.articles,
       ingredients: [
