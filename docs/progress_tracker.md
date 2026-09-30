@@ -3,13 +3,33 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-30 M11 merge of C1 and C2 onto B, and the Settings refusal in place (#37, #41, #62, #61, #42)
+
+Node v22.22.2; Chromium through playwright-core for the shots. Nothing ran on a phone.
+
+- C1 and C2 cherry-picked onto the B branch. Conflicts only in `ArticleScreen.tsx` imports (C1's `directionOf`
+  and C2's `Notice`, both kept), the decision log (C1 and C2 rows renumbered 84 to 88 after B's 78 to 83),
+  this tracker and `docs/strings-review.md` (every section kept). C2's scenario renamed `DX-1.c` so it no longer
+  shares the `DX-1.b` prefix with B's start-fault scenario. B's new strings pass C2's one-sentence check as
+  written.
+- #61 Settings: a `false` from a settings `set*` call now shows `failure.kv.io` as a Notice inside the card of
+  the control that failed, and the theme choice moves only after its write succeeds. The service already
+  returned `false`, so the new asserts in `DX-1.c-refused-preference-write` (reduced blur and reduced motion
+  refused, appearance unchanged) were green before the screen change; there was no service-level red.
+- `npm run verify` green: 777 tests in 84 files, 8 checks, 62 scenarios, trace 51 Must, 21 fixture burritos,
+  both native bundles clean. `npm run shots`: "182 screenshots and the contact sheet in shots/; 39 targets
+  under 44 px counting hit slop, 0 text boxes escaping their parent". Settings seen in light, dark and rtl,
+  Home and Study in large-text.
+- Not verified: the Settings refusal Notices rendered (no shots mode refuses key-value writes), and anything on
+  a phone.
+
 ## 2026-09-30 C2 refused writes in place, preference write order, one-sentence copy (#61, #42)
 
 Node v22.22.2; Chromium through playwright-core for the shots. Nothing ran on a phone, and nothing here
 reached git.door43.org.
 
 - Red first:
-  - #61: `DX-1.b-refused-preference-write` failed on "a refused write reports that it did not save"
+  - #61: `DX-1.c-refused-preference-write` failed on "a refused write reports that it did not save"
     (`true !== false`), its journal showing `PreferenceChanged home.theme light` before the `Failure kv.io`.
     Green once Preferences wrote first. Its added assertion that Home's theme toggle returns
     `{ ok: false, code: 'kv.io' }` failed before `toggleTheme` returned `Written<Scheme>`.

@@ -35,6 +35,9 @@ export default scenario(
       'a refused write reports that it did not save',
     );
     assert.equal(await services.settings.setName('Amani'), false);
+    assert.equal(await services.settings.setReducedBlur(true), false, 'the Settings toggles report it too');
+    assert.equal(await services.settings.setReducedMotion(true), false);
+    assert.deepEqual(services.settings.appearance(), { scheme: 'dark' }, 'no toggle claims a change');
     assert.deepEqual(
       await services.home.toggleTheme('light'),
       { ok: false, code: 'kv.io' },
@@ -43,11 +46,7 @@ export default scenario(
     assert.equal(changed(), before, 'no PreferenceChanged for a write that failed');
     assert.deepEqual(
       kvFailures(),
-      [
-        { code: 'kv.io', type: 'PreferenceChanged' },
-        { code: 'kv.io', type: 'PreferenceChanged' },
-        { code: 'kv.io', type: 'PreferenceChanged' },
-      ],
+      Array.from({ length: 5 }, () => ({ code: 'kv.io', type: 'PreferenceChanged' })),
       'each refused write is a Failure with kv.io and the event it held back',
     );
     assert.equal(services.settings.theme(), 'dark', 'the value in memory is the one on the device');

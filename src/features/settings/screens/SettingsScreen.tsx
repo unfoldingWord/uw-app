@@ -5,7 +5,7 @@ import { failureCodeOf, type FailureCode } from '@lib/domain/failures';
 import { GlassButton, GlassInput, Icon } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
-import { Card, ListRow, Screen, ThemedText, Toggle } from '@shared/ui';
+import { Card, ListRow, Notice, Screen, ThemedText, Toggle } from '@shared/ui';
 import {
   createSettingsService,
   type FullTextState,
@@ -52,22 +52,32 @@ export default function SettingsScreen() {
   const [themeChoice, setThemeChoice] = useState<ThemeChoice>(() => service.theme());
   const [name, setName] = useState(() => service.name() ?? '');
   const [nameState, setNameState] = useState<'idle' | 'saved' | FailureCode>('idle');
-  const [failure, setFailure] = useState<FailureCode | undefined>(undefined);
+  const [refusals, setRefusals] = useState<
+    Readonly<Partial<Record<SettingsEntryId, FailureCode | undefined>>>
+  >({});
   const [, setRevision] = useState(0);
   const locales = service.locales();
   const current = locales.find((choice) => choice.selected);
 
-  const attempt = async (work: () => Promise<boolean>) => {
+  const attempt = async (control: SettingsEntryId, work: () => Promise<unknown>): Promise<boolean> => {
+    let code: FailureCode | undefined;
     try {
-      setFailure((await work()) ? undefined : 'unexpected');
+      code = (await work()) === false ? 'kv.io' : undefined;
     } catch (error) {
-      setFailure(failureCodeOf(error));
+      code = failureCodeOf(error);
     }
+    setRefusals((current) => ({ ...current, [control]: code }));
+    return code === undefined;
+  };
+
+  const refusal = (control: SettingsEntryId) => {
+    const code = refusals[control];
+    return code === undefined ? null : <Notice text={words.t(`failure.${code}`)} />;
   };
 
   const saveName = async () => {
     try {
-      setNameState((await service.setName(name.trim())) ? 'saved' : 'unexpected');
+      setNameState((await service.setName(name.trim())) ? 'saved' : 'kv.io');
     } catch (error) {
       setNameState(failureCodeOf(error));
     }
@@ -99,11 +109,6 @@ export default function SettingsScreen() {
       title={words.t('settings.title')}
       back={{ label: words.t('common.back'), onPress: () => router.back() }}
     >
-      {failure === undefined ? null : (
-        <ThemedText variant="caption" tone="body" live>
-          {words.t(`failure.${failure}`)}
-        </ThemedText>
-      )}
       <ListRow
         title={words.t('settings.appLanguage')}
         detail={appLanguage?.about ?? words.t('settings.appLanguage.about')}
@@ -128,7 +133,7 @@ export default function SettingsScreen() {
               {...(choice.complete ? {} : { detail: words.t('settings.appLanguage.partial') })}
               selected={choice.selected}
               onPress={async () => {
-                await attempt(() => service.setLocale(choice.locale));
+                await attempt('appLanguage', () => service.setLocale(choice.locale));
                 setRevision((revision) => revision + 1);
                 await overview.reload();
               }}
@@ -137,6 +142,7 @@ export default function SettingsScreen() {
           <ThemedText variant="caption" tone="dim">
             {words.t('settings.appLanguage.direction')}
           </ThemedText>
+          {refusal('appLanguage')}
         </Card>
       ) : null}
       <Card level={1}>
@@ -153,12 +159,14 @@ export default function SettingsScreen() {
               label={themeLabel(choice)}
               selected={themeChoice === choice}
               onPress={async () => {
-                setThemeChoice(choice);
-                await attempt(() => service.setTheme(choice));
+                if (await attempt('theme', () => service.setTheme(choice))) {
+                  setThemeChoice(choice);
+                }
               }}
             />
           ))}
         </View>
+        {refusal('theme')}
       </Card>
       <Card level={1}>
         <View style={[styles.value, { gap: theme.space.sp6 }]}>
@@ -173,9 +181,10 @@ export default function SettingsScreen() {
           <Toggle
             label={words.t('settings.reducedBlur')}
             on={theme.reducedBlur}
-            onChange={(on) => attempt(() => service.setReducedBlur(on))}
+            onChange={(on) => attempt('reducedBlur', () => service.setReducedBlur(on))}
           />
         </View>
+        {refusal('reducedBlur')}
         <View style={[styles.value, { gap: theme.space.sp6 }]}>
           <View style={styles.grow}>
             <ThemedText variant="body" tone="title" weight={theme.fontWeight.fwSemibold}>
@@ -188,9 +197,10 @@ export default function SettingsScreen() {
           <Toggle
             label={words.t('settings.reducedMotion')}
             on={theme.reducedMotion}
-            onChange={(on) => attempt(() => service.setReducedMotion(on))}
+            onChange={(on) => attempt('reducedMotion', () => service.setReducedMotion(on))}
           />
         </View>
+        {refusal('reducedMotion')}
       </Card>
       <Card level={1}>
         <ThemedText variant="body" tone="title" weight={theme.fontWeight.fwSemibold}>
@@ -216,12 +226,15 @@ export default function SettingsScreen() {
           <GlassButton size="sm" variant="dark" onPress={saveName}>
             {words.t('common.save')}
           </GlassButton>
-          {nameState === 'idle' ? null : (
+          {nameState === 'saved' ? (
             <ThemedText variant="caption" tone="dim" live style={styles.grow}>
-              {nameState === 'saved' ? words.t('common.done') : words.t(`failure.${nameState}`)}
+              {words.t('common.done')}
             </ThemedText>
-          )}
+          ) : null}
         </View>
+        {nameState === 'idle' || nameState === 'saved' ? null : (
+          <Notice text={words.t(`failure.${nameState}`)} />
+        )}
       </Card>
       <Card level={1}>
         <View style={[styles.value, { gap: theme.space.sp6 }]}>
@@ -239,16 +252,12 @@ export default function SettingsScreen() {
             on={fullText?.on ?? false}
             disabled={fullText === undefined}
             onChange={async (on) => {
-              try {
-                await service.setFullText(on);
-                setFailure(undefined);
-              } catch (error) {
-                setFailure(failureCodeOf(error));
-              }
+              await attempt('fullText', () => service.setFullText(on));
               await overview.reload();
             }}
           />
         </View>
+        {refusal('fullText')}
       </Card>
       <StorageSection service={service} storage={overview.value?.storage} onChanged={overview.reload} />
       {links.map((link) => {
