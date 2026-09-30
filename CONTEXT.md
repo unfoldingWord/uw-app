@@ -50,6 +50,10 @@ _Avoid_: origin, provider
 The release tag, commit, publisher and licence carried on every piece of content, from download to screen to whatever leaves the device.
 _Avoid_: metadata, attribution (attribution is what provenance is rendered as)
 
+**Label**:
+A title or a name that points at content without being content: an article, story or Word title in the contents lists (`Contents.words`, `Contents.academy`, `Contents.stories`), a book name, a reference's name (`corpus.title`, `bookName`, `referenceName`). A label carries no provenance because it never leaves the device alone: whatever is shared or sent is the content it names, with that content's provenance. The provenance check lists `words`, `academy` and `stories` by name and exempts them as labels, and fails on a label that holds anything but its id or number and its title.
+_Avoid_: heading, caption, metadata
+
 **Text**:
 A Bible text resource. Two readings may exist for a language: **Literal** (close to the original) and **Simplified** (everyday words).
 _Avoid_: ULT, UST, GLT, GST in anything a user sees; Bible (ambiguous)

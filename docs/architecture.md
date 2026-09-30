@@ -122,7 +122,7 @@ A rule that lives only in prose drifts. Each of these has a check in `verify` an
 | `lib/` is pure | `no-restricted-globals` in `src/lib/**`, plus `tsconfig.lib.json` with no DOM or React Native types |
 | No code comments | lint rule over `src/`, `app/`, `sim/`, `tests/` |
 | One writer per durable value | a test walks every `store.ts` `owns` export and fails on any table, directory or key claimed twice or written elsewhere |
-| Provenance on every content value | the Corpus types make it a required field; a test renders every fixture value and finds the licence |
+| Provenance on every content value | the Corpus types make it a required field; the `provenance` check renders every fixture value, finds the licence, and exempts titles in `words`, `academy` and `stories` as labels by name (`CONTEXT.md`, Label) |
 | No network except allowlisted hosts | the Http port refuses other hosts; a dependency scan fails on any package that opens a socket itself |
 | Tokens agree | `src/shared/theme` is compared to `design-system/tokens/*.css` by name and value |
 | Strings live in one table | no punctuated literal in `app/`, `features/` or `hooks/` that the table does not hold |
