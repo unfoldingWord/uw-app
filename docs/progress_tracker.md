@@ -3,6 +3,33 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-30 N1 native configuration, backup and release fixes (issues #4, #5, #26, #45, #48)
+
+Node v22.22.2. Nothing ran on a phone. No Swift or Kotlin was compiled (no Xcode, no Android SDK here).
+
+- Red first: the `permissions` check with the `application/x-zip-compressed` alias missing from `app.config.ts`
+  (1 finding, #48); `permissions.test.ts` for the iOS bundle identifier before the assertion existed (#45); the
+  `permissions` check over the real repo once the library scan and the dangerous list existed and before
+  `app.config.ts` blocked them: 31 findings, including `node_modules/expo-network/android/src/main/AndroidManifest.xml
+  merges android.permission.ACCESS_WIFI_STATE` (#26); `backup-rules.test.ts` against a stub (2 of 3 failed) and
+  the `permissions` check before the plugin set `android:dataExtractionRules` (#5); `src/platform/backup.test.ts`
+  before `backup.ts` existed, three boundary tests before `@modules` was a refused device module, and SE-1
+  before the privacy screen carried `privacy.backup` (#4).
+- `EXPO_OFFLINE=1 npx expo install expo-asset` pinned `~57.0.18` (without `EXPO_OFFLINE` it failed: the proxy
+  refuses the Expo API with 403). The `knip` script is now `unused`.
+- `npx expo prebuild --platform android --no-install` (template fetched from npm) wrote
+  `android:dataExtractionRules="@xml/data_extraction_rules"`, a `res/xml/data_extraction_rules.xml` identical to
+  the plugin's copy, 45 `tools:node="remove"` permissions, and the three archive MIME types; the directory
+  was then deleted. Gradle's manifest merge was not run (no Android SDK).
+- `npx expo-modules-autolinking resolve` finds `backup-exclusion` on apple (`BackupExclusionModule`, pod
+  `BackupExclusion`) and android (`expo.modules.backupexclusion.BackupExclusionModule`).
+- `npm run verify`: green (670 tests in 65 files, 52 scenarios, 7 checks, trace 0 unproven, contract 21
+  fixture burritos, live skipped offline; bundle android 1911 and iOS 1778 modules). The `permissions` summary
+  now names what it does not observe: permissions from Maven dependencies outside `node_modules`.
+- Not verified: the Swift and Kotlin compile; the iCloud, Manage Storage entry and the flag on a phone (#4);
+  the app absent from an Android 12 device-to-device transfer (#5); the merged manifest of a built APK (#26);
+  a preview build's `versionCode` increment on EAS (#48); that `com.unfoldingword.iosapp` is the record
+  under the unfoldingWord seller in App Store Connect (#45, taken from the issue).
 ## 2026-09-30 Corpus: note attachment, reading choice, quoted TSV cells, introductions (#11, #12, #13, #18)
 
 Node v22.22.2; Chromium 141 through playwright-core 1.56.1 for the shots. Nothing ran on a phone. Nothing
