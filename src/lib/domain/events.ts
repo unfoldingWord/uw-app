@@ -136,6 +136,18 @@ export const eventSchemas = {
       tag: 'tag?',
     },
   },
+  PackResourceFailed: {
+    replay: 'follows',
+    payload: {
+      install: 'id',
+      pack: 'pack',
+      publisher: 'publisher',
+      resource: 'resource',
+      language: 'language?',
+      tag: 'tag',
+      code: 'code',
+    },
+  },
   PackRemoved: { replay: 'redo', payload: { pack: 'pack' } },
   PassageOpened: { replay: 'verbatim', payload: { reference: 'reference?', language: 'language' } },
   ArticleOpened: { replay: 'verbatim', payload: { article: 'article?', language: 'language' } },
