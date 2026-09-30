@@ -398,6 +398,8 @@ export const ur: LocaleTable = {
   'privacy.never':
     'ایپ کبھی آپ کا مقام، رابطے یا اکاؤنٹ نہیں مانگتی، اور کوئی بیرونی تجزیاتی نظام استعمال نہیں کرتی۔',
   'privacy.local': 'نام، گروپ، نوٹس اور پیش رفت اسی فون پر رہتے ہیں، جب تک آپ انہیں بھیجیں یا شیئر نہ کریں۔',
+  'privacy.backup':
+    'جب تک کوئی اگلی اپڈیٹ یہ تصدیق نہ کرے کہ یہ باہر رکھے گئے ہیں، اس فون کے بیک اپ میں آپ کے نوٹس اور گروپوں کے نام شامل ہو سکتے ہیں۔',
   'settings.title': 'ترتیبات',
   'settings.appLanguage': 'ایپ کی زبان',
   'settings.appLanguage.about': 'بٹنوں اور لیبلز کی زبان، جو آپ پڑھتے ہیں اس سے الگ۔',
@@ -476,6 +478,18 @@ export const ur: LocaleTable = {
   'search.fullText.inSettings': 'اسے ترتیبات میں آن کریں۔ فہرست اسی فون پر رہتی ہے۔',
   'study.frame.picture': 'منظر {number} کی تصویر',
   'transfer.app.ready': 'ایپ اس فون پر آ گئی ہے ({size}) اور انسٹال کے لیے تیار ہے۔',
+  'transfer.network': 'پہلے دونوں فون ایک ہی وائی فائی یا ہاٹ اسپاٹ سے جوڑیں۔',
+  'transfer.address': 'اگر دوسرا فون اسے نہ ڈھونڈ سکے تو وہاں {address} لکھیں۔',
+  'transfer.address.qr': '{address} کے لیے تصویری کوڈ۔ اسے دوسرے فون کے کیمرے سے اسکین کریں۔',
+  'transfer.typed': 'پتہ لکھیں',
+  'transfer.typed.address': 'دوسرے فون کا پتہ',
+  'transfer.typed.code': 'دوسرے فون کا کوڈ',
+  'transfer.typed.connect': 'جوڑیں',
+  'transfer.typed.invalid': 'پتہ اور چار ہندسوں کا کوڈ ویسے ہی لکھیں جیسے دوسرا فون دکھاتا ہے۔',
+  'transfer.app.install': 'ایپ انسٹال کریں',
+  'transfer.app.install.opened': 'انسٹالر کھلا ہے۔ مکمل کرنے کے لیے اس کے مراحل پر عمل کریں۔',
+  'transfer.app.install.unsupported':
+    'ایپ کی یہ کاپی انسٹالر نہیں کھول سکتی۔ اس کے بجائے ایپ اس کے اسٹور سے لیں۔',
   'failure.boot': 'ایپ اس فون پر تیار نہیں ہو سکی۔ تھوڑی دیر بعد دوبارہ کوشش کریں۔',
   'languages.import.title': 'فائل سے',
   'languages.import': 'فائل سے درآمد کریں',

@@ -19,9 +19,9 @@
     "check": "npm run lint && npm run format:check",
     "typecheck": "tsx scripts/typecheck.ts",
     "test": "vitest run",
-    "knip": "knip",
+    "unused": "knip",
     "checks": "tsx scripts/checks/cli.ts",
-    "verify": "npm run check && npm run typecheck && npm run test && npm run knip && npm run checks && npm run sim -- all && npm run trace && npm run contract && npm run bundle",
+    "verify": "npm run check && npm run typecheck && npm run test && npm run unused && npm run checks && npm run sim -- all && npm run trace && npm run contract && npm run bundle",
     "fixtures": "tsx sim/fixtures/build.ts",
     "bundle": "tsx scripts/bundle.ts",
     "icons": "tsx scripts/icons/cli.ts",
@@ -30,6 +30,7 @@
   "dependencies": {
     "@noble/hashes": "^2.4.0",
     "expo": "~57.0.26",
+    "expo-asset": "~57.0.18",
     "expo-audio": "~57.0.5",
     "expo-blur": "~57.0.3",
     "expo-constants": "~57.0.20",
@@ -55,6 +56,8 @@
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
     "react-native-svg": "15.15.4",
+    "react-native-tcp-socket": "^6.4.3",
+    "uqr": "^0.1.3",
     "yaml": "^2.9.1"
   },
   "devDependencies": {

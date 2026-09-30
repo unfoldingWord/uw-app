@@ -126,6 +126,18 @@ _Avoid_: client, partner (that is a supporter), node
 A device making itself findable to peers for a transfer, under a short code shown on its screen.
 _Avoid_: broadcast, beacon, hosting
 
+**Pairing code**:
+The short code an advertisement shows. The receiver sends it back when it connects, and the sender declines a connection that does not carry it.
+_Avoid_: PIN, password, token
+
+**Address**:
+Where an advertisement listens on the shared local network, as host and port. Shown as text and as a QR code for when discovery finds nothing; never journaled. In code, `Advertisement.address` and a `Peer` id.
+_Avoid_: IP, endpoint, URL
+
+**App package**:
+The Android app file one phone sends another so it can be installed without a store (SH-2). iOS has none.
+_Avoid_: APK (in copy), binary, installer
+
 **Link**:
 An open connection between two peers over the Transport port, carrying the bytes of one transfer. In code, `TransportLink`.
 _Avoid_: socket, channel, session (that is formation)

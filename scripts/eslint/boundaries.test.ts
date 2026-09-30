@@ -63,6 +63,11 @@ describe('import boundaries (AGENTS.md rule 2)', () => {
     ['app/_layout.tsx', "import { allowedHosts } from '@lib/network-extra';\n"],
     ['app/_layout.tsx', "import { isAllowedUrl } from '@lib/network';\n"],
     ['app/_layout.tsx', "import { bookmarks } from '@features/home/store';\n"],
+    ['src/lib/corpus/corpus.ts', "import { backupExclusionModule } from '@modules/backup-exclusion';\n"],
+    ['src/features/home/service.ts', "import { backupExclusionModule } from '@modules/backup-exclusion';\n"],
+    ['src/shared/theme/theme.ts', "import { backupExclusionModule } from '@modules/backup-exclusion';\n"],
+    ['app/_layout.tsx', "import { backupExclusionModule } from '@modules/backup-exclusion';\n"],
+    ['sim/world.ts', "import { backupExclusionModule } from '@modules/backup-exclusion';\n"],
   ])('%s refuses %s', async (file, code) => {
     expect(await ruleIds(file, code)).toContain(restricted);
   });
@@ -90,6 +95,7 @@ describe('import boundaries (AGENTS.md rule 2)', () => {
     ['src/features/home/screens/HomeScreen.tsx', "import { home } from '../service';\n"],
     ['src/features/home/screens/HomeScreen.tsx', "import type { Reference } from '@lib/domain/reference';\n"],
     ['src/platform/files.ts', "import type { Files } from '@lib/ports';\n"],
+    ['src/platform/ports.ts', "import { backupExclusionModule } from '@modules/backup-exclusion';\n"],
     ['sim/world.ts', "import { createKernel } from '@lib/kernel';\n"],
     ['sim/world.ts', "import { home } from '@features/home/service';\n"],
     ['sim/world.ts', "import { readFileSync } from 'node:fs';\n"],

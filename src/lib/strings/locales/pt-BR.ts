@@ -412,6 +412,8 @@ export const ptBR: LocaleTable = {
     'O aplicativo nunca pede sua localização, seus contatos ou uma conta, e não usa análises de terceiros.',
   'privacy.local':
     'Nomes, grupos, notas e progresso ficam neste celular, a não ser que você os transfira ou compartilhe.',
+  'privacy.backup':
+    'Um backup deste celular pode incluir suas notas e os nomes dos seus grupos até que uma atualização confirme que eles ficam de fora.',
   'settings.title': 'Configurações',
   'settings.appLanguage': 'Idioma do aplicativo',
   'settings.appLanguage.about': 'O idioma dos botões e rótulos, separado do que você lê.',
@@ -496,6 +498,18 @@ export const ptBR: LocaleTable = {
   'search.fullText.inSettings': 'Ative nas Configurações. O índice fica neste celular.',
   'study.frame.picture': 'Imagem do quadro {number}',
   'transfer.app.ready': 'O aplicativo chegou a este celular ({size}) e está pronto para instalar.',
+  'transfer.network': 'Primeiro conecte os dois celulares ao mesmo Wi-Fi ou roteador do celular.',
+  'transfer.address': 'Se o outro celular não encontrar este, digite {address} nele.',
+  'transfer.address.qr': 'Código em imagem para {address}. Leia com a câmera do outro celular.',
+  'transfer.typed': 'Digitar um endereço',
+  'transfer.typed.address': 'Endereço do outro celular',
+  'transfer.typed.code': 'Código do outro celular',
+  'transfer.typed.connect': 'Conectar',
+  'transfer.typed.invalid': 'Digite o endereço e o código de quatro dígitos como o outro celular mostra.',
+  'transfer.app.install': 'Instalar o aplicativo',
+  'transfer.app.install.opened': 'O instalador está aberto. Siga as etapas para concluir.',
+  'transfer.app.install.unsupported':
+    'Esta cópia do aplicativo não pode abrir o instalador. Instale o aplicativo pela loja.',
   'failure.boot': 'O aplicativo não conseguiu se preparar neste celular. Tente de novo daqui a pouco.',
   'languages.import.title': 'De um arquivo',
   'languages.import': 'Importar de um arquivo',

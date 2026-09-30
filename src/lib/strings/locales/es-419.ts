@@ -413,6 +413,8 @@ export const es419: LocaleTable = {
     'La aplicación nunca pide tu ubicación, tus contactos ni una cuenta, y no usa análisis de terceros.',
   'privacy.local':
     'Los nombres, grupos, notas y avances se quedan en este teléfono, salvo que los transfieras o compartas.',
+  'privacy.backup':
+    'Una copia de seguridad de este teléfono puede incluir tus notas y los nombres de tus grupos hasta que una actualización confirme que quedan fuera.',
   'settings.title': 'Ajustes',
   'settings.appLanguage': 'Idioma de la aplicación',
   'settings.appLanguage.about': 'El idioma de los botones y etiquetas, aparte de lo que lees.',
@@ -497,6 +499,19 @@ export const es419: LocaleTable = {
   'search.fullText.inSettings': 'Actívalo en Ajustes. El índice se queda en este teléfono.',
   'study.frame.picture': 'Imagen del cuadro {number}',
   'transfer.app.ready': 'La aplicación llegó a este teléfono ({size}) y está lista para instalar.',
+  'transfer.network': 'Primero conecta los dos teléfonos a la misma red Wi-Fi o zona de conexión.',
+  'transfer.address': 'Si el otro teléfono no encuentra este, escribe {address} allí.',
+  'transfer.address.qr': 'Código en imagen para {address}. Escanéalo con la cámara del otro teléfono.',
+  'transfer.typed': 'Escribir una dirección',
+  'transfer.typed.address': 'Dirección del otro teléfono',
+  'transfer.typed.code': 'Código del otro teléfono',
+  'transfer.typed.connect': 'Conectar',
+  'transfer.typed.invalid':
+    'Escribe la dirección y el código de cuatro dígitos tal como los muestra el otro teléfono.',
+  'transfer.app.install': 'Instalar la aplicación',
+  'transfer.app.install.opened': 'El instalador está abierto. Sigue sus pasos para terminar.',
+  'transfer.app.install.unsupported':
+    'Esta copia de la aplicación no puede abrir el instalador. Consigue la aplicación en su tienda.',
   'failure.boot': 'La aplicación no pudo prepararse en este teléfono. Intenta de nuevo en un momento.',
   'languages.import.title': 'Desde un archivo',
   'languages.import': 'Importar desde un archivo',

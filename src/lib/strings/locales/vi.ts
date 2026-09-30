@@ -377,6 +377,8 @@ export const vi: LocaleTable = {
     'Ứng dụng không bao giờ hỏi vị trí, danh bạ hay tài khoản của bạn, và không dùng công cụ phân tích của bên thứ ba.',
   'privacy.local':
     'Tên, nhóm, ghi chú và tiến độ luôn ở trên điện thoại này, trừ khi bạn chuyển hoặc chia sẻ chúng.',
+  'privacy.backup':
+    'Bản sao lưu của điện thoại này có thể chứa ghi chú và tên nhóm của bạn cho đến khi một bản cập nhật sau xác nhận chúng được loại ra.',
   'settings.title': 'Cài đặt',
   'settings.appLanguage': 'Ngôn ngữ ứng dụng',
   'settings.appLanguage.about': 'Ngôn ngữ của nút và nhãn, tách biệt với nội dung bạn đọc.',
@@ -454,6 +456,18 @@ export const vi: LocaleTable = {
   'search.fullText.inSettings': 'Bật trong Cài đặt. Chỉ mục nằm trên điện thoại này.',
   'study.frame.picture': 'Hình cho khung {number}',
   'transfer.app.ready': 'Ứng dụng đã đến điện thoại này ({size}) và sẵn sàng để cài đặt.',
+  'transfer.network': 'Trước tiên hãy kết nối cả hai điện thoại vào cùng một Wi-Fi hoặc điểm phát sóng.',
+  'transfer.address': 'Nếu điện thoại kia không tìm thấy máy này, hãy nhập {address} ở đó.',
+  'transfer.address.qr': 'Mã hình cho {address}. Hãy quét bằng máy ảnh của điện thoại kia.',
+  'transfer.typed': 'Nhập địa chỉ',
+  'transfer.typed.address': 'Địa chỉ từ điện thoại kia',
+  'transfer.typed.code': 'Mã từ điện thoại kia',
+  'transfer.typed.connect': 'Kết nối',
+  'transfer.typed.invalid': 'Hãy nhập địa chỉ và mã bốn chữ số đúng như điện thoại kia hiển thị.',
+  'transfer.app.install': 'Cài đặt ứng dụng',
+  'transfer.app.install.opened': 'Trình cài đặt đang mở. Hãy làm theo các bước để hoàn tất.',
+  'transfer.app.install.unsupported':
+    'Bản ứng dụng này không mở được trình cài đặt. Hãy tải ứng dụng từ cửa hàng của nó.',
   'failure.boot': 'Ứng dụng chưa thể chuẩn bị trên điện thoại này. Hãy thử lại sau giây lát.',
   'languages.import.title': 'Từ một tệp',
   'languages.import': 'Nhập từ tệp',

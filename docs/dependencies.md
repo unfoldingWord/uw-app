@@ -29,12 +29,15 @@ list. Versions live in `package.json`; the lock file is committed.
 | expo-sqlite | ~57.0.3 | A hand-bound SQLite; the Db platform adapter (FTS5 compiled in by default) and, through `expo-sqlite/kv-store`, the Kv adapter, so preferences need no second native module such as MMKV |
 | expo-crypto | ~57.0.3 | A hand-written random UUID; Hermes has no `crypto.randomUUID`, so the Ids adapter uses `randomUUID()` from the platform's secure random source |
 | expo-network | ~57.0.2 | Hand-written reachability checks; the Http adapter's offline signal (`getNetworkStateAsync`). It makes no network calls of its own; the adapter never calls its IP address function |
+| expo-asset | ~57.0.18 | Nothing new; a required peer of expo-audio that npm installed only transitively, so expo-doctor flagged it. Pinned to the version Expo SDK 57 bundles (`npx expo install expo-asset` with `EXPO_OFFLINE=1`); its config plugin is not listed in `plugins`, since the app embeds no assets through it |
 | expo-audio | ~57.0.5 | A hand-written player; the Audio adapter streams an allowlisted URL or plays a downloaded file |
 | expo-sharing | ~57.0.22 | A hand-written Android share intent for files; the ShareSheet adapter shares an audio file on Android (text and iOS files go through React Native's `Share`) |
 | expo-document-picker | ~57.0.3 | A hand-written system document picker; the Picker adapter opens the system picker for a burrito `.zip` (SH-3) and copies it into the cache for the Files port to adopt. MIT, typed, no permission; its config plugin only adds iCloud entitlements when `ios.usesIcloudStorage` is set, which it is not, so it is not listed in `plugins` |
 | expo-localization | ~57.0.2 | Reading the device locale by hand; the Locale adapter's tag, region, time zone and direction |
 | expo-splash-screen | ~57.0.9 | A hand-written launch storyboard and Android 12 splash theme; the logo mark on paper (night in dark mode) until the kernel has started or failed, so the root layout never shows a blank frame |
 | expo-system-ui | ~57.0.4 | Setting the Android root view background and night mode by hand; required for `userInterfaceStyle: automatic` to follow the system theme on Android |
+| react-native-tcp-socket | ^6.4.3 | A hand-written TCP socket module; the Transport platform adapter (`src/platform/transport.ts`, the only importer, checked by `npm run checks`) listens on an ephemeral port and connects to a peer on the shared local network (SH-1, proposal `docs/proposals/2026-09-29-transport-radio.md`). MIT, typed, autolinked, no config plugin and no manifest entry of its own; last release 6.4.3 on 2026-09-10. It opens sockets on purpose, only to a phone the leader chose, never to the internet |
+| uqr | ^0.1.3 | A hand-written QR encoder; the transfer screen draws the sender's address and code as a QR code (`src/features/transfer/fallback.ts`) that the other phone's system camera opens as an `unfoldingword://transfer` link, so no camera permission is asked. MIT, TypeScript, no dependencies, pure JavaScript for Hermes and Node; last release 2026-04 |
 
 ## Development
 

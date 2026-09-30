@@ -64,6 +64,7 @@ export const shots: readonly Shot[] = [
   { name: 'transfer', path: '/transfer' },
   { name: 'transfer-send', path: '/transfer', press: 'Send', modes: leftToRight },
   { name: 'transfer-receive', path: '/transfer', press: 'Receive', modes: leftToRight },
+  { name: 'transfer-typed', path: '/transfer?address=192.0.2.1%3A47000&code=0427' },
   { name: 'study-search-reference', path: '/study/search', type: 'Ruth 1:16', modes: leftToRight },
   { name: 'study-audio', path: '/study?reference=RUT%201:16', press: 'Play audio', modes: leftToRight },
   { name: 'study-word-links', path: '/study?reference=RUT%201:16', press: 'Word links', modes: leftToRight },

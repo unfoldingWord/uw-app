@@ -19,7 +19,7 @@ type Harness = { uwQaVariant?: string };
 
 const harnessPlatform: DevicePlatform = 'android';
 
-const harnessAppPackage = { path: 'app/unfoldingword.apk', bytes: 96 * 1024 };
+const harnessAppPackage = { source: 'file:///data/app/org.unfoldingword.app/base.apk', bytes: 96 * 1024 };
 
 const harnessClipMs = 3 * 60 * 1000 + 12 * 1000;
 

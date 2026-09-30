@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 import { failureCodeOf } from '@lib/domain/failures';
-import { GlassButton } from '@shared/glass';
+import { GlassButton, GlassInput } from '@shared/glass';
 import { useTheme } from '@shared/theme';
 import { Card, Notice, Row, ScreenScaffold, ThemedText } from '@shared/ui';
 import type { IncomingView, PeerView, ReceiveResult, ResourceChoice, TransferService } from '../../service';
@@ -15,6 +15,7 @@ type Received = Extract<ReceiveResult, { ok: true }>;
 
 type Stage =
   | { readonly kind: 'looking'; readonly peers: readonly PeerView[] | undefined }
+  | { readonly kind: 'typing'; readonly address: string; readonly code: string; readonly message?: string }
   | { readonly kind: 'incoming'; readonly offer: Incoming }
   | { readonly kind: 'receiving'; readonly offer: Incoming }
   | { readonly kind: 'received'; readonly result: Received }
@@ -27,9 +28,12 @@ function failureStage(service: TransferService, error: unknown): Stage {
 const keyOf = (item: Pick<ResourceChoice, 'publisher' | 'resource'>): string =>
   `${item.publisher}/${item.resource}`;
 
+export type TypedStart = { readonly address: string; readonly code: string };
+
 export type ReceiveFlowProps = {
   service: TransferService;
   header: ReactNode;
+  typed?: TypedStart | undefined;
   onOpen: (language: string) => Promise<void>;
   onDone: () => void;
 };
@@ -106,10 +110,97 @@ function OfferChoices({
   );
 }
 
-export function ReceiveFlow({ service, header, onOpen, onDone }: ReceiveFlowProps) {
+function TypedEntry({
+  service,
+  stage,
+  onChange,
+  onConnect,
+}: {
+  service: TransferService;
+  stage: Extract<Stage, { kind: 'typing' }>;
+  onChange: (next: Extract<Stage, { kind: 'typing' }>) => void;
+  onConnect: (address: string, code: string) => Promise<void>;
+}) {
+  const theme = useTheme();
+  const typed = service.typed();
+  const [busy, setBusy] = useState(false);
+  const connect = async () => {
+    setBusy(true);
+    try {
+      await onConnect(stage.address, stage.code);
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <Card>
+      <ThemedText variant="cardTitle" tone="title" accessibilityRole="header">
+        {typed.open}
+      </ThemedText>
+      <ThemedText variant="caption" tone="body">
+        {typed.network}
+      </ThemedText>
+      <View style={{ gap: theme.space.sp3 }}>
+        <GlassInput
+          accessibilityLabel={typed.address}
+          placeholder={typed.address}
+          value={stage.address}
+          autoCapitalize="none"
+          autoCorrect={false}
+          keyboardType="numbers-and-punctuation"
+          onChangeText={(address) => onChange({ ...stage, address })}
+        />
+        <GlassInput
+          accessibilityLabel={typed.code}
+          placeholder={typed.code}
+          value={stage.code}
+          keyboardType="number-pad"
+          maxLength={4}
+          onChangeText={(code) => onChange({ ...stage, code })}
+        />
+      </View>
+      {stage.message === undefined ? null : <Notice text={stage.message} />}
+      <GlassButton variant="dark" size="lg" full busy={busy} onPress={connect}>
+        {typed.connect}
+      </GlassButton>
+    </Card>
+  );
+}
+
+function AppInstall({ service, size }: { service: TransferService; size: string }) {
+  const words = service.words();
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<{ text: string; ready: boolean } | undefined>(undefined);
+  const install = async () => {
+    setBusy(true);
+    try {
+      const outcome = await service.installApp();
+      setMessage({ text: outcome.message, ready: outcome.ok });
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <>
+      <Notice tone="ready" text={words.t('transfer.app.ready', { size })} />
+      {message === undefined ? null : (
+        <Notice tone={message.ready ? 'ready' : 'attention'} text={message.text} />
+      )}
+      <GlassButton variant="glass" full busy={busy} onPress={install}>
+        {service.installLabel()}
+      </GlassButton>
+    </>
+  );
+}
+
+export function ReceiveFlow({ service, header, typed, onOpen, onDone }: ReceiveFlowProps) {
   const words = service.words();
   const looking = service.looking();
-  const [stage, setStage] = useState<Stage>({ kind: 'looking', peers: undefined });
+  const [stage, setStage] = useState<Stage>(
+    typed === undefined
+      ? { kind: 'looking', peers: undefined }
+      : { kind: 'typing', address: typed.address, code: typed.code },
+  );
   const status = useStatus(service, stage.kind === 'receiving');
 
   const find = useCallback(async () => {
@@ -122,8 +213,21 @@ export function ReceiveFlow({ service, header, onOpen, onDone }: ReceiveFlowProp
   }, [service]);
 
   useEffect(() => {
-    void find();
-  }, [find]);
+    if (typed === undefined) {
+      void find();
+    }
+  }, [find, typed]);
+
+  const connectTyped = async (address: string, code: string) => {
+    try {
+      const offer = await service.connectTyped(address, code);
+      setStage(
+        offer.ok ? { kind: 'incoming', offer } : { kind: 'typing', address, code, message: offer.message },
+      );
+    } catch (error) {
+      setStage(failureStage(service, error));
+    }
+  };
 
   const connect = async (peer: PeerView) => {
     try {
@@ -180,6 +284,19 @@ export function ReceiveFlow({ service, header, onOpen, onDone }: ReceiveFlowProp
           <GlassButton variant="glass" full busy={stage.peers === undefined} onPress={find}>
             {looking.find}
           </GlassButton>
+          <GlassButton
+            variant="quiet"
+            full
+            onPress={() => setStage({ kind: 'typing', address: '', code: '' })}
+          >
+            {service.typed().open}
+          </GlassButton>
+        </ScreenScaffold>
+      );
+    case 'typing':
+      return (
+        <ScreenScaffold header={header}>
+          <TypedEntry service={service} stage={stage} onChange={setStage} onConnect={connectTyped} />
         </ScreenScaffold>
       );
     case 'incoming':
@@ -222,10 +339,7 @@ export function ReceiveFlow({ service, header, onOpen, onDone }: ReceiveFlowProp
                   {stage.result.label}
                 </ThemedText>
                 {stage.result.app === undefined ? null : (
-                  <Notice
-                    tone="ready"
-                    text={words.t('transfer.app.ready', { size: stage.result.app.size })}
-                  />
+                  <AppInstall service={service} size={stage.result.app.size} />
                 )}
                 <GlassButton
                   variant="dark"
@@ -240,7 +354,7 @@ export function ReceiveFlow({ service, header, onOpen, onDone }: ReceiveFlowProp
               </>
             ) : (
               <>
-                <Notice tone="ready" text={words.t('transfer.app.ready', { size: stage.result.app.size })} />
+                <AppInstall service={service} size={stage.result.app.size} />
                 <GlassButton variant="dark" full onPress={onDone}>
                   {words.t('common.done')}
                 </GlassButton>

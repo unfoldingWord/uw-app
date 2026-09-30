@@ -380,6 +380,8 @@ export const id: LocaleTable = {
     'Aplikasi tidak pernah meminta lokasi, kontak, atau akun Anda, dan tidak memakai analitik pihak ketiga.',
   'privacy.local':
     'Nama, kelompok, catatan, dan kemajuan tetap di ponsel ini kecuali Anda mengirim atau membagikannya.',
+  'privacy.backup':
+    'Cadangan ponsel ini mungkin berisi catatan dan nama kelompok Anda sampai pembaruan berikutnya memastikan semuanya dikecualikan.',
   'settings.title': 'Pengaturan',
   'settings.appLanguage': 'Bahasa aplikasi',
   'settings.appLanguage.about': 'Bahasa tombol dan label, terpisah dari yang Anda baca.',
@@ -462,6 +464,18 @@ export const id: LocaleTable = {
   'search.fullText.inSettings': 'Aktifkan di Pengaturan. Indeksnya tetap di ponsel ini.',
   'study.frame.picture': 'Gambar untuk bingkai {number}',
   'transfer.app.ready': 'Aplikasi sudah sampai di ponsel ini ({size}) dan siap dipasang.',
+  'transfer.network': 'Hubungkan kedua ponsel ke Wi-Fi atau hotspot yang sama terlebih dahulu.',
+  'transfer.address': 'Jika ponsel lain tidak menemukan ponsel ini, ketik {address} di sana.',
+  'transfer.address.qr': 'Kode gambar untuk {address}. Pindai dengan kamera di ponsel lain.',
+  'transfer.typed': 'Ketik alamat',
+  'transfer.typed.address': 'Alamat dari ponsel lain',
+  'transfer.typed.code': 'Kode dari ponsel lain',
+  'transfer.typed.connect': 'Hubungkan',
+  'transfer.typed.invalid': 'Ketik alamat dan kode empat angka persis seperti yang ditampilkan ponsel lain.',
+  'transfer.app.install': 'Pasang aplikasi',
+  'transfer.app.install.opened': 'Penginstal sudah terbuka. Ikuti langkahnya sampai selesai.',
+  'transfer.app.install.unsupported':
+    'Salinan aplikasi ini tidak dapat membuka penginstal. Dapatkan aplikasi dari tokonya.',
   'failure.boot': 'Aplikasi belum bisa bersiap di ponsel ini. Coba lagi sebentar lagi.',
   'languages.import.title': 'Dari berkas',
   'languages.import': 'Impor dari berkas',

@@ -400,6 +400,8 @@ export const sw: LocaleTable = {
     'Programu haiombi kamwe mahali ulipo, anwani zako au akaunti, na haitumii uchambuzi wa watu wengine.',
   'privacy.local':
     'Majina, vikundi, maelezo na maendeleo vinabaki kwenye simu hii isipokuwa uvitume au uvishiriki.',
+  'privacy.backup':
+    'Nakala rudufu ya simu hii inaweza kujumuisha maelezo yako na majina ya vikundi hadi sasisho la baadaye lithibitishe kwamba yameachwa nje.',
   'settings.title': 'Mipangilio',
   'settings.appLanguage': 'Lugha ya programu',
   'settings.appLanguage.about': 'Lugha ya vitufe na lebo, tofauti na unachosoma.',
@@ -481,6 +483,18 @@ export const sw: LocaleTable = {
   'search.fullText.inSettings': 'Iwashe katika Mipangilio. Faharasa inabaki kwenye simu hii.',
   'study.frame.picture': 'Mchoro wa picha ya {number}',
   'transfer.app.ready': 'Programu imefika kwenye simu hii ({size}) na iko tayari kusakinishwa.',
+  'transfer.network': 'Kwanza unganisha simu zote mbili kwenye Wi-Fi au hotspot moja.',
+  'transfer.address': 'Ikiwa simu nyingine haipati hii, andika {address} huko.',
+  'transfer.address.qr': 'Msimbo wa picha wa {address}. Uchanganue kwa kamera ya simu nyingine.',
+  'transfer.typed': 'Andika anwani',
+  'transfer.typed.address': 'Anwani kutoka simu nyingine',
+  'transfer.typed.code': 'Msimbo kutoka simu nyingine',
+  'transfer.typed.connect': 'Unganisha',
+  'transfer.typed.invalid': 'Andika anwani na msimbo wa tarakimu nne kama simu nyingine inavyoonyesha.',
+  'transfer.app.install': 'Sakinisha programu',
+  'transfer.app.install.opened': 'Kisakinishi kimefunguliwa. Fuata hatua zake ili kumaliza.',
+  'transfer.app.install.unsupported':
+    'Nakala hii ya programu haiwezi kufungua kisakinishi. Pata programu kutoka duka lake badala yake.',
   'failure.boot': 'Programu haikuweza kujiandaa kwenye simu hii. Jaribu tena baada ya muda mfupi.',
   'languages.import.title': 'Kutoka kwenye faili',
   'languages.import': 'Leta kutoka kwenye faili',

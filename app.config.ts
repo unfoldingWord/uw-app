@@ -1,31 +1,79 @@
 import type { ExpoConfig } from 'expo/config';
+import { withDataExtractionRules } from './plugins/data-extraction-rules/index.ts';
 import { locales } from './src/lib/strings/locales.ts';
 
-const identifier = 'org.unfoldingword.app';
+const iosBundleIdentifier = 'com.unfoldingword.iosapp';
+
+const androidPackage = 'org.unfoldingword.app';
 
 const brand = {
   paper: '#F4FAFB',
   night: '#04161F',
 } as const;
 
-const archiveTypes = ['application/zip', 'application/octet-stream'];
+const archiveTypes = ['application/zip', 'application/x-zip-compressed', 'application/octet-stream'];
+
+const transferService = '_uwapp._tcp';
+
+const localNetworkUsage =
+  'The app looks for the other phone on your Wi-Fi or hotspot only while you send or receive.';
+
+const installerBuild = process.env.UW_ANDROID_PACKAGE_INSTALLER === '1';
+
+const installerPermission = 'android.permission.REQUEST_INSTALL_PACKAGES';
+
+const installerPermissions = installerBuild ? [installerPermission] : [];
 
 const blockedPermissions = [
-  'android.permission.RECORD_AUDIO',
-  'android.permission.READ_EXTERNAL_STORAGE',
-  'android.permission.WRITE_EXTERNAL_STORAGE',
-  'android.permission.ACCESS_FINE_LOCATION',
-  'android.permission.ACCESS_COARSE_LOCATION',
-  'android.permission.ACCESS_BACKGROUND_LOCATION',
-  'android.permission.READ_CONTACTS',
-  'android.permission.GET_ACCOUNTS',
-  'android.permission.READ_PHONE_STATE',
-  'android.permission.CAMERA',
-  'android.permission.SYSTEM_ALERT_WINDOW',
-  'android.permission.FOREGROUND_SERVICE',
-  'android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK',
-  'android.permission.POST_NOTIFICATIONS',
-];
+  'READ_CALENDAR',
+  'WRITE_CALENDAR',
+  'CAMERA',
+  'READ_CONTACTS',
+  'WRITE_CONTACTS',
+  'GET_ACCOUNTS',
+  'ACCESS_FINE_LOCATION',
+  'ACCESS_COARSE_LOCATION',
+  'ACCESS_BACKGROUND_LOCATION',
+  'ACCESS_MEDIA_LOCATION',
+  'RECORD_AUDIO',
+  'READ_PHONE_STATE',
+  'READ_PHONE_NUMBERS',
+  'CALL_PHONE',
+  'ANSWER_PHONE_CALLS',
+  'READ_CALL_LOG',
+  'WRITE_CALL_LOG',
+  'ADD_VOICEMAIL',
+  'USE_SIP',
+  'PROCESS_OUTGOING_CALLS',
+  'ACCEPT_HANDOVER',
+  'BODY_SENSORS',
+  'BODY_SENSORS_BACKGROUND',
+  'ACTIVITY_RECOGNITION',
+  'SEND_SMS',
+  'RECEIVE_SMS',
+  'READ_SMS',
+  'RECEIVE_WAP_PUSH',
+  'RECEIVE_MMS',
+  'READ_EXTERNAL_STORAGE',
+  'WRITE_EXTERNAL_STORAGE',
+  'READ_MEDIA_IMAGES',
+  'READ_MEDIA_VIDEO',
+  'READ_MEDIA_AUDIO',
+  'READ_MEDIA_VISUAL_USER_SELECTED',
+  'BLUETOOTH_SCAN',
+  'BLUETOOTH_CONNECT',
+  'BLUETOOTH_ADVERTISE',
+  'UWB_RANGING',
+  'NEARBY_WIFI_DEVICES',
+  'POST_NOTIFICATIONS',
+  'ACCESS_WIFI_STATE',
+  'SYSTEM_ALERT_WINDOW',
+  'FOREGROUND_SERVICE',
+  'FOREGROUND_SERVICE_MEDIA_PLAYBACK',
+  'CHANGE_NETWORK_STATE',
+].map((name) => `android.permission.${name}`);
+
+const blockedOnThisBuild = installerBuild ? blockedPermissions : [...blockedPermissions, installerPermission];
 
 const config: ExpoConfig = {
   name: 'unfoldingWord',
@@ -38,7 +86,7 @@ const config: ExpoConfig = {
   platforms: ['ios', 'android'],
   updates: { enabled: false },
   ios: {
-    bundleIdentifier: identifier,
+    bundleIdentifier: iosBundleIdentifier,
     supportsTablet: false,
     config: { usesNonExemptEncryption: false },
     infoPlist: {
@@ -53,6 +101,8 @@ const config: ExpoConfig = {
         },
       ],
       NSAppTransportSecurity: { NSAllowsArbitraryLoads: false, NSAllowsLocalNetworking: true },
+      NSLocalNetworkUsageDescription: localNetworkUsage,
+      NSBonjourServices: [transferService],
     },
     privacyManifests: {
       NSPrivacyTracking: false,
@@ -79,9 +129,10 @@ const config: ExpoConfig = {
     },
   },
   android: {
-    package: identifier,
+    package: androidPackage,
     allowBackup: false,
-    blockedPermissions,
+    blockedPermissions: blockedOnThisBuild,
+    permissions: installerPermissions,
     intentFilters: [
       {
         action: 'VIEW',
@@ -123,4 +174,4 @@ const config: ExpoConfig = {
   ],
 };
 
-export default config;
+export default withDataExtractionRules(config);

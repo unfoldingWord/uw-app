@@ -12,6 +12,7 @@ import {
 
 const messages: Message[] = [
   { kind: 'hello', platform: 'ios' },
+  { kind: 'hello', platform: 'android', code: '0427' },
   {
     kind: 'offer',
     offer: {
@@ -129,6 +130,9 @@ describe('transfer protocol', () => {
       frame('text'),
       frame({ kind: 'hello', platform: 'ios' }),
       frame({ v: 1, kind: 'hello', platform: 'windows' }),
+      frame({ v: 1, kind: 'hello', platform: 'ios', code: 427 }),
+      frame({ v: 1, kind: 'hello', platform: 'ios', code: '42' }),
+      frame({ v: 1, kind: 'hello', platform: 'ios', code: 'abcd' }),
       frame({ v: 1, kind: 'shout' }),
       frame({ v: 1, kind: 'done', item: 0, md5: 'not-a-digest' }),
       frame({ v: 1, kind: 'error', code: 'made.up' }),

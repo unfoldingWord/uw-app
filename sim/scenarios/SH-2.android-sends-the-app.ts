@@ -18,8 +18,7 @@ export default scenario(
     await android.start();
     await installFromCatalog(android, [languagePackId('qaa')]);
     const apk = packageBytes(simAppPackage.bytes);
-    await android.adapters.files.mkdir('app');
-    await android.adapters.files.writeBytes(simAppPackage.path, apk);
+    android.adapters.files.offerExternal(simAppPackage.source, apk);
 
     assert.deepEqual(await android.kernel.transfer.capabilities(), {
       available: true,

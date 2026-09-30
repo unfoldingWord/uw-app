@@ -400,6 +400,8 @@ export const hi: LocaleTable = {
     'ऐप कभी आपका स्थान, संपर्क या खाता नहीं माँगता, और किसी बाहरी विश्लेषण का उपयोग नहीं करता।',
   'privacy.local':
     'नाम, समूह, टिप्पणियाँ और प्रगति इसी फ़ोन पर रहते हैं, जब तक आप उन्हें भेजते या साझा नहीं करते।',
+  'privacy.backup':
+    'जब तक कोई आगे का अपडेट पुष्टि न करे कि वे बाहर रखे गए हैं, इस फ़ोन के बैकअप में आपकी टिप्पणियाँ और समूहों के नाम शामिल हो सकते हैं।',
   'settings.title': 'सेटिंग्स',
   'settings.appLanguage': 'ऐप की भाषा',
   'settings.appLanguage.about': 'बटनों और लेबलों की भाषा, जो आप पढ़ते हैं उससे अलग।',
@@ -477,6 +479,18 @@ export const hi: LocaleTable = {
   'search.fullText.inSettings': 'इसे सेटिंग्स में चालू करें। अनुक्रमणिका इसी फ़ोन पर रहती है।',
   'study.frame.picture': 'दृश्य {number} का चित्र',
   'transfer.app.ready': 'ऐप इस फ़ोन पर आ गया है ({size}) और इंस्टॉल के लिए तैयार है।',
+  'transfer.network': 'पहले दोनों फ़ोन एक ही वाई-फ़ाई या हॉटस्पॉट से जोड़ें।',
+  'transfer.address': 'अगर दूसरा फ़ोन इसे नहीं ढूँढ पाता, तो वहाँ {address} लिखें।',
+  'transfer.address.qr': '{address} के लिए चित्र कोड। इसे दूसरे फ़ोन के कैमरे से स्कैन करें।',
+  'transfer.typed': 'पता लिखें',
+  'transfer.typed.address': 'दूसरे फ़ोन का पता',
+  'transfer.typed.code': 'दूसरे फ़ोन का कोड',
+  'transfer.typed.connect': 'जोड़ें',
+  'transfer.typed.invalid': 'पता और चार अंकों का कोड वैसे ही लिखें जैसे दूसरा फ़ोन दिखाता है।',
+  'transfer.app.install': 'ऐप इंस्टॉल करें',
+  'transfer.app.install.opened': 'इंस्टॉलर खुला है। पूरा करने के लिए उसके चरणों का पालन करें।',
+  'transfer.app.install.unsupported':
+    'ऐप की यह प्रति इंस्टॉलर नहीं खोल सकती। इसके बजाय ऐप उसके स्टोर से लें।',
   'failure.boot': 'ऐप इस फ़ोन पर तैयार नहीं हो सका। थोड़ी देर बाद फिर से कोशिश करें।',
   'languages.import.title': 'फ़ाइल से',
   'languages.import': 'फ़ाइल से आयात करें',

@@ -1,6 +1,6 @@
 import { writeArchive } from '../burrito/archive';
 import { validate } from '../burrito/validate';
-import type { FailureCode } from '../domain/failures';
+import { failureCodeOf, type FailureCode } from '../domain/failures';
 import { languagePackId } from '../domain/pack';
 import { resourceKey } from '../domain/release';
 import type { ModulePorts } from '../module';
@@ -14,20 +14,22 @@ import { createDigest, TransferStop, type Wire } from './wire';
 
 export type Outgoing = {
   resources: readonly { resource: WireResource; root: string }[];
-  appPath: string | undefined;
+  appSource: string | undefined;
 };
 
-type AppPackageLookup = { fact: AppPackageFact; path: string | undefined };
+type AppPackageLookup = { fact: AppPackageFact; source: string | undefined };
+
+const outgoingAppPath = `${outgoingDirectory}/app.apk`;
 
 export async function appPackageOf(ports: ModulePorts): Promise<AppPackageLookup> {
   if (ports.transport.platform() === 'ios') {
-    return { fact: { available: false, reason: 'ios-not-permitted' }, path: undefined };
+    return { fact: { available: false, reason: 'ios-not-permitted' }, source: undefined };
   }
   const found = await ports.transport.appPackage();
-  if (found === undefined || !(await ports.files.exists(found.path))) {
-    return { fact: { available: false, reason: 'not-found' }, path: undefined };
+  if (found === undefined || found.bytes <= 0) {
+    return { fact: { available: false, reason: 'not-found' }, source: undefined };
   }
-  return { fact: { available: true, bytes: await ports.files.size(found.path) }, path: found.path };
+  return { fact: { available: true, bytes: found.bytes }, source: found.source };
 }
 
 type Prepared = { ok: true; offer: Offer; outgoing: Outgoing } | { ok: false; code: FailureCode };
@@ -70,17 +72,17 @@ export async function prepareOffer(ports: ModulePorts, plan: TransferPlan): Prom
     );
     resources.push(...offered.filter((item) => kept.has(item.resource)));
   }
-  let appPath: string | undefined;
+  let appSource: string | undefined;
   let appBytes: number | undefined;
   if (plan.app === true) {
     const lookup = await appPackageOf(ports);
     if (!lookup.fact.available) {
       return { ok: false, code: 'transfer.unsupported' };
     }
-    appPath = lookup.path;
+    appSource = lookup.source;
     appBytes = lookup.fact.bytes;
   }
-  if (resources.length === 0 && appPath === undefined) {
+  if (resources.length === 0 && appSource === undefined) {
     return { ok: false, code: 'pack.empty-plan' };
   }
   const offer: Offer = {
@@ -89,7 +91,7 @@ export async function prepareOffer(ports: ModulePorts, plan: TransferPlan): Prom
     app: appBytes === undefined ? undefined : { bytes: appBytes },
     bytes: resources.reduce((sum, item) => sum + item.resource.bytes, 0) + (appBytes ?? 0),
   };
-  return { ok: true, offer, outgoing: { resources, appPath } };
+  return { ok: true, offer, outgoing: { resources, appSource } };
 }
 
 type Item = PlanItem & { path: string };
@@ -97,7 +99,7 @@ type Item = PlanItem & { path: string };
 async function writeArchives(
   ports: ModulePorts,
   resources: Outgoing['resources'],
-  appPath: string | undefined,
+  appSource: string | undefined,
 ): Promise<Item[]> {
   const { files } = ports;
   await removeIfPresent(files, outgoingDirectory);
@@ -113,10 +115,18 @@ async function writeArchives(
     await files.writeBytes(path, archive);
     items.push({ key: resourceKey(item.resource), bytes: archive.byteLength, path });
   }
-  if (appPath !== undefined) {
-    items.push({ key: appItemKey, bytes: await files.size(appPath), path: appPath });
+  if (appSource !== undefined) {
+    items.push({ key: appItemKey, bytes: await adoptedApp(ports, appSource), path: outgoingAppPath });
   }
   return items;
+}
+
+async function adoptedApp(ports: ModulePorts, source: string): Promise<number> {
+  try {
+    return await ports.files.adopt(source, outgoingAppPath);
+  } catch (error) {
+    throw new TransferStop(failureCodeOf(error), true);
+  }
 }
 
 async function stream(run: Run, wire: Wire, item: Item, index: number): Promise<void> {
@@ -140,8 +150,8 @@ export async function sendAccepted(run: Run, wire: Wire, outgoing: Outgoing): Pr
   const resources = outgoing.resources.filter((item) =>
     accepted.resources.some((choice) => resourceKey(choice) === resourceKey(item.resource)),
   );
-  const appPath = accepted.app ? outgoing.appPath : undefined;
-  if (resources.length === 0 && appPath === undefined) {
+  const appSource = accepted.app ? outgoing.appSource : undefined;
+  if (resources.length === 0 && appSource === undefined) {
     throw new TransferStop('transfer.declined', false);
   }
   await run.emit({
@@ -151,11 +161,11 @@ export async function sendAccepted(run: Run, wire: Wire, outgoing: Outgoing): Pr
       role: 'sender',
       ...(active.offer?.language === undefined ? {} : { language: active.offer.language }),
       resources: resources.length,
-      app: appPath === undefined ? 'none' : 'included',
+      app: appSource === undefined ? 'none' : 'included',
     },
   });
   active.state = 'preparing';
-  const items = await writeArchives(ports, resources, appPath);
+  const items = await writeArchives(ports, resources, appSource);
   active.total = items.reduce((sum, item) => sum + item.bytes, 0);
   await wire.send({ kind: 'plan', items: items.map(({ key, bytes }) => ({ key, bytes })) });
   active.state = 'sending';
@@ -172,7 +182,7 @@ export async function sendAccepted(run: Run, wire: Wire, outgoing: Outgoing): Pr
       to: active.peer ?? active.platform,
       resources: resources.length,
       bytes: active.total,
-      app: appPath === undefined ? 'none' : 'included',
+      app: appSource === undefined ? 'none' : 'included',
     },
   });
   return active.total;

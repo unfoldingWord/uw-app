@@ -47,7 +47,10 @@ export type SimDevice = {
 
 export type DeviceWorld = { clock: Clock; network: MemoryNetwork; bus: TransportBus };
 
-export const simAppPackage: AppPackage = { path: 'app/unfoldingword.apk', bytes: 96 * 1024 };
+export const simAppPackage: AppPackage = {
+  source: 'file:///data/app/org.unfoldingword.app/base.apk',
+  bytes: 96 * 1024,
+};
 
 export function createSimDevice(name: string, world: DeviceWorld, options: DeviceOptions = {}): SimDevice {
   const platform = options.platform ?? 'android';
@@ -60,7 +63,13 @@ export function createSimDevice(name: string, world: DeviceWorld, options: Devic
     kv: createMemoryKv(),
     http: createMemoryHttp({ network: world.network, files }),
     transport: world.bus.transport(
-      platform === 'android' ? { platform, appPackage: simAppPackage } : { platform },
+      platform === 'android'
+        ? {
+            platform,
+            appPackage: () =>
+              files.externalBytes(simAppPackage.source) === undefined ? undefined : simAppPackage,
+          }
+        : { platform },
     ),
     audio: createMemoryAudio({ clock: world.clock }),
     shareSheet: createMemoryShareSheet(),

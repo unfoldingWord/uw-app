@@ -2,7 +2,11 @@ import { getDocumentAsync } from 'expo-document-picker';
 import type { Picker } from '@lib/ports';
 import { messageOf, portError } from './errors';
 
-const archiveTypes: readonly string[] = ['application/zip', 'application/octet-stream'];
+const archiveTypes: readonly string[] = [
+  'application/zip',
+  'application/x-zip-compressed',
+  'application/octet-stream',
+];
 
 export function createPlatformPicker(): Picker {
   return {

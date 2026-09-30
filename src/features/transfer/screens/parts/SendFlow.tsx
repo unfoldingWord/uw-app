@@ -4,6 +4,7 @@ import { GlassButton } from '@shared/glass';
 import { useTheme } from '@shared/theme';
 import { Card, EmptyState, Notice, ScreenScaffold, SectionTitle, ThemedText } from '@shared/ui';
 import type { AppPackageView, OfferView, ResourceChoice, TransferService } from '../../service';
+import { AddressCard } from './AddressCard';
 import { PickRow } from './PickRow';
 import { ProgressCard } from './Progress';
 import { useStatus } from './useStatus';
@@ -105,6 +106,10 @@ export function SendFlow({ service, app, header, onDone }: SendFlowProps) {
           onStop={() => service.cancel()}
           code={{ label: stage.offer.codeLabel, hint: stage.offer.hint }}
         />
+        {stage.offer.fallback === undefined ||
+        (status !== undefined && status.state !== 'advertising') ? null : (
+          <AddressCard fallback={stage.offer.fallback} />
+        )}
       </ScreenScaffold>
     );
   }

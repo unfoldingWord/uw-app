@@ -62,6 +62,7 @@ const deviceModules = [
   'react-native-multipeer',
   'react-native-share',
   'react-native-device-info',
+  '@modules',
 ];
 
 function escaped(name: string): string {
@@ -121,7 +122,7 @@ export const layers: Layer[] = [
       nodeBuiltins,
       designSystemAssets,
       {
-        regex: '^@(features|shared|platform|sim)(/|$)',
+        regex: '^@(features|shared|platform|sim|modules)(/|$)',
         message: 'src/lib imports nothing above it in the tower (AGENTS.md rule 2).',
       },
     ],
@@ -133,7 +134,7 @@ export const layers: Layer[] = [
       reactNativeAndExpo,
       designSystemAssets,
       {
-        regex: '^@(features|shared|platform|sim)(/|$)',
+        regex: '^@(features|shared|platform|sim|modules)(/|$)',
         message: 'src/lib imports nothing above it in the tower (AGENTS.md rule 2).',
       },
     ],
@@ -337,7 +338,7 @@ export const layers: Layer[] = [
       reactNativeAndExpo,
       designSystemAssets,
       {
-        regex: '^@(platform|shared)(/|$)',
+        regex: '^@(platform|shared|modules)(/|$)',
         message: 'sim imports src/lib and src/features/*/service.ts and nothing else (AGENTS.md rule 2).',
       },
       {

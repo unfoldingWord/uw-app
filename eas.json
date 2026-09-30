@@ -25,8 +25,16 @@
     "preview": {
       "extends": "base",
       "distribution": "internal",
+      "autoIncrement": true,
       "android": {
         "buildType": "apk"
+      }
+    },
+    "apk": {
+      "extends": "preview",
+      "env": {
+        "EXPO_NO_TELEMETRY": "1",
+        "UW_ANDROID_PACKAGE_INSTALLER": "1"
       }
     },
     "production": {

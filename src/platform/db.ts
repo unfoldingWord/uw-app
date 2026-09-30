@@ -1,7 +1,15 @@
-import { openDatabaseAsync, type SQLiteDatabase } from 'expo-sqlite';
+import { Directory } from 'expo-file-system';
+import { defaultDatabaseDirectory, openDatabaseAsync, type SQLiteDatabase } from 'expo-sqlite';
 import type { Db, DbRow, DbTransaction, SqlValue } from '@lib/ports';
 
 const deviceDatabaseName = 'uw.db';
+
+export function createDatabaseDirectory(): string {
+  const location = String(defaultDatabaseDirectory);
+  const directory = new Directory(location.startsWith('/') ? `file://${encodeURI(location)}` : location);
+  directory.create({ intermediates: true, idempotent: true });
+  return directory.uri;
+}
 
 export function createPlatformDb(name: string = deviceDatabaseName): Db {
   let opened: Promise<SQLiteDatabase> | undefined;

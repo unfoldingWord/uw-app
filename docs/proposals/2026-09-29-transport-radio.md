@@ -1,7 +1,7 @@
 # The Transport radio
 
-Status: proposed, awaiting human approval. Until it is approved, `src/platform/transport.ts` is the platform
-adapter for the Transport port and reports `available: false` (see `docs/exceptions.md`); the sim proves SH-1 and
+Status: approved in issue #2 (2026-09-29). Built up to the spike in step 4 on 2026-09-30 (see `docs/exceptions.md`); before that, `src/platform/transport.ts` was the platform
+adapter for the Transport port and reported `available: false`; the sim proves SH-1 and
 SH-2 on the memory adapter's shared bus.
 
 Evidence labels: **checked** means read in the package source or the docs in this repository on 2026-09-29;

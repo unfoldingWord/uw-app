@@ -165,7 +165,7 @@ describe('Transfer at its interface', () => {
     if (link === undefined) {
       throw new Error('no link');
     }
-    expect(await read(link)).toEqual({ kind: 'hello', platform: 'android' });
+    expect(await read(link)).toEqual({ kind: 'hello', platform: 'android', code: '0002' });
     await link.send(encodeFrame({ kind: 'hello', platform: 'ios' }));
     await link.send(
       encodeFrame({ kind: 'offer', offer: { language: 'qab', resources: [qabStories], app: undefined } }),

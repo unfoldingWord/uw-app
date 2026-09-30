@@ -21,7 +21,10 @@ export type TransferCapabilities = {
 };
 
 export type OfferOutcome =
-  { ok: true; transfer: string; code: string; offer: Offer } | { ok: false; code: FailureCode };
+  | { ok: true; transfer: string; code: string; address: string | undefined; offer: Offer }
+  | { ok: false; code: FailureCode };
+
+export type InstallAppOutcome = { ok: true } | { ok: false; code: FailureCode };
 
 export type TransferOutcome =
   | { ok: true; transfer: string; bytes: number }

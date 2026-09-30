@@ -405,6 +405,8 @@ export const nl: LocaleTable = {
     'De app vraagt nooit om je locatie, je contacten of een account, en gebruikt geen analyse van derden.',
   'privacy.local':
     'Namen, groepen, aantekeningen en voortgang blijven op deze telefoon, tenzij je ze overzet of deelt.',
+  'privacy.backup':
+    'Een back-up van deze telefoon kan je aantekeningen en groepsnamen bevatten, totdat een latere update bevestigt dat ze erbuiten blijven.',
   'settings.title': 'Instellingen',
   'settings.appLanguage': 'Taal van de app',
   'settings.appLanguage.about': 'De taal van knoppen en labels, los van wat je leest.',
@@ -489,6 +491,18 @@ export const nl: LocaleTable = {
   'search.fullText.inSettings': 'Zet het aan in Instellingen. De index blijft op deze telefoon.',
   'study.frame.picture': 'Afbeelding bij beeld {number}',
   'transfer.app.ready': 'De app staat nu op deze telefoon ({size}) en is klaar om te installeren.',
+  'transfer.network': 'Zet beide telefoons eerst op hetzelfde wifi-netwerk of dezelfde hotspot.',
+  'transfer.address': 'Vindt de andere telefoon deze niet, typ daar dan {address}.',
+  'transfer.address.qr': 'Beeldcode voor {address}. Scan hem met de camera van de andere telefoon.',
+  'transfer.typed': 'Een adres typen',
+  'transfer.typed.address': 'Adres van de andere telefoon',
+  'transfer.typed.code': 'Code van de andere telefoon',
+  'transfer.typed.connect': 'Verbinden',
+  'transfer.typed.invalid': 'Typ het adres en de viercijferige code zoals de andere telefoon ze toont.',
+  'transfer.app.install': 'De app installeren',
+  'transfer.app.install.opened': 'Het installatieprogramma is open. Volg de stappen om af te ronden.',
+  'transfer.app.install.unsupported':
+    'Deze kopie van de app kan het installatieprogramma niet openen. Haal de app liever uit de winkel.',
   'failure.boot': 'De app kon zich niet klaarmaken op deze telefoon. Probeer het zo meteen opnieuw.',
   'languages.import.title': 'Uit een bestand',
   'languages.import': 'Importeren uit een bestand',

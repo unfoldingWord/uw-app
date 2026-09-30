@@ -22,6 +22,22 @@ describe('dependencyFindings (AGENTS.md sections 6 and 10)', () => {
     ]);
   });
 
+  it('admits the transfer socket package only in the Transport platform adapter', () => {
+    const importers = {
+      'react-native-tcp-socket': ['src/platform/transport.ts', 'src/features/transfer/service.ts'],
+    };
+    expect(
+      dependencyFindings({
+        runtime: ['react-native-tcp-socket'],
+        locked: [],
+        documented: ['react-native-tcp-socket'],
+        importers,
+      }),
+    ).toEqual([
+      'src/features/transfer/service.ts imports react-native-tcp-socket; only src/platform/transport.ts opens a transfer socket (SH-1)',
+    ]);
+  });
+
   it('reads the runtime table of docs/dependencies.md', () => {
     const markdown = [
       '# Dependencies',

@@ -1,28 +1,21 @@
-const androidAdmitted: readonly string[] = [
-  'android.permission.INTERNET',
-  'android.permission.ACCESS_NETWORK_STATE',
-  'android.permission.VIBRATE',
-  'android.permission.MODIFY_AUDIO_SETTINGS',
-];
+import {
+  androidBlockedOn,
+  androidRefused,
+  installerPermission,
+  isAdmitted,
+  libraryPermissionFindings,
+  type LibraryPermission,
+} from './android-permissions.ts';
 
-export const androidRefused: readonly string[] = [
-  'android.permission.RECORD_AUDIO',
-  'android.permission.READ_EXTERNAL_STORAGE',
-  'android.permission.WRITE_EXTERNAL_STORAGE',
-  'android.permission.ACCESS_FINE_LOCATION',
-  'android.permission.ACCESS_COARSE_LOCATION',
-  'android.permission.ACCESS_BACKGROUND_LOCATION',
-  'android.permission.READ_CONTACTS',
-  'android.permission.GET_ACCOUNTS',
-  'android.permission.READ_PHONE_STATE',
-  'android.permission.CAMERA',
-  'android.permission.SYSTEM_ALERT_WINDOW',
-  'android.permission.FOREGROUND_SERVICE',
-  'android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK',
-  'android.permission.POST_NOTIFICATIONS',
-];
+export { installerPermission };
 
-const iosAdmittedUsageDescriptions: readonly string[] = [];
+export const installerFlag = 'UW_ANDROID_PACKAGE_INSTALLER';
+
+export const installerProfile = 'apk';
+
+const transferServices: readonly string[] = ['_uwapp._tcp'];
+
+const iosAdmittedUsageDescriptions: readonly string[] = ['NSLocalNetworkUsageDescription'];
 
 const iosAdmittedEntitlements: readonly string[] = [];
 
@@ -34,7 +27,15 @@ export type IntentFilter = { actions: readonly string[]; data: readonly IntentDa
 
 const appScheme = 'unfoldingword';
 
-const importedMimeTypes: readonly string[] = ['application/zip', 'application/octet-stream'];
+const dataExtractionRulesResource = '@xml/data_extraction_rules';
+
+const appStoreRecord = { id: '925570688', bundleIdentifier: 'com.unfoldingword.iosapp' } as const;
+
+const importedMimeTypes: readonly string[] = [
+  'application/zip',
+  'application/x-zip-compressed',
+  'application/octet-stream',
+];
 
 const admittedIntentSchemes: readonly string[] = [appScheme, 'content'];
 
@@ -45,9 +46,12 @@ const viewAction = 'android.intent.action.VIEW';
 export type NativeConfig = {
   androidPermissions: readonly ManifestPermission[];
   androidAllowBackup: string | undefined;
+  androidDataExtractionRules: string | undefined;
   androidIntentFilters: readonly IntentFilter[];
   infoPlist: Readonly<Record<string, unknown>>;
   entitlements: Readonly<Record<string, unknown>>;
+  iosBundleIdentifier: string | undefined;
+  libraryPermissions: readonly LibraryPermission[];
 };
 
 function record(value: unknown): Record<string, unknown> {
@@ -64,7 +68,11 @@ function attributes(node: unknown): Record<string, unknown> {
   return record(record(node).$);
 }
 
-export function nativeConfigOf(introspected: unknown): NativeConfig {
+export function nativeConfigOf(
+  introspected: unknown,
+  libraryPermissions: readonly LibraryPermission[] = [],
+): NativeConfig {
+  const bundleIdentifier = record(record(introspected).ios).bundleIdentifier;
   const modResults = record(record(record(introspected)._internal).modResults);
   const android = record(modResults.android);
   const ios = record(modResults.ios);
@@ -78,6 +86,7 @@ export function nativeConfigOf(introspected: unknown): NativeConfig {
   const applicationNode = list(manifest.application)[0];
   const application = attributes(applicationNode);
   const allowBackup = application['android:allowBackup'];
+  const dataExtractionRules = application['android:dataExtractionRules'];
   const filters = list(record(applicationNode).activity)
     .flatMap((activity) => list(record(activity)['intent-filter']))
     .map((filter) => ({
@@ -95,9 +104,12 @@ export function nativeConfigOf(introspected: unknown): NativeConfig {
   return {
     androidPermissions: permissions,
     androidAllowBackup: typeof allowBackup === 'string' ? allowBackup : undefined,
+    androidDataExtractionRules: typeof dataExtractionRules === 'string' ? dataExtractionRules : undefined,
     androidIntentFilters: filters,
     infoPlist: record(ios.infoPlist),
     entitlements: record(ios.entitlements),
+    iosBundleIdentifier: typeof bundleIdentifier === 'string' ? bundleIdentifier : undefined,
+    libraryPermissions,
   };
 }
 
@@ -160,28 +172,39 @@ function importFindings(config: NativeConfig): string[] {
   return findings;
 }
 
-export function permissionFindings(config: NativeConfig): string[] {
+export function permissionFindings(config: NativeConfig, installerBuild = false): string[] {
   const findings: string[] = [];
   const requested = config.androidPermissions.filter((permission) => !permission.removed);
   const removed = new Set(config.androidPermissions.filter((item) => item.removed).map((item) => item.name));
   for (const permission of requested) {
     if (androidRefused.includes(permission.name)) {
       findings.push(`Android manifest requests ${permission.name}, which PRD sections 9 and 12 refuse`);
-    } else if (!androidAdmitted.includes(permission.name)) {
+    } else if (!isAdmitted(permission.name, installerBuild)) {
       findings.push(
-        `Android manifest requests ${permission.name}, which is not on the admitted list in scripts/checks/permissions.ts`,
+        `Android manifest requests ${permission.name}, which is not on the admitted list in scripts/checks/android-permissions.ts`,
       );
     }
   }
-  for (const name of androidRefused) {
+  for (const name of androidBlockedOn(installerBuild)) {
     if (!removed.has(name)) {
       findings.push(
         `${name} is not in android.blockedPermissions, so a library manifest could still merge it in`,
       );
     }
   }
+  for (const name of removed) {
+    if (isAdmitted(name, installerBuild)) {
+      findings.push(`${name} is admitted and also in android.blockedPermissions; keep it in one list`);
+    }
+  }
+  findings.push(...libraryPermissionFindings(config.libraryPermissions, removed, installerBuild));
   if (config.androidAllowBackup !== 'false') {
     findings.push('android:allowBackup is not "false", so Android backs up notes, groups and names');
+  }
+  if (config.androidDataExtractionRules !== dataExtractionRulesResource) {
+    findings.push(
+      `android:dataExtractionRules is not ${dataExtractionRulesResource}, so Android 12 and later copies notes, groups and names to a new phone in a device-to-device transfer`,
+    );
   }
   for (const key of Object.keys(config.infoPlist)) {
     if (usageDescription.test(key) && !iosAdmittedUsageDescriptions.includes(key)) {
@@ -206,5 +229,75 @@ export function permissionFindings(config: NativeConfig): string[] {
       findings.push(`iOS entitlements carry ${key}, which nothing in the PRD needs`);
     }
   }
+  if (config.iosBundleIdentifier !== appStoreRecord.bundleIdentifier) {
+    findings.push(
+      `The iOS bundle identifier is ${config.iosBundleIdentifier ?? '(none)'}; the App Store record this app replaces (id ${appStoreRecord.id}) is ${appStoreRecord.bundleIdentifier}, and Apple never changes the bundle identifier of an existing record`,
+    );
+  }
   return [...findings, ...importFindings(config)];
+}
+
+export function radioFindings(config: NativeConfig, installerBuild: boolean): string[] {
+  const findings: string[] = [];
+  const description = config.infoPlist.NSLocalNetworkUsageDescription;
+  if (typeof description !== 'string' || description.trim() === '') {
+    findings.push(
+      'Info.plist has no NSLocalNetworkUsageDescription, so iOS cannot ask for local network access when a transfer starts (SH-1)',
+    );
+  }
+  const services = list(config.infoPlist.NSBonjourServices).map(String);
+  if (
+    services.length !== transferServices.length ||
+    services.some((item) => !transferServices.includes(item))
+  ) {
+    findings.push(
+      `Info.plist NSBonjourServices is ${JSON.stringify(services)}; only ${transferServices.join(', ')} is admitted (SH-1)`,
+    );
+  }
+  const requested = config.androidPermissions.some(
+    (permission) => permission.name === installerPermission && !permission.removed,
+  );
+  if (requested && !installerBuild) {
+    findings.push(
+      `Android manifest requests ${installerPermission} outside the ${installerProfile} build; Google Play restricts it (SH-2)`,
+    );
+  }
+  if (!requested && installerBuild) {
+    findings.push(
+      `The ${installerProfile} build does not request ${installerPermission}, so the received app cannot be installed (SH-2)`,
+    );
+  }
+  return findings;
+}
+
+type EasProfile = { extends?: string; distribution?: string; env?: Record<string, string> };
+
+function profileEnv(
+  profiles: Readonly<Record<string, EasProfile>>,
+  name: string,
+  seen: string[] = [],
+): Record<string, string> {
+  const profile = profiles[name];
+  if (profile === undefined || seen.includes(name)) {
+    return {};
+  }
+  const inherited =
+    profile.extends === undefined ? {} : profileEnv(profiles, profile.extends, [...seen, name]);
+  return { ...inherited, ...profile.env };
+}
+
+export function easFindings(eas: unknown): string[] {
+  const profiles = record(record(eas).build) as Record<string, EasProfile>;
+  const findings: string[] = [];
+  if (profileEnv(profiles, installerProfile)[installerFlag] !== '1') {
+    findings.push(`eas.json profile ${installerProfile} does not set ${installerFlag}=1 (SH-2)`);
+  }
+  for (const [name, profile] of Object.entries(profiles)) {
+    if (profile.distribution === 'store' && profileEnv(profiles, name)[installerFlag] !== undefined) {
+      findings.push(
+        `eas.json store profile ${name} sets ${installerFlag}; the Play build never declares ${installerPermission}`,
+      );
+    }
+  }
+  return findings;
 }

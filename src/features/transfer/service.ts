@@ -5,12 +5,14 @@ import { fromPeer } from '@lib/packs/source';
 import type { DevicePlatform, Peer } from '@lib/ports';
 import type { WireChoice, WireResource } from '@lib/transfer/protocol';
 import type {
+  IncomingOutcome,
   ReceivedApp,
   TransferResult,
   TransferRole,
   TransferState,
   TransferStatus,
 } from '@lib/transfer/types';
+import { qrMatrixOf, qrPathOf, transferLink, typedEntryOf, type QrMatrix } from './fallback';
 import { transferWords, type TransferWords } from './strings';
 
 export type Failed = { readonly ok: false; readonly code: FailureCode; readonly message: string };
@@ -64,6 +66,25 @@ export type SendPlan = {
   readonly app?: boolean;
 };
 
+export type AddressFallback = {
+  readonly address: string;
+  readonly label: string;
+  readonly network: string;
+  readonly qr: QrMatrix;
+  readonly qrPath: string;
+  readonly qrLabel: string;
+};
+
+export type TypedView = {
+  readonly open: string;
+  readonly address: string;
+  readonly code: string;
+  readonly connect: string;
+  readonly network: string;
+};
+
+export type InstallView = { readonly ok: true; readonly message: string } | Failed;
+
 export type SelectionSummary = { readonly count: number; readonly bytes: number; readonly label: string };
 
 export type OfferView =
@@ -75,6 +96,7 @@ export type OfferView =
       readonly app: boolean;
       readonly code: string;
       readonly codeLabel: string;
+      readonly fallback: AddressFallback | undefined;
       readonly hint: string;
       readonly waiting: string;
       readonly bytes: number;
@@ -152,6 +174,10 @@ export type TransferService = {
   looking(): LookingView;
   discover(): Promise<readonly PeerView[]>;
   connect(peer: Peer): Promise<IncomingView>;
+  typed(): TypedView;
+  connectTyped(address: string, code: string): Promise<IncomingView>;
+  installApp(): Promise<InstallView>;
+  installLabel(): string;
   accept(selection?: Selection): Promise<ReceiveResult>;
   decline(): Promise<void>;
   cancel(): Promise<void>;
@@ -210,6 +236,53 @@ export function createTransferService(kernel: Kernel): TransferService {
         bytes: burrito.bytes,
       }),
     );
+  };
+
+  const fallbackOf = (current: TransferWords, address: string, code: string): AddressFallback | undefined => {
+    const entry = typedEntryOf(address, code);
+    if (entry === undefined) {
+      return undefined;
+    }
+    const qr = qrMatrixOf(transferLink(entry));
+    return {
+      address: entry.address,
+      label: current.t('transfer.address', { address: entry.address }),
+      network: current.t('transfer.network'),
+      qr,
+      qrPath: qrPathOf(qr),
+      qrLabel: current.t('transfer.address.qr', { address: entry.address }),
+    };
+  };
+
+  const incomingOf = async (outcome: IncomingOutcome): Promise<IncomingView> => {
+    if (!outcome.ok) {
+      return failed(outcome.code);
+    }
+    const current = words();
+    const { offer } = outcome;
+    const { platform } = await kernel.transfer.capabilities();
+    const app =
+      offer.app !== undefined && platform === 'android'
+        ? {
+            bytes: offer.app.bytes,
+            size: current.size(offer.app.bytes),
+            label: current.t('transfer.app'),
+          }
+        : undefined;
+    const count = offer.resources.length;
+    return {
+      ok: true,
+      platform: outcome.platform,
+      language: offer.language,
+      title: current.t('transfer.offer.title', {
+        language: autonymOf(kernel, offer.language),
+      }),
+      size: current.plural('transfer.offer.size', count, { size: current.size(offer.bytes) }),
+      resources: offer.resources.map((item) => choiceOf(current, item)),
+      app,
+      accept: current.t('transfer.accept'),
+      decline: current.t('transfer.decline'),
+    };
   };
 
   const appView = (app: ReceivedApp): ReceivedAppView => ({
@@ -311,6 +384,8 @@ export function createTransferService(kernel: Kernel): TransferService {
         app: outcome.offer.app !== undefined,
         code: outcome.code,
         codeLabel: current.t('transfer.code', { code: outcome.code }),
+        fallback:
+          outcome.address === undefined ? undefined : fallbackOf(current, outcome.address, outcome.code),
         hint: current.t('transfer.code.hint'),
         waiting: current.t('transfer.waiting'),
         bytes: outcome.offer.bytes,
@@ -349,36 +424,38 @@ export function createTransferService(kernel: Kernel): TransferService {
       }));
     },
     async connect(peer) {
-      const outcome = await kernel.transfer.connect(peer);
-      if (!outcome.ok) {
-        return failed(outcome.code);
-      }
+      return incomingOf(await kernel.transfer.connect(peer));
+    },
+    typed() {
       const current = words();
-      const { offer } = outcome;
-      const { platform } = await kernel.transfer.capabilities();
-      const app =
-        offer.app !== undefined && platform === 'android'
-          ? {
-              bytes: offer.app.bytes,
-              size: current.size(offer.app.bytes),
-              label: current.t('transfer.app'),
-            }
-          : undefined;
-      const count = offer.resources.length;
       return {
-        ok: true,
-        platform: outcome.platform,
-        language: offer.language,
-        title: current.t('transfer.offer.title', {
-          language: autonymOf(kernel, offer.language),
-        }),
-        size: current.plural('transfer.offer.size', count, { size: current.size(offer.bytes) }),
-        resources: offer.resources.map((item) => choiceOf(current, item)),
-        app,
-        accept: current.t('transfer.accept'),
-        decline: current.t('transfer.decline'),
+        open: current.t('transfer.typed'),
+        address: current.t('transfer.typed.address'),
+        code: current.t('transfer.typed.code'),
+        connect: current.t('transfer.typed.connect'),
+        network: current.t('transfer.network'),
       };
     },
+    async connectTyped(address, code) {
+      const entry = typedEntryOf(address, code);
+      if (entry === undefined) {
+        return { ok: false, code: 'transfer.peer-lost', message: words().t('transfer.typed.invalid') };
+      }
+      return incomingOf(await kernel.transfer.connectAt(entry.address, entry.code));
+    },
+    async installApp() {
+      const outcome = await kernel.transfer.installApp();
+      const current = words();
+      if (outcome.ok) {
+        return { ok: true, message: current.t('transfer.app.install.opened') };
+      }
+      const message =
+        outcome.code === 'transfer.unsupported'
+          ? current.t('transfer.app.install.unsupported')
+          : current.t(`failure.${outcome.code}`);
+      return { ok: false, code: outcome.code, message };
+    },
+    installLabel: () => words().t('transfer.app.install'),
     async accept(selection = {}) {
       const accepted = await kernel.transfer.accept({
         ...(selection.resources === undefined ? {} : { resources: selection.resources }),
