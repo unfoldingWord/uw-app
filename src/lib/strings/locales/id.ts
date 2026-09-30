@@ -29,6 +29,13 @@ export const id: LocaleTable = {
   'common.bookmark.add': 'Simpan untuk nanti',
   'common.bookmark.remove': 'Hapus dari simpanan',
   'common.joined': '{first} · {second}',
+  'common.source.catalog': 'Dari katalog',
+  'common.source.peer': 'Dari ponsel lain',
+  'common.source.file': 'Dari berkas',
+  'common.replace.file': 'Ganti {resources} yang Anda unduh dari katalog dengan salinan di berkas ini?',
+  'common.replace.peer': 'Ganti {resources} yang Anda unduh dari katalog dengan salinan dari ponsel lain?',
+  'common.replace.confirm': 'Ganti',
+  'common.replace.keep': 'Simpan salinan katalog',
   'common.attribution': '{resource} · {publisher} · {version} · {licence}',
   'common.language.chip': 'Ganti bahasa, sekarang {language}',
   'common.theme.toggle': 'Ganti tema',
@@ -455,6 +462,8 @@ export const id: LocaleTable = {
   'failure.pack.mixed-packs':
     'Sumber-sumber ini berasal dari paket yang berbeda, jadi kirim satu paket setiap kali.',
   'failure.corpus.unreadable': 'Paket ini tidak bisa dibuka, jadi hapus paket ini, lalu unduh lagi.',
+  'failure.pack.replace-unconfirmed':
+    'Ini akan mengganti sumber yang Anda unduh dari katalog, jadi tidak ada yang dipasang.',
   'failure.transfer.unavailable': 'Pengiriman ke ponsel terdekat belum tersedia di ponsel ini sekarang.',
   'failure.transfer.unsupported':
     'Ponsel ini tidak bisa mengirim aplikasinya sendiri, tetapi sumbernya tetap bisa dikirim.',

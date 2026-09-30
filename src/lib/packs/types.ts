@@ -7,7 +7,17 @@ export type InstalledBurrito = {
   root: string;
   row: ResourceRow;
   bytes: number;
+  source: PackSourceKind;
   provenance: Provenance;
+};
+
+export type Replacement = {
+  publisher: string;
+  resource: string;
+  title: string;
+  source: Exclude<PackSourceKind, 'catalog'>;
+  installed: { tag: string; commit: string };
+  incoming: { tag: string; commit: string | undefined };
 };
 
 export type InstalledPack = {
@@ -29,7 +39,13 @@ export type InstallProgress = {
 
 export type InstallOutcome =
   | { ok: true; install: string | undefined; pack: InstalledPack }
-  | { ok: false; install: string | undefined; pack: PackId | undefined; code: FailureCode };
+  | {
+      ok: false;
+      install: string | undefined;
+      pack: PackId | undefined;
+      code: FailureCode;
+      replaces?: readonly Replacement[];
+    };
 
 export type RemoveOutcome = { ok: true; pack: PackId } | { ok: false; pack: PackId; code: FailureCode };
 
@@ -47,6 +63,12 @@ export type PackUpdate = {
   resources: readonly ResourceUpdate[];
 };
 
-export type PackStorage = { pack: PackId; kind: PackKind; language: string | undefined; bytes: number };
+export type PackStorage = {
+  pack: PackId;
+  kind: PackKind;
+  language: string | undefined;
+  bytes: number;
+  sources: readonly PackSourceKind[];
+};
 
 export type Storage = { packs: readonly PackStorage[]; used: number; freeSpace: number };

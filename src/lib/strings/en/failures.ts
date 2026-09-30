@@ -32,6 +32,8 @@ export const failures = {
   'failure.pack.no-provenance': 'This resource does not say who published it, so the app keeps it out.',
   'failure.pack.empty-plan': 'Choose at least one resource first.',
   'failure.pack.mixed-packs': 'These resources belong to different packs, so send one pack at a time.',
+  'failure.pack.replace-unconfirmed':
+    'This would replace a resource you downloaded from the catalog, so nothing was installed.',
   'failure.corpus.unreadable': 'This pack could not be opened, so remove it and then download it again.',
   'failure.transfer.unavailable': 'Nearby transfer is not available on this phone right now.',
   'failure.transfer.unsupported': 'This phone cannot send the app itself, but resources can still go.',

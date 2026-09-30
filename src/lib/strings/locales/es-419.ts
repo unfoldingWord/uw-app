@@ -29,6 +29,15 @@ export const es419: LocaleTable = {
   'common.bookmark.add': 'Guardar para después',
   'common.bookmark.remove': 'Quitar de guardados',
   'common.joined': '{first} · {second}',
+  'common.source.catalog': 'Del catálogo',
+  'common.source.peer': 'De otro teléfono',
+  'common.source.file': 'De un archivo',
+  'common.replace.file':
+    '¿Reemplazar {resources}, que descargaste del catálogo, con la copia de este archivo?',
+  'common.replace.peer':
+    '¿Reemplazar {resources}, que descargaste del catálogo, con la copia del otro teléfono?',
+  'common.replace.confirm': 'Reemplazar',
+  'common.replace.keep': 'Conservar la copia del catálogo',
   'common.attribution': '{resource} · {publisher} · {version} · {licence}',
   'common.language.chip': 'Cambiar idioma, ahora {language}',
   'common.theme.toggle': 'Cambiar tema',
@@ -488,6 +497,8 @@ export const es419: LocaleTable = {
   'failure.pack.empty-plan': 'Primero elige al menos un recurso.',
   'failure.pack.mixed-packs':
     'Estos recursos pertenecen a paquetes distintos, así que envía un paquete a la vez.',
+  'failure.pack.replace-unconfirmed':
+    'Esto reemplazaría un recurso que descargaste del catálogo, así que no se instaló nada.',
   'failure.corpus.unreadable': 'No se pudo abrir este paquete, así que quítalo y descárgalo de nuevo.',
   'failure.transfer.unavailable': 'La transferencia cercana no está disponible en este teléfono ahora.',
   'failure.transfer.unsupported':

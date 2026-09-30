@@ -7,7 +7,7 @@ import { useTheme } from '@shared/theme';
 import { Header, IconAction, Notice, ScreenScaffold, useAsyncValue } from '@shared/ui';
 import { createLanguagesService } from '../service';
 import { ExtrasSection } from './ExtrasSection';
-import { ImportSection, OpenedFile, openedKey, type RunImport } from './ImportSection';
+import { ImportSection, OpenedFile, openedKey, type Asking, type RunImport } from './ImportSection';
 import { openedParam } from './intent';
 import { LanguageList } from './LanguageList';
 import { MissingSection } from './MissingSection';
@@ -26,6 +26,7 @@ export default function LanguagesScreen() {
   const handed = useLocalSearchParams<Partial<Record<typeof openedParam, string>>>()[openedParam];
   const [dismissed, setDismissed] = useState<string | undefined>(undefined);
   const [imported, setImported] = useState(false);
+  const [asking, setAsking] = useState<Asking | undefined>(undefined);
   const opened = typeof handed === 'string' && handed !== '' && handed !== dismissed ? handed : undefined;
   const words = languages.words();
   const [query, setQuery] = useState('');
@@ -61,8 +62,13 @@ export default function LanguagesScreen() {
 
   const runImport: RunImport = async (key, action) => {
     setImported(false);
+    setAsking(undefined);
     await run(key, async () => {
       const outcome = await action();
+      if (!outcome.ok && outcome.confirm !== undefined) {
+        setAsking({ key, question: outcome.confirm });
+        return { ok: true };
+      }
       if (outcome.ok && outcome.installed !== undefined) {
         setImported(true);
         if (key === openedKey) {
@@ -71,6 +77,11 @@ export default function LanguagesScreen() {
       }
       return outcome;
     });
+  };
+
+  const keepInstalled = async () => {
+    setAsking(undefined);
+    await languages.keepInstalled();
   };
 
   const refreshFailure =
@@ -114,6 +125,8 @@ export default function LanguagesScreen() {
           failures={failures}
           onImport={runImport}
           onDismiss={() => setDismissed(opened)}
+          asking={asking}
+          onKeep={keepInstalled}
         />
       )}
       <GlassInput
@@ -161,7 +174,13 @@ export default function LanguagesScreen() {
         failures={failures}
         onUpdate={(pack) => run(pack, () => languages.update(pack))}
       />
-      <ImportSection imported={imported} failures={failures} onImport={runImport} />
+      <ImportSection
+        imported={imported}
+        failures={failures}
+        onImport={runImport}
+        asking={asking}
+        onKeep={keepInstalled}
+      />
       <StorageSection version={version} rows={everyRow} failures={failures} onRemove={setPending} />
     </ScreenScaffold>
   );

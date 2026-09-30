@@ -29,6 +29,13 @@ export const vi: LocaleTable = {
   'common.bookmark.add': 'Lưu để xem sau',
   'common.bookmark.remove': 'Bỏ khỏi mục đã lưu',
   'common.joined': '{first} · {second}',
+  'common.source.catalog': 'Từ danh mục',
+  'common.source.peer': 'Từ điện thoại khác',
+  'common.source.file': 'Từ một tệp',
+  'common.replace.file': 'Thay {resources} bạn đã tải từ danh mục bằng bản trong tệp này?',
+  'common.replace.peer': 'Thay {resources} bạn đã tải từ danh mục bằng bản từ điện thoại kia?',
+  'common.replace.confirm': 'Thay thế',
+  'common.replace.keep': 'Giữ bản từ danh mục',
   'common.attribution': '{resource} · {publisher} · {version} · {licence}',
   'common.language.chip': 'Đổi ngôn ngữ, hiện là {language}',
   'common.theme.toggle': 'Đổi giao diện',
@@ -446,6 +453,8 @@ export const vi: LocaleTable = {
   'failure.pack.no-provenance': 'Tài nguyên này không cho biết ai xuất bản, nên ứng dụng không cài đặt.',
   'failure.pack.empty-plan': 'Hãy chọn ít nhất một tài nguyên trước.',
   'failure.pack.mixed-packs': 'Các tài nguyên này thuộc những gói khác nhau, vì vậy hãy gửi từng gói một.',
+  'failure.pack.replace-unconfirmed':
+    'Việc này sẽ thay thế một tài nguyên bạn đã tải từ danh mục, nên chưa cài đặt gì.',
   'failure.corpus.unreadable': 'Không mở được gói này, vì vậy hãy gỡ gói rồi tải lại.',
   'failure.transfer.unavailable': 'Hiện điện thoại này chưa thể chuyển đến thiết bị ở gần.',
   'failure.transfer.unsupported':

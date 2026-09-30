@@ -27,6 +27,15 @@ export const common = {
   'common.bookmark.add': 'Save for later',
   'common.bookmark.remove': 'Remove from saved',
   'common.joined': '{first} · {second}',
+  'common.source.catalog': 'From the catalog',
+  'common.source.peer': 'From another phone',
+  'common.source.file': 'From a file',
+  'common.replace.file':
+    'Replace {resources}, which you downloaded from the catalog, with the copy in this file?',
+  'common.replace.peer':
+    'Replace {resources}, which you downloaded from the catalog, with the copy from the other phone?',
+  'common.replace.confirm': 'Replace',
+  'common.replace.keep': 'Keep the catalog copy',
   'common.attribution': '{resource} · {publisher} · {version} · {licence}',
   'common.language.chip': 'Change language, now {language}',
   'common.theme.toggle': 'Switch theme',

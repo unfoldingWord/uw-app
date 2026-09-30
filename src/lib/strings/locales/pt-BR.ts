@@ -29,6 +29,13 @@ export const ptBR: LocaleTable = {
   'common.bookmark.add': 'Salvar para depois',
   'common.bookmark.remove': 'Remover dos salvos',
   'common.joined': '{first} · {second}',
+  'common.source.catalog': 'Do catálogo',
+  'common.source.peer': 'De outro celular',
+  'common.source.file': 'De um arquivo',
+  'common.replace.file': 'Substituir {resources}, que você baixou do catálogo, pela cópia deste arquivo?',
+  'common.replace.peer': 'Substituir {resources}, que você baixou do catálogo, pela cópia do outro celular?',
+  'common.replace.confirm': 'Substituir',
+  'common.replace.keep': 'Manter a cópia do catálogo',
   'common.attribution': '{resource} · {publisher} · {version} · {licence}',
   'common.language.chip': 'Mudar idioma, agora {language}',
   'common.theme.toggle': 'Mudar tema',
@@ -487,6 +494,8 @@ export const ptBR: LocaleTable = {
   'failure.pack.no-provenance': 'Este recurso não diz quem o publicou, então o aplicativo não o instala.',
   'failure.pack.empty-plan': 'Escolha pelo menos um recurso primeiro.',
   'failure.pack.mixed-packs': 'Estes recursos são de pacotes diferentes, então envie um pacote por vez.',
+  'failure.pack.replace-unconfirmed':
+    'Isto substituiria um recurso que você baixou do catálogo, então nada foi instalado.',
   'failure.corpus.unreadable': 'Não foi possível abrir este pacote, então remova-o e baixe de novo.',
   'failure.transfer.unavailable': 'A transferência por perto não está disponível neste celular agora.',
   'failure.transfer.unsupported':

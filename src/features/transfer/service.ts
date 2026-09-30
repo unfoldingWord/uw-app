@@ -2,6 +2,7 @@ import type { FailureCode } from '@lib/domain/failures';
 import { languagePackId, type PackId } from '@lib/domain/pack';
 import type { Kernel } from '@lib/kernel';
 import { fromPeer } from '@lib/packs/source';
+import type { InstallOutcome } from '@lib/packs/types';
 import type { DevicePlatform, Peer } from '@lib/ports';
 import type { WireChoice, WireResource } from '@lib/transfer/protocol';
 import type {
@@ -15,7 +16,14 @@ import type {
 import { qrMatrixOf, qrPathOf, transferLink, typedEntryOf, type QrMatrix } from './fallback';
 import { transferWords, type TransferWords } from './strings';
 
-export type Failed = { readonly ok: false; readonly code: FailureCode; readonly message: string };
+export type ReplaceQuestion = { readonly question: string; readonly replace: string; readonly keep: string };
+
+export type Failed = {
+  readonly ok: false;
+  readonly code: FailureCode;
+  readonly message: string;
+  readonly confirm?: ReplaceQuestion;
+};
 
 export type AppPackageView =
   | {
@@ -179,6 +187,8 @@ export type TransferService = {
   installApp(): Promise<InstallView>;
   installLabel(): string;
   accept(selection?: Selection): Promise<ReceiveResult>;
+  confirmReplace(): Promise<ReceiveResult>;
+  keepInstalled(): Promise<void>;
   decline(): Promise<void>;
   cancel(): Promise<void>;
   status(): StatusView | undefined;
@@ -206,6 +216,42 @@ export function createTransferService(kernel: Kernel): TransferService {
   const words = (): TransferWords => transferWords(kernel);
 
   const failed = (code: FailureCode): Failed => ({ ok: false, code, message: words().t(`failure.${code}`) });
+
+  let receivedApp: ReceivedAppView | undefined;
+
+  const receivedOf = (installed: InstallOutcome): ReceiveResult => {
+    const current = words();
+    if (!installed.ok) {
+      const titles = (installed.replaces ?? []).map((item) => item.title);
+      const [first, ...rest] = titles;
+      if (first === undefined) {
+        return failed(installed.code);
+      }
+      const resources = rest.reduce(
+        (joined, item) => current.t('common.joined', { first: joined, second: item }),
+        first,
+      );
+      return {
+        ...failed(installed.code),
+        confirm: {
+          question: current.t('common.replace.peer', { resources }),
+          replace: current.t('common.replace.confirm'),
+          keep: current.t('common.replace.keep'),
+        },
+      };
+    }
+    const language = installed.pack.language ?? '';
+    const autonym = autonymOf(kernel, language);
+    return {
+      ok: true,
+      state: 'ready-to-read',
+      language,
+      pack: installed.pack.pack,
+      label: current.t('transfer.received', { language: autonym }),
+      open: current.t('transfer.openLanguage', { language: autonym }),
+      app: receivedApp,
+    };
+  };
 
   const choiceOf = (
     current: TransferWords,
@@ -468,23 +514,11 @@ export function createTransferService(kernel: Kernel): TransferService {
       if (accepted.delivery === undefined) {
         return app === undefined ? failed('transfer.declined') : { ok: true, state: 'app-received', app };
       }
-      const installed = await kernel.packs.install(fromPeer(accepted.delivery));
-      if (!installed.ok) {
-        return failed(installed.code);
-      }
-      const language = installed.pack.language ?? '';
-      const current = words();
-      const autonym = autonymOf(kernel, language);
-      return {
-        ok: true,
-        state: 'ready-to-read',
-        language,
-        pack: installed.pack.pack,
-        label: current.t('transfer.received', { language: autonym }),
-        open: current.t('transfer.openLanguage', { language: autonym }),
-        app,
-      };
+      receivedApp = app;
+      return receivedOf(await kernel.packs.install(fromPeer(accepted.delivery)));
     },
+    confirmReplace: async () => receivedOf(await kernel.packs.confirmReplace()),
+    keepInstalled: () => kernel.packs.declineReplace(),
     decline: () => kernel.transfer.decline(),
     cancel: () => kernel.transfer.cancel(),
     status() {

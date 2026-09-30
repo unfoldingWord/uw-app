@@ -43,7 +43,7 @@ A Language Pack installed without one or more of its optional resources because 
 _Avoid_: broken pack, incomplete download
 
 **Source**:
-Where a pack's burritos come from: the Catalog, a Peer, or a File.
+Where a pack's burritos come from: the Catalog, a Peer, or a File. Each installed burrito keeps its own, shown in Storage and on the Licence page; a peer or a file that would replace a burrito from the catalog with a different commit asks the leader first.
 _Avoid_: origin, provider
 
 **Provenance**:

@@ -16,13 +16,15 @@ function numberOf(row: DbRow, column: string): number {
 
 function burritoOf(row: DbRow): InstalledBurrito | undefined {
   const resourceRow = resourceRows.find((item) => item === row.resource_row);
-  if (resourceRow === undefined) {
+  const source = packSources.find((item) => item === row.source);
+  if (resourceRow === undefined || source === undefined) {
     return undefined;
   }
   return {
     root: textOf(row, 'root'),
     row: resourceRow,
     bytes: numberOf(row, 'bytes'),
+    source,
     provenance: {
       publisher: textOf(row, 'publisher'),
       resource: textOf(row, 'resource'),
@@ -39,7 +41,7 @@ function burritoOf(row: DbRow): InstalledBurrito | undefined {
 export async function readInstalledPacks(db: DbTransaction): Promise<InstalledPack[]> {
   const packRows = await db.all('SELECT pack, kind, language, source, bytes FROM packs ORDER BY pack');
   const burritoRows = await db.all(
-    'SELECT pack, publisher, resource, language, tag, commit_sha, released, resource_row, root, title, licence, bytes FROM pack_burritos ORDER BY pack, publisher, resource',
+    'SELECT pack, publisher, resource, language, tag, commit_sha, released, resource_row, root, title, licence, bytes, source FROM pack_burritos ORDER BY pack, publisher, resource',
   );
   return packRows.flatMap((row) => {
     const kind = packKinds.find((item) => item === row.kind);
@@ -73,7 +75,7 @@ export async function writeInstalledPack(transaction: DbTransaction, pack: Insta
   for (const burrito of pack.burritos) {
     const { provenance } = burrito;
     await transaction.run(
-      'INSERT INTO pack_burritos (pack, publisher, resource, language, tag, commit_sha, released, resource_row, root, title, licence, bytes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      'INSERT INTO pack_burritos (pack, publisher, resource, language, tag, commit_sha, released, resource_row, root, title, licence, bytes, source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [
         pack.pack,
         provenance.publisher,
@@ -87,6 +89,7 @@ export async function writeInstalledPack(transaction: DbTransaction, pack: Insta
         provenance.title,
         provenance.licence,
         burrito.bytes,
+        burrito.source,
       ],
     );
   }

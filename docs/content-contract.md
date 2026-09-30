@@ -54,6 +54,7 @@ One row is open and blocks FO-2 on live data until DCS generates it: formation, 
 - The app therefore takes publisher, resource, tag and release date (`released`) from the catalog entry it downloaded, and the commit from the catalog and the burrito, which agree.
 - A peer's offer names the release as the sender recorded it, and the commit; the receiver refuses a burrito whose revision is not the offered commit.
 - A file carries no tag. When the catalog on the phone lists a release with the burrito's commit, the file takes that release's publisher, resource and tag. Otherwise it keeps the repository named in the burrito and the tag `unrecorded`, and an update from the catalog replaces it.
+- Nothing in a file or an offer is signed, so the name a peer or a file gives is only a claim. Each installed burrito keeps its source (catalog, peer or file), shown in Storage and on the Licence page, and a peer or file burrito that would replace one installed from the catalog with a different commit is installed only once the leader confirms it (issue #22). Signed releases are a DCS matter.
 
 ## What the app adds
 

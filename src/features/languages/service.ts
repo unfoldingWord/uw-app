@@ -4,7 +4,7 @@ import type { FailureCode } from '@lib/domain/failures';
 import { imagePackId, languagePackId, originalPackId, type PackId } from '@lib/domain/pack';
 import type { Kernel } from '@lib/kernel';
 import { optionalReleases } from '@lib/packs/plan';
-import type { InstallOutcome, PackUpdate, RemoveOutcome, Storage } from '@lib/packs/types';
+import type { InstallOutcome, PackUpdate, RemoveOutcome, Replacement, Storage } from '@lib/packs/types';
 import { languagesWords, type LanguagesWords } from './strings';
 
 export type LanguageRow = {
@@ -38,7 +38,10 @@ export type MissingResource = {
   readonly code: FailureCode | undefined;
 };
 
-export type ImportOutcome = { ok: true; installed: PackId | undefined } | { ok: false; code: FailureCode };
+export type ReplaceQuestion = { readonly question: string; readonly replace: string; readonly keep: string };
+
+export type ImportOutcome =
+  { ok: true; installed: PackId | undefined } | { ok: false; code: FailureCode; confirm?: ReplaceQuestion };
 
 export type LanguagesService = {
   words(): LanguagesWords;
@@ -63,6 +66,9 @@ export type LanguagesService = {
   update(pack: PackId): Promise<InstallOutcome>;
   importFile(): Promise<ImportOutcome>;
   importOpened(uri: string): Promise<ImportOutcome>;
+  confirmReplace(): Promise<ImportOutcome>;
+  keepInstalled(): Promise<void>;
+  sourceOf(pack: Storage['packs'][number]): string;
   openedName(uri: string): string;
 };
 
@@ -99,11 +105,33 @@ function rowOf(kernel: Kernel, words: LanguagesWords, item: CatalogLanguage): La
   };
 }
 
-function importOutcomeOf(outcome: InstallOutcome | undefined): ImportOutcome {
+function questionOf(words: LanguagesWords, replaces: readonly Replacement[]): ReplaceQuestion | undefined {
+  const [first, ...rest] = replaces;
+  if (first === undefined) {
+    return undefined;
+  }
+  const resources = rest.reduce(
+    (joined, item) => words.t('common.joined', { first: joined, second: item.title }),
+    first.title,
+  );
+  return {
+    question: words.t(first.source === 'peer' ? 'common.replace.peer' : 'common.replace.file', { resources }),
+    replace: words.t('common.replace.confirm'),
+    keep: words.t('common.replace.keep'),
+  };
+}
+
+function importOutcomeOf(words: LanguagesWords, outcome: InstallOutcome | undefined): ImportOutcome {
   if (outcome === undefined) {
     return { ok: true, installed: undefined };
   }
-  return outcome.ok ? { ok: true, installed: outcome.pack.pack } : { ok: false, code: outcome.code };
+  if (outcome.ok) {
+    return { ok: true, installed: outcome.pack.pack };
+  }
+  const confirm = questionOf(words, outcome.replaces ?? []);
+  return confirm === undefined
+    ? { ok: false, code: outcome.code }
+    : { ok: false, code: outcome.code, confirm };
 }
 
 function decoded(part: string): string {
@@ -215,8 +243,18 @@ export function createLanguagesService(kernel: Kernel): LanguagesService {
     storage: () => kernel.packs.storage(),
     updates: () => kernel.packs.updates(),
     update: (pack) => kernel.packs.update(pack),
-    importFile: async () => importOutcomeOf(await kernel.packs.importPicked()),
-    importOpened: async (uri) => importOutcomeOf(await kernel.packs.importFile(uri)),
+    importFile: async () => importOutcomeOf(words(), await kernel.packs.importPicked()),
+    importOpened: async (uri) => importOutcomeOf(words(), await kernel.packs.importFile(uri)),
+    confirmReplace: async () => importOutcomeOf(words(), await kernel.packs.confirmReplace()),
+    keepInstalled: () => kernel.packs.declineReplace(),
+    sourceOf(pack) {
+      const current = words();
+      const [first, ...rest] = pack.sources.map((source) => current.t(`common.source.${source}`));
+      return rest.reduce(
+        (joined, item) => current.t('common.joined', { first: joined, second: item }),
+        first ?? '',
+      );
+    },
     openedName: nameOfOpened,
   };
 }
