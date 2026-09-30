@@ -46,6 +46,9 @@ Change a value in place; set it to `null` to fall back to English for that key w
   `study.helps.showResponse`, `study.helps.hideResponse`, `study.noLanguage`, `study.noLanguage.action`,
   `library.download`, `library.onPhone` and `search.fullText.inSettings`. `library.download` interpolates a
   resource title such as "Greek New Testament"; check the verb agrees with it where the language inflects.
+- **Drafted on 2026-09-30 (issue #4).** `privacy.backup` says a backup of the phone may include notes and group
+  names until a later update confirms they are kept out. It is temporary: the change that records the iPhone run
+  of the backup exclusion removes it. Check it reads as calm and honest, not as an alarm.
 - **Drafted with the introductions in Study (2026-09-30).** `study.helps.bookIntro` and
   `study.helps.chapterIntro` label the book and chapter introductions shown first among the notes. The word
   for "book" should be the one used for a book of the Bible (ar uses سفر), and "chapter" the one the Bible

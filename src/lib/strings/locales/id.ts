@@ -374,6 +374,8 @@ export const id: LocaleTable = {
     'Aplikasi tidak pernah meminta lokasi, kontak, atau akun Anda, dan tidak memakai analitik pihak ketiga.',
   'privacy.local':
     'Nama, kelompok, catatan, dan kemajuan tetap di ponsel ini kecuali Anda mengirim atau membagikannya.',
+  'privacy.backup':
+    'Cadangan ponsel ini mungkin berisi catatan dan nama kelompok Anda sampai pembaruan berikutnya memastikan semuanya dikecualikan.',
   'settings.title': 'Pengaturan',
   'settings.appLanguage': 'Bahasa aplikasi',
   'settings.appLanguage.about': 'Bahasa tombol dan label, terpisah dari yang Anda baca.',

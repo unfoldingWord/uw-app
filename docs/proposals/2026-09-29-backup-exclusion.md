@@ -1,7 +1,27 @@
 # Keep the packs and the database out of iCloud backup
 
-Status: proposed, awaiting human approval. Nothing below is built. Android is already covered by
-`android.allowBackup: false` in `app.config.ts`, checked by `scripts/checks/permissions.check.ts`.
+Status: approved in issue #4 (2026-09-30) and built in code on 2026-09-30; not yet run on a phone, so the
+privacy screen keeps a line saying a backup may include notes and group names until that run is recorded.
+Android is covered by `android.allowBackup: false` and, since issue #5, by data extraction rules
+(`plugins/data-extraction-rules`), both checked by `scripts/checks/permissions.check.ts`.
+
+What was built, and where it differs from the Change below:
+
+- `modules/backup-exclusion`: `excludeFromBackup(location)` sets `URLResourceValues.isExcludedFromBackup` on
+  a directory and returns the flag read back with the resource cache cleared; `isExcludedFromBackup(location)`
+  only reads it. The Kotlin module answers `false` to both and is never called. `index.ts` wraps
+  `requireNativeModule('BackupExclusion')`; `src/platform` reaches it through the `@modules/*` alias, which the
+  `deviceApis` lint pattern refuses everywhere else.
+- The call is made once, in `createPlatformPorts` (`src/platform/ports.ts`), on the device root and on
+  expo-sqlite's `defaultDatabaseDirectory` (created first by `createDatabaseDirectory` in `db.ts`), before any
+  port is handed to the kernel, rather than in `files.ts`, `db.ts` and `kv.ts` separately: `uw.db` and
+  `uw-preferences.db` share that directory, so one call covers both.
+- It fails closed on iOS: if the module is missing, refuses, or reads back false, `excludeFromBackup` in
+  `src/platform/backup.ts` throws a `files.io` port error, so the boot fails with Try again and nothing is
+  written where a backup reaches it. It is not a journaled `Failure`: the kernel does not exist yet at that
+  point, and journaling a platform fault needs a port or kernel change this proposal ruled out.
+- Tested in Node at the helper's interface (`src/platform/backup.test.ts`). The Swift and Kotlin were not
+  compiled here; autolinking finds the module on both platforms (`expo-modules-autolinking resolve`).
 
 Evidence labels: **checked** means read in the package source in `node_modules` on 2026-09-29; **inference**
 means reasoned, not observed on a phone.

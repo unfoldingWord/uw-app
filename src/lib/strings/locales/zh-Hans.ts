@@ -362,6 +362,7 @@ export const zhHans: LocaleTable = {
   'privacy.dropped': '如果计数无法发送，就会被舍弃，对你没有任何影响。',
   'privacy.never': '应用从不索取你的位置、联系人或账户，也不使用第三方分析。',
   'privacy.local': '名字、小组、笔记和进度都留在这部手机上，除非你传送或分享它们。',
+  'privacy.backup': '在后续更新确认它们已被排除之前，这部手机的备份可能包含你的笔记和小组名称。',
   'settings.title': '设置',
   'settings.appLanguage': '应用语言',
   'settings.appLanguage.about': '按钮和标签的语言，与你阅读的内容分开设置。',

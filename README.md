@@ -55,8 +55,9 @@ from a phone replaying in the sim.
 - Audio: DCS does not yet carry audio in burritos, so audio packs are a
   provisional flavor too, to be attached as release assets.
 - iCloud backup: packs and the database sit in `Documents`, which iOS backs
-  up; [the backup exclusion proposal](docs/proposals/2026-09-29-backup-exclusion.md)
-  must land before App Store submission. Android backs nothing up.
+  up; `modules/backup-exclusion` ([proposal](docs/proposals/2026-09-29-backup-exclusion.md))
+  keeps them out but has not run on an iPhone, and that run must be recorded
+  before App Store submission. Android backs nothing up and migrates nothing.
 - The impact story copy and feed: communications review.
 - The store listings: the app replaces the existing "unfoldingWord" records, so
   iOS keeps the bundle identifier `com.unfoldingword.iosapp`; the Android

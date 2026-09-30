@@ -420,6 +420,8 @@ export const fr: LocaleTable = {
     'L’application ne demande jamais votre position, vos contacts ni un compte, et n’utilise aucune mesure d’audience externe.',
   'privacy.local':
     'Les noms, groupes, notes et avancées restent sur ce téléphone, sauf si vous les transférez ou les partagez.',
+  'privacy.backup':
+    'Une sauvegarde de ce téléphone peut contenir vos notes et les noms de vos groupes, jusqu’à ce qu’une mise à jour confirme qu’ils en sont exclus.',
   'settings.title': 'Réglages',
   'settings.appLanguage': 'Langue de l’application',
   'settings.appLanguage.about': 'La langue des boutons et des libellés, distincte de ce que vous lisez.',

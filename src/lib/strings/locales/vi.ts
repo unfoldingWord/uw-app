@@ -371,6 +371,8 @@ export const vi: LocaleTable = {
     'Ứng dụng không bao giờ hỏi vị trí, danh bạ hay tài khoản của bạn, và không dùng công cụ phân tích của bên thứ ba.',
   'privacy.local':
     'Tên, nhóm, ghi chú và tiến độ luôn ở trên điện thoại này, trừ khi bạn chuyển hoặc chia sẻ chúng.',
+  'privacy.backup':
+    'Bản sao lưu của điện thoại này có thể chứa ghi chú và tên nhóm của bạn cho đến khi một bản cập nhật sau xác nhận chúng được loại ra.',
   'settings.title': 'Cài đặt',
   'settings.appLanguage': 'Ngôn ngữ ứng dụng',
   'settings.appLanguage.about': 'Ngôn ngữ của nút và nhãn, tách biệt với nội dung bạn đọc.',

@@ -246,7 +246,12 @@ export function createSettingsService(kernel: Kernel): SettingsService {
         summary: current.t('privacy.summary'),
         intro: current.t('privacy.counts'),
         counts: leavingFolds.map((fold) => ({ fold, label: current.t(`privacy.count.${fold}`) })),
-        notes: [current.t('privacy.dropped'), current.t('privacy.never'), current.t('privacy.local')],
+        notes: [
+          current.t('privacy.dropped'),
+          current.t('privacy.never'),
+          current.t('privacy.local'),
+          current.t('privacy.backup'),
+        ],
       };
     },
     async entries() {

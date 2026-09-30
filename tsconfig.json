@@ -12,6 +12,7 @@
       "@shared/*": ["./src/shared/*"],
       "@platform/*": ["./src/platform/*"],
       "@sim/*": ["./sim/*"],
+      "@modules/*": ["./modules/*"],
       "@design-system/assets/fonts/*": ["./design-system/assets/fonts/*"],
       "@design-system/assets/logo/*": ["./design-system/assets/logo/*"]
     }

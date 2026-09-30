@@ -118,6 +118,15 @@ export default scenario(
       'the privacy screen says nothing is sent today',
     );
     assert.equal(settings.privacy().intro, phone.kernel.strings.words(settings.locale()).t('privacy.counts'));
+    assert.equal(
+      phone.kernel.strings.words('en').t('privacy.backup'),
+      'A backup of this phone may include your notes and group names until a later update confirms they are kept out.',
+      'the privacy screen says a backup may still carry notes until the backup exclusion is proven on a phone',
+    );
+    assert.equal(
+      settings.privacy().notes.at(-1),
+      phone.kernel.strings.words(settings.locale()).t('privacy.backup'),
+    );
     assert.deepEqual(
       (await settings.entries()).map((entry) => entry.id),
       [

@@ -394,6 +394,8 @@ export const sw: LocaleTable = {
     'Programu haiombi kamwe mahali ulipo, anwani zako au akaunti, na haitumii uchambuzi wa watu wengine.',
   'privacy.local':
     'Majina, vikundi, maelezo na maendeleo vinabaki kwenye simu hii isipokuwa uvitume au uvishiriki.',
+  'privacy.backup':
+    'Nakala rudufu ya simu hii inaweza kujumuisha maelezo yako na majina ya vikundi hadi sasisho la baadaye lithibitishe kwamba yameachwa nje.',
   'settings.title': 'Mipangilio',
   'settings.appLanguage': 'Lugha ya programu',
   'settings.appLanguage.about': 'Lugha ya vitufe na lebo, tofauti na unachosoma.',

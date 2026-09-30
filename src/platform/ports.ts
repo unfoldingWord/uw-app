@@ -1,8 +1,10 @@
 import { Platform } from 'react-native';
 import type { DevicePlatform, Ports } from '@lib/ports';
+import { backupExclusionModule } from '@modules/backup-exclusion';
 import { createPlatformAudio } from './audio';
+import { excludeFromBackup } from './backup';
 import { createPlatformClock } from './clock';
-import { createPlatformDb } from './db';
+import { createDatabaseDirectory, createPlatformDb } from './db';
 import { createDeviceRoot, createPlatformFiles } from './files';
 import { createPlatformHttp, type HostPolicy } from './http';
 import { createPlatformIds } from './ids';
@@ -19,6 +21,11 @@ function devicePlatform(): DevicePlatform {
 export function createPlatformPorts(policy: HostPolicy): Ports {
   const platform = devicePlatform();
   const root = createDeviceRoot();
+  excludeFromBackup({
+    platform,
+    flag: backupExclusionModule,
+    directories: [root.directory.uri, createDatabaseDirectory()],
+  });
   const files = createPlatformFiles(root);
   const http = createPlatformHttp({ policy, files });
   return {

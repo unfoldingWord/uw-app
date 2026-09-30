@@ -406,6 +406,8 @@ export const ptBR: LocaleTable = {
     'O aplicativo nunca pede sua localização, seus contatos ou uma conta, e não usa análises de terceiros.',
   'privacy.local':
     'Nomes, grupos, notas e progresso ficam neste celular, a não ser que você os transfira ou compartilhe.',
+  'privacy.backup':
+    'Um backup deste celular pode incluir suas notas e os nomes dos seus grupos até que uma atualização confirme que eles ficam de fora.',
   'settings.title': 'Configurações',
   'settings.appLanguage': 'Idioma do aplicativo',
   'settings.appLanguage.about': 'O idioma dos botões e rótulos, separado do que você lê.',

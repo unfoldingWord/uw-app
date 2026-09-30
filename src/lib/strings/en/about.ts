@@ -46,6 +46,8 @@ export const about = {
   'privacy.never':
     'The app never asks for your location, contacts or an account, and uses no outside analytics.',
   'privacy.local': 'Names, groups, notes and progress stay on this phone unless you transfer or share them.',
+  'privacy.backup':
+    'A backup of this phone may include your notes and group names until a later update confirms they are kept out.',
   'settings.title': 'Settings',
   'settings.appLanguage': 'App language',
   'settings.appLanguage.about': 'The language of buttons and labels, separate from what you read.',

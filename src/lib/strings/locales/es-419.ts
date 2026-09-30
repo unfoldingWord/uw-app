@@ -407,6 +407,8 @@ export const es419: LocaleTable = {
     'La aplicación nunca pide tu ubicación, tus contactos ni una cuenta, y no usa análisis de terceros.',
   'privacy.local':
     'Los nombres, grupos, notas y avances se quedan en este teléfono, salvo que los transfieras o compartas.',
+  'privacy.backup':
+    'Una copia de seguridad de este teléfono puede incluir tus notas y los nombres de tus grupos hasta que una actualización confirme que quedan fuera.',
   'settings.title': 'Ajustes',
   'settings.appLanguage': 'Idioma de la aplicación',
   'settings.appLanguage.about': 'El idioma de los botones y etiquetas, aparte de lo que lees.',

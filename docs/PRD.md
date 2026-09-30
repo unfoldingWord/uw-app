@@ -356,6 +356,12 @@ The `ui_kits/travel-assistant/` example, the slides and the desktop console are 
 - No accounts, no identifiers, no third-party SDKs, no location permission, no contacts or accounts access.
 - Aggregate analytics only, as defined in section 9, documented in-app.
 - Names, groups, notes and progress never leave the device except when the leader explicitly transfers or shares.
+  That includes backups and phone migrations: on iOS the directories that hold packs and the databases are
+  excluded from iCloud and computer backups (`modules/backup-exclusion`), and on Android `allowBackup` is off
+  and the data extraction rules exclude every domain from cloud backup and device-to-device transfer. Until a
+  phone run proves the iOS exclusion, the privacy screen says a backup may include notes and group names.
+- Encryption at rest by the app itself (of the databases and packs) is out of scope for the first release;
+  they rely on the phone's own storage encryption.
 - No disguise or passcode mode in the first release (see non-goals).
 - Public copy follows the brand security guideline: no names, locations or images of people in sensitive contexts.
 

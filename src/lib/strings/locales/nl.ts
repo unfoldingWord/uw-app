@@ -399,6 +399,8 @@ export const nl: LocaleTable = {
     'De app vraagt nooit om je locatie, je contacten of een account, en gebruikt geen analyse van derden.',
   'privacy.local':
     'Namen, groepen, aantekeningen en voortgang blijven op deze telefoon, tenzij je ze overzet of deelt.',
+  'privacy.backup':
+    'Een back-up van deze telefoon kan je aantekeningen en groepsnamen bevatten, totdat een latere update bevestigt dat ze erbuiten blijven.',
   'settings.title': 'Instellingen',
   'settings.appLanguage': 'Taal van de app',
   'settings.appLanguage.about': 'De taal van knoppen en labels, los van wat je leest.',
