@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { utf8 } from '@lib/burrito/files';
 import { readArchive, writeArchive } from '@lib/burrito/archive';
 import { languagePackId } from '@lib/domain/pack';
 import { parseReference } from '@lib/domain/reference';
@@ -97,6 +98,26 @@ export default scenario(
     assert.equal(!corrupt.ok && corrupt.code, 'pack.checksum-mismatch');
     world.network.serve(newer, good);
 
+    let grown: Promise<void> | undefined;
+    const stopWatching = phone.adapters.files.onWrite((operation, path) => {
+      if (
+        grown === undefined &&
+        path.startsWith('packs/.staging/') &&
+        path.endsWith('/ingredients/RUT.tsv')
+      ) {
+        grown = Promise.resolve().then(() => phone.adapters.files.appendBytes(path, utf8('\n')));
+      }
+    });
+    const changedOnDisk = await phone.kernel.packs.update(pack);
+    stopWatching();
+    await grown;
+    assert.ok(grown !== undefined, 'a staged file was changed after it was unpacked');
+    assert.equal(
+      !changedOnDisk.ok && changedOnDisk.code,
+      'pack.checksum-mismatch',
+      'a file whose size on disk is not the listed size is refused, even when the archive was whole',
+    );
+
     phone.adapters.files.failRename('packs/language/qaa');
     const interrupted = await phone.kernel.packs.update(pack);
     assert.equal(!interrupted.ok && interrupted.code, 'files.io');
@@ -108,7 +129,7 @@ export default scenario(
     const failures = phone.kernel.journal.read().filter((entry) => entry.type === 'PackFailed');
     assert.deepEqual(
       failures.map((entry) => entry.type === 'PackFailed' && entry.payload.code),
-      ['http.timeout', 'pack.checksum-mismatch', 'files.io'],
+      ['http.timeout', 'pack.checksum-mismatch', 'pack.checksum-mismatch', 'files.io'],
     );
 
     const release = phone.adapters.http.hold(newer);
