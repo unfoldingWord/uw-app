@@ -93,7 +93,7 @@ jobs:
           if-no-files-found: warn
 
   ios:
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
