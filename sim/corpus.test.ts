@@ -534,4 +534,19 @@ describe('corpus note attachment', () => {
     expect(letter[0]?.books).toEqual({ '3JN': { quoted: 3, attached: 3 } });
     expect(await device.kernel.corpus.attachment('qab')).toEqual([]);
   });
+
+  it('counts one book at a time without evicting the books a reader has open', async () => {
+    const device = await phone([qaa]);
+    const ruth = reference('RUT 1:16');
+    expect(await device.kernel.corpus.passage(ruth, { language: 'qaa' })).toBeDefined();
+    await device.kernel.corpus.attachment('qaa');
+    const reads: string[] = [];
+    const stop = device.adapters.files.onRead((_, path) => reads.push(path));
+    expect(await device.kernel.corpus.passage(ruth, { language: 'qaa' })).toBeDefined();
+    stop();
+    expect(
+      reads.filter((path) => /\.(usfm|tsv)$/.test(path)),
+      'the passage is still read from the cache after a count over every book',
+    ).toEqual([]);
+  });
 });
