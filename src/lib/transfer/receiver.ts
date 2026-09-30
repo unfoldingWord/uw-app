@@ -84,6 +84,9 @@ export async function receiveAccepted(run: Run, wire: Wire, chosen: Chosen): Pro
   active.state = 'receiving';
   await removeIfPresent(ports.files, incomingDirectory);
   await ports.files.mkdir(incomingDirectory);
+  if ((await ports.files.freeSpace()) < active.total) {
+    throw new TransferStop('pack.no-space', true);
+  }
   const archives = new Map<string, string>();
   let app: ReceivedApp | undefined;
   for (const [index, item] of plan.items.entries()) {
