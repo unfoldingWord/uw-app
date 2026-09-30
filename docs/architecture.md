@@ -122,7 +122,7 @@ Three things derive from the journal by pure folds, so none needs its own bookke
 
 - **Telemetry** is a count over events, computed on the device. Adding a count is adding a fold, and PRD section 9 lists which folds exist. What has been sent is a fold too, over `TelemetrySent`, so a batch is the difference. v1.0.0 sent nothing (ADR 0012); v1.1.0 sends only once an endpoint is set.
 - **Snapshot** is the fold of the modules plus the journal tail.
-- **Replay** is the journal fed back through the kernel on memory adapters. A diagnostics file that leaves out what the leader read still replays, except bookmarks and the last passage (the three opening events' fields are optional for that reason).
+- **Replay** is the journal fed back through the kernel on memory adapters. A diagnostics file that leaves out what the leader read still replays, except bookmarks and the last passage (the three opening events' fields are optional for that reason); it keeps each time only to its UTC day so the time zone cannot be read from it (`replay.md`, issue #24).
 
 ## The sim
 

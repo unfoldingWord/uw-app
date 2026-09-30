@@ -11,16 +11,22 @@ export function createPlaybackClock(recorded: readonly DomainEvent[], fallback: 
       days.set(event.at, event.payload.day);
     }
   }
+  let current: DomainEvent | undefined;
   return {
     now() {
       const event = recorded[index];
       if (event === undefined) {
+        current = undefined;
         return recorded.at(-1)?.at ?? fallback.now();
       }
       index += 1;
+      current = event;
       return event.at;
     },
-    dayOf: (at) => days.get(at) ?? fallback.dayOf(at),
+    dayOf: (at) =>
+      current?.type === 'AppOpened' && current.at === at
+        ? current.payload.day
+        : (days.get(at) ?? fallback.dayOf(at)),
     remaining: () => recorded.length - index,
   };
 }

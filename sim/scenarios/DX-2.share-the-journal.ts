@@ -11,10 +11,15 @@ import { transferBetween } from '../transfer';
 
 const locale = { tag: 'sw-TZ', region: 'TZ', timeZone: 'Africa/Dar_es_Salaam' };
 
+const minute = 60 * 1000;
+
+const dayMs = 24 * 60 * minute;
+
 export default scenario(
   'DX-2',
   'a leader shares the journal and a snapshot through the share sheet, in one file that names no one and leaves out what they read unless they include it',
   async (world) => {
+    world.clock.setUtcOffsetMinutes(180);
     const sender = world.device('sender', { platform: 'ios' });
     await sender.start();
     await installFromCatalog(sender, [languagePackId('qab')]);
@@ -29,6 +34,11 @@ export default scenario(
     const saved = await phone.kernel.bookmarks.add({ target: 'story', story: 1, language: 'qab' });
     assert.ok(saved?.ok);
 
+    world.clock.advance(Date.parse('2026-01-05T20:30:00Z') - world.clock.now());
+    await phone.restart();
+    world.clock.advance(40 * minute);
+    assert.ok(await phone.kernel.resume(), 'an open at 00:10 local is a new day of use');
+
     const snapshot = phone.kernel.snapshot();
     const journal = phone.kernel.journal.export();
     const withheld = await phone.kernel.share.journal({ journal, snapshot }, { locale: 'en' });
@@ -40,8 +50,11 @@ export default scenario(
     );
     const stripped = JSON.parse(await phone.adapters.files.readText(diagnosticsPath)) as {
       reading: unknown;
-      events: { type: string; payload: Record<string, unknown> }[];
-      snapshot: { modules: Record<string, Record<string, unknown>>; journal: { tail: unknown[] } };
+      events: { type: string; at: number; payload: Record<string, unknown> }[];
+      snapshot: {
+        modules: Record<string, Record<string, unknown>>;
+        journal: { tail: { at: number }[] };
+      };
     };
     assert.equal(stripped.reading, 'left-out');
     const read = stripped.events.filter((event) =>
@@ -65,8 +78,28 @@ export default scenario(
     );
     assert.equal('lastPassage' in (stripped.snapshot.modules.preferences ?? {}), false);
     assert.ok(!JSON.stringify(stripped.snapshot.journal.tail).includes('"story":1'));
+    const openings = stripped.events.filter((event) => event.type === 'AppOpened');
+    assert.deepEqual(
+      openings.slice(-2).map((event) => event.payload.day),
+      ['2026-01-05', '2026-01-06'],
+      'the phone opened at 23:30 and again at 00:10 local time',
+    );
+    assert.ok(
+      [...stripped.events, ...stripped.snapshot.journal.tail].every((event) => event.at % dayMs === 0),
+      'the left-out file keeps each time only to its UTC day, so an open near local midnight cannot pin the time zone',
+    );
+    assert.equal(
+      new Set(openings.slice(-2).map((event) => event.at)).size,
+      1,
+      'two local days fall in one UTC day, and nothing in the file tells the hour between them',
+    );
     const partial = await replayJournal(world, stripped, 'partial');
     assert.ok(partial.ok, partial.ok ? '' : partial.reason);
+    assert.deepEqual(
+      partial.device.kernel.telemetry.daysOfUse(),
+      phone.kernel.telemetry.daysOfUse(),
+      'the days of use come back whole from the recorded local days',
+    );
     assert.deepEqual(partial.snapshot.modules.bookmarks, { bookmarks: [] }, 'a bookmark cannot be rebuilt');
     assert.equal(
       stableJson(partial.snapshot.modules.packs),

@@ -201,7 +201,7 @@ The bounded, append-only record of events on a device, including failures. It le
 _Avoid_: log, history, telemetry (telemetry is derived from it)
 
 **Diagnostics file**:
-The one file a leader shares from Settings so someone can help: the journal written out as a document, and the snapshot beside it. `npm run replay` rebuilds a device from it. In code the journal half is `JournalExport`, written by `journal.export()` and read by `parseJournalExport`; "export" names only that code, never a word a leader sees, and the file leaves the device only through Share. By default it leaves out what the leader read (the passages, articles and stories opened, and bookmarks), keeping every event; "Include what I read" puts them in for that one share.
+The one file a leader shares from Settings so someone can help: the journal written out as a document, and the snapshot beside it. `npm run replay` rebuilds a device from it. In code the journal half is `JournalExport`, written by `journal.export()` and read by `parseJournalExport`; "export" names only that code, never a word a leader sees, and the file leaves the device only through Share. By default it leaves out what the leader read (the passages, articles and stories opened, and bookmarks), keeping every event with its time only to the UTC day, so the time zone cannot be read from it; "Include what I read" puts them in for that one share.
 _Avoid_: log file, dump, backup
 
 **Batch**:
