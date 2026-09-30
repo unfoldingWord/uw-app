@@ -6,7 +6,7 @@ import { GlassBlur } from './GlassBlur';
 import { useKeyframeLoop } from './motion';
 import { referenceValues } from './referenceValues';
 import { shadowCss } from './shadows';
-import { slopFor } from './pressGate';
+import { touchSlop } from './pressGate';
 import { usePress, type PressHandler } from './usePress';
 
 export type GlassIconButtonTone = 'light' | 'dark' | 'night';
@@ -89,7 +89,7 @@ export function GlassIconButton({
       accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: inert, busy: working }}
       disabled={inert}
-      hitSlop={slopFor(size)}
+      {...touchSlop(size, size)}
       testID={testID}
       {...press.handlers}
       style={[styles.hug, style]}

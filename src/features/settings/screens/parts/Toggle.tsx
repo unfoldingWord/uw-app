@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import { touchSlop } from '@shared/glass/pressGate';
 import { useTheme } from '@shared/theme';
 
 export type ToggleProps = {
@@ -36,7 +37,7 @@ export function Toggle({ label, on, onChange, hint, disabled = false }: TogglePr
       accessibilityHint={hint}
       accessibilityState={{ checked: on, busy, disabled }}
       disabled={disabled}
-      hitSlop={theme.space.sp4}
+      {...touchSlop(height, width)}
       onPress={() => void change()}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createPressGate, minimumTouchTarget, slopFor } from './pressGate';
+import { createPressGate, minimumTouchTarget, slopFor, touchSlop } from './pressGate';
 
 describe('press gate (AGENTS.md section 10: busy before the first await)', () => {
   it('goes inert synchronously when a handler returns a promise, and wakes when it settles', async () => {
@@ -40,5 +40,13 @@ describe('press gate (AGENTS.md section 10: busy before the first await)', () =>
     expect(slopFor(28)).toBe(8);
     expect(28 + 2 * slopFor(28)).toBeGreaterThanOrEqual(minimumTouchTarget);
     expect(slopFor(52)).toBe(0);
+  });
+
+  it('names the slop on both axes, and exposes it to the shots audit', () => {
+    expect(touchSlop(30, 60)).toEqual({
+      hitSlop: { top: 7, bottom: 7, left: 0, right: 0 },
+      dataSet: { touchSlopV: 7, touchSlopH: 0 },
+    });
+    expect(touchSlop(20).hitSlop).toEqual({ top: 12, bottom: 12, left: 0, right: 0 });
   });
 });
