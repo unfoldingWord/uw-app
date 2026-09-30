@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "moduleDetection": "force",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "paths": {
+      "@lib/*": ["./src/lib/*"],
+      "@features/*": ["./src/features/*"],
+      "@platform/*": ["./src/platform/*"],
+      "@sim/*": ["./sim/*"]
+    }
+  },
+  "include": [
+    "sim/**/*.ts",
+    "scripts/**/*.ts",
+    "tests/**/*.ts",
+    "src/lib/**/*.test.ts",
+    "eslint.config.ts",
+    "vitest.config.ts",
+    "knip.config.ts",
+    "app.config.ts"
+  ]
+}

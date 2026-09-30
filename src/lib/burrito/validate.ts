@@ -1,0 +1,281 @@
+import { pinnedRows, rowFor, type ListedIngredient, type ContractRow } from './flavors';
+import { fromUtf8, ingredientsDirectory, md5Hex, metadataPath, type BurritoFiles } from './files';
+import { isLicenceFile, licenceName, licenceUrl } from './licence';
+import { isRecord, primaryRepository, type BurritoMetadata, type IngredientEntry } from './metadata';
+
+type InvalidRule =
+  | 'metadata-missing'
+  | 'metadata-unreadable'
+  | 'metadata-format'
+  | 'metadata-field'
+  | 'metadata-version'
+  | 'ingredient-field'
+  | 'ingredient-path'
+  | 'ingredient-missing'
+  | 'ingredient-size'
+  | 'ingredient-checksum'
+  | 'row-ingredients'
+  | 'licence';
+
+export type ValidationReport =
+  | {
+      readonly ok: true;
+      readonly kind: 'valid';
+      readonly row: ContractRow;
+      readonly metadata: BurritoMetadata;
+    }
+  | {
+      readonly ok: false;
+      readonly kind: 'ignored';
+      readonly rule: 'unknown-flavor';
+      readonly path: string;
+      readonly message: string;
+    }
+  | {
+      readonly ok: false;
+      readonly kind: 'invalid';
+      readonly rule: InvalidRule;
+      readonly path: string;
+      readonly message: string;
+    };
+
+export type ValidateOptions = {
+  readonly rows?: readonly ContractRow[];
+  readonly contents?: boolean;
+};
+
+export type IngredientFact = { readonly size: number; readonly md5: string };
+
+export type BurritoFacts = {
+  readonly metadata: Uint8Array | undefined;
+  fact(key: string): IngredientFact | undefined;
+  text(key: string): string | undefined;
+};
+
+function factsOf(files: BurritoFiles): BurritoFacts {
+  return {
+    metadata: files.get(metadataPath),
+    fact: (key) => {
+      const bytes = files.get(key);
+      return bytes === undefined ? undefined : { size: bytes.byteLength, md5: md5Hex(bytes) };
+    },
+    text: (key) => {
+      const bytes = files.get(key);
+      return bytes === undefined ? undefined : fromUtf8(bytes);
+    },
+  };
+}
+
+export const burritoFormat = 'scripture burrito';
+
+const burritoVersion = /^1\.0\.\d+$/;
+
+const md5Pattern = /^[0-9a-f]{32}$/;
+
+function invalid(rule: InvalidRule, path: string, message: string): ValidationReport {
+  return { ok: false, kind: 'invalid', rule, path, message };
+}
+
+function at(value: unknown, path: readonly (string | number)[]): unknown {
+  let current: unknown = value;
+  for (const step of path) {
+    if (typeof step === 'number') {
+      current = Array.isArray(current) ? (current[step] as unknown) : undefined;
+    } else {
+      current = isRecord(current) ? current[step] : undefined;
+    }
+  }
+  return current;
+}
+
+function nonEmptyString(value: unknown): boolean {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function localized(value: unknown): boolean {
+  return isRecord(value) && Object.values(value).some(nonEmptyString);
+}
+
+const requiredFields: readonly {
+  path: readonly (string | number)[];
+  accepts: (value: unknown) => boolean;
+}[] = [
+  { path: ['meta', 'version'], accepts: nonEmptyString },
+  { path: ['type', 'flavorType', 'name'], accepts: nonEmptyString },
+  { path: ['type', 'flavorType', 'flavor', 'name'], accepts: nonEmptyString },
+  { path: ['languages', 0, 'tag'], accepts: nonEmptyString },
+  { path: ['identification', 'name'], accepts: localized },
+  { path: ['identification', 'abbreviation'], accepts: localized },
+  { path: ['copyright', 'shortStatements', 0, 'statement'], accepts: nonEmptyString },
+  { path: ['ingredients'], accepts: isRecord },
+];
+
+function fieldPath(path: readonly (string | number)[]): string {
+  return path
+    .map((step) => (typeof step === 'number' ? `[${step}]` : `.${step}`))
+    .join('')
+    .slice(1);
+}
+
+function parseJson(bytes: Uint8Array): unknown {
+  try {
+    return JSON.parse(fromUtf8(bytes)) as unknown;
+  } catch {
+    return undefined;
+  }
+}
+
+function ingredientEntry(value: unknown): IngredientEntry | string {
+  if (!isRecord(value)) {
+    return 'is not an object';
+  }
+  if (!nonEmptyString(value.mimeType)) {
+    return 'has no mimeType';
+  }
+  if (typeof value.size !== 'number' || !Number.isInteger(value.size) || value.size < 0) {
+    return 'has no size';
+  }
+  const checksum = at(value, ['checksum', 'md5']);
+  if (typeof checksum !== 'string' || !md5Pattern.test(checksum)) {
+    return 'has no checksum.md5';
+  }
+  return value as IngredientEntry;
+}
+
+function isSafeIngredientKey(key: string): boolean {
+  if (!key.startsWith(ingredientsDirectory) || key.includes('\\')) {
+    return false;
+  }
+  const segments = key.slice(ingredientsDirectory.length).split('/');
+  return segments.every((segment) => segment !== '' && segment !== '.' && segment !== '..');
+}
+
+function listIngredients(ingredients: Record<string, unknown>): ListedIngredient[] | ValidationReport {
+  const listed: ListedIngredient[] = [];
+  for (const [key, value] of Object.entries(ingredients)) {
+    if (!isSafeIngredientKey(key)) {
+      return invalid(
+        'ingredient-path',
+        key,
+        `ingredient ${key} is not a plain path under ${ingredientsDirectory}`,
+      );
+    }
+    const entry = ingredientEntry(value);
+    if (typeof entry === 'string') {
+      return invalid('ingredient-field', key, `ingredient ${key} ${entry}`);
+    }
+    listed.push({ key, path: key.slice(ingredientsDirectory.length), entry });
+  }
+  return listed;
+}
+
+function checkPresence(
+  facts: BurritoFacts,
+  ingredients: readonly ListedIngredient[],
+): ValidationReport | undefined {
+  for (const { key, entry } of ingredients) {
+    const found = facts.fact(key);
+    if (!found) {
+      return invalid('ingredient-missing', key, `ingredient ${key} is listed but not present`);
+    }
+    if (found.size !== entry.size) {
+      return invalid(
+        'ingredient-size',
+        key,
+        `ingredient ${key} is ${found.size} bytes, listed as ${entry.size}`,
+      );
+    }
+    const actual = found.md5;
+    if (actual !== entry.checksum.md5) {
+      return invalid(
+        'ingredient-checksum',
+        key,
+        `ingredient ${key} has md5 ${actual}, listed as ${entry.checksum.md5}`,
+      );
+    }
+  }
+  return undefined;
+}
+
+function hasLicence(
+  metadata: unknown,
+  facts: BurritoFacts,
+  ingredients: readonly ListedIngredient[],
+): boolean {
+  const statements = at(metadata, ['copyright', 'shortStatements']);
+  if (
+    Array.isArray(statements) &&
+    statements.some((item) => licenceName.test(String(at(item, ['statement']))))
+  ) {
+    return true;
+  }
+  const licenses = at(metadata, ['copyright', 'licenses']);
+  if (Array.isArray(licenses) && licenses.some((item) => licenceUrl.test(String(at(item, ['url']))))) {
+    return true;
+  }
+  return ingredients.some(({ key }) => {
+    if (!isLicenceFile(key)) {
+      return false;
+    }
+    const text = facts.text(key);
+    return text !== undefined && licenceName.test(text);
+  });
+}
+
+export function validate(files: BurritoFiles, options: ValidateOptions = {}): ValidationReport {
+  return validateFacts(factsOf(files), options);
+}
+
+export function validateFacts(facts: BurritoFacts, options: ValidateOptions = {}): ValidationReport {
+  const bytes = facts.metadata;
+  if (!bytes) {
+    return invalid('metadata-missing', metadataPath, 'the burrito has no metadata.json');
+  }
+  const metadata = parseJson(bytes);
+  if (!isRecord(metadata)) {
+    return invalid('metadata-unreadable', metadataPath, 'metadata.json is not a JSON object');
+  }
+  if (metadata.format !== burritoFormat) {
+    return invalid('metadata-format', 'format', `format is not "${burritoFormat}"`);
+  }
+  for (const field of requiredFields) {
+    if (!field.accepts(at(metadata, field.path))) {
+      const path = fieldPath(field.path);
+      return invalid('metadata-field', path, `metadata.json has no ${path}`);
+    }
+  }
+  if (!burritoVersion.test(String(at(metadata, ['meta', 'version'])))) {
+    return invalid('metadata-version', 'meta.version', 'meta.version is not Scripture Burrito 1.0');
+  }
+  const ingredients = listIngredients(metadata.ingredients as Record<string, unknown>);
+  if (!Array.isArray(ingredients)) {
+    return ingredients;
+  }
+  const flavorType = String(at(metadata, ['type', 'flavorType', 'name']));
+  const flavor = String(at(metadata, ['type', 'flavorType', 'flavor', 'name']));
+  const matched = rowFor(options.rows ?? pinnedRows, flavorType, flavor, ingredients, {
+    repository: primaryRepository(metadata),
+  });
+  if (!matched) {
+    return {
+      ok: false,
+      kind: 'ignored',
+      rule: 'unknown-flavor',
+      path: 'type.flavorType',
+      message: `${flavorType}/${flavor} matches no row of the content contract`,
+    };
+  }
+  const { row, form } = matched;
+  const mismatch = form.check(ingredients);
+  if (mismatch) {
+    return invalid('row-ingredients', mismatch.path, `${form.resource}: ${mismatch.message}`);
+  }
+  const absent = options.contents === false ? undefined : checkPresence(facts, ingredients);
+  if (absent) {
+    return absent;
+  }
+  if (!hasLicence(metadata, facts, ingredients)) {
+    return invalid('licence', 'copyright', 'no licence ingredient or copyright statement names CC BY-SA 4.0');
+  }
+  return { ok: true, kind: 'valid', row, metadata: metadata as BurritoMetadata };
+}

@@ -55,15 +55,15 @@ Each is a deep module: small interface, tests at the interface, internals free t
 
 **Catalog.** `refresh()`, `languages()`, `releases(language)`. Reads Door43's catalog through Http and normalizes it into releases, each carrying the URL of its generated Scripture Burrito archive. The only module that knows Door43's shape.
 
-**Packs.** `install(source, plan)`, `installed()`, `remove(pack)`, `updates()`. One install path for all three sources: `fromCatalog(release)`, `fromPeer(session)`, `fromFile(path)`. Writes beside, verifies checksums against the burrito metadata, renames over. The old pack is readable until the new one is complete. Owner of every pack directory.
+**Packs.** `install(source, plan)`, `installed()`, `remove(pack)`, `updates()`. One install path for all three sources: `fromCatalog(release)`, `fromPeer(session)`, `fromFile(path)`. Writes beside, verifies checksums against the burrito metadata, renames over. The old pack is readable until the new one is complete. Owner of every pack directory. Each install unpacks its burritos, streamed from the archive, into a directory of its own, `packs/{kind}/{language or pack}/{install}/{publisher}/{resource}`; a burrito an update keeps stays where it is. The `packs` row in the database is the commit point: a directory no row names is garbage, removed on the next start, and the directories an update replaced are removed only after `PackInstalled` has been read by Corpus. Corpus, on start, reads the installed packs through Packs' `readInstalledPacks` and catches up with any it has not read.
 
 **Corpus.** `passage(reference)`, `article(id)`, `story(n)`, `search(query)`, `reindex()`. Every value returned carries provenance as a required field; there is no way to get content out without it. The only module that parses USFM, TSV and Markdown.
 
 **Formation.** `tracks(language)`, `session(track, n)`, `groups()`, `create(group)`, `advance(group, step)`. A state machine over positions. Language fallback (plain stories when movements are absent, English movements alongside when asked) is decided here, once.
 
-**Transfer.** `offer(plan)`, `accept(offer)`, `run(session)`. A state machine over the Transport port. Carries burritos; on the receiving side it is just `packs.install(fromPeer(session))`.
+**Transfer.** Sender: `offer(plan)` advertises under a short code, `run(transfer)` sends what the receiver accepts. Receiver: `discover()`, `connect(peer)` shows the offer, `accept(selection)` receives and verifies every archive and returns a peer session that hands Packs each archive as the file it was received into (`{ ok: true, path }`), never its bytes; then it is just `packs.install(fromPeer(session))`. Either side: `cancel()`, `current()`. A state machine over the Transport port, speaking a small versioned protocol (`src/lib/transfer/protocol.ts`). Carries burritos, and on Android the app package.
 
-**Share.** `passage(reference)`, `story(n)`, `audio(resource, reference)`. Builds payloads with provenance and the link, hands them to ShareSheet.
+**Share.** `passage(passage)`, `story(story)`, `audio(clip)`, `journal(report)`, each with the locale for its words. Builds payloads with provenance and the link from content the corpus already returned, hands them to ShareSheet.
 
 **Journal.** `append(event)`, `read(since)`, `export()`. Bounded and append-only. Failures are events here too; this is the error channel, the telemetry source and the replay input.
 
@@ -78,7 +78,7 @@ Every module returns events; the kernel appends them to the journal. Modules nev
 ```
 PackInstallStarted   PackInstalled   PackFailed   PackRemoved   CatalogRefreshed
 PassageOpened   ArticleOpened   StoryOpened   SearchRun
-GroupCreated   SessionStarted   StepCompleted   SessionCompleted
+GroupCreated   SessionStarted   MovementCompleted   SessionCompleted
 TransferOffered   TransferAccepted   TransferProgressed   TransferCompleted   TransferFailed
 ShareSent   ImportReceived   InvitationShown   InvitationTapped
 Failure(code, context)
@@ -105,7 +105,7 @@ The cockpit, once scaffolded:
 npm run sim -- <scenario>        run one scenario and print its snapshot and journal
 npm run sim -- all               every scenario
 npm run replay -- <journal.json> rebuild a device from an exported journal, print the snapshot
-npm run trace                    Must requirement IDs against scenarios and tests: which have none
+npm run trace                    Must requirement IDs against scenarios and tests: fails on any without a scenario
 npm run contract                 validate every fixture burrito, and a live release when online
 npm run verify                   lint, typecheck (including lib with no DOM), test, knip, checks, trace, contract
 ```
@@ -127,7 +127,7 @@ A rule that lives only in prose drifts. Each of these has a check in `verify` an
 | Tokens agree | `src/shared/theme` is compared to `design-system/tokens/*.css` by name and value |
 | Strings live in one table | no punctuated literal in `app/`, `features/` or `hooks/` that the table does not hold |
 | Nothing unused | knip over files, dependencies, exports and types |
-| Every Must requirement is proven | `trace` fails on a Must ID with neither a scenario nor a test |
+| Every Must requirement is proven | `trace --enforce` fails on a Must ID with no scenario named for it, unless the ID is on the documented list in `sim/trace.ts` and a test names it (SE-2, `docs/exceptions.md`); the DX-4 scenario runs the same check |
 | Content matches the contract | `contract` validates every fixture burrito against `docs/content-contract.md` |
 
 ## Where a change goes

@@ -1,0 +1,117 @@
+[
+  {
+    "url": "https://git.door43.org/api/v1/catalog/search?stage=prod&topic=tc-ready",
+    "file": "catalog.json",
+    "contentType": "application/json"
+  },
+  {
+    "url": "https://git.door43.org/api/v1/catalog/list/languages?stage=prod&topic=tc-ready",
+    "file": "languages.json",
+    "contentType": "application/json"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/qaa_ult/sb/v1.zip",
+    "file": "sb/unfoldingWord/qaa_ult/v1.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/qaa_ust/sb/v1.zip",
+    "file": "sb/unfoldingWord/qaa_ust/v1.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/qaa_tn/sb/v1.zip",
+    "file": "sb/unfoldingWord/qaa_tn/v1.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/qaa_twl/sb/v1.zip",
+    "file": "sb/unfoldingWord/qaa_twl/v1.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/qaa_tq/sb/v1.zip",
+    "file": "sb/unfoldingWord/qaa_tq/v1.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/qaa_tw/sb/v1.zip",
+    "file": "sb/unfoldingWord/qaa_tw/v1.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/qaa_ta/sb/v1.zip",
+    "file": "sb/unfoldingWord/qaa_ta/v1.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/qaa_obs/sb/v1.zip",
+    "file": "sb/unfoldingWord/qaa_obs/v1.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/Door43-Catalog/qaa_obs/sb/v2.zip",
+    "file": "sb/Door43-Catalog/qaa_obs/v2.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/qaa_obs-tn/sb/v1.zip",
+    "file": "sb/unfoldingWord/qaa_obs-tn/v1.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/qaa_obs-sq/sb/v1.zip",
+    "file": "sb/unfoldingWord/qaa_obs-sq/v1.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/qaa_obs-twl/sb/v1.zip",
+    "file": "sb/unfoldingWord/qaa_obs-twl/v1.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/qaa_obs-tf/sb/v1.zip",
+    "file": "sb/unfoldingWord/qaa_obs-tf/v1.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/qaa_ult-audio/sb/v1.zip",
+    "file": "sb/unfoldingWord/qaa_ult-audio/v1.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/qab_obs/sb/v1.zip",
+    "file": "sb/unfoldingWord/qab_obs/v1.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/qab_obs-sq/sb/v1.zip",
+    "file": "sb/unfoldingWord/qab_obs-sq/v1.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/en_obs/sb/v9.zip",
+    "file": "sb/unfoldingWord/en_obs/v9.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/en_obs-tf/sb/v4.zip",
+    "file": "sb/unfoldingWord/en_obs-tf/v4.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/hbo_uhb/sb/v3.0.0.zip",
+    "file": "sb/unfoldingWord/hbo_uhb/v3.0.0.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/el-x-koine_ugnt/sb/v0.34.zip",
+    "file": "sb/unfoldingWord/el-x-koine_ugnt/v0.34.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/obs-images/sb/v1.zip",
+    "file": "sb/unfoldingWord/obs-images/v1.zip",
+    "contentType": "application/zip"
+  }
+]

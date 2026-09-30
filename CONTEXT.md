@@ -62,6 +62,10 @@ _Avoid_: location, address
 The text and helps for one reference, assembled from the corpus.
 _Avoid_: verse view, reader (that is a screen)
 
+**Bookmark**:
+A passage, article or story a leader saved to find again from Home. It holds a reference or an id and the language, never text.
+_Avoid_: favourite, saved item (that is the Home card that lists bookmarks), position (that is formation)
+
 **Corpus**:
 Everything installed on the device, queryable as passages, articles, stories and search hits.
 _Avoid_: database, store, content
@@ -98,6 +102,18 @@ _Avoid_: progress (that is a number derived from position), bookmark
 Moving a pack from one phone to another with no network, inside the app.
 _Avoid_: sync, send (that is Share), P2P, beam
 
+**Peer**:
+Another device running the app, found nearby over the Transport port, that a transfer is made with.
+_Avoid_: client, partner (that is a supporter), node
+
+**Advertisement**:
+A device making itself findable to peers for a transfer, under a short code shown on its screen.
+_Avoid_: broadcast, beacon, hosting
+
+**Link**:
+An open connection between two peers over the Transport port, carrying the bytes of one transfer. In code, `TransportLink`.
+_Avoid_: socket, channel, session (that is formation)
+
 **Offer**:
 What a sender puts on the table in a transfer: the resources selected and their sizes. The receiver accepts an offer.
 _Avoid_: manifest, plan
@@ -131,6 +147,14 @@ _Avoid_: driver, provider, service
 **Adapter**:
 A concrete implementation of a port. Every port has exactly two: the platform adapter and the memory adapter.
 _Avoid_: mock, stub, implementation (when the seam is the topic)
+
+**Media address**:
+The address a screen renders a picture from: a story frame image in a pack or a cached impact story image, given by the kernel's media module for a file on the device. A web address is never loaded as a picture.
+_Avoid_: image URL, picture link, remote image
+
+**Player**:
+The kernel's one audio player. It plays one audio clip at a time, a chapter of an Audio Pack or a story's audio, from its file on the device or from an allowlisted stream, and reports idle, loading, playing, paused, ended or failed with a code. Only a failure enters the journal; the position never does.
+_Avoid_: media player, audio engine, track
 
 **Event**:
 A typed record of something that happened in the kernel. Modules communicate and the journal is written in events.
@@ -177,6 +201,10 @@ _Avoid_: testimonial, case study
 **Language**:
 A language that has content. What a leader reads in.
 _Avoid_: locale (that is the app's own language)
+
+**Preference**:
+A value the leader chooses that shapes the app on this device: the app locale, the theme, reduced blur, the first name, the current language, the reading, English movements alongside. One of a closed list of keys. Whether a language's full-text index is wanted is not a preference; Corpus keeps it.
+_Avoid_: setting (that is the screen), option, config
 
 **Locale**:
 The language of the app's own words: buttons, labels, settings. One of sixteen.

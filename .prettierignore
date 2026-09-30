@@ -1,0 +1,13 @@
+node_modules/
+design-system/
+.expo/
+dist/
+web-build/
+coverage/
+ios/
+android/
+package-lock.json
+expo-env.d.ts
+**/*.md
+.claude/
+/shots/
