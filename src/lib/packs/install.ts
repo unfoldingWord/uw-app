@@ -470,7 +470,12 @@ export function createInstaller(context: InstallerContext): Installer {
         if (isRequired(offer, target, resolved) || installWideFailures.includes(code)) {
           throw new InstallFailure(code, offer.ref);
         }
-        failed.push({ ...refOf(offer.ref), code });
+        const release = { ...refOf(offer.ref), code };
+        failed.push(release);
+        await context.emit({
+          type: 'PackResourceFailed',
+          payload: { install, pack: target.pack, ...release },
+        });
         await quietly(() => removeIfPresent(files, `${stage}/${index}`));
         progress.resources = index + 1;
         progress.bytes = before;

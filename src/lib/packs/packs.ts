@@ -78,6 +78,7 @@ export const packsModule = defineModule<PacksApi>({
     'PackInstallProgressed',
     'PackInstalled',
     'PackFailed',
+    'PackResourceFailed',
     'PackRemoved',
     'ImportReceived',
   ],

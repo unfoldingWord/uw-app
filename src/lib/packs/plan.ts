@@ -11,9 +11,10 @@ function awaitsSource(release: CatalogRelease): boolean {
   return release.row !== undefined && rowsAwaitingSource.includes(release.row);
 }
 
-const literalPairCodes: readonly string[] = ['ult', 'glt'];
-
-const simplifiedPairCodes: readonly string[] = ['ust', 'gst'];
+const pairFamilies: readonly (readonly [literal: string, simplified: string])[] = [
+  ['ult', 'ust'],
+  ['glt', 'gst'],
+];
 
 const leadingPublisher = 'unfoldingWord';
 
@@ -55,15 +56,33 @@ function codeOf(release: CatalogRelease): string {
 
 function isPairText(release: CatalogRelease): boolean {
   const code = codeOf(release);
-  return literalPairCodes.includes(code) || simplifiedPairCodes.includes(code);
+  return pairFamilies.some((family) => family.includes(code));
+}
+
+function wholePair(own: readonly CatalogRelease[]): CatalogRelease[] | undefined {
+  for (const [literalCode, simplifiedCode] of pairFamilies) {
+    const literal = own.find((release) => codeOf(release) === literalCode);
+    const simplified = own.find((release) => codeOf(release) === simplifiedCode);
+    if (literal !== undefined && simplified !== undefined) {
+      return [literal, simplified];
+    }
+  }
+  return undefined;
 }
 
 function publishersPair(texts: readonly CatalogRelease[]): CatalogRelease[] {
-  const publisher = texts.find(isPairText)?.publisher;
-  const own = texts.filter((release) => release.publisher === publisher);
-  const literal = own.find((release) => literalPairCodes.includes(codeOf(release)));
-  const simplified = own.find((release) => simplifiedPairCodes.includes(codeOf(release)));
-  return [literal, simplified].flatMap((release) => release ?? []);
+  const paired = texts.filter(isPairText);
+  const publishers = [...new Set(paired.map((release) => release.publisher))];
+  for (const publisher of publishers) {
+    const pair = wholePair(paired.filter((release) => release.publisher === publisher));
+    if (pair !== undefined) {
+      return pair;
+    }
+  }
+  const own = paired.filter((release) => release.publisher === publishers[0]);
+  const literalCodes: readonly string[] = pairFamilies.map(([literal]) => literal);
+  const fallback = own.find((release) => literalCodes.includes(codeOf(release))) ?? own[0];
+  return fallback === undefined ? [] : [fallback];
 }
 
 export function defaultReleases(releases: readonly CatalogRelease[], pack: PackId): CatalogRelease[] {
@@ -92,8 +111,8 @@ export function missingReleases(
   pack: PackId,
   installed: InstalledPack | undefined,
 ): CatalogRelease[] {
-  const present = new Set((installed?.burritos ?? []).map((burrito) => burrito.provenance.resource));
-  return defaultReleases(releases, pack).filter((release) => !present.has(release.resource));
+  const present = new Set((installed?.burritos ?? []).map((burrito) => resourceKey(burrito.provenance)));
+  return defaultReleases(releases, pack).filter((release) => !present.has(resourceKey(release)));
 }
 
 function updateOf(burrito: InstalledBurrito, catalog: ReadonlyMap<string, CatalogRelease>): ResourceUpdate[] {
