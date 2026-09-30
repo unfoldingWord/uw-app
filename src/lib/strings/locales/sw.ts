@@ -121,6 +121,7 @@ export const sw: LocaleTable = {
   'study.helps.noNotes': 'Hakuna maelezo kwa mstari huu.',
   'study.helps.bookIntro': 'Kuhusu kitabu hiki',
   'study.helps.chapterIntro': 'Kuhusu sura ya {chapter}',
+  'study.helps.footnote': 'Tanbihi kutoka kwa {publisher}',
   'study.helps.noWordLinks': 'Hakuna viungo vya maneno kwa mstari huu.',
   'study.helps.noQuestions': 'Hakuna maswali kwa mstari huu.',
   'study.helps.notDownloaded': 'Misaada ya kifungu hiki bado haiko kwenye simu hii.',

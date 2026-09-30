@@ -121,6 +121,7 @@ export const nl: LocaleTable = {
   'study.helps.noNotes': 'Geen aantekeningen bij dit vers.',
   'study.helps.bookIntro': 'Over dit boek',
   'study.helps.chapterIntro': 'Over hoofdstuk {chapter}',
+  'study.helps.footnote': 'Voetnoot van {publisher}',
   'study.helps.noWordLinks': 'Geen woordkoppelingen bij dit vers.',
   'study.helps.noQuestions': 'Geen vragen bij dit vers.',
   'study.helps.notDownloaded': 'De hulp bij deze passage staat nog niet op deze telefoon.',

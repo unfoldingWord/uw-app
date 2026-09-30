@@ -70,7 +70,7 @@ const twoChapters = String.raw`\id RUT qac_ult
 \h Ruth
 \c 1
 \v 21 I went out full.
-\v 22 So Naomi returned.
+\v 22 So Naomi returned.\f + \fr 1:22 \ft Some copies add with Ruth.\f*
 \c 2
 \v 1 Naomi had a relative.
 \v 2 Ruth said to Naomi.
@@ -285,6 +285,14 @@ describe('corpus passages beyond the fixture language', () => {
       '1:22',
       '2:1',
       '2:2',
+    ]);
+    expect(
+      passage?.text.verses.map((verse) => [verse.text, verse.footnotes]),
+      'a footnote stays on its verse as the publisher wrote it, outside the text',
+    ).toEqual([
+      ['So Naomi returned.', ['Some copies add with Ruth.']],
+      ['Naomi had a relative.', undefined],
+      ['Ruth said to Naomi.', undefined],
     ]);
     expect(passage?.notes).toEqual([]);
     expect(passage?.wordLinks).toEqual([]);

@@ -114,6 +114,7 @@ export const zhHans: LocaleTable = {
   'study.helps.noNotes': '这节经文没有注释。',
   'study.helps.bookIntro': '关于本书',
   'study.helps.chapterIntro': '关于第 {chapter} 章',
+  'study.helps.footnote': '{publisher} 的脚注',
   'study.helps.noWordLinks': '这节经文没有词汇链接。',
   'study.helps.noQuestions': '这节经文没有问题。',
   'study.helps.notDownloaded': '这段经文的辅助资料还不在这部手机上。',

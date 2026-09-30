@@ -129,6 +129,7 @@ export const ar: LocaleTable = {
   'study.helps.noNotes': 'لا توجد ملاحظات لهذه الآية.',
   'study.helps.bookIntro': 'عن هذا السفر',
   'study.helps.chapterIntro': 'عن الأصحاح {chapter}',
+  'study.helps.footnote': 'حاشية من {publisher}',
   'study.helps.noWordLinks': 'لا توجد روابط كلمات لهذه الآية.',
   'study.helps.noQuestions': 'لا توجد أسئلة لهذه الآية.',
   'study.helps.notDownloaded': 'مساعدات هذا المقطع ليست على هذا الهاتف بعد.',

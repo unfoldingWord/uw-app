@@ -8,6 +8,7 @@ export type VerseHelps = {
   readonly notes: readonly Note[];
   readonly wordLinks: readonly WordLink[];
   readonly questions: readonly Question[];
+  readonly footnotes: readonly string[];
 };
 
 function covers(reference: string, at: VerseKey): boolean {
@@ -46,6 +47,9 @@ export function helpsAt(passage: Passage, at: VerseKey): VerseHelps {
     notes: passage.notes.filter((note) => inVerse(note, at)),
     wordLinks: passage.wordLinks.filter((link) => inVerse(link, at)),
     questions: passage.questions.filter((question) => covers(question.reference, at)),
+    footnotes:
+      passage.text.verses.find((verse) => verse.chapter === at.chapter && verse.verse === at.verse)
+        ?.footnotes ?? [],
   };
 }
 

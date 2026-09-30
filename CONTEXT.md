@@ -66,6 +66,10 @@ _Avoid_: resource strip, annotations, translation helps
 A **Note** on a whole book or a whole chapter rather than on a verse. A passage that opens the book carries the book's introduction, and a passage that opens a chapter carries that chapter's; they are shown first among the notes.
 _Avoid_: intro note, overview, general notes
 
+**Footnote**:
+The publisher's own note on one verse, carried inside the text's USFM (`\f` and `\fe`). Kept on the verse as a list of plain sentences (`Verse.footnotes`), outside the verse's text, and shown under the verse among the notes, marked as the publisher's footnote. It is part of the text and carries the text's provenance; it is not a Note.
+_Avoid_: annotation, margin note, note (that is Translation Notes)
+
 **Article**:
 A standalone piece of reference text: a **Word** entry (Translation Words) or an **Academy** article (Translation Academy).
 _Avoid_: page, entry, topic

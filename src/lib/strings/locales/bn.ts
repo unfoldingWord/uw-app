@@ -121,6 +121,7 @@ export const bn: LocaleTable = {
   'study.helps.noNotes': 'এই পদের জন্য কোনো টীকা নেই।',
   'study.helps.bookIntro': 'এই বই সম্পর্কে',
   'study.helps.chapterIntro': 'অধ্যায় {chapter} সম্পর্কে',
+  'study.helps.footnote': '{publisher}-এর পাদটীকা',
   'study.helps.noWordLinks': 'এই পদের জন্য কোনো শব্দ সংযোগ নেই।',
   'study.helps.noQuestions': 'এই পদের জন্য কোনো প্রশ্ন নেই।',
   'study.helps.notDownloaded': 'এই অংশের সহায়িকা এখনও এই ফোনে নেই।',

@@ -115,6 +115,7 @@ export const vi: LocaleTable = {
   'study.helps.noNotes': 'Câu này không có ghi chú.',
   'study.helps.bookIntro': 'Về sách này',
   'study.helps.chapterIntro': 'Về chương {chapter}',
+  'study.helps.footnote': 'Chú thích của {publisher}',
   'study.helps.noWordLinks': 'Câu này không có liên kết từ.',
   'study.helps.noQuestions': 'Câu này không có câu hỏi.',
   'study.helps.notDownloaded': 'Phần trợ giúp cho đoạn này chưa có trên điện thoại này.',

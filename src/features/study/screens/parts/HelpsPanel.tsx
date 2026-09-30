@@ -131,6 +131,35 @@ function IntroItem({
   );
 }
 
+function FootnoteItem({
+  words,
+  footnote,
+  publisher,
+  language,
+}: {
+  words: StudyWords;
+  footnote: string;
+  publisher: string;
+  language: string;
+}) {
+  const theme = useTheme();
+  return (
+    <View style={{ gap: theme.space.sp3, padding: theme.space.sp5 }}>
+      <Say role="overline" tone="dim">
+        {words.t('study.helps.footnote', { publisher })}
+      </Say>
+      <Say
+        role="caption"
+        tone="body"
+        selectable
+        style={contentText(theme, theme.text.caption, { language, sample: footnote })}
+      >
+        {footnote}
+      </Say>
+    </View>
+  );
+}
+
 function QuestionItem({
   words,
   question,
@@ -186,16 +215,18 @@ export function HelpsPanel({
   const theme = useTheme();
   const language = passage.language;
   const helps =
-    at === undefined ? { intros: [], notes: [], wordLinks: [], questions: [] } : helpsAt(passage, at);
+    at === undefined
+      ? { intros: [], notes: [], wordLinks: [], questions: [], footnotes: [] }
+      : helpsAt(passage, at);
   const choices = (Object.keys(tabKeys) as HelpsTab[]).map((key) => ({
     key,
     label: words.t(tabKeys[key]),
     selected: key === tab,
   }));
-  const available = hasHelps(passage);
+  const available = hasHelps(passage) || helps.footnotes.length > 0;
   const count =
     tab === 'notes'
-      ? helps.intros.length + helps.notes.length
+      ? helps.intros.length + helps.notes.length + helps.footnotes.length
       : tab === 'wordLinks'
         ? helps.wordLinks.length
         : helps.questions.length;
@@ -257,6 +288,15 @@ export function HelpsPanel({
                 onFocus={onFocus}
                 onLink={onLink}
                 labelOf={labelOf}
+              />
+            ))}
+            {helps.footnotes.map((footnote, index) => (
+              <FootnoteItem
+                key={`footnote-${String(index)}`}
+                words={words}
+                footnote={footnote}
+                publisher={passage.text.provenance.publisher}
+                language={language}
               />
             ))}
           </>

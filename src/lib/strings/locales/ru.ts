@@ -126,6 +126,7 @@ export const ru: LocaleTable = {
   'study.helps.noNotes': 'К этому стиху нет примечаний.',
   'study.helps.bookIntro': 'Об этой книге',
   'study.helps.chapterIntro': 'О главе {chapter}',
+  'study.helps.footnote': 'Сноска от {publisher}',
   'study.helps.noWordLinks': 'К этому стиху нет ссылок на слова.',
   'study.helps.noQuestions': 'К этому стиху нет вопросов.',
   'study.helps.notDownloaded': 'Пособий к этому отрывку пока нет на этом телефоне.',

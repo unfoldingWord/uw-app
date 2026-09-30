@@ -116,6 +116,7 @@ export const my: LocaleTable = {
   'study.helps.noNotes': 'ဤအခန်းငယ်အတွက် မှတ်စု မရှိပါ။',
   'study.helps.bookIntro': 'ဤကျမ်းအကြောင်း',
   'study.helps.chapterIntro': 'အခန်းကြီး {chapter} အကြောင်း',
+  'study.helps.footnote': '{publisher} ၏ အောက်ခြေမှတ်ချက်',
   'study.helps.noWordLinks': 'ဤအခန်းငယ်အတွက် စကားလုံး လင့်ခ် မရှိပါ။',
   'study.helps.noQuestions': 'ဤအခန်းငယ်အတွက် မေးခွန်း မရှိပါ။',
   'study.helps.notDownloaded': 'ဤကျမ်းပိုဒ်အတွက် အကူအညီများ ဤဖုန်းပေါ်တွင် မရှိသေးပါ။',
