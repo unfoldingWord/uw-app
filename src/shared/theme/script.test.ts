@@ -43,6 +43,21 @@ describe('PRD 10.1 the app locale picks the script face for chrome', () => {
     expect(hindi.fontWeight).toBe('600');
   });
 
+  it('drops letter spacing in a script face, since tracking breaks joined letters and conjuncts', () => {
+    const hindi = themeIn('hi');
+    const overline = uiText(hindi, hindi.text.overline, 'पढ़ना जारी रखें');
+    expect(overline.letterSpacing).toBeUndefined();
+    expect(overline.textTransform).toBe('uppercase');
+  });
+
+  it('gives Nastaliq the taller line it needs, so an Urdu title does not overlap the line below', () => {
+    const urdu = themeIn('ur');
+    const title = uiText(urdu, urdu.text.cardTitle, 'کہانی');
+    expect(title.lineHeight).toBeGreaterThanOrEqual(2 * title.fontSize);
+    const arabic = themeIn('ar');
+    expect(uiText(arabic, arabic.text.cardTitle, 'قصة').lineHeight).toBe(arabic.text.cardTitle.lineHeight);
+  });
+
   it('keeps Inter for a Latin label in a right-to-left locale, such as the unfoldingWord name', () => {
     const theme = themeIn('ar');
     expect(uiText(theme, theme.text.body, 'unfoldingWord').fontFamily).toBe(theme.text.body.fontFamily);

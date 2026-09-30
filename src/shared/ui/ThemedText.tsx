@@ -60,7 +60,8 @@ export function ThemedText({
   ...rest
 }: ThemedTextProps) {
   const theme = useTheme();
-  const base = theme.text[variant];
+  const sample = textSample(children);
+  const base = uiText(theme, theme.text[variant], sample);
   return (
     <Text
       {...rest}
@@ -74,7 +75,7 @@ export function ThemedText({
           textAlign: align,
           writingDirection: 'auto',
         },
-        familyFor(theme, family, weight, variant, textSample(children)),
+        familyFor(theme, family, weight, variant, sample),
         style,
       ]}
     >

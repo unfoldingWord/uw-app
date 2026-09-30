@@ -170,6 +170,8 @@ function textStyle(
   return style;
 }
 
+const scriptLineHeights: Readonly<Partial<Record<Script, number>>> = { urdu: 2 };
+
 export function withScript(
   style: TextStyleTokens,
   stack: readonly string[],
@@ -178,7 +180,17 @@ export function withScript(
   const face = fontFaces.find((item) => item.name === style.fontFamily);
   const weight = Number(style.fontWeight ?? face?.weight.split(' ')[0] ?? 400);
   const family = fontFor(stack, weight, { script });
-  return family === undefined ? style : { ...style, fontWeight: undefined, ...family };
+  if (family === undefined) {
+    return style;
+  }
+  const untracked: TextStyleTokens = { ...style };
+  delete untracked.letterSpacing;
+  const factor = scriptLineHeights[script];
+  const lineHeight =
+    factor === undefined
+      ? style.lineHeight
+      : Math.max(style.lineHeight, toHundredths(style.fontSize * factor));
+  return { ...untracked, fontWeight: undefined, ...family, lineHeight };
 }
 
 function buildTheme(options: ThemeOptions): Theme {
