@@ -6,11 +6,13 @@ import { createWorld } from './world';
 
 const ruthAudio = audioPackId('qaa', 'qaa_ult');
 
+const storyAudio = audioPackId('qaa', 'qaa_obs');
+
 async function phoneWithClip() {
   const world = createWorld();
   const phone = world.device('phone');
   await phone.start();
-  await installFromCatalog(phone, [languagePackId('qaa'), ruthAudio]);
+  await installFromCatalog(phone, [languagePackId('qaa'), ruthAudio, storyAudio]);
   const parsed = parseReference('RUT 1:1');
   if (!parsed.ok) {
     throw new Error('RUT 1:1 is not a reference');
@@ -26,12 +28,17 @@ async function phoneWithClip() {
 describe('player', () => {
   it('keeps the last clip asked for when two loads overlap', async () => {
     const { phone, path } = await phoneWithClip();
-    const stream = 'https://git.door43.org/unfoldingWord/qaa_ult/raw/branch/master/01.mp3';
-    phone.adapters.audio.provide({ kind: 'url', url: stream }, 20_000);
+    const [stream] = phone.adapters.files
+      .tree()
+      .filter((item) => item.startsWith('packs/audio/') && item.includes('qaa_obs') && item.endsWith('.m4a'));
+    if (stream === undefined) {
+      throw new Error('the story audio pack carries no clip');
+    }
+    phone.adapters.audio.provide({ kind: 'file', path: stream }, 20_000);
     const player = phone.kernel.player;
     const [first, second] = await Promise.all([
       player.load({ kind: 'file', path }),
-      player.load({ kind: 'url', url: stream }),
+      player.load({ kind: 'file', path: stream }),
     ]);
     expect(second).toEqual({ state: 'paused', clip: stream, positionMs: 0, durationMs: 20_000 });
     expect('clip' in first && first.clip).toBe(stream);

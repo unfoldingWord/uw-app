@@ -54,7 +54,7 @@ Every port has exactly two adapters, platform and memory, so every seam is real.
 | Picker | `pickArchive()`: ask the system for a burrito file | scripted picks, cancels and failures |
 | Locale | device locale, region, time zone, direction | settable |
 
-The Transport platform adapter is `react-native-tcp-socket` for the stream and the local module `modules/uw-radio/` for mDNS, the local address and the installer hand-off (ADR 0013); it has not run on a phone. The Audio source may be a file or a URL; v1.0.0 plays only files from an Audio Pack (ST-4).
+The Transport platform adapter is `react-native-tcp-socket` for the stream and the local module `modules/uw-radio/` for mDNS, the local address and the installer hand-off (ADR 0013); it has not run on a phone. The Audio source is a file on the device: audio is download-only and plays from an Audio Pack (ST-4, issue #53); a URL source was removed with that decision.
 
 Determinism follows: with Clock and Ids injected, a scenario reproduces byte for byte, and a journal shared from a phone replays in the sim to the same snapshot.
 

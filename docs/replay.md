@@ -103,7 +103,7 @@ with no `AppOpened` yet; a restart in replay journals the same event at the same
 7. **A module writes only what it owns.** The `db`, `files`, `kv` and `http.download` a module is handed
    refuse, with code `kernel.not-owned`, a statement that writes a table, a path outside a directory, or a
    preference key that is not in its `owns`. Reads are not scoped: a module reads another's values through
-   the owner's exported functions. Audio from a URL off the host allowlist is refused.
+   the owner's exported functions. Audio plays only from a file under `packs/` (download-only, issue #53).
 8. **Snapshots are pure and identify no one.** `snapshot()` returns JSON built from module state only. It leaves
    the device with the journal (DX-2), so it carries no names, notes, typed text, locale, region or time zone.
 

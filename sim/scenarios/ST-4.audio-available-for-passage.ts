@@ -99,18 +99,12 @@ export default scenario(
 
     assert.deepEqual(since(), [], 'playing, pausing and seeking keep the journal lean');
 
-    const stream = await listener.kernel.player.load({ kind: 'url', url: 'https://tracker.example/a.mp3' });
-    assert.ok(stream.state === 'failed' && stream.code === 'http.host-refused');
-    assert.deepEqual(audio.status(), { state: 'idle' }, 'one clip at a time');
-
+    assert.deepEqual(await audio.stop(), { state: 'idle' });
     await listener.adapters.files.remove(onPhone.path);
     const gone = await audio.toggle();
     assert.ok(gone.state === 'failed' && gone.code === 'audio.unavailable', 'a missing file fails in place');
     const failures = since().flatMap((entry) => (entry.type === 'Failure' ? [entry.payload] : []));
-    assert.deepEqual(failures, [
-      { code: 'http.host-refused', context: { step: 'audio' } },
-      { code: 'audio.unavailable', context: { step: 'audio' } },
-    ]);
+    assert.deepEqual(failures, [{ code: 'audio.unavailable', context: { step: 'audio' } }]);
 
     unsubscribe();
     assert.deepEqual(seen, [

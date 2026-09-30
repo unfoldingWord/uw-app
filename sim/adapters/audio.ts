@@ -4,7 +4,7 @@ import { portError } from './errors';
 export type MemoryAudio = Audio & { provide(source: AudioSource, durationMs: number): void };
 
 function sourceKey(source: AudioSource): string {
-  return source.kind === 'file' ? `file:${source.path}` : `url:${source.url}`;
+  return `file:${source.path}`;
 }
 
 export function createMemoryAudio(options: { clock: Clock }): MemoryAudio {

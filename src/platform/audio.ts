@@ -4,19 +4,15 @@ import {
   type AudioPlayer,
   type AudioStatus as PlayerStatus,
 } from 'expo-audio';
-import type { Audio, AudioSource, AudioState, AudioStatus, Http } from '@lib/ports';
+import type { Audio, AudioState, AudioStatus } from '@lib/ports';
 import { portError } from './errors';
-import type { HostPolicy } from './http';
 
 export type PlatformAudioOptions = {
-  policy: HostPolicy;
-  http: Http;
   uriOf(path: string): string;
   loadTimeoutMs?: number;
 };
 
 const defaultLoadTimeoutMs = 15_000;
-const resolveTimeoutMs = 15_000;
 const idle: AudioStatus = Object.freeze({ state: 'idle', positionMs: 0, durationMs: 0 });
 
 function milliseconds(seconds: number): number {
@@ -38,37 +34,6 @@ export function createPlatformAudio(options: PlatformAudioOptions): Audio {
       positionMs: milliseconds(player.currentTime),
       durationMs: milliseconds(player.duration),
     };
-  }
-
-  function refused(url: string): Error {
-    return portError('http.host-refused', `${options.policy.hostOf(url) ?? 'that host'} is not allowed`);
-  }
-
-  async function uriOf(source: AudioSource): Promise<string> {
-    if (source.kind === 'file') {
-      return options.uriOf(source.path);
-    }
-    if (!options.policy.permits(source.url)) {
-      throw refused(source.url);
-    }
-    const landed = await options.http.request({
-      url: source.url,
-      method: 'HEAD',
-      timeoutMs: resolveTimeoutMs,
-    });
-    if (landed.kind === 'refused') {
-      throw refused(landed.host === undefined ? source.url : `https://${landed.host}/`);
-    }
-    if (landed.kind !== 'response') {
-      throw portError(
-        landed.kind === 'offline' ? 'http.offline' : 'audio.unavailable',
-        'the stream is out of reach',
-      );
-    }
-    if (landed.status < 200 || landed.status >= 300 || !options.policy.permits(landed.url)) {
-      throw portError('audio.unavailable', 'the stream does not answer from an allowed host');
-    }
-    return landed.url;
   }
 
   function requireLoaded(): AudioPlayer {
@@ -122,7 +87,7 @@ export function createPlatformAudio(options: PlatformAudioOptions): Audio {
 
   return {
     load: async (source) => {
-      const uri = await uriOf(source);
+      const uri = options.uriOf(source.path);
       modeSet ??= setAudioModeAsync({ playsInSilentMode: true, shouldPlayInBackground: false });
       await modeSet;
       await unload();
