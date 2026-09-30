@@ -534,6 +534,9 @@ Decisions taken in the requirements interview of 2026-09-29 with Jesse Griffin. 
 | 86 | A link inline in a sentence keeps its text size as its touch target: React Native's `Text` takes no hit slop, and WCAG 2.5.8 exempts inline targets. Every other target reaches 44 px counting hit slop. (2026-09-30, issue #62) |
 | 87 | A preference is written before it is journaled: only a key-value write that succeeds emits `PreferenceChanged` and changes the value; a refused write is a `Failure` (`kv.io`) and keeps the old value. Every screen that saves shows a refused write or a failed read in place, on the control or section it belongs to. (2026-09-30, issue #61) |
 | 88 | Support copy is one sentence in every locale, checked by the `strings` check with the platform sentence segmenter; the ON-1 tagline and footer are exempt because the PRD fixes their wording. (2026-09-30, issue #42) |
+| 89 | USFM footnotes (`\f`, `\fe`) are kept on their verse as plain text and shown under the verse among the notes, marked as the publisher's footnote; cross references stay dropped. Post-release, no requirement names them. (2026-09-30, issue #19) |
+| 90 | Each installed burrito records its source (catalog, peer or file), shown in Storage and on the Licence page; a peer or file burrito that would replace a catalog one with a different commit installs nothing until the leader confirms in one sentence (`pack.replace-unconfirmed`). Signed releases are raised with DCS separately. (2026-09-30, issue #22) |
+| 91 | The default diagnostics file (reading left out) keeps each event's time only to 00:00 UTC of its day and keeps `AppOpened.day`, so the time zone cannot be read to the hour and replay still counts the same days of use; rounding to the minute or hour, or dropping `day`, would not close the leak. The file with "Include what I read" keeps exact times. (2026-09-30, issue #24) |
 
 ---
 
