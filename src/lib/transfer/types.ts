@@ -72,3 +72,6 @@ export type TransferResult = {
   resources: number;
   bytes: number;
 };
+
+export type { DevicePlatform, Peer } from '../ports';
+export type { WireChoice, WireResource } from './protocol';

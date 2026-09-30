@@ -73,3 +73,6 @@ export type PackStorage = {
 };
 
 export type Storage = { packs: readonly PackStorage[]; used: number; freeSpace: number };
+
+export { optionalReleases } from './plan';
+export { fromPeer } from './source';
