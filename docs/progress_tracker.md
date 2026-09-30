@@ -3,6 +3,34 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-30 Corpus: note attachment, reading choice, quoted TSV cells, introductions (#11, #12, #13, #18)
+
+Node v22.22.2; Chromium 141 through playwright-core 1.56.1 for the shots. Nothing ran on a phone. Nothing
+ran against git.door43.org or cdn.door43.org (HTTP 403 from the sandbox), so no live release was measured.
+
+- Red first, each observed before its change: `src/lib/corpus/alignment.test.ts` "when the target reorders
+  the original words" (3 tests, `expected [] to deeply equal ...`); ST-2 `j003` and `j004` on the newly
+  aligned 3 John 1:3 attached to `''`; ST-3 read "Ruth spoke in the unfoldingWord t4t." for Simplified;
+  `src/lib/corpus/tsv.test.ts` "quoted cells" (3 tests, the spanning note cut at `"First line`,
+  `readTsv is not a function`); tsv tests on `3:intro` and `2:front` and ST-2 `opening.intros` undefined.
+- #11: a quote attaches by an exact contiguous match in the rebuilt order, otherwise as an occurrence-aware
+  multiset in the verse (rarest word fixes the nth occurrence, other words take the instances nearest it).
+  New read `Corpus.attachment(language, books?)`; `sim/corpus.test.ts` counts qaa_tn: 5 quoted, 4 attached
+  (RUT 1:1 has no alignment). The fixture qaa_ult aligns 3 John 1:3 in English order; `npm run fixtures`
+  regenerated qaa_ult, qaa_tn and el-x-koine_ugnt.
+- #12: Literal and Simplified are the preferred publisher's ult/glt and ust/gst; ST-3 imports a same-publisher
+  t4t, another publisher's ust and the publisher's own ust and ult into qae and asserts the ust is read.
+- #18: `readTsv` reads RFC 4180 quoted cells only where needed and returns lines that are not rows;
+  `unparsedTsv` (src/lib/burrito/unparsed.ts) feeds `npm run contract` (fixtures fail on any, live notes them).
+- #13: `Passage.intros`, book-scoped note link base, intros first in the notes tab. `npm run shots -- --only
+  study-chapter,study-passage`: 8 shots; looked at study-chapter in light, dark and reduced blur: both
+  introduction cards render above the verse notes and the relative link reads "Ruth 1:16".
+- `npm run verify`: green (656 tests in 62 files, 52 scenarios, 7 checks, trace 0 unproven, contract 21
+  fixture burritos with live skipped offline, bundle android 1910 and iOS 1777 modules).
+- Not verified: the attachment rate on real en_tn, hi_tn or es-419_tn releases (the 95 percent floor is
+  agent A's live CI assertion over `Corpus.attachment`); the six hi_tn Acts rows on the real file; that the
+  multiset heuristic picks the right instance of a repeated word in real reordered verses (INFERRED from
+  the fixture cases only); the intro cards at dynamic type maximum and at 360 px; anything on a phone.
 ## 2026-09-30 Device CI: Android emulator and iOS simulator workflow
 
 Node v22.22.2 in the sandbox. Nothing ran on a phone, an emulator or a simulator, and nothing has run in
