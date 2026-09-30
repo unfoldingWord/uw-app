@@ -39,6 +39,26 @@ export default scenario(
     const installed = phone.kernel.journal.read().find((entry) => entry.type === 'PackInstalled');
     assert.ok(installed?.type === 'PackInstalled');
     assert.deepEqual(installed.payload.failed, [failedNotes], 'the journal names the failed release');
+    const journal = phone.kernel.journal.read();
+    const resourceFailures = journal.filter((entry) => entry.type === 'PackResourceFailed');
+    assert.deepEqual(
+      resourceFailures.map(
+        (entry) => entry.type === 'PackResourceFailed' && { ...entry.payload, install: undefined },
+      ),
+      [{ install: undefined, pack, ...failedNotes }],
+      'each optional release that fails is its own event, with its release',
+    );
+    const [resourceFailure] = resourceFailures;
+    assert.ok(resourceFailure?.type === 'PackResourceFailed');
+    assert.equal(resourceFailure.payload.install, installed.payload.install);
+    assert.ok(
+      journal.indexOf(resourceFailure) < journal.indexOf(installed),
+      'the release failure is journaled before the partial pack is installed',
+    );
+    assert.ok(
+      !journal.some((entry) => entry.type === 'PackFailed'),
+      'PackFailed stays the event for an install that did not happen',
+    );
 
     const ruth = parseReference('RUT 1:16');
     assert.ok(ruth.ok);
