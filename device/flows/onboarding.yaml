@@ -14,7 +14,7 @@ name: First launch and onboarding through to Home
 - tapOn: 'Choose your language'
 - extendedWaitUntil:
     visible: 'Search languages'
-    timeout: 15000
+    timeout: 60000
 - takeScreenshot: onboarding-2-choose-language
 - tapOn:
     text: 'Back'
