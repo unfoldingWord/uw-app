@@ -4,7 +4,10 @@ import { usePress } from '@shared/glass/usePress';
 import { useTheme } from '@shared/theme';
 import { prototypeValues } from './prototypeValues';
 import { useBottomInset } from './ScreenScaffold';
+import { reportTabBarHeight, restingTabBarHeight, useTabBarGrowth } from './tabBarHeight';
 import { ThemedText } from './ThemedText';
+
+const minimumTabLabelScale = 0.6;
 
 export type TabItem = {
   key: string;
@@ -29,7 +32,8 @@ function Tab({ label, icon, focused, onPress }: Omit<TabItem, 'key'>) {
         style={[
           styles.inner,
           {
-            height: prototypeValues.tabBar.item,
+            minHeight: prototypeValues.tabBar.item,
+            paddingVertical: theme.space.sp2,
             gap: theme.space.sp2,
             borderRadius: theme.radius.rPill,
             backgroundColor: focused ? theme.color.glassFill4 : undefined,
@@ -45,7 +49,15 @@ function Tab({ label, icon, focused, onPress }: Omit<TabItem, 'key'>) {
         ]}
       >
         <Icon name={icon} color={theme.color.textTitle} />
-        <ThemedText variant="caption" tone="title" weight={theme.fontWeight.fwMedium}>
+        <ThemedText
+          variant="caption"
+          tone="title"
+          weight={theme.fontWeight.fwMedium}
+          align="center"
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={minimumTabLabelScale}
+        >
           {label}
         </ThemedText>
       </Animated.View>
@@ -57,7 +69,8 @@ export type TabBarProps = { items: readonly TabItem[] };
 
 export function useTabBarClearance(): number {
   const theme = useTheme();
-  return useBottomInset() + prototypeValues.tabBar.item + 2 * theme.space.sp3 + theme.space.gapStack;
+  const growth = useTabBarGrowth(theme);
+  return useBottomInset() + restingTabBarHeight(theme) + growth + theme.space.gapStack;
 }
 
 export function TabBar({ items }: TabBarProps) {
@@ -75,6 +88,7 @@ export function TabBar({ items }: TabBarProps) {
         shadow="float"
         accessibilityRole="tablist"
         style={[styles.row, { padding: theme.space.sp3 }]}
+        onLayout={(event) => reportTabBarHeight(event.nativeEvent.layout.height)}
       >
         {items.map(({ key, ...item }) => (
           <Tab key={key} {...item} />

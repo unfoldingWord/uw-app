@@ -81,7 +81,8 @@ export function ContinueFormation({ card, onOpen }: ContinueFormationProps) {
             styles.tile,
             {
               width: prototypeValues.card.tile,
-              height: prototypeValues.card.tile,
+              minHeight: prototypeValues.card.tile,
+              padding: theme.space.sp3,
               borderRadius: theme.radius.rLg,
               overflow: 'hidden',
             },

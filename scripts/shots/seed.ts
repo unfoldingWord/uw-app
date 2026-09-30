@@ -15,6 +15,24 @@ const englishLocale: DeviceLocale = { tag: 'en', region: 'US', timeZone: 'UTC', 
 
 const arabicLocale: DeviceLocale = { tag: 'ar', region: 'EG', timeZone: 'UTC', rtl: true };
 
+const urduLocale: DeviceLocale = { tag: 'ur', region: 'PK', timeZone: 'UTC', rtl: true };
+
+const hindiLocale: DeviceLocale = { tag: 'hi', region: 'IN', timeZone: 'UTC', rtl: false };
+
+function deviceLocaleFor(variant: ImageVariant): DeviceLocale {
+  switch (variant) {
+    case 'rtl':
+    case 'fresh-rtl':
+      return arabicLocale;
+    case 'ur':
+      return urduLocale;
+    case 'hi':
+      return hindiLocale;
+    default:
+      return englishLocale;
+  }
+}
+
 type Recording = { network: MemoryNetwork; routes(): readonly ImageRoute[] };
 
 function bodyOf(body: Uint8Array | string): string {
@@ -105,8 +123,7 @@ async function deviceFor(variant: ImageVariant): Promise<{ device: SimDevice; re
   const recording = recordingNetwork();
   serveFixtures(recording.network);
   const bus = createTransportBus();
-  const arabic = variant === 'rtl' || variant === 'fresh-rtl';
-  const locale = arabic ? arabicLocale : englishLocale;
+  const locale = deviceLocaleFor(variant);
   const device = createSimDevice(`qa-${variant}`, { clock, network: recording.network, bus }, { locale });
   await device.start();
   if (variant === 'fresh' || variant === 'fresh-rtl') {
@@ -119,6 +136,9 @@ async function deviceFor(variant: ImageVariant): Promise<{ device: SimDevice; re
   }
   if (variant === 'rtl') {
     await settings.setLocale('ar');
+  }
+  if (variant === 'ur' || variant === 'hi') {
+    await settings.setLocale(variant);
   }
   return { device, recording };
 }

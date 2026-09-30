@@ -22,7 +22,7 @@ export type DeviceImage = {
   readonly routes: readonly ImageRoute[];
 };
 
-export const imageVariants = ['fresh', 'fresh-rtl', 'home', 'reduced-blur', 'rtl'] as const;
+export const imageVariants = ['fresh', 'fresh-rtl', 'home', 'reduced-blur', 'rtl', 'ur', 'hi'] as const;
 
 export type ImageVariant = (typeof imageVariants)[number];
 

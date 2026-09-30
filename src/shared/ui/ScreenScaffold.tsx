@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuroraField, StatusBar } from '@shared/glass';
 import { useTheme } from '@shared/theme';
 import { prototypeValues } from './prototypeValues';
+import { useTabBarGrowth } from './tabBarHeight';
 
 export type ScreenClearance = 'tabs' | 'footer' | 'none';
 
@@ -30,9 +31,10 @@ export function ScreenScaffold({
 }: ScreenScaffoldProps) {
   const theme = useTheme();
   const bottom = useBottomInset();
+  const growth = useTabBarGrowth(theme);
   const reserved =
     clearance === 'tabs'
-      ? prototypeValues.tabBar.clearance
+      ? prototypeValues.tabBar.clearance + growth
       : clearance === 'footer'
         ? prototypeValues.tabBar.clearance - theme.space.sp10
         : theme.space.sp10;

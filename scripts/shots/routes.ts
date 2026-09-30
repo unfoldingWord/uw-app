@@ -1,11 +1,13 @@
 import type { ImageVariant } from '@sim/web/image';
 
 export type Mode = {
-  readonly name: 'light' | 'dark' | 'reduced-blur' | 'rtl';
+  readonly name: 'light' | 'dark' | 'reduced-blur' | 'rtl' | 'ur' | 'hi' | 'large-text';
   readonly scheme: 'light' | 'dark';
   readonly variant: ImageVariant;
   readonly freshVariant: ImageVariant;
   readonly direction: 'ltr' | 'rtl';
+  readonly browserLocale: string;
+  readonly textZoom?: number;
 };
 
 export type Shot = {
@@ -18,19 +20,68 @@ export type Shot = {
   readonly modes?: readonly Mode['name'][];
 };
 
-const leftToRight: readonly Mode['name'][] = ['light', 'dark', 'reduced-blur'];
+const leftToRight: readonly Mode['name'][] = ['light', 'dark', 'reduced-blur', 'large-text'];
+
+export const largeTextZoom = 2;
 
 export const modes: readonly Mode[] = [
-  { name: 'light', scheme: 'light', variant: 'home', freshVariant: 'fresh', direction: 'ltr' },
-  { name: 'dark', scheme: 'dark', variant: 'home', freshVariant: 'fresh', direction: 'ltr' },
+  {
+    name: 'light',
+    scheme: 'light',
+    variant: 'home',
+    freshVariant: 'fresh',
+    direction: 'ltr',
+    browserLocale: 'en-US',
+  },
+  {
+    name: 'dark',
+    scheme: 'dark',
+    variant: 'home',
+    freshVariant: 'fresh',
+    direction: 'ltr',
+    browserLocale: 'en-US',
+  },
   {
     name: 'reduced-blur',
     scheme: 'light',
     variant: 'reduced-blur',
     freshVariant: 'fresh',
     direction: 'ltr',
+    browserLocale: 'en-US',
   },
-  { name: 'rtl', scheme: 'light', variant: 'rtl', freshVariant: 'fresh-rtl', direction: 'rtl' },
+  {
+    name: 'rtl',
+    scheme: 'light',
+    variant: 'rtl',
+    freshVariant: 'fresh-rtl',
+    direction: 'rtl',
+    browserLocale: 'ar-EG',
+  },
+  {
+    name: 'ur',
+    scheme: 'light',
+    variant: 'ur',
+    freshVariant: 'fresh-rtl',
+    direction: 'rtl',
+    browserLocale: 'ur-PK',
+  },
+  {
+    name: 'hi',
+    scheme: 'light',
+    variant: 'hi',
+    freshVariant: 'fresh',
+    direction: 'ltr',
+    browserLocale: 'hi-IN',
+  },
+  {
+    name: 'large-text',
+    scheme: 'light',
+    variant: 'home',
+    freshVariant: 'fresh',
+    direction: 'ltr',
+    browserLocale: 'en-US',
+    textZoom: largeTextZoom,
+  },
 ];
 
 export const shots: readonly Shot[] = [
