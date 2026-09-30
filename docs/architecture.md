@@ -49,6 +49,8 @@ Every port has exactly two adapters, platform and memory, so every seam is real.
 
 Determinism follows: with Clock and Ids injected, a scenario reproduces byte for byte, and a journal exported from a phone replays in the sim to the same snapshot.
 
+**The web render harness is not a third adapter set** (ADR 0008). `npm run shots` exports the real app for the web and photographs every screen in Chromium. On web Metro picks `src/platform/ports.web.ts`, a one-line re-export of `@sim/web/ports`, which builds the Ports from the memory adapters and the sim's pinned Clock and Ids, restores a device image the sim wrote in Node, and makes Files, Kv, Db and Http wait for it; it passes the `drafts` locale gate so the right-to-left and script modes render their drafted locales. The memory Db adapter takes its SQL engine, `node:sqlite` in Node and sql.js in the browser (ADR 0011). `npm run bundle` fails if any module from `sim/`, `scripts/`, sql.js or react-native-web reaches an iOS or Android bundle. The other visual check is the device CI, `.github/workflows/device.yml`: release builds on an Android emulator and an iOS simulator driven by the Maestro flows in `device/flows`.
+
 ## Modules
 
 Each is a deep module: small interface, tests at the interface, internals free to change. Interfaces below are the whole of what a caller learns; anything else is internal.
