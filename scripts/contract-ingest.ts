@@ -184,7 +184,20 @@ async function installDefault(world: World, device: SimDevice, language: string)
   const texts = installed.pack.burritos
     .filter((burrito) => burrito.row === 'text')
     .map((burrito) => burrito.provenance.resource);
+  const diagnoses = status.failed.flatMap((item) => {
+    const release = defaults.find(
+      (candidate) =>
+        candidate.publisher === item.publisher &&
+        candidate.resource === item.resource &&
+        candidate.tag === item.tag,
+    );
+    const route = release === undefined ? undefined : world.network.lookup(release.archiveUrl);
+    return route !== undefined && route.body instanceof Uint8Array
+      ? [diagnosis(`${item.publisher}/${item.resource} ${item.tag}`, route.body)]
+      : [];
+  });
   return [
+    ...diagnoses,
     outcome(
       status.complete && served.failed.length === 0,
       `default: ${language}: installed ${installed.pack.burritos.length} of ${defaults.length} default releases in ${seconds} s, ${megabytes(installed.pack.bytes)} measured on the phone, ${megabytes(served.downloaded)} downloaded; texts ${texts.join(' ')}; failed ${status.failed.map((item) => `${item.publisher}/${item.resource}@${item.tag}:${item.code}`).join(' ') || 'none'}${served.failed.length > 0 ? `; not fetched ${served.failed.join(', ')}` : ''}`,
