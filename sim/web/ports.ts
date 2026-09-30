@@ -10,7 +10,7 @@ import { createMemoryPicker } from '@sim/adapters/picker';
 import { createMemoryShareSheet } from '@sim/adapters/share-sheet';
 import { createSqlDb, type SqlEngine } from '@sim/adapters/sql-db';
 import { createTransportBus } from '@sim/adapters/transport';
-import { decodeBytes, imagePath, sqlWasmPath, type DeviceImage } from './image';
+import { decodeBytes, harnessLocaleGate, imagePath, sqlWasmPath, type DeviceImage } from './image';
 import { openSqlEngine } from './sqljs';
 
 type HostPolicy = { permits(url: string): boolean; hostOf(url: string): string | undefined };
@@ -173,6 +173,8 @@ function lazyEngine(engine: Promise<SqlEngine>): { engine: SqlEngine; ready: Pro
     }),
   };
 }
+
+export const localeGate = harnessLocaleGate;
 
 export function devicePlatform(): DevicePlatform {
   return harnessPlatform;

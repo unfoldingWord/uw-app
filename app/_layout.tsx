@@ -11,7 +11,7 @@ import { createKernel, hostOf, isAllowedUrl, type Kernel } from '@lib/kernel';
 import { reducedBlurByDefault } from '@platform/display';
 import { createPlatformLocale } from '@platform/locale';
 import { discoverMigrations } from '@platform/migrations';
-import { createPlatformPorts } from '@platform/ports';
+import { createPlatformPorts, localeGate } from '@platform/ports';
 import { useThemeFonts } from '@shared/fonts';
 import { createBoot, KernelProvider, serviceOf, type BootState } from '@shared/kernel';
 import { ThemeProvider, type Scheme } from '@shared/theme';
@@ -21,7 +21,7 @@ void preventAutoHideAsync().catch(() => false);
 
 async function openKernel(): Promise<Kernel> {
   const ports = createPlatformPorts({ permits: (url) => isAllowedUrl(url), hostOf });
-  const kernel = createKernel(ports, { migrations: discoverMigrations() });
+  const kernel = createKernel(ports, { migrations: discoverMigrations(), localeGate });
   await kernel.start();
   return kernel;
 }

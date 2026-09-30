@@ -7,7 +7,14 @@ import { createTransportBus } from '@sim/adapters/transport';
 import { createSimDevice, type SimDevice } from '@sim/device';
 import { serveFixtures } from '@sim/fixtures/serve';
 import { servicesOf } from '@sim/services';
-import { encodeBytes, imagePath, type DeviceImage, type ImageRoute, type ImageVariant } from '@sim/web/image';
+import {
+  encodeBytes,
+  harnessLocaleGate,
+  imagePath,
+  type DeviceImage,
+  type ImageRoute,
+  type ImageVariant,
+} from '@sim/web/image';
 
 export const harnessMoment = Date.UTC(2026, 8, 29, 8, 20, 0);
 
@@ -125,7 +132,11 @@ async function deviceFor(variant: ImageVariant): Promise<{ device: SimDevice; re
   serveFixtures(recording.network);
   const bus = createTransportBus();
   const locale = deviceLocaleFor(variant);
-  const device = createSimDevice(`qa-${variant}`, { clock, network: recording.network, bus }, { locale });
+  const device = createSimDevice(
+    `qa-${variant}`,
+    { clock, network: recording.network, bus },
+    { locale, localeGate: harnessLocaleGate },
+  );
   await device.start();
   if (variant === 'fresh' || variant === 'fresh-rtl') {
     return { device, recording };

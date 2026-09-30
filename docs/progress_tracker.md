@@ -3,6 +3,24 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-30 M10 merge of U1 and U2 onto N2, and the shots harness through the drafts gate
+
+Node v22.22.2; Chromium through playwright-core for the shots. Nothing ran on a phone.
+
+- Cherry-picked the U1 batch (#35, #36, #38, #39, #40) and the U2 batch (#56, #25, #27, #20, #51) onto the N2
+  branch. Conflicts were only in `docs/strings-review.md`, `docs/progress_tracker.md` and `docs/exceptions.md`;
+  every side was kept, newest first where the file is newest first.
+- Red observed: with both batches in, `npm run shots` rendered `settings--rtl.png` in English in a mirrored
+  layout, because the locale gate of #51 defaults to the release gate and the harness boots the root layout.
+- Fix: the web-only `src/platform/ports.web.ts` seam hands the root layout `drafts`, the native
+  `src/platform/ports.ts` hands it `reviewed`, and `scripts/shots/seed.ts` seeds with the same `drafts`.
+- Green observed: `npm run shots` printed "182 screenshots and the contact sheet in shots/; 173 targets under
+  44 px counting hit slop, 0 text boxes escaping their parent". `settings--rtl.png` shows the Arabic Settings
+  screen right to left, `settings--ur.png` Urdu in Nastaliq and `settings--hi.png` Hindi in Devanagari.
+  `npm run verify` is green: 734 tests, 56 scenarios, and both native bundles free of `sim/`.
+- Not verified: the native app on a phone still speaking English for an unreviewed phone locale (INFERRED from
+  `ports.ts` passing `reviewed`, the same gate as the kernel default, and the bundle check).
+
 ## 2026-09-30 U2 share privacy, refused writes, invitation, locale gate (issues #20, #25, #27, #51, #56)
 
 Node v22.22.2. Nothing ran on a phone, and no screen was rendered (`npm run shots` was not run).

@@ -1,1 +1,1 @@
-export { createPlatformPorts, devicePlatform } from '@sim/web/ports';
+export { createPlatformPorts, devicePlatform, localeGate } from '@sim/web/ports';
