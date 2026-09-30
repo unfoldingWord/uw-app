@@ -392,7 +392,7 @@ Proposed; to be confirmed with product before launch. All are aggregate and anon
 | Measure | Why it matters |
 |---|---|
 | Language packs downloaded, per language | The vision is measured in leaders with resources in hand |
-| Transfers completed, per platform pair | Whether the offline door is actually used |
+| Transfers completed | Whether the offline door is actually used |
 | Shares sent | Whether the app spreads by leaders' own hands |
 | Formation sessions started, per language | Whether the pathway is used, not just installed |
 | Distinct days of use per install, distribution | Whether it becomes a working tool rather than a one-time look |

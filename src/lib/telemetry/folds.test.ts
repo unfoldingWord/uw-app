@@ -104,7 +104,7 @@ const events: DomainEvent[] = [
 ];
 
 describe('telemetry folds (PRD section 9)', () => {
-  it('counts the section 9 list, and the platform pair split of transfers for PRD 14', () => {
+  it('counts the section 9 list and nothing else', () => {
     expect(Object.keys(emptyTelemetry).sort()).toEqual([
       'appOpens',
       'formationSessionsStarted',
@@ -112,14 +112,12 @@ describe('telemetry folds (PRD section 9)', () => {
       'invitationTaps',
       'languagePackDownloads',
       'sharesSent',
-      'transfersByPlatformPair',
       'transfersCompleted',
     ]);
     expect(foldTelemetry(events)).toEqual({
       appOpens: 3,
       languagePackDownloads: { qaa: 1 },
       transfersCompleted: 1,
-      transfersByPlatformPair: { 'ios-android': 1 },
       sharesSent: 1,
       formationSessionsStarted: { qaa: 2, en: 1 },
       invitationTaps: 1,
@@ -127,7 +125,7 @@ describe('telemetry folds (PRD section 9)', () => {
     });
   });
 
-  it('lets only the section 9 fold list leave, and keeps the platform pair split on the phone', () => {
+  it('lets only the section 9 fold list leave, with no platform pair split', () => {
     expect([...leavingFolds]).toEqual([
       'appOpens',
       'languagePackDownloads',
@@ -139,7 +137,7 @@ describe('telemetry folds (PRD section 9)', () => {
     ]);
     const leaving = leavingCounts(foldTelemetry(events));
     expect(Object.keys(leaving)).toEqual([...leavingFolds]);
-    expect('transfersByPlatformPair' in leaving).toBe(false);
+    expect(Object.keys(foldTelemetry(events)).sort()).toEqual([...leavingFolds].sort());
     expect(leaving.transfersCompleted).toBe(1);
   });
 

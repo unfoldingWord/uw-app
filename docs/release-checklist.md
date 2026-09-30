@@ -22,13 +22,11 @@ recorded run on a phone; **blocked** names the missing input and its owner.
 
 ## Also needed before submission
 
-- **Transfers per platform pair (note for Product).** PRD 14 lists "Transfers completed, per platform pair"
-  as a proposed success measure, but PRD 9's fold list, which is the only thing that may leave the device,
-  names only "transfers completed". Decision in G1, without editing the PRD: the telemetry module keeps the
-  `transfersByPlatformPair` fold on the phone (SH-1 asserts it, the diagnostics journal shows it), but it is
-  not in `leavingFolds` (`src/lib/telemetry/folds.ts`), so it is not in what would be sent and not on the
-  privacy screen. If Product wants the split measured, add it to PRD 9 and the privacy screen together (PRD
-  9 requires both to change), then add it to `leavingFolds` and restore its `privacy.count.*` string.
+- **Transfers per platform pair (decided, issue #30).** PRD 14's measure is "transfers completed" only, the
+  count PRD 9 already lists. The `transfersByPlatformPair` fold is removed, so no count by platform pair is kept
+  on the phone or leaves in the diagnostics file; SH-1 proves iOS to Android and back from the
+  `TransferCompleted` events' `from` and `to`. Adding a split later means PRD 9, PRD 14, the privacy screen and a
+  fold together.
 
 - **Impact story comms review.** The shipped story and the feed follow the brand security guideline; the
   communications team signs off the copy and sets up the feed (PRD 15, `docs/impact-stories.md`). Since G1
