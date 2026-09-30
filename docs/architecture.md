@@ -155,6 +155,7 @@ A rule that lives only in prose drifts. Each of these has a check in `verify` an
 | Rule | Check |
 |---|---|
 | Imports go down the tower only | ESLint `no-restricted-imports` over aliases and relative paths |
+| A feature sees only the kernel's public surface | the `features` lint layer admits from `src/lib` only `@lib/kernel`, `@lib/domain/*` and a module's types file, `@lib/<module>/types` (which re-exports the wire and result types and the pure helpers a service may use), and `@lib/module` and `@lib/written` as types only |
 | `lib/` is pure | `no-restricted-globals` in `src/lib/**`, plus `tsconfig.lib.json` with no DOM or React Native types |
 | No code comments | lint rule over `src/`, `app/`, `sim/`, `tests/` |
 | One writer per durable value | the `owns` check walks every kernel module's and feature `store.ts`'s `owns` export and fails on any table, directory or key claimed twice, unowned, or written elsewhere |

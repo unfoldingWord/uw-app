@@ -104,6 +104,18 @@ const otherFeatures: RestrictedPattern = {
     'A feature never imports another feature, and reaches its own files by relative path. Shared code moves to src/shared (AGENTS.md rule 2).',
 };
 
+const kernelPublicSurface: RestrictedPattern = {
+  regex: '^@lib/(?!kernel$|domain/[^/]+$|[^/]+/types$|module$|written$)',
+  message:
+    "A feature reaches src/lib only through its public surface: @lib/kernel, @lib/domain/* and a module's types file, @lib/<module>/types (AGENTS.md rule 2).",
+};
+
+const kernelContractTypes: RestrictedPattern = {
+  regex: '^@lib/(module|written)$',
+  allowTypeImports: true,
+  message: 'A feature imports @lib/module and @lib/written as types only (Owns, Written) (AGENTS.md rule 2).',
+};
+
 const applicationBase: RestrictedPattern[] = [
   simFromApplication,
   deviceApis,
@@ -142,7 +154,14 @@ export const layers: Layer[] = [
     name: 'features',
     files: ['src/features/**'],
     ignores: ['src/features/*/screens/**', 'src/features/*/migrations/**'],
-    patterns: [otherFeatures, platformFromApplication, renderingApis, ...applicationBase],
+    patterns: [
+      otherFeatures,
+      platformFromApplication,
+      renderingApis,
+      kernelPublicSurface,
+      kernelContractTypes,
+      ...applicationBase,
+    ],
   },
   {
     name: 'screens',

@@ -68,6 +68,16 @@ describe('import boundaries (AGENTS.md rule 2)', () => {
     ['src/shared/theme/theme.ts', "import { backupExclusionModule } from '@modules/backup-exclusion';\n"],
     ['app/_layout.tsx', "import { backupExclusionModule } from '@modules/backup-exclusion';\n"],
     ['sim/world.ts', "import { backupExclusionModule } from '@modules/backup-exclusion';\n"],
+    ['src/features/transfer/service.ts', "import type { Peer } from '@lib/ports';\n"],
+    ['src/features/transfer/service.ts', "import type { WireChoice } from '@lib/transfer/protocol';\n"],
+    ['src/features/languages/service.ts', "import { packsModule } from '@lib/packs/packs';\n"],
+    ['src/features/languages/service.ts', "import { readPacks } from '@lib/packs/store';\n"],
+    ['src/features/languages/service.ts', "import type { PackRow } from '@lib/packs/store';\n"],
+    ['src/features/home/strings.ts', "import type { Words } from '@lib/strings/strings';\n"],
+    ['src/features/home/service.ts', "import { allowedHosts } from '@lib/network';\n"],
+    ['src/features/home/service.ts', "import { written } from '@lib/written';\n"],
+    ['src/features/home/store.ts', "import { defineModule } from '@lib/module';\n"],
+    ['src/features/home/service.ts', "import type { Kernel } from '@lib/kernel/extra';\n"],
   ])('%s refuses %s', async (file, code) => {
     expect(await ruleIds(file, code)).toContain(restricted);
   });
@@ -116,6 +126,12 @@ describe('import boundaries (AGENTS.md rule 2)', () => {
     ['app/_layout.tsx', "import { GlassSurface } from '@shared/glass';\n"],
     ['src/platform/files.ts', "import { File } from 'expo-file-system';\n"],
     ['src/lib/burrito/files.ts', "import { md5 } from '@noble/hashes/legacy.js';\n"],
+    ['src/features/transfer/service.ts', "import type { Peer, WireChoice } from '@lib/transfer/types';\n"],
+    ['src/features/languages/service.ts', "import { optionalReleases } from '@lib/packs/types';\n"],
+    ['src/features/home/service.ts', "import type { FailureCode } from '@lib/domain/failures';\n"],
+    ['src/features/home/service.ts', "import type { Written } from '@lib/written';\n"],
+    ['src/features/home/store.ts', "import type { Owns } from '@lib/module';\n"],
+    ['src/features/home/strings.ts', "import type { Words } from '@lib/strings/types';\n"],
   ])('%s allows %s', async (file, code) => {
     const ids = await ruleIds(file, code);
     expect(ids.filter((id) => id === restricted || id === leavesUnit)).toEqual([]);
