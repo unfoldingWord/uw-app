@@ -82,6 +82,7 @@ export type InvitationWords = {
   readonly dismiss: string;
   readonly readMore: string;
   readonly securityNote: string;
+  readonly opensBrowser: string;
 };
 
 export type InvitationCard =
@@ -204,6 +205,7 @@ function invitationWords(words: HomeWords, story: ImpactStory): InvitationWords 
     dismiss: words.t('invitation.dismiss'),
     readMore: words.t('invitation.readMore'),
     securityNote: story.securityNote ?? words.t('impact.securityNote'),
+    opensBrowser: words.t('common.opensBrowser'),
   };
 }
 

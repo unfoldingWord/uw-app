@@ -28,6 +28,7 @@ export default scenario(
       dismiss: 'Not now',
       readMore: 'Read the full story on unfoldingword.org',
       securityNote: 'Names in this story are changed for security.',
+      opensBrowser: 'Opens in your browser',
     });
 
     await home.invitationShown(world.clock.now());
