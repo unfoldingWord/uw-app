@@ -34,6 +34,8 @@ export type IntentFilter = { actions: readonly string[]; data: readonly IntentDa
 
 const appScheme = 'unfoldingword';
 
+const appStoreRecord = { id: '925570688', bundleIdentifier: 'com.unfoldingword.iosapp' } as const;
+
 const importedMimeTypes: readonly string[] = [
   'application/zip',
   'application/x-zip-compressed',
@@ -52,6 +54,7 @@ export type NativeConfig = {
   androidIntentFilters: readonly IntentFilter[];
   infoPlist: Readonly<Record<string, unknown>>;
   entitlements: Readonly<Record<string, unknown>>;
+  iosBundleIdentifier: string | undefined;
 };
 
 function record(value: unknown): Record<string, unknown> {
@@ -69,6 +72,7 @@ function attributes(node: unknown): Record<string, unknown> {
 }
 
 export function nativeConfigOf(introspected: unknown): NativeConfig {
+  const bundleIdentifier = record(record(introspected).ios).bundleIdentifier;
   const modResults = record(record(record(introspected)._internal).modResults);
   const android = record(modResults.android);
   const ios = record(modResults.ios);
@@ -102,6 +106,7 @@ export function nativeConfigOf(introspected: unknown): NativeConfig {
     androidIntentFilters: filters,
     infoPlist: record(ios.infoPlist),
     entitlements: record(ios.entitlements),
+    iosBundleIdentifier: typeof bundleIdentifier === 'string' ? bundleIdentifier : undefined,
   };
 }
 
@@ -209,6 +214,11 @@ export function permissionFindings(config: NativeConfig): string[] {
     if (!iosAdmittedEntitlements.includes(key)) {
       findings.push(`iOS entitlements carry ${key}, which nothing in the PRD needs`);
     }
+  }
+  if (config.iosBundleIdentifier !== appStoreRecord.bundleIdentifier) {
+    findings.push(
+      `The iOS bundle identifier is ${config.iosBundleIdentifier ?? '(none)'}; the App Store record this app replaces (id ${appStoreRecord.id}) is ${appStoreRecord.bundleIdentifier}, and Apple never changes the bundle identifier of an existing record`,
+    );
   }
   return [...findings, ...importFindings(config)];
 }

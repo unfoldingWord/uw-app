@@ -7,6 +7,7 @@ function introspected(options: {
   infoPlist?: Record<string, unknown>;
   entitlements?: Record<string, unknown>;
   intentData?: { scheme: string; mimeType?: string }[];
+  bundleIdentifier?: string;
 }): unknown {
   const intentData = options.intentData ?? [
     { scheme: 'content', mimeType: 'application/zip' },
@@ -14,6 +15,7 @@ function introspected(options: {
     { scheme: 'content', mimeType: 'application/octet-stream' },
   ];
   return {
+    ios: { bundleIdentifier: options.bundleIdentifier ?? 'com.unfoldingword.iosapp' },
     _internal: {
       modResults: {
         android: {
@@ -138,6 +140,15 @@ describe('permissionFindings', () => {
       'Info.plist declares no document type for public.zip-archive, so iOS never offers the app a burrito (SH-3)',
       'Info.plist does not set LSSupportsOpeningDocumentsInPlace false; an opened burrito must be copied, never edited in place',
       "Info.plist sets UIFileSharingEnabled, which shows the app's files in the Files app and Finder",
+    ]);
+  });
+
+  it('refuses an iOS bundle identifier other than the App Store record the app replaces', () => {
+    const config = nativeConfigOf(
+      introspected({ permissions: blocked, allowBackup: 'false', bundleIdentifier: 'org.unfoldingword.app' }),
+    );
+    expect(permissionFindings(config)).toEqual([
+      'The iOS bundle identifier is org.unfoldingword.app; the App Store record this app replaces (id 925570688) is com.unfoldingword.iosapp, and Apple never changes the bundle identifier of an existing record',
     ]);
   });
 });

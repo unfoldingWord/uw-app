@@ -1,7 +1,9 @@
 import type { ExpoConfig } from 'expo/config';
 import { locales } from './src/lib/strings/locales.ts';
 
-const identifier = 'org.unfoldingword.app';
+const iosBundleIdentifier = 'com.unfoldingword.iosapp';
+
+const androidPackage = 'org.unfoldingword.app';
 
 const brand = {
   paper: '#F4FAFB',
@@ -38,7 +40,7 @@ const config: ExpoConfig = {
   platforms: ['ios', 'android'],
   updates: { enabled: false },
   ios: {
-    bundleIdentifier: identifier,
+    bundleIdentifier: iosBundleIdentifier,
     supportsTablet: false,
     config: { usesNonExemptEncryption: false },
     infoPlist: {
@@ -79,7 +81,7 @@ const config: ExpoConfig = {
     },
   },
   android: {
-    package: identifier,
+    package: androidPackage,
     allowBackup: false,
     blockedPermissions,
     intentFilters: [

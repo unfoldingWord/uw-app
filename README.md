@@ -58,8 +58,10 @@ from a phone replaying in the sim.
   up; [the backup exclusion proposal](docs/proposals/2026-09-29-backup-exclusion.md)
   must land before App Store submission. Android backs nothing up.
 - The impact story copy and feed: communications review.
-- The store name "unfoldingWord" on both stores, the bundle identifier
-  `org.unfoldingword.app`, and the short link domain for share-out: Product.
+- The store listings: the app replaces the existing "unfoldingWord" records, so
+  iOS keeps the bundle identifier `com.unfoldingword.iosapp`; the Android
+  package and signing key wait on the Play account holder, and the short link
+  domain for share-out on Product.
 
 ## The cockpit
 
