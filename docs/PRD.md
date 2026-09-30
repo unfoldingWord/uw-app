@@ -260,9 +260,11 @@ The exact shapes accepted, pinned from the `rc2sb` mirrors, and the validator bo
 
 ### 8.4 Language pack composition
 
-One pack per language containing every text resource above that exists for it. Excluded from the pack: OBS images (shared pack), audio (separate), original-language texts (separate).
+One pack per language containing every text resource above that exists for it, from the preferred publisher: the publisher's own literal and simplified pair (`ult` and `ust`, or `glt` and `gst`) and the helps. Other publishers' texts (BSB, T4T and the like) and other publishers' copies of a resource are optional downloads, never in the default pack. Excluded from the pack: OBS images (shared pack), audio (separate), original-language texts (separate), and formation until DCS generates its archive.
 
-Reference sizes, English, raw source before Scripture Burrito packaging and compression: literal text 81 MB, simplified text 94 MB, Translation Notes 34 MB, everything else under 10 MB. Whole pack roughly 220 MB raw; expected 40 to 60 MB compressed. The transfer screen's resource selection (SH-1) exists so a phone-to-phone transfer can omit a text.
+Measured sizes, English, 2026-09-29, installed through the kernel from live DCS before the default pack was narrowed (formation left out): 273.8 MB on the phone and 41.1 MB downloaded. On the phone per resource: literal text (`en_ult`) 76.9 MB, simplified text (`en_ust`) 89.4 MB, `en_bsb` 34.5 MB, Translation Notes 32.9 MB, Translation Words 9.2 MB, Word Links 7.7 MB, `en_t4t` 6.4 MB, and 16.8 MB for everything else together (the difference, not measured one by one).
+
+Derived from that measurement, not yet measured: the default English pack without `en_bsb` and `en_t4t` is about 232.9 MB on the phone (273.8 − 34.5 − 6.4), and about 226 MB once Word Links no longer keep a second copy of the Words articles (about 7 MB). Its download is below 41.1 MB; the per-resource download sizes were not recorded, so the figure is not derived here. The live contract step in CI prints the measured install size of the default English and Indonesian packs, and that run replaces these derived figures. The transfer screen's resource selection (SH-1) exists so a phone-to-phone transfer can omit a text.
 
 ### 8.5 Versioning
 

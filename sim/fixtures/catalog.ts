@@ -14,6 +14,18 @@ export function burritoArchiveFile(release: FixtureRelease): string {
   return `sb/${release.publisher}/${release.resource}/${release.tag}.zip`;
 }
 
+export function assetUrl(release: FixtureRelease, name: string): string {
+  return `${door43}/${release.publisher}/${release.resource}/releases/download/${release.tag}/${name}`;
+}
+
+export function assetFile(release: FixtureRelease, name: string): string {
+  return `assets/${release.publisher}/${release.resource}/${release.tag}/${name}`;
+}
+
+export function rawLicenceUrl(release: FixtureRelease): string {
+  return `${door43}/${release.publisher}/${release.resource}/raw/tag/${release.tag}/LICENSE.md`;
+}
+
 export function commitOf(release: FixtureRelease): string {
   const key = `${release.publisher}/${release.resource}@${release.tag}`;
   return `${md5Hex(utf8(key))}${md5Hex(utf8(key.split('').reverse().join(''))).slice(0, 8)}`;
@@ -149,7 +161,15 @@ function catalogEntry(release: FixtureRelease, index: number) {
       prerelease: false,
       created_at: release.released,
       published_at: release.released,
-      assets: [],
+      assets: (release.audioAssets ?? []).map((asset, position) => ({
+        id: 5000 + id * 10 + position,
+        name: asset.name,
+        size: asset.bytes.length,
+        download_count: 0,
+        created_at: release.released,
+        uuid: `fixture-${id}-${position}`,
+        browser_download_url: assetUrl(release, asset.name),
+      })),
     },
     tarbar_url: `${tagUrl}.tar.gz`,
     zipball_url: `${tagUrl}.zip`,
@@ -170,7 +190,13 @@ function catalogEntry(release: FixtureRelease, index: number) {
     ingredients,
     books: release.books,
     relations: null,
-    attachment_types: { pdf: false, audio: false, video: false, stream: false, other: false },
+    attachment_types: {
+      pdf: false,
+      audio: (release.audioAssets ?? []).length > 0,
+      video: false,
+      stream: false,
+      other: false,
+    },
     is_valid: true,
     validation_errors_url: `${door43}/api/v1/catalog/validation/${fullName}/${release.tag}`,
     healthcheck_severity: 'success',
@@ -187,5 +213,18 @@ export function catalogSearch(releases: readonly FixtureRelease[]) {
 }
 
 export function catalogLanguages(releases: readonly FixtureRelease[]) {
-  return { ok: true, data: [...new Set(releases.map((release) => release.language.tag))].sort() };
+  const byTag = new Map(releases.map((release) => [release.language.tag, release.language]));
+  const data = [...byTag.values()]
+    .sort((left, right) => (left.tag < right.tag ? -1 : left.tag > right.tag ? 1 : 0))
+    .map((language) => ({
+      lc: language.tag,
+      ln: language.title,
+      ang: language.englishName,
+      ld: language.direction,
+      gw: language.gatewayLanguage,
+      lr: '',
+      alt: [],
+      cc: [],
+    }));
+  return { ok: true, data };
 }

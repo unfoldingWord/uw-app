@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { archiveReadBytes } from '@lib/burrito/unpack';
-import { languagePackId } from '@lib/domain/pack';
+import { languagePackId, originalPackId } from '@lib/domain/pack';
 import { archiveUrlOf } from '@lib/domain/release';
 import { readBurrito } from '@lib/packs/tree';
 import { validate } from '@lib/burrito/validate';
@@ -82,12 +82,12 @@ describe('packs install by streaming (LA-2, LA-7)', () => {
   it('refuses before unpacking when the archive would not fit once unpacked', async () => {
     const { world, device } = await phone();
     await device.kernel.catalog.refresh();
-    const url = archiveUrlOf({ publisher: 'unfoldingWord', resource: 'obs-images', tag: 'v1' });
+    const url = archiveUrlOf({ publisher: 'unfoldingWord', resource: 'hbo_uhb', tag: 'v3.0.0' });
     const archive = world.network.lookup(url)?.body;
     expect(archive instanceof Uint8Array).toBe(true);
     const archiveBytes = archive instanceof Uint8Array ? archive.byteLength : 0;
     device.adapters.files.setCapacity(device.adapters.files.used() + archiveBytes + 64);
-    const outcome = await device.kernel.packs.installFromCatalog('image:obs');
+    const outcome = await device.kernel.packs.installFromCatalog(originalPackId('hbo'));
     expect(outcome).toMatchObject({ ok: false, code: 'pack.no-space' });
     expect(device.adapters.files.tree().filter((path) => path.startsWith('packs/'))).toEqual(['packs/']);
   });

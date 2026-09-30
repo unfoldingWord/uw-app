@@ -1,0 +1,159 @@
+name: device
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: device-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MAESTRO_VERSION: '2.0.3'
+  MAESTRO_CLI_NO_ANALYTICS: '1'
+  MAESTRO_CLI_ANALYSIS_NOTIFICATION_DISABLED: 'true'
+  EXPO_NO_TELEMETRY: '1'
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      APK_PATH: ${{ github.workspace }}/android/app/build/outputs/apk/release/app-release.apk
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Prebuild the native Android project
+        run: npx expo prebuild --platform android --no-install --clean
+      - name: Build the release APK
+        working-directory: android
+        run: ./gradlew :app:assembleRelease -PreactNativeArchitectures=x86_64 --no-daemon
+      - name: Report APK size and merged manifest permissions
+        run: bash device/ci/apk-report.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: ${{ env.APK_PATH }}
+          retention-days: 7
+      - name: Install Maestro
+        run: |
+          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+      - name: Run the Maestro flows on the emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          arch: x86_64
+          target: google_apis
+          profile: pixel_3a
+          ram-size: 2048M
+          heap-size: 256M
+          disk-size: 4096M
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
+          disable-animations: true
+          script: bash device/ci/android.sh main
+      - name: Try downloading a language on the emulator
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          arch: x86_64
+          target: google_apis
+          profile: pixel_3a
+          ram-size: 2048M
+          heap-size: 256M
+          disk-size: 4096M
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
+          disable-animations: true
+          script: bash device/ci/android.sh optional
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-maestro
+          path: |
+            device-out/
+            ~/.maestro/tests/
+          if-no-files-found: warn
+
+  ios:
+    runs-on: macos-26
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Select the newest Xcode
+        run: |
+          xcode="$(ls -d /Applications/Xcode_*.app | grep -vi beta | sort -V | tail -n 1)"
+          sudo xcode-select -s "$xcode/Contents/Developer"
+          xcodebuild -version
+      - name: Prebuild the native iOS project and install pods
+        run: npx expo prebuild --platform ios --clean
+      - name: Boot an iPhone simulator
+        run: bash device/ci/simulator.sh
+      - name: Build the release app for the simulator
+        run: |
+          xcodebuild \
+            -workspace ios/unfoldingWord.xcworkspace \
+            -scheme unfoldingWord \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -destination "id=$SIMULATOR_UDID" \
+            -derivedDataPath build \
+            ONLY_ACTIVE_ARCH=YES \
+            CODE_SIGNING_ALLOWED=NO \
+            -quiet \
+            build
+      - name: Report app size
+        run: |
+          app="build/Build/Products/Release-iphonesimulator/unfoldingWord.app"
+          size="$(du -sk "$app" | cut -f1)"
+          echo "Simulator app: $size KB"
+          {
+            echo "## iOS simulator app"
+            echo
+            echo "- Size on disk: $size KB (a simulator build, not the size of a store download)"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Install the app on the simulator
+        run: xcrun simctl install "$SIMULATOR_UDID" build/Build/Products/Release-iphonesimulator/unfoldingWord.app
+      - name: Install Maestro
+        run: |
+          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+      - name: Run the Maestro flows on the simulator
+        run: bash device/ci/ios.sh main
+      - name: Try downloading a language on the simulator
+        continue-on-error: true
+        run: bash device/ci/ios.sh optional
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-maestro
+          path: |
+            device-out/
+            ~/.maestro/tests/
+          if-no-files-found: warn

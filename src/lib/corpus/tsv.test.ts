@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { helpsRowCount, noteRows, parseHelpsReference, parseTsv, questionRows, wordLinkRows } from './tsv';
+import {
+  helpsRowCount,
+  noteRows,
+  parseHelpsReference,
+  parseTsv,
+  questionRows,
+  readTsv,
+  wordLinkRows,
+} from './tsv';
 
 describe('parseHelpsReference', () => {
   it('reads verses, ranges, lists and ranges across chapters', () => {
@@ -26,7 +34,7 @@ describe('parseHelpsReference', () => {
 
   it('marks introductions and refuses what it cannot read', () => {
     expect(parseHelpsReference('front:intro')).toEqual({ kind: 'intro' });
-    expect(parseHelpsReference('3:intro')).toEqual({ kind: 'intro' });
+    expect(parseHelpsReference('3:intro')).toEqual({ kind: 'intro', chapter: 3 });
     expect(parseHelpsReference('chapter one')).toBeUndefined();
     expect(parseHelpsReference('')).toBeUndefined();
   });
@@ -84,7 +92,14 @@ describe('helps rows', () => {
       'RUT\t1\t16\tab12\trc://*/ta/man/translate/figs-idiom\tאֱלֹהַ֖יִךְ\t1\tyour God\tNote text<br>more\n';
     expect(noteRows(nine)).toEqual([
       { reference: { kind: 'intro' }, id: 'x1', support: '', quote: '', occurrence: 0, note: '# Ruth' },
-      { reference: { kind: 'intro' }, id: 'x2', support: '', quote: '', occurrence: 0, note: 'Chapter one' },
+      {
+        reference: { kind: 'intro', chapter: 1 },
+        id: 'x2',
+        support: '',
+        quote: '',
+        occurrence: 0,
+        note: 'Chapter one',
+      },
       {
         reference: {
           kind: 'verses',
@@ -117,6 +132,42 @@ describe('parseHelpsReference in the forms releases carry', () => {
       kind: 'verses',
       ranges: [{ start: { chapter: 1, verse: 2 }, end: { chapter: 1, verse: 4 } }],
     });
-    expect(parseHelpsReference('2:front')).toEqual({ kind: 'intro' });
+    expect(parseHelpsReference('2:front')).toEqual({ kind: 'intro', chapter: 2 });
+  });
+});
+
+describe('quoted cells', () => {
+  const header = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote';
+
+  it('reads an RFC 4180 quoted cell that spans lines and doubles its quotes', () => {
+    const text = `${header}\n1:1\tq1\t\t\tλόγος\t1\t"First line\nsecond line with ""a phrase"""\n1:2\tq2\t\t\tθεός\t1\tNext.\n1:3\tq3\t\t\tθεός\t1\t"He said ""peace"""\n`;
+    expect(noteRows(text).map((row) => [row.id, row.note])).toEqual([
+      ['q1', 'First line\nsecond line with "a phrase"'],
+      ['q2', 'Next.'],
+      ['q3', 'He said "peace"'],
+    ]);
+    expect(readTsv(text).unparsed).toEqual([]);
+  });
+
+  it('keeps a cell that only begins with a quotation as it is written', () => {
+    const text = `${header}\n1:1\tq1\t\t\tλόγος\t1\t"Walk" is a metaphor for how a person lives.\n1:2\tq2\t\t\tθεός\t1\t"you live according to the truth"\n1:3\tq3\t\t\tθεός\t1\t"Unclosed\n`;
+    expect(noteRows(text).map((row) => row.note)).toEqual([
+      '"Walk" is a metaphor for how a person lives.',
+      '"you live according to the truth"',
+      '"Unclosed',
+    ]);
+    expect(readTsv(text).unparsed).toEqual([]);
+  });
+
+  it('reports the lines it could not read as a row', () => {
+    const text = `${header}\n1:1\tq1\t\t\tλόγος\t1\t"A note that\nbreaks" without closing well\n1:2\tq2\t\t\tθεός\n`;
+    expect(noteRows(text).map((row) => [row.id, row.note])).toEqual([
+      ['q1', '"A note that'],
+      ['q2', ''],
+    ]);
+    expect(readTsv(text).unparsed).toEqual([
+      { line: 3, columns: 1, expected: 7 },
+      { line: 4, columns: 5, expected: 7 },
+    ]);
   });
 });

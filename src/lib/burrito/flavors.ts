@@ -4,7 +4,7 @@ import { repositoryCode, type IngredientEntry } from './metadata';
 
 export type RowId = ResourceRow;
 
-type RowStatus = 'pinned' | 'provisional';
+type RowStatus = 'pinned' | 'app-written' | 'provisional';
 
 export type ListedIngredient = {
   readonly key: string;
@@ -39,6 +39,7 @@ export const mimeTypes = {
   markdown: 'text/markdown',
   yaml: 'text/yaml',
   mp3: 'audio/mpeg',
+  m4a: 'audio/mp4',
   jpeg: 'image/jpeg',
 } as const;
 
@@ -257,8 +258,6 @@ function storyFiles(ingredients: readonly ListedIngredient[]): RowMismatch | und
   return undefined;
 }
 
-const academyArticle = /^([^/]+)\/[^/]+\/01\.md$/;
-
 const configFile = 'config.yaml';
 
 function configsOf(ingredients: readonly ListedIngredient[]): ListedIngredient[] | RowMismatch {
@@ -285,20 +284,7 @@ function articleTree(ingredients: readonly ListedIngredient[]): RowMismatch | un
     return { path: 'ingredients', message: 'no Markdown article ingredient' };
   }
   const configs = configsOf(ingredients);
-  if (!Array.isArray(configs)) {
-    return configs;
-  }
-  const listed = new Set(configs.map((config) => config.path));
-  for (const ingredient of ofType(ingredients, mimeTypes.markdown)) {
-    const section = academyArticle.exec(ingredient.path)?.[1];
-    if (section !== undefined && !listed.has(`${section}/${configFile}`)) {
-      return {
-        path: `ingredients/${section}/${configFile}`,
-        message: `the Academy section ${section} has no ${configFile}`,
-      };
-    }
-  }
-  return undefined;
+  return Array.isArray(configs) ? undefined : configs;
 }
 
 function movementsPerStory(ingredients: readonly ListedIngredient[]): RowMismatch | undefined {
@@ -470,6 +456,10 @@ function provisional(id: RowId, resource: string, form: Omit<RowForm, 'resource'
   return { id, status: 'provisional', resource, forms: [{ resource, ...form }] };
 }
 
+function appWritten(id: RowId, resource: string, form: Omit<RowForm, 'resource'>): ContractRow {
+  return { id, status: 'app-written', resource, forms: [{ resource, ...form }] };
+}
+
 const provisionalRows: readonly ContractRow[] = [
   provisional('formation', 'Theological formation', {
     flavorType: provisionalFlavors.formation.flavorType,
@@ -477,13 +467,13 @@ const provisionalRows: readonly ContractRow[] = [
     appliesTo: always,
     check: movementsPerStory,
   }),
-  provisional('audio', 'Audio', {
+  appWritten('audio', 'Audio', {
     flavorType: provisionalFlavors.audio.flavorType,
     flavors: [provisionalFlavors.audio.flavor],
     appliesTo: always,
     check: scopedAudio,
   }),
-  provisional('images', 'Story images', {
+  appWritten('images', 'Story images', {
     flavorType: provisionalFlavors.images.flavorType,
     flavors: [provisionalFlavors.images.flavor],
     appliesTo: always,

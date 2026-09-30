@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { audioPackId, languagePackId } from '@lib/domain/pack';
-import { installFromCatalog } from '../install';
+import { installFromCatalog, withFormation } from '../install';
 import { scenario } from '../scenario';
 
 const unfoldingWord = ['unfoldingWord'];
@@ -14,17 +14,17 @@ export default scenario(
     const corpus = device.kernel.corpus;
     assert.deepEqual(corpus.summary('qaa'), {}, 'nothing is counted before a pack is installed');
 
-    await installFromCatalog(device, [
-      languagePackId('qaa'),
-      languagePackId('qab'),
-      audioPackId('qaa', 'qaa_ult-audio'),
-    ]);
+    await installFromCatalog(
+      device,
+      [languagePackId('qaa'), languagePackId('qab'), audioPackId('qaa', 'qaa_ult')],
+      withFormation,
+    );
 
     const count = (items: number) => ({ burritos: 1, items, publishers: unfoldingWord });
     assert.deepEqual(corpus.summary('qaa'), {
       literal: count(2),
       simplified: count(2),
-      notes: count(6),
+      notes: count(8),
       wordLinks: count(6),
       questions: count(4),
       words: count(6),

@@ -1,6 +1,7 @@
 import { readArchive } from '@lib/burrito/archive';
 import type { ContractRow, RowId } from '@lib/burrito/flavors';
 import { readProvenance } from '@lib/burrito/metadata';
+import { unparsedTsv, unparsedTsvMessage } from '@lib/burrito/unparsed';
 import { validate, type ValidationReport } from '@lib/burrito/validate';
 import { fixtureResponses } from '@sim/fixtures/load';
 import { fixtureRows } from '@sim/fixtures/rows';
@@ -12,9 +13,7 @@ const expectedFixtureRows: readonly (readonly [RegExp, RowId])[] = [
   [/_obs-tf$/, 'formation'],
   [/_obs-(tn|sq|tq|twl)$/, 'storyHelps'],
   [/_obs$/, 'stories'],
-  [/-audio$/, 'audio'],
-  [/^obs-images$/, 'images'],
-  [/_(ult|ust|uhb|ugnt)$/, 'text'],
+  [/_(ult|ust|t4t|bsb|uhb|ugnt)$/, 'text'],
   [/_tn$/, 'notes'],
   [/_twl$/, 'wordLinks'],
   [/_tq$/, 'questions'],
@@ -55,7 +54,11 @@ function checkFixture(
   if (!archive.ok) {
     return { line: `FAIL  ${label}: ${archive.rule} at ${archive.path}: ${archive.message}`, failed: true };
   }
-  return describe(label, validate(archive.files, { rows }), expected);
+  const outcome = describe(label, validate(archive.files, { rows }), expected);
+  const unparsed = unparsedTsvMessage(unparsedTsv(archive.files));
+  return unparsed === undefined
+    ? outcome
+    : { line: `${outcome.line}\nFAIL  ${label}: ${unparsed}`, failed: true };
 }
 
 async function online(): Promise<Outcome[]> {

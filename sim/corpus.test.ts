@@ -10,7 +10,7 @@ import { archiveUrlOf } from '@lib/domain/release';
 import { fromCatalog, fromFile } from '@lib/packs/source';
 import type { InstallOutcome, InstalledPack } from '@lib/packs/types';
 import type { SimDevice } from './device';
-import { installFromCatalog } from './install';
+import { installFromCatalog, withFormation } from './install';
 import { createWorld } from './world';
 
 function reference(text: string): Reference {
@@ -24,7 +24,7 @@ function reference(text: string): Reference {
 async function phone(packs: readonly PackId[]) {
   const device = createWorld().device('phone');
   await device.start();
-  await installFromCatalog(device, packs);
+  await installFromCatalog(device, packs, withFormation);
   return device;
 }
 
@@ -106,16 +106,16 @@ describe('corpus stories', () => {
       [
         2,
         expect.stringMatching(
-          /^packs\/image\/obs\/[^/]+\/unfoldingWord\/obs-images\/ingredients\/images\/obs-en-01-02\.jpg$/,
+          /^packs\/image\/obs\/[^/]+\/unfoldingWord\/en_obs\/ingredients\/images\/obs-en-01-02\.jpg$/,
         ),
-        'obs-images',
+        'en_obs',
       ],
       [
         3,
         expect.stringMatching(
-          /^packs\/image\/obs\/[^/]+\/unfoldingWord\/obs-images\/ingredients\/images\/obs-en-01-03\.jpg$/,
+          /^packs\/image\/obs\/[^/]+\/unfoldingWord\/en_obs\/ingredients\/images\/obs-en-01-03\.jpg$/,
         ),
-        'obs-images',
+        'en_obs',
       ],
     ]);
     for (const frame of story?.frames ?? []) {
@@ -501,5 +501,23 @@ describe('corpus follows Packs through PackInstalled and PackRemoved (LA-2, LA-6
     const passage = await device.kernel.corpus.passage(reference('RUT 1:16'), { language: 'qaa' });
     expect(passage?.notes.map((note) => note.provenance.tag)).toEqual(['v1']);
     expect(await notesReleases(device)).toEqual(['qaa_tn@v1']);
+  });
+});
+
+describe('corpus note attachment', () => {
+  it('counts the quoted notes of each installed notes burrito and how many attach to a word', async () => {
+    const device = await phone([qaa]);
+    const [notes, ...others] = await device.kernel.corpus.attachment('qaa');
+    expect(others).toEqual([]);
+    expect(notes?.provenance.resource).toBe('qaa_tn');
+    expect(notes?.text).toBe('qaa_ult');
+    expect(notes?.books).toEqual({
+      RUT: { quoted: 2, attached: 1 },
+      '3JN': { quoted: 3, attached: 3 },
+    });
+    expect([notes?.quoted, notes?.attached]).toEqual([5, 4]);
+    const letter = await device.kernel.corpus.attachment('qaa', ['3JN']);
+    expect(letter[0]?.books).toEqual({ '3JN': { quoted: 3, attached: 3 } });
+    expect(await device.kernel.corpus.attachment('qab')).toEqual([]);
   });
 });

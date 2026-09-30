@@ -1,7 +1,8 @@
 # Provisional flavors for formation, audio and story images
 
-Status: proposed, awaiting human approval. Revised 2026-09-29 after GitHub Actions run 36618141715 read the real
-catalog and archives (see "Revision" at the end). The code behind it is confined to named constants so that approval,
+Status: approved in issue #8 on 2026-09-30, with its open question answered (see "Decision" at the end) and recorded
+as ADR 0006. Revised 2026-09-29 after GitHub Actions run 36618141715 read the real catalog and archives (see
+"Revision" at the end). The code behind it is confined to named constants so that approval,
 rejection or an upstream pin changes one place.
 
 ## Problem
@@ -101,3 +102,17 @@ carried, and the shape of the catalog the sim serves.
   It also reopens ADR 0002 (content enters only as a burrito). Nothing is built until that is decided.
 - **Images.** Unchanged; no image release was sampled.
 
+## Decision (issue #8, 2026-09-30)
+
+- **Images.** The live catalog has no `OBS Images` subject. The app builds the Image Pack itself from the 360px
+  pictures the `unfoldingWord/en_obs` release cites on `cdn.door43.org`, wraps them in an `x-obsImages` burrito
+  with that release's provenance and licence, and validates it like any other. Per-language overrides stay as
+  designed (an `image/*` ingredient at the same basename inside the language's own stories burrito).
+- **Audio.** The app builds an Audio Pack from a release's `.m4a` (or `.mp3`) assets, flagged by
+  `attachment_types.audio`, in a `scripture/audioTranslation` burrito keyed by story (`OBS: [n]`) for Open Bible
+  Stories and by book and chapter for a Bible, with `audio/mp4` admitted and provenance from the release's catalog
+  entry and the `LICENSE.md` at its tag.
+- **Formation.** The provisional `peripheral/x-OBSTheologicalFormation` row stays until DCS generates the archive,
+  and formation leaves the default language pack until then (issue #10).
+- ADR 0002 gains one clause, recorded as ADR 0006: the app may write a burrito around assets the catalog lists,
+  and what it writes passes the same validator. In code the audio and images rows are `status: 'app-written'`.

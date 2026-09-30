@@ -45,6 +45,7 @@ export const shots: readonly Shot[] = [
   { name: 'home', path: '/' },
   { name: 'study', path: '/study' },
   { name: 'study-passage', path: '/study?reference=RUT%201:16' },
+  { name: 'study-chapter', path: '/study?reference=RUT%201' },
   { name: 'study-library', path: '/study/library' },
   { name: 'study-search', path: '/study/search' },
   { name: 'study-article', path: '/study/article/tw/bible/kt/god' },

@@ -1,6 +1,7 @@
 import { fromUtf8, metadataPath, type BurritoFiles } from '../burrito/files';
 import { isRecord } from '../burrito/metadata';
 import type { Files } from '../ports';
+import { sharedLookup, type SharedLookup } from './shared';
 
 export function parentOf(path: string): string {
   const index = path.lastIndexOf('/');
@@ -30,10 +31,17 @@ export async function readBurrito(files: Files, root: string): Promise<BurritoFi
   }
   const metadata = await files.readBytes(metadataFile);
   burrito.set(metadataPath, metadata);
+  let shared: SharedLookup | undefined;
   for (const path of listedPaths(metadata)) {
     const file = `${root}/${path}`;
     if (await files.exists(file)) {
       burrito.set(path, await files.readBytes(file));
+      continue;
+    }
+    shared ??= await sharedLookup(files, root);
+    const found = await shared(path);
+    if (found !== undefined) {
+      burrito.set(path, found);
     }
   }
   return burrito;

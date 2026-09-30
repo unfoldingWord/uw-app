@@ -168,6 +168,17 @@ const johnGreek = {
   love: { content: 'ἀγαπῶ', lemma: 'ἀγαπάω', strong: 'G00250' },
   in: { content: 'ἐν', lemma: 'ἐν', strong: 'G17220' },
   truth: { content: 'ἀληθείᾳ', lemma: 'ἀλήθεια', strong: 'G02250' },
+  for: { content: 'γὰρ', lemma: 'γάρ', strong: 'G10630' },
+  rejoiced: { content: 'ἐχάρην', lemma: 'χαίρω', strong: 'G54630' },
+  greatly: { content: 'λίαν', lemma: 'λίαν', strong: 'G30290' },
+  coming: { content: 'ἐρχομένων', lemma: 'ἔρχομαι', strong: 'G20640' },
+  brothers: { content: 'ἀδελφῶν', lemma: 'ἀδελφός', strong: 'G00800' },
+  and: { content: 'καὶ', lemma: 'καί', strong: 'G25320' },
+  testifying: { content: 'μαρτυρούντων', lemma: 'μαρτυρέω', strong: 'G31400' },
+  your: { content: 'σου', lemma: 'σύ', strong: 'G47710' },
+  justAs: { content: 'καθὼς', lemma: 'καθώς', strong: 'G25310' },
+  you: { content: 'σὺ', lemma: 'σύ', strong: 'G47710' },
+  walk: { content: 'περιπατεῖς', lemma: 'περιπατέω', strong: 'G40430' },
 } as const;
 
 export const literalBooks: readonly Book[] = [
@@ -251,9 +262,22 @@ export const literalBooks: readonly Book[] = [
       {
         number: 3,
         parts: [
-          plain(
-            'For I rejoiced greatly when brothers came and testified about your truth, even as you walk in truth.',
-          ),
+          aligned(johnGreek.for, 'For'),
+          aligned(johnGreek.rejoiced, 'I rejoiced'),
+          aligned(johnGreek.greatly, 'greatly'),
+          plain('when'),
+          aligned(johnGreek.brothers, 'brothers'),
+          aligned(johnGreek.coming, 'came'),
+          aligned(johnGreek.and, 'and'),
+          aligned(johnGreek.testifying, 'testified'),
+          plain('about'),
+          aligned(johnGreek.your, 'your'),
+          aligned(johnGreek.truth, 'truth', ','),
+          aligned(johnGreek.justAs, 'even as'),
+          aligned(johnGreek.you, 'you'),
+          aligned(johnGreek.walk, 'walk'),
+          aligned(johnGreek.in, 'in'),
+          aligned(johnGreek.truth, 'truth', '.'),
         ],
       },
       {

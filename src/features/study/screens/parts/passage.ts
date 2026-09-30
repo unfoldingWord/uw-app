@@ -1,9 +1,10 @@
 import { parseReference } from '@lib/domain/reference';
-import type { Note, Passage, Question, Verse, WordLink, WordSpan } from '../../service';
+import type { Introduction, Note, Passage, Question, Verse, WordLink, WordSpan } from '../../service';
 
 export type VerseKey = { readonly chapter: number; readonly verse: number };
 
 export type VerseHelps = {
+  readonly intros: readonly Introduction[];
   readonly notes: readonly Note[];
   readonly wordLinks: readonly WordLink[];
   readonly questions: readonly Question[];
@@ -32,8 +33,16 @@ function inVerse(item: { reference: string; words?: readonly WordSpan[] }, at: V
     : covers(item.reference, at);
 }
 
+function opensChapterAt(passage: Passage, at: VerseKey): boolean {
+  const first = passage.text.verses.find((verse) => verse.chapter === at.chapter);
+  return first !== undefined && first.verse === at.verse;
+}
+
 export function helpsAt(passage: Passage, at: VerseKey): VerseHelps {
   return {
+    intros: opensChapterAt(passage, at)
+      ? passage.intros.filter((intro) => (intro.chapter ?? 1) === at.chapter)
+      : [],
     notes: passage.notes.filter((note) => inVerse(note, at)),
     wordLinks: passage.wordLinks.filter((link) => inVerse(link, at)),
     questions: passage.questions.filter((question) => covers(question.reference, at)),
@@ -41,7 +50,9 @@ export function helpsAt(passage: Passage, at: VerseKey): VerseHelps {
 }
 
 export function hasHelps(passage: Passage): boolean {
-  return passage.notes.length + passage.wordLinks.length + passage.questions.length > 0;
+  return (
+    passage.intros.length + passage.notes.length + passage.wordLinks.length + passage.questions.length > 0
+  );
 }
 
 export function keyOf(verse: Verse): VerseKey {

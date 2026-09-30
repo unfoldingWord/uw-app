@@ -13,7 +13,7 @@ import {
   tsv,
   type HelpsTable,
 } from './helps.ts';
-import { greyJpeg, silentMp3 } from './media.ts';
+import { greyJpeg, silentM4a } from './media.ts';
 import {
   bookUsfm,
   frontMatterUsfm,
@@ -29,6 +29,7 @@ import {
 import {
   formationSessions,
   frameImageName,
+  frameImageUrl,
   sectionMarkdown,
   storiesFor,
   storyFileName,
@@ -48,6 +49,8 @@ type CatalogFlavor = { readonly flavorType: string; readonly flavor: string };
 
 export type FixtureStatement = { readonly statement: string; readonly bare: boolean };
 
+export type FixtureAsset = { readonly name: string; readonly bytes: Uint8Array };
+
 export type FixtureRelease = {
   readonly publisher: string;
   readonly resource: string;
@@ -65,6 +68,7 @@ export type FixtureRelease = {
   readonly currentScope?: Scope;
   readonly books: readonly string[];
   readonly ingredients: readonly IngredientInput[];
+  readonly audioAssets?: readonly FixtureAsset[];
 };
 
 const languages = {
@@ -109,6 +113,7 @@ const languages = {
 const released = '2026-09-01T00:00:00Z';
 const unfoldingWord = 'unfoldingWord';
 const door43Catalog = 'Door43-Catalog';
+const thirdPartyPublisher = 'Worldview';
 
 const textFlavor = {
   usfmVersion: '3.0',
@@ -199,12 +204,14 @@ function imageOverride(): IngredientInput {
   };
 }
 
-function imagePackIngredients(): IngredientInput[] {
+export type CdnImage = { readonly url: string; readonly name: string; readonly bytes: Uint8Array };
+
+export function cdnImages(): readonly CdnImage[] {
   return storiesFor('en').flatMap((story) =>
     story.frames.map((_, index) => ({
-      path: `${storyImagesDirectory}${frameImageName(story.number, index + 1)}`,
+      url: frameImageUrl(story.number, index + 1),
+      name: frameImageName(story.number, index + 1),
       bytes: greyJpeg(story.number * 10 + index + 1),
-      mimeType: mimeTypes.jpeg,
     })),
   );
 }
@@ -230,7 +237,7 @@ function storyHelp(table: HelpsTable, scope?: Scope): IngredientInput[] {
 
 const storiesScope: Scope = { OBS: [] };
 
-const audioFrames = 20;
+const audioSeconds = 20;
 
 function release(
   base: Omit<FixtureRelease, 'released' | 'books' | 'publisher'> & {
@@ -257,6 +264,7 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     currentScope: { ...bookScope(literalBooks), NEH: [] },
     books: bookCodes(literalBooks),
     ingredients: literalIngredients(),
+    audioAssets: [{ name: 'qaa_ult_v1_rut_001_128kbps.m4a', bytes: silentM4a(audioSeconds) }],
   }),
   release({
     resource: 'qaa_ust',
@@ -271,6 +279,35 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     currentScope: bookScope(simplifiedBooks),
     books: bookCodes(simplifiedBooks),
     ingredients: textIngredients(simplifiedBooks, 'ust', 'qaa'),
+  }),
+  release({
+    resource: 'qaa_t4t',
+    tag: 'v1',
+    language: languages.qaa,
+    subject: 'Bible',
+    title: 'Fixture Translation for Translators',
+    abbreviation: 'T4T',
+    flavorType: 'scripture',
+    flavor: 'textTranslation',
+    flavorDetails: textFlavor,
+    currentScope: bookScope(simplifiedBooks),
+    books: bookCodes(simplifiedBooks),
+    ingredients: textIngredients(simplifiedBooks, 't4t', 'qaa'),
+  }),
+  release({
+    publisher: thirdPartyPublisher,
+    resource: 'qaa_bsb',
+    tag: 'v1',
+    language: languages.qaa,
+    subject: 'Bible',
+    title: 'Fixture Berean Standard Bible',
+    abbreviation: 'BSB',
+    flavorType: 'scripture',
+    flavor: 'textTranslation',
+    flavorDetails: textFlavor,
+    currentScope: bookScope(simplifiedBooks),
+    books: bookCodes(simplifiedBooks),
+    ingredients: textIngredients(simplifiedBooks, 'bsb', 'qaa'),
   }),
   release({
     resource: 'qaa_tn',
@@ -347,6 +384,10 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     flavor: 'textStories',
     statement: storiesStatement,
     ingredients: [...storyIngredients('qaa'), imageOverride()],
+    audioAssets: [
+      { name: 'qaa_obs_v1_01_128kbps.m4a', bytes: silentM4a(audioSeconds) },
+      { name: 'qaa_obs_v1_01_64kbps.m4a', bytes: silentM4a(audioSeconds / 2) },
+    ],
   }),
   release({
     publisher: door43Catalog,
@@ -409,27 +450,6 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     flavorType: provisionalFlavors.formation.flavorType,
     flavor: provisionalFlavors.formation.flavor,
     ingredients: formationIngredients(),
-  }),
-  release({
-    resource: 'qaa_ult-audio',
-    tag: 'v1',
-    language: languages.qaa,
-    subject: 'Bible Audio',
-    title: 'Fixture Literal Text Audio',
-    abbreviation: 'ult-audio',
-    flavorType: provisionalFlavors.audio.flavorType,
-    flavor: provisionalFlavors.audio.flavor,
-    flavorDetails: { performance: ['singleVoice', 'reading'], formats: { format1: { compression: 'mp3' } } },
-    currentScope: { RUT: ['1'] },
-    books: ['rut'],
-    ingredients: [
-      {
-        path: 'RUT/RUT_001.mp3',
-        bytes: silentMp3(audioFrames),
-        mimeType: mimeTypes.mp3,
-        scope: { RUT: ['1'] },
-      },
-    ],
   }),
   release({
     resource: 'qab_obs',
@@ -505,16 +525,5 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     currentScope: bookScope(greekBooks),
     books: bookCodes(greekBooks),
     ingredients: originalIngredients(greekBooks, 'ugnt', 'el-x-koine'),
-  }),
-  release({
-    resource: 'obs-images',
-    tag: 'v1',
-    language: languages.zxx,
-    subject: 'OBS Images',
-    title: 'Open Bible Stories Images (fixture)',
-    abbreviation: 'obs-images',
-    flavorType: provisionalFlavors.images.flavorType,
-    flavor: provisionalFlavors.images.flavor,
-    ingredients: imagePackIngredients(),
   }),
 ];

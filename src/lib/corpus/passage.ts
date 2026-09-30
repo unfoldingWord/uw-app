@@ -1,16 +1,18 @@
 import { formatReference, type Reference } from '../domain/reference';
 import { attachQuote, coversVerse } from './alignment';
 import type { Library } from './library';
-import { resolveLink, wordLinkArticle } from './links';
+import { resolveLink, wordLinkArticle, type LinkBase } from './links';
 import { audioClips, bookNotes, bookQuestions, bookWordLinks, textBook } from './loaders';
 import { renderMarkdown } from './markdown';
-import { isStudyResource, readingOfKind } from './readings';
+import { isPairText, isStudyResource, readingOfKind } from './readings';
 import type { Entry } from './tables';
-import type { HelpsReference } from './tsv';
+import type { HelpsReference, NoteRow } from './tsv';
 import type { UsfmBook } from './usfm';
 import type {
   AudioClip,
   ChapterTitle,
+  CorpusKind,
+  Introduction,
   Note,
   Passage,
   PassageOptions,
@@ -50,7 +52,9 @@ function chaptersOf(reference: Reference): number[] {
 
 function helpsReferenceText(book: string, reference: HelpsReference): string {
   if (reference.kind === 'intro') {
-    return book;
+    return reference.chapter === undefined
+      ? book
+      : formatReference({ book, start: { chapter: reference.chapter } });
   }
   const [first] = reference.ranges;
   const last = reference.ranges.at(-1);
@@ -72,19 +76,105 @@ function helpsCover(reference: HelpsReference, verses: readonly Verse[]): boolea
   return verses.some((verse) => coversVerse(reference, verse));
 }
 
+function isChoice(kind: CorpusKind): kind is TextChoice {
+  return kind === 'literal' || kind === 'simplified';
+}
+
+function pairPublisher(texts: readonly Entry[]): string | undefined {
+  return texts.find(
+    (entry) => isChoice(entry.kind) && isPairText(entry.provenance.resource, entry.language, entry.kind),
+  )?.provenance.publisher;
+}
+
+export function readingTexts(library: Library, language: string, book: string): readonly Entry[] {
+  const texts = library.of(language, textKinds).filter((entry) => entry.books.includes(book));
+  const publisher = pairPublisher(texts);
+  if (publisher === undefined) {
+    return texts;
+  }
+  const paired = (entry: Entry): number =>
+    isChoice(entry.kind) && isPairText(entry.provenance.resource, entry.language, entry.kind) ? 0 : 1;
+  return texts
+    .filter((entry) => entry.kind === 'original' || entry.provenance.publisher === publisher)
+    .map((entry, order) => ({ entry, order }))
+    .sort((left, right) => paired(left.entry) - paired(right.entry) || left.order - right.order)
+    .map(({ entry }) => entry);
+}
+
+export function defaultText(texts: readonly Entry[], wanted?: Reading): Entry | undefined {
+  const pick = (kind: Reading): Entry | undefined => texts.find((entry) => entry.kind === kind);
+  return wanted === undefined ? (pick('literal') ?? pick('simplified') ?? pick('original')) : pick(wanted);
+}
+
 function chosenText(
   library: Library,
   reference: Reference,
   options: PassageOptions,
 ): { entry: Entry | undefined; texts: readonly Entry[] } {
-  const texts = library
-    .of(options.language, textKinds)
-    .filter((entry) => entry.books.includes(reference.book));
-  const wanted = options.text;
-  const pick = (kind: Reading): Entry | undefined => texts.find((entry) => entry.kind === kind);
-  const entry =
-    wanted === undefined ? (pick('literal') ?? pick('simplified') ?? pick('original')) : pick(wanted);
-  return { entry, texts };
+  const texts = readingTexts(library, options.language, reference.book);
+  return { entry: defaultText(texts, options.text), texts };
+}
+
+function padded(value: number): string {
+  return String(value).padStart(2, '0');
+}
+
+function noteBase(book: string, reference: HelpsReference): LinkBase {
+  const folder = book.toLowerCase();
+  if (reference.kind === 'intro') {
+    const chapter = reference.chapter === undefined ? 'front' : padded(reference.chapter);
+    return { resource: 'other', path: `${folder}/${chapter}/intro.md` };
+  }
+  const start = reference.ranges[0]?.start;
+  return {
+    resource: 'other',
+    path:
+      start === undefined
+        ? `${folder}/front/intro.md`
+        : `${folder}/${padded(start.chapter)}/${padded(start.verse)}.md`,
+  };
+}
+
+function noteBlocks(library: Library, language: string, book: string, row: NoteRow) {
+  return renderMarkdown(row.note, {
+    base: noteBase(book, row.reference),
+    titleOf: (target) => library.titleOf(language, target),
+  });
+}
+
+function opensChapter(verses: readonly Verse[], chapter: number): boolean {
+  return verses.some((verse) => verse.chapter === chapter && verse.verse <= 1);
+}
+
+function introCovers(reference: HelpsReference, verses: readonly Verse[]): boolean {
+  if (reference.kind !== 'intro') {
+    return false;
+  }
+  return opensChapter(verses, reference.chapter ?? 1);
+}
+
+async function introsFor(
+  library: Library,
+  language: string,
+  book: string,
+  verses: readonly Verse[],
+): Promise<Introduction[]> {
+  const intros: Introduction[] = [];
+  for (const entry of library.of(language, ['notes']).filter((item) => item.books.includes(book))) {
+    for (const row of await bookNotes(library, entry, book)) {
+      if (row.reference.kind !== 'intro' || !introCovers(row.reference, verses)) {
+        continue;
+      }
+      const intro = {
+        id: row.id,
+        study: isStudyResource(entry.provenance.resource, entry.language),
+        blocks: noteBlocks(library, language, book, row),
+        provenance: entry.provenance,
+      };
+      intros.push(row.reference.chapter === undefined ? intro : { ...intro, chapter: row.reference.chapter });
+    }
+  }
+  return intros.sort((left, right) => (left.chapter ?? 0) - (right.chapter ?? 0));
 }
 
 async function notesFor(
@@ -99,19 +189,15 @@ async function notesFor(
       if (!helpsCover(row.reference, verses)) {
         continue;
       }
-      const support =
-        row.support === '' ? undefined : resolveLink(row.support, { resource: 'other', path: '' });
-      const blocks = renderMarkdown(row.note, {
-        base: { resource: 'other', path: '' },
-        titleOf: (target) => library.titleOf(language, target),
-      });
+      const base = noteBase(book, row.reference);
+      const support = row.support === '' ? undefined : resolveLink(row.support, base);
       const note = {
         id: row.id,
         study: isStudyResource(entry.provenance.resource, entry.language),
         reference: helpsReferenceText(book, row.reference),
         quote: row.quote,
         occurrence: row.occurrence,
-        blocks,
+        blocks: noteBlocks(library, language, book, row),
         words: attachQuote(row.quote, row.occurrence, row.reference, verses),
         provenance: entry.provenance,
       };
@@ -227,6 +313,7 @@ export async function assemblePassage(
       provenance: entry.provenance,
     },
     availableTexts: available.length === choices.length ? available : [],
+    intros: await introsFor(library, language, reference.book, verses),
     notes: await notesFor(library, language, reference.book, verses),
     wordLinks: await wordLinksFor(library, language, reference.book, verses),
     questions: await questionsFor(library, language, reference.book, verses),

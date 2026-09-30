@@ -20,6 +20,8 @@ export const study = {
   'study.helps.heading': '{helps} · verse {verse}',
   'study.helps.tapTerm': 'Tap a term to open its article.',
   'study.helps.noNotes': 'No notes for this verse.',
+  'study.helps.bookIntro': 'About this book',
+  'study.helps.chapterIntro': 'About chapter {chapter}',
   'study.helps.noWordLinks': 'No word links for this verse.',
   'study.helps.noQuestions': 'No questions for this verse.',
   'study.helps.notDownloaded': 'Helps for this passage are not on this phone yet.',

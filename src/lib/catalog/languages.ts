@@ -1,11 +1,12 @@
 import { compareText } from '../order';
 import { englishNameOf } from './languageNames';
 import { compareReleases } from './normalize';
-import type { CatalogLanguage, CatalogRelease } from './types';
+import type { CatalogLanguage, CatalogRelease, LanguageName } from './types';
 
 export function languagesOf(
   releases: readonly CatalogRelease[],
   installed: ReadonlySet<string>,
+  names: ReadonlyMap<string, LanguageName> = new Map(),
 ): CatalogLanguage[] {
   const byLanguage = new Map<string, CatalogRelease[]>();
   for (const release of releases) {
@@ -17,11 +18,12 @@ export function languagesOf(
     .map(([language, items]) => {
       const [first] = [...items].sort(compareReleases);
       const autonym = first?.autonym ?? language;
+      const named = names.get(language);
       return {
         language,
         autonym,
-        englishName: englishNameOf(language, autonym),
-        direction: first?.direction ?? 'ltr',
+        englishName: named?.englishName ?? englishNameOf(language, autonym),
+        direction: named?.direction ?? first?.direction ?? 'ltr',
         resources: new Set(items.map((item) => item.resource)).size,
         installed: installed.has(language),
       };

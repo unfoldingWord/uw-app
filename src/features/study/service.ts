@@ -17,6 +17,7 @@ import type { Kernel } from '@lib/kernel';
 import type { InstallOutcome } from '@lib/packs/types';
 import { clipControls, clockTime, type ClipControls } from '@lib/player/controls';
 import type { PlayerStatus } from '@lib/player/player';
+import { isStoryAudio } from '@lib/catalog/built';
 import { libraryCards, type LibraryCard } from './library';
 import { studyWords, type StudyWords } from './strings';
 
@@ -26,6 +27,7 @@ export type {
   Block,
   FullTextHit,
   Inline,
+  Introduction,
   LinkTarget,
   Note,
   Passage,
@@ -163,7 +165,7 @@ export function createStudyService(kernel: Kernel): StudyService {
     }
     const release = kernel.catalog
       .releases(passage.language)
-      .find((item) => item.kind === 'audio' && item.pack !== undefined);
+      .find((item) => item.kind === 'audio' && item.pack !== undefined && !isStoryAudio(item));
     if (release?.pack === undefined) {
       return { state: 'none' };
     }

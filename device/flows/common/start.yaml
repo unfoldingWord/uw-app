@@ -1,0 +1,20 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    text: 'Allow'
+    optional: true
+- extendedWaitUntil:
+    visible: 'Continue in English'
+    timeout: 90000
+- waitForAnimationToEnd:
+    timeout: 5000
+- tapOn:
+    text: 'Continue in English'
+    retryTapIfNoChange: true
+- extendedWaitUntil:
+    visible: 'Switch theme'
+    timeout: 30000
+- waitForAnimationToEnd:
+    timeout: 5000

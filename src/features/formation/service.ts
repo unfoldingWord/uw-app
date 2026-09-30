@@ -102,7 +102,7 @@ export function createFormationService(kernel: Kernel): FormationService {
     languageName: (code) =>
       kernel.catalog.languages().find((item) => item.language === code)?.autonym ?? code,
     async download(pack) {
-      const outcome = await kernel.packs.installFromCatalog(pack);
+      const outcome = await kernel.packs.installFromCatalog(pack, { withRows: ['formation'] });
       return outcome.ok ? { ok: true } : { ok: false, code: outcome.code };
     },
     picture: (frame) => (frame.image === undefined ? undefined : kernel.media.uriOf(frame.image.path)),

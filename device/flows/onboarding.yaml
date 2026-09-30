@@ -1,0 +1,36 @@
+appId: ${APP_ID}
+name: First launch and onboarding through to Home
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    text: 'Allow'
+    optional: true
+- extendedWaitUntil:
+    visible: 'Continue in English'
+    timeout: 90000
+- takeScreenshot: onboarding-1-welcome
+- assertVisible: 'Choose your language'
+- tapOn: 'Choose your language'
+- extendedWaitUntil:
+    visible: 'Search languages'
+    timeout: 60000
+- takeScreenshot: onboarding-2-choose-language
+- tapOn:
+    text: 'Back'
+    above: 'Search languages'
+- extendedWaitUntil:
+    visible: 'Continue in English'
+    timeout: 15000
+- waitForAnimationToEnd:
+    timeout: 5000
+- tapOn:
+    text: 'Continue in English'
+    retryTapIfNoChange: true
+- extendedWaitUntil:
+    visible: 'Switch theme'
+    timeout: 30000
+- assertVisible: 'Good (morning|afternoon|evening)'
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: onboarding-3-home

@@ -26,9 +26,21 @@ _Avoid_: index, feed, DCS (that is the upstream, not the catalog)
 One Scripture Burrito: a directory or archive with a metadata file and ingredients. The file form of one resource.
 _Avoid_: bundle, zip, archive, container
 
+**App-written Burrito**:
+A burrito the app writes itself around assets the catalog lists, because DCS generates no archive for them: the Image Pack from the pictures `en_obs` cites, and an Audio Pack from a release's audio assets (ADR 0006). It passes the same validator as a DCS burrito.
+_Avoid_: converted, generated, synthetic
+
 **Pack**:
 A set of resources installed on the device and replaced as one unit. Three kinds: **Language Pack** (every text resource for one language), **Image Pack** (the Open Bible Stories images, shared across languages), **Audio Pack** (audio for one resource in one language).
 _Avoid_: bundle, download, library (that is a screen)
+
+**Default Pack**:
+What a Language Pack holds when the leader downloads a language in one action: the preferred publisher's own Literal and Simplified text and the helps. Other publishers' texts and releases whose row has no source yet are **Optional Downloads**, listed in the library with their publisher and never installed unless the leader chooses them.
+_Avoid_: core set, bundle
+
+**Partial Pack**:
+A Language Pack installed without one or more of its optional resources because their download failed. The text is required: a failed Literal or Simplified text fails the whole install. The journal and the Languages screen name each failed release, and Retry installs only what is missing.
+_Avoid_: broken pack, incomplete download
 
 **Source**:
 Where a pack's burritos come from: the Catalog, a Peer, or a File.
@@ -45,6 +57,10 @@ _Avoid_: ULT, UST, GLT, GST in anything a user sees; Bible (ambiguous)
 **Helps**:
 The verse-bound resources shown with a passage: **Notes**, **Word Links** and **Questions**.
 _Avoid_: resource strip, annotations, translation helps
+
+**Introduction**:
+A **Note** on a whole book or a whole chapter rather than on a verse. A passage that opens the book carries the book's introduction, and a passage that opens a chapter carries that chapter's; they are shown first among the notes.
+_Avoid_: intro note, overview, general notes
 
 **Article**:
 A standalone piece of reference text: a **Word** entry (Translation Words) or an **Academy** article (Translation Academy).

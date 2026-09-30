@@ -3,6 +3,101 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-30 Integration: catalog and packs onto the corpus batch
+
+Node v22.22.2. Nothing ran on a phone and nothing ran against live DCS (HTTP 403 from the sandbox).
+
+- Cherry-picked the catalog and packs batch (#10, #12, #17, #14, #8, #15, #16, #54) onto the corpus batch
+  (#11, #12, #13, #18). Only this tracker conflicted. `npm run fixtures` after both sides left every fixture
+  byte-identical, and no scenario count changed.
+- `scripts/contract-ingest.ts` now calls `kernel.corpus.attachment('en', books)` directly for GEN RUT PSA MAT JHN
+  ROM 3JN, prints each book's rate and fails below 95 percent overall or when a book is not counted.
+- Dry-run of the ingest step with `fetch` served from `sim/fixtures/routes.json`: runs end to end; its
+  assertions fail as expected on the fixture world and the en_tn line reports no quoted notes. The same
+  `attachment` read on the fixture `qaa` pack counts RUT 1 of 2 and 3JN 3 of 3.
+- `npm run verify`: green (669 tests in 64 files, 54 scenarios, 7 checks, trace 51 Must and 0 unproven, contract
+  21 fixture burritos, live skipped offline).
+- Not verified: the live en_tn rate, and how long the seven books take on a CI runner.
+
+## 2026-09-30 Catalog and packs on live data (#10, #12, #17, #14, #8, #15, #16, #54)
+
+Node v22.22.2 in a sandbox with no route to git.door43.org or cdn.door43.org (HTTP 403). Nothing ran on a
+phone and nothing ran against live DCS.
+
+- Red first: `LA-2.partial-pack-names-failed-release` failed before the installer change (formation still in the
+  defaults); `src/lib/packs/plan.test.ts` failed 4 of 4 before the default pair and publisher order; LA-1 failed
+  with `'Fixture A' !== 'Fixture language A'` and `catalog.test.ts` with `normalizeLanguageNames is not a
+  function` before the languages list; LA-3 and LA-4 failed with `pack.mixed-packs` with the app-built offer
+  disabled; `LA-6.word-links-share-words-payload` failed ("the same article is not extracted a second time")
+  before the Words payload was shared.
+- Mutations for #54, each run in this worktree and reverted: disabling the language override in
+  `corpus/reading.ts` `imageFor` turns LA-3 red; removing the on-disk size check in `install.ts`
+  `verifyOnDisk` turns LA-7 red; `textContentType="password"` on the onboarding name field turns ON-4 red.
+- `npm run verify`: green (661 tests in 63 files, 54 scenarios, 7 checks, trace 51 Must requirements and 0
+  unproven, contract 21 fixture burritos, live skipped offline; bundle android 1917 and iOS 1784 modules).
+- `npm run shots -- --only languages,study-audio`: 7 screenshots (light, dark, reduced blur, and right to left for
+  Languages), 0 console errors; the "More to download" section renders with each publisher. The "Not yet on this
+  phone" section has no shot (the fixture world installs whole packs).
+- The live CI step (`scripts/contract-ingest.ts`) was dry-run once against the fixture routes with `fetch`
+  replaced, to check it runs end to end; its assertions failed there as expected (21 entries, 3 languages). The
+  en_tn attachment assertion reports the corpus `attachment` read as missing until issue #11 lands.
+- Not verified: any live install, the real languages list shape (`lc`, `ang`, `ln`, `ld` is taken from issue
+  #14), release asset naming beyond `ahr_obs_v1_NN_128kbps.m4a` (Bible chapter asset names are an inference),
+  the raw `LICENSE.md` URL at a tag for audio, the size figures in PRD 8.4 after the change (derived, not
+  measured), story 1's picture and one chapter of audio on a phone (#8 asks for a recorded phone run).
+
+## 2026-09-30 Corpus: note attachment, reading choice, quoted TSV cells, introductions (#11, #12, #13, #18)
+
+Node v22.22.2; Chromium 141 through playwright-core 1.56.1 for the shots. Nothing ran on a phone. Nothing
+ran against git.door43.org or cdn.door43.org (HTTP 403 from the sandbox), so no live release was measured.
+
+- Red first, each observed before its change: `src/lib/corpus/alignment.test.ts` "when the target reorders
+  the original words" (3 tests, `expected [] to deeply equal ...`); ST-2 `j003` and `j004` on the newly
+  aligned 3 John 1:3 attached to `''`; ST-3 read "Ruth spoke in the unfoldingWord t4t." for Simplified;
+  `src/lib/corpus/tsv.test.ts` "quoted cells" (3 tests, the spanning note cut at `"First line`,
+  `readTsv is not a function`); tsv tests on `3:intro` and `2:front` and ST-2 `opening.intros` undefined.
+- #11: a quote attaches by an exact contiguous match in the rebuilt order, otherwise as an occurrence-aware
+  multiset in the verse (rarest word fixes the nth occurrence, other words take the instances nearest it).
+  New read `Corpus.attachment(language, books?)`; `sim/corpus.test.ts` counts qaa_tn: 5 quoted, 4 attached
+  (RUT 1:1 has no alignment). The fixture qaa_ult aligns 3 John 1:3 in English order; `npm run fixtures`
+  regenerated qaa_ult, qaa_tn and el-x-koine_ugnt.
+- #12: Literal and Simplified are the preferred publisher's ult/glt and ust/gst; ST-3 imports a same-publisher
+  t4t, another publisher's ust and the publisher's own ust and ult into qae and asserts the ust is read.
+- #18: `readTsv` reads RFC 4180 quoted cells only where needed and returns lines that are not rows;
+  `unparsedTsv` (src/lib/burrito/unparsed.ts) feeds `npm run contract` (fixtures fail on any, live notes them).
+- #13: `Passage.intros`, book-scoped note link base, intros first in the notes tab. `npm run shots -- --only
+  study-chapter,study-passage`: 8 shots; looked at study-chapter in light, dark and reduced blur: both
+  introduction cards render above the verse notes and the relative link reads "Ruth 1:16".
+- `npm run verify`: green (656 tests in 62 files, 52 scenarios, 7 checks, trace 0 unproven, contract 21
+  fixture burritos with live skipped offline, bundle android 1910 and iOS 1777 modules).
+- Not verified: the attachment rate on real en_tn, hi_tn or es-419_tn releases (the 95 percent floor is
+  agent A's live CI assertion over `Corpus.attachment`); the six hi_tn Acts rows on the real file; that the
+  multiset heuristic picks the right instance of a repeated word in real reordered verses (INFERRED from
+  the fixture cases only); the intro cards at dynamic type maximum and at 360 px; anything on a phone.
+## 2026-09-30 Device CI: Android emulator and iOS simulator workflow
+
+Node v22.22.2 in the sandbox. Nothing ran on a phone, an emulator or a simulator, and nothing has run in
+GitHub Actions yet: the sandbox has no `/dev/kvm`, no Xcode, and no route to dl.google.com, github.com
+releases or get.maestro.mobile.dev.
+
+- Wrote `.github/workflows/device.yml` (pull_request, workflow_dispatch) with jobs `android` (ubuntu-latest,
+  KVM, Java 17, `expo prebuild`, `:app:assembleRelease` for x86_64 signed with the prebuild debug keystore,
+  API 30 x86_64 google_apis emulator with 2048 MB RAM) and `ios` (macos-15, newest non-beta Xcode, `expo
+  prebuild` with pods, Release simulator build with signing off). Both run the Maestro flows, then the optional
+  download flow with `continue-on-error`, and upload `android-maestro`, `android-apk` and `ios-maestro`.
+- The Android job prints the APK size and the merged manifest permissions (`aapt2 dump permissions`) to the
+  log and the job summary, for the merged-manifest observation issue #26 asks for. Not yet observed.
+- Flows in `device/flows/`: `onboarding`, `tabs`, `theme`, `languages`, and `download-language` (tagged
+  `optional`), sharing `common/start.yaml`. They target controls by the English accessible names in
+  `src/lib/strings/en/`; no `testID` was added and no app code changed.
+- Observed here: `npx expo prebuild --platform android --no-install --clean` and `--platform ios
+  --no-install` succeed in a scratch copy (Linux, no SDK): package `org.unfoldingword.app`, Gradle 9.3.1,
+  release build type signed with `signingConfigs.debug`, Xcode scheme and workspace `unfoldingWord`, iOS
+  deployment target 16.4; `ExpoModulesCore` declares Swift 6.0, so Xcode 16 or later. The workflow and every
+  flow parse with the `yaml` package; the shell scripts pass `bash -n`; Prettier is clean.
+- Not verified: Gradle, xcodebuild, CocoaPods, the emulator, the simulator, Maestro `2.0.3` and every flow
+  step. Expect the first CI run to need fixes.
+
 ## 2026-09-29 P1 readable names and small visual fixes
 
 Node v22.22.2; Chromium 141 through playwright-core 1.56.1 for the shots. Nothing ran on a phone.

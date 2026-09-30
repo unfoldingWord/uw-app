@@ -3,7 +3,7 @@ export type TsvRow = Readonly<Record<string, string>>;
 export type HelpsPoint = { readonly chapter: number; readonly verse: number };
 
 export type HelpsReference =
-  | { readonly kind: 'intro' }
+  | { readonly kind: 'intro'; readonly chapter?: number }
   | {
       readonly kind: 'verses';
       readonly ranges: readonly { readonly start: HelpsPoint; readonly end: HelpsPoint }[];
@@ -42,19 +42,126 @@ function unescapeCell(text: string): string {
     .trim();
 }
 
-export function parseTsv(text: string): TsvRow[] {
-  const lines = text.replace(/\r\n?/g, '\n').split('\n');
-  const header = (lines[0] ?? '')
+export type UnparsedTsvLine = { readonly line: number; readonly columns: number; readonly expected: number };
+
+export type TsvRead = { readonly rows: readonly TsvRow[]; readonly unparsed: readonly UnparsedTsvLine[] };
+
+type QuotedRecord = { readonly cells: readonly string[]; readonly end: number; readonly escaped: boolean };
+
+const quote = '"';
+
+function quotedCell(
+  text: string,
+  from: number,
+): { value: string; end: number; escaped: boolean } | undefined {
+  let value = '';
+  let at = from + 1;
+  let escaped = false;
+  for (;;) {
+    const close = text.indexOf(quote, at);
+    if (close === -1) {
+      return undefined;
+    }
+    value += text.slice(at, close);
+    if (text[close + 1] === quote) {
+      value += quote;
+      escaped = true;
+      at = close + 2;
+      continue;
+    }
+    const after = text[close + 1];
+    return after === undefined || after === '\t' || after === '\n'
+      ? { value, end: close + 1, escaped }
+      : undefined;
+  }
+}
+
+function quotedRecord(text: string, from: number, expected: number): QuotedRecord | undefined {
+  const cells: string[] = [];
+  let at = from;
+  let escaped = false;
+  for (;;) {
+    if (text[at] === quote) {
+      const cell = quotedCell(text, at);
+      if (cell === undefined) {
+        return undefined;
+      }
+      cells.push(cell.value);
+      escaped ||= cell.escaped;
+      at = cell.end;
+    } else {
+      const tab = text.indexOf('\t', at);
+      const newline = text.indexOf('\n', at);
+      const stops = [tab, newline, text.length].filter((stop) => stop !== -1);
+      const end = Math.min(...stops);
+      cells.push(text.slice(at, end));
+      at = end;
+    }
+    if (cells.length > expected) {
+      return undefined;
+    }
+    if (text[at] === '\t') {
+      at += 1;
+      continue;
+    }
+    return cells.length === expected ? { cells, end: at, escaped } : undefined;
+  }
+}
+
+function linesIn(text: string, from: number, to: number): number {
+  let count = 0;
+  for (let at = text.indexOf('\n', from); at !== -1 && at < to; at = text.indexOf('\n', at + 1)) {
+    count += 1;
+  }
+  return count;
+}
+
+export function readTsv(text: string): TsvRead {
+  const normal = text.replace(/\r\n?/g, '\n');
+  const headerEnd = normal.indexOf('\n');
+  const header = normal
+    .slice(0, headerEnd === -1 ? normal.length : headerEnd)
     .replace(/^\uFEFF/, '')
     .split('\t')
     .map((cell) => cell.trim());
-  return lines.slice(1).flatMap((line) => {
-    if (line.trim() === '') {
-      return [];
+  const expected = header.length;
+  const rows: TsvRow[] = [];
+  const unparsed: UnparsedTsvLine[] = [];
+  const rowOf = (cells: readonly string[]): TsvRow =>
+    Object.fromEntries(header.map((name, index) => [name, cells[index] ?? '']));
+  let at = headerEnd === -1 ? normal.length : headerEnd + 1;
+  let line = 2;
+  while (at < normal.length) {
+    const found = normal.indexOf('\n', at);
+    const end = found === -1 ? normal.length : found;
+    const literal = normal.slice(at, end);
+    if (literal.trim() === '') {
+      at = end + 1;
+      line += 1;
+      continue;
     }
-    const cells = line.split('\t');
-    return [Object.fromEntries(header.map((name, index) => [name, cells[index] ?? '']))];
-  });
+    const cells = literal.split('\t');
+    const quoted = cells.some((cell) => cell.startsWith(quote))
+      ? quotedRecord(normal, at, expected)
+      : undefined;
+    if (quoted !== undefined && (quoted.end > end || quoted.escaped || cells.length !== expected)) {
+      rows.push(rowOf(quoted.cells));
+      line += linesIn(normal, at, quoted.end) + 1;
+      at = quoted.end + 1;
+      continue;
+    }
+    if (cells.length !== expected) {
+      unparsed.push({ line, columns: cells.length, expected });
+    }
+    rows.push(rowOf(cells));
+    at = end + 1;
+    line += 1;
+  }
+  return { rows, unparsed };
+}
+
+export function parseTsv(text: string): TsvRow[] {
+  return [...readTsv(text).rows];
 }
 
 const pointPattern = /^(\d+):(\d+)[a-z]?$/;
@@ -75,8 +182,10 @@ function point(text: string, chapter: number | undefined): HelpsPoint | undefine
 
 export function parseHelpsReference(text: string): HelpsReference | undefined {
   const trimmed = text.trim();
-  if (introPattern.test(trimmed)) {
-    return { kind: 'intro' };
+  const intro = introPattern.exec(trimmed);
+  if (intro !== null) {
+    const chapter = Number(intro[1]);
+    return Number.isInteger(chapter) && chapter > 0 ? { kind: 'intro', chapter } : { kind: 'intro' };
   }
   const ranges: { start: HelpsPoint; end: HelpsPoint }[] = [];
   let chapter: number | undefined;

@@ -16,8 +16,8 @@ export default scenario(
     assert.deepEqual(
       phone.kernel.packs.installed().map((pack) => [pack.pack, pack.burritos.length]),
       [
-        ['language:en', 2],
-        ['language:qaa', 12],
+        ['language:en', 1],
+        ['language:qaa', 11],
         ['language:qab', 2],
       ],
     );

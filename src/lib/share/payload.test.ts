@@ -40,6 +40,7 @@ const passage: Passage = {
     ],
   },
   availableTexts: [],
+  intros: [],
   notes: [],
   wordLinks: [],
   questions: [],

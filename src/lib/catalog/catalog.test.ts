@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { englishNameOf } from './languageNames';
 import { languagesOf, searchLanguages } from './languages';
 import { comparePublishers } from '../order';
-import { normalizeEntry, normalizePage } from './normalize';
+import { normalizeEntry, normalizeLanguageNames, normalizePage } from './normalize';
 import { rowOfSubject } from './subjects';
 import type { CatalogRelease } from './types';
 
@@ -39,6 +39,8 @@ describe('catalog normalization (LA-1)', () => {
       bytes: undefined,
       autonym: 'Español Latin America',
       direction: 'ltr',
+      assets: [],
+      built: undefined,
     });
   });
 
@@ -174,5 +176,51 @@ describe('languages and search (LA-1)', () => {
     expect(search('فار')).toEqual(['fa']);
     expect(search('pt')).toEqual(['pt-br']);
     expect(search('  ')).toEqual(['fa', 'qaa', 'pt-br']);
+  });
+});
+
+describe('English names from the DCS languages list (LA-1, #14)', () => {
+  const release = (language: string, resource: string, autonym: string): CatalogRelease => ({
+    ...(normalizeEntry({ ...entry, language, name: resource, language_title: autonym }) as CatalogRelease),
+  });
+
+  it('reads ang, ln and ld per language and ignores entries it cannot key', () => {
+    const names = normalizeLanguageNames({
+      ok: true,
+      data: [
+        { lc: 'apd', ln: 'عربي سوداني', ang: 'Sudanese Arabic', ld: 'rtl', gw: false },
+        { lc: 'ur-deva', ln: 'उर्दू', ang: 'Urdu (Devanagari)', ld: 'ltr', gw: false },
+        { ln: 'no code' },
+        'en',
+      ],
+    });
+    expect(names).toEqual(
+      new Map([
+        ['apd', { englishName: 'Sudanese Arabic', autonym: 'عربي سوداني', direction: 'rtl' }],
+        ['ur-deva', { englishName: 'Urdu (Devanagari)', autonym: 'उर्दू', direction: 'ltr' }],
+      ]),
+    );
+    expect(normalizeLanguageNames({ ok: false })).toBeUndefined();
+  });
+
+  it('names and sorts right-to-left languages by their English name', () => {
+    const names = new Map([
+      ['aao', { englishName: 'Algerian Saharan Arabic', autonym: 'عربية', direction: 'rtl' as const }],
+      ['qaa', { englishName: 'Fixture language A', autonym: 'Fixture A', direction: 'ltr' as const }],
+    ]);
+    const listed = languagesOf(
+      [
+        release('aao', 'aao_obs', 'عربية'),
+        release('qaa', 'qaa_obs', 'Fixture A'),
+        release('fa', 'fa_obs', 'فارسی'),
+      ],
+      new Set(),
+      names,
+    );
+    expect(listed.map((item) => [item.language, item.englishName, item.direction])).toEqual([
+      ['aao', 'Algerian Saharan Arabic', 'rtl'],
+      ['fa', 'Farsi', 'ltr'],
+      ['qaa', 'Fixture language A', 'ltr'],
+    ]);
   });
 });
