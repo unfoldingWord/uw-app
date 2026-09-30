@@ -387,6 +387,11 @@ const deviceCases: ContractCase[] = [
       check(transport.maxChunkBytes() > 0, 'chunk size');
       if (transport.platform() === 'ios') {
         same(await transport.appPackage(), undefined, 'iOS never shares its package');
+        same(
+          await codeOf(transport.install('transfer/app/unfoldingword.apk')),
+          'transfer.unsupported',
+          'iOS',
+        );
       }
       if (!(await transport.available())) {
         same(await codeOf(transport.discover(10)), 'transfer.unavailable', 'discover while unavailable');

@@ -36,6 +36,8 @@ list. Versions live in `package.json`; the lock file is committed.
 | expo-localization | ~57.0.2 | Reading the device locale by hand; the Locale adapter's tag, region, time zone and direction |
 | expo-splash-screen | ~57.0.9 | A hand-written launch storyboard and Android 12 splash theme; the logo mark on paper (night in dark mode) until the kernel has started or failed, so the root layout never shows a blank frame |
 | expo-system-ui | ~57.0.4 | Setting the Android root view background and night mode by hand; required for `userInterfaceStyle: automatic` to follow the system theme on Android |
+| react-native-tcp-socket | ^6.4.3 | A hand-written TCP socket module; the Transport platform adapter (`src/platform/transport.ts`, the only importer, checked by `npm run checks`) listens on an ephemeral port and connects to a peer on the shared local network (SH-1, proposal `docs/proposals/2026-09-29-transport-radio.md`). MIT, typed, autolinked, no config plugin and no manifest entry of its own; last release 6.4.3 on 2026-09-10. It opens sockets on purpose, only to a phone the leader chose, never to the internet |
+| uqr | ^0.1.3 | A hand-written QR encoder; the transfer screen draws the sender's address and code as a QR code (`src/features/transfer/fallback.ts`) that the other phone's system camera opens as an `unfoldingword://transfer` link, so no camera permission is asked. MIT, TypeScript, no dependencies, pure JavaScript for Hermes and Node; last release 2026-04 |
 
 ## Development
 

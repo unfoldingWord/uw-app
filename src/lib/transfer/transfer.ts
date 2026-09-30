@@ -25,6 +25,7 @@ import { appPackageOf, prepareOffer, sendAccepted, type Outgoing } from './sende
 import type {
   AcceptOutcome,
   IncomingOutcome,
+  InstallAppOutcome,
   OfferOutcome,
   ReceivedApp,
   TransferCapabilities,
@@ -42,15 +43,19 @@ export type TransferApi = {
   run(transfer: string): Promise<TransferOutcome>;
   discover(): Promise<readonly Peer[]>;
   connect(peer: Peer): Promise<IncomingOutcome>;
+  connectAt(address: string, code: string): Promise<IncomingOutcome>;
   accept(selection?: TransferSelection): Promise<AcceptOutcome>;
   decline(): Promise<void>;
   cancel(): Promise<void>;
   current(): TransferStatus | undefined;
   last(): TransferResult | undefined;
   receivedApp(): ReceivedApp | undefined;
+  installApp(): Promise<InstallAppOutcome>;
 };
 
 const discoverTimeoutMs = 10 * 1000;
+
+const maximumRefusals = 8;
 
 export function pairingCode(transfer: string): string {
   const value = Number.parseInt(md5Hex(utf8(transfer)).slice(0, 8), 16) % 10_000;
@@ -215,7 +220,13 @@ export const transferModule = defineModule<TransferApi>({
         await finish(current);
         return { ok: false, code };
       }
-      return { ok: true, transfer, code: current.code, offer: prepared.offer };
+      return {
+        ok: true,
+        transfer,
+        code: current.code,
+        address: current.advertisement.address,
+        offer: prepared.offer,
+      };
     }
 
     async function run(transfer: string): Promise<TransferOutcome> {
@@ -232,15 +243,9 @@ export const transferModule = defineModule<TransferApi>({
       current.inFlight = true;
       const sending = runOf(current);
       try {
-        const link = await current.advertisement?.accept(acceptTimeoutMs);
+        const wire = await admitted(current);
         await quietly(async () => current.advertisement?.stop());
-        if (link === undefined) {
-          throw new TransferStop('transfer.peer-lost', false);
-        }
-        const wire = createWire(link, ports.transport.maxChunkBytes());
-        current.wire = wire;
         await wire.send({ kind: 'hello', platform: current.platform });
-        current.peer = (await wire.expect('hello')).platform;
         current.state = 'offering';
         const offered = current.offer;
         await wire.send({
@@ -253,6 +258,44 @@ export const transferModule = defineModule<TransferApi>({
         return { ok: false, transfer, code: await settle(current, error) };
       } finally {
         await finish(current);
+      }
+    }
+
+    async function admitted(current: Active): Promise<Wire> {
+      for (let refusals = 0; ; refusals += 1) {
+        if (refusals >= maximumRefusals) {
+          throw new TransferStop('transfer.declined', false);
+        }
+        const link = current.cancelled ? undefined : await current.advertisement?.accept(acceptTimeoutMs);
+        if (link === undefined) {
+          throw new TransferStop('transfer.peer-lost', false);
+        }
+        const wire = createWire(link, ports.transport.maxChunkBytes());
+        current.wire = wire;
+        const refused = await provenBy(current, wire);
+        if (refused === undefined) {
+          return wire;
+        }
+        current.wire = undefined;
+        await quietly(() => wire.close());
+        await refuse(refused);
+      }
+    }
+
+    async function provenBy(current: Active, wire: Wire): Promise<FailureCode | undefined> {
+      try {
+        const hello = await wire.expect('hello');
+        if (hello.code !== undefined && hello.code === current.code) {
+          current.peer = hello.platform;
+          return undefined;
+        }
+        await quietly(() => wire.send({ kind: 'error', code: 'transfer.declined' }));
+        return 'transfer.declined';
+      } catch (error) {
+        if (current.cancelled) {
+          throw error;
+        }
+        return codeOfStop(current, error);
       }
     }
 
@@ -278,7 +321,7 @@ export const transferModule = defineModule<TransferApi>({
           ports.transport.maxChunkBytes(),
         );
         current.wire = wire;
-        await wire.send({ kind: 'hello', platform: current.platform });
+        await wire.send({ kind: 'hello', platform: current.platform, code: peer.code });
         const hello = await wire.expect('hello');
         current.peer = hello.platform;
         const incoming = (await wire.expect('offer')).offer;
@@ -292,6 +335,26 @@ export const transferModule = defineModule<TransferApi>({
         const code = codeOfStop(current, error);
         await finish(current);
         return refuse(code);
+      }
+    }
+
+    function connectAt(address: string, code: string): Promise<IncomingOutcome> {
+      return connect({ id: address.trim(), code: code.trim(), platform: ports.transport.platform() });
+    }
+
+    async function installApp(): Promise<InstallAppOutcome> {
+      if (ports.transport.platform() === 'ios') {
+        return refuse('transfer.unsupported');
+      }
+      const app = receivedApp;
+      try {
+        if (app === undefined || !(await ports.files.exists(app.path))) {
+          return await refuse('files.not-found');
+        }
+        await ports.transport.install(app.path);
+        return { ok: true };
+      } catch (error) {
+        return refuse(failureCodeOf(error));
       }
     }
 
@@ -435,12 +498,14 @@ export const transferModule = defineModule<TransferApi>({
         run,
         discover,
         connect,
+        connectAt,
         accept,
         decline,
         cancel,
         current: () => (active === undefined ? undefined : statusOf(active)),
         last: () => last,
         receivedApp: () => receivedApp,
+        installApp,
       },
       async start() {
         await quietly(() => removeIfPresent(ports.files, incomingDirectory));

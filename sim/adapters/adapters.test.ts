@@ -194,7 +194,10 @@ describe('Transport memory adapter', () => {
   it('carries chunks both ways between an advertiser and a connector', async () => {
     const bus = createTransportBus({ maxChunkBytes: 8 });
     const iphone = bus.transport({ platform: 'ios' });
-    const android = bus.transport({ platform: 'android', appPackage: { path: 'app.apk', bytes: 3 } });
+    const android = bus.transport({
+      platform: 'android',
+      appPackage: { source: 'file:///app.apk', bytes: 3 },
+    });
     const advertisement = await iphone.advertise('4821');
     expect(await iphone.discover(10)).toEqual([]);
     const [peer] = await android.discover(10);
@@ -215,7 +218,7 @@ describe('Transport memory adapter', () => {
     await receiver?.close();
     expect(await sender.receive()).toBeUndefined();
     expect(await codeOf(sender.send(bytes('x')))).toBe('transfer.peer-lost');
-    expect(await android.appPackage()).toEqual({ path: 'app.apk', bytes: 3 });
+    expect(await android.appPackage()).toEqual({ source: 'file:///app.apk', bytes: 3 });
     expect(await iphone.appPackage()).toBeUndefined();
     expect(bus.delivered()).toBe(7);
   });

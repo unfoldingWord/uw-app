@@ -13,6 +13,17 @@ const brand = {
 
 const archiveTypes = ['application/zip', 'application/x-zip-compressed', 'application/octet-stream'];
 
+const transferService = '_uwapp._tcp';
+
+const localNetworkUsage =
+  'The app looks for the other phone on your Wi-Fi or hotspot only while you send or receive.';
+
+const installerBuild = process.env.UW_ANDROID_PACKAGE_INSTALLER === '1';
+
+const installerPermission = 'android.permission.REQUEST_INSTALL_PACKAGES';
+
+const installerPermissions = installerBuild ? [installerPermission] : [];
+
 const blockedPermissions = [
   'READ_CALENDAR',
   'WRITE_CALENDAR',
@@ -59,7 +70,10 @@ const blockedPermissions = [
   'SYSTEM_ALERT_WINDOW',
   'FOREGROUND_SERVICE',
   'FOREGROUND_SERVICE_MEDIA_PLAYBACK',
+  'CHANGE_NETWORK_STATE',
 ].map((name) => `android.permission.${name}`);
+
+const blockedOnThisBuild = installerBuild ? blockedPermissions : [...blockedPermissions, installerPermission];
 
 const config: ExpoConfig = {
   name: 'unfoldingWord',
@@ -87,6 +101,8 @@ const config: ExpoConfig = {
         },
       ],
       NSAppTransportSecurity: { NSAllowsArbitraryLoads: false, NSAllowsLocalNetworking: true },
+      NSLocalNetworkUsageDescription: localNetworkUsage,
+      NSBonjourServices: [transferService],
     },
     privacyManifests: {
       NSPrivacyTracking: false,
@@ -115,7 +131,8 @@ const config: ExpoConfig = {
   android: {
     package: androidPackage,
     allowBackup: false,
-    blockedPermissions,
+    blockedPermissions: blockedOnThisBuild,
+    permissions: installerPermissions,
     intentFilters: [
       {
         action: 'VIEW',

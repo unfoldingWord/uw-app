@@ -1,11 +1,21 @@
 import {
+  androidBlockedOn,
   androidRefused,
+  installerPermission,
   isAdmitted,
   libraryPermissionFindings,
   type LibraryPermission,
 } from './android-permissions.ts';
 
-const iosAdmittedUsageDescriptions: readonly string[] = [];
+export { installerPermission };
+
+export const installerFlag = 'UW_ANDROID_PACKAGE_INSTALLER';
+
+export const installerProfile = 'apk';
+
+const transferServices: readonly string[] = ['_uwapp._tcp'];
+
+const iosAdmittedUsageDescriptions: readonly string[] = ['NSLocalNetworkUsageDescription'];
 
 const iosAdmittedEntitlements: readonly string[] = [];
 
@@ -162,20 +172,20 @@ function importFindings(config: NativeConfig): string[] {
   return findings;
 }
 
-export function permissionFindings(config: NativeConfig): string[] {
+export function permissionFindings(config: NativeConfig, installerBuild = false): string[] {
   const findings: string[] = [];
   const requested = config.androidPermissions.filter((permission) => !permission.removed);
   const removed = new Set(config.androidPermissions.filter((item) => item.removed).map((item) => item.name));
   for (const permission of requested) {
     if (androidRefused.includes(permission.name)) {
       findings.push(`Android manifest requests ${permission.name}, which PRD sections 9 and 12 refuse`);
-    } else if (!isAdmitted(permission.name)) {
+    } else if (!isAdmitted(permission.name, installerBuild)) {
       findings.push(
         `Android manifest requests ${permission.name}, which is not on the admitted list in scripts/checks/android-permissions.ts`,
       );
     }
   }
-  for (const name of androidRefused) {
+  for (const name of androidBlockedOn(installerBuild)) {
     if (!removed.has(name)) {
       findings.push(
         `${name} is not in android.blockedPermissions, so a library manifest could still merge it in`,
@@ -183,11 +193,11 @@ export function permissionFindings(config: NativeConfig): string[] {
     }
   }
   for (const name of removed) {
-    if (isAdmitted(name)) {
+    if (isAdmitted(name, installerBuild)) {
       findings.push(`${name} is admitted and also in android.blockedPermissions; keep it in one list`);
     }
   }
-  findings.push(...libraryPermissionFindings(config.libraryPermissions, removed));
+  findings.push(...libraryPermissionFindings(config.libraryPermissions, removed, installerBuild));
   if (config.androidAllowBackup !== 'false') {
     findings.push('android:allowBackup is not "false", so Android backs up notes, groups and names');
   }
@@ -225,4 +235,69 @@ export function permissionFindings(config: NativeConfig): string[] {
     );
   }
   return [...findings, ...importFindings(config)];
+}
+
+export function radioFindings(config: NativeConfig, installerBuild: boolean): string[] {
+  const findings: string[] = [];
+  const description = config.infoPlist.NSLocalNetworkUsageDescription;
+  if (typeof description !== 'string' || description.trim() === '') {
+    findings.push(
+      'Info.plist has no NSLocalNetworkUsageDescription, so iOS cannot ask for local network access when a transfer starts (SH-1)',
+    );
+  }
+  const services = list(config.infoPlist.NSBonjourServices).map(String);
+  if (
+    services.length !== transferServices.length ||
+    services.some((item) => !transferServices.includes(item))
+  ) {
+    findings.push(
+      `Info.plist NSBonjourServices is ${JSON.stringify(services)}; only ${transferServices.join(', ')} is admitted (SH-1)`,
+    );
+  }
+  const requested = config.androidPermissions.some(
+    (permission) => permission.name === installerPermission && !permission.removed,
+  );
+  if (requested && !installerBuild) {
+    findings.push(
+      `Android manifest requests ${installerPermission} outside the ${installerProfile} build; Google Play restricts it (SH-2)`,
+    );
+  }
+  if (!requested && installerBuild) {
+    findings.push(
+      `The ${installerProfile} build does not request ${installerPermission}, so the received app cannot be installed (SH-2)`,
+    );
+  }
+  return findings;
+}
+
+type EasProfile = { extends?: string; distribution?: string; env?: Record<string, string> };
+
+function profileEnv(
+  profiles: Readonly<Record<string, EasProfile>>,
+  name: string,
+  seen: string[] = [],
+): Record<string, string> {
+  const profile = profiles[name];
+  if (profile === undefined || seen.includes(name)) {
+    return {};
+  }
+  const inherited =
+    profile.extends === undefined ? {} : profileEnv(profiles, profile.extends, [...seen, name]);
+  return { ...inherited, ...profile.env };
+}
+
+export function easFindings(eas: unknown): string[] {
+  const profiles = record(record(eas).build) as Record<string, EasProfile>;
+  const findings: string[] = [];
+  if (profileEnv(profiles, installerProfile)[installerFlag] !== '1') {
+    findings.push(`eas.json profile ${installerProfile} does not set ${installerFlag}=1 (SH-2)`);
+  }
+  for (const [name, profile] of Object.entries(profiles)) {
+    if (profile.distribution === 'store' && profileEnv(profiles, name)[installerFlag] !== undefined) {
+      findings.push(
+        `eas.json store profile ${name} sets ${installerFlag}; the Play build never declares ${installerPermission}`,
+      );
+    }
+  }
+  return findings;
 }

@@ -145,3 +145,18 @@ Dates are formatted by the screen layer with the platform's date formatting, and
 - `session.audio.time`: the elapsed and total time under "Play and discuss" when a story has audio, the same
   shape as `study.audio.time`. The times are written `m:ss` with ASCII digits.
 - Drafted by an AI agent in fifteen locales; none reviewed.
+
+## Added with the Transport radio and the installer hand-off (N2)
+
+- `transfer.network`: the one sentence that asks the leader to put both phones on one Wi-Fi or hotspot. "Wi-Fi"
+  and "hotspot" are kept as the words phones show in each locale where the draft could not find a common
+  local word; check each.
+- `transfer.address` and `transfer.address.qr`: the typed fallback and the accessible name of the QR code.
+  `{address}` is digits, dots and a colon, never translated. "Picture code" stands in for "QR code"; a
+  reviewer may prefer the local name for QR.
+- `transfer.typed`, `transfer.typed.address`, `transfer.typed.code`, `transfer.typed.connect`,
+  `transfer.typed.invalid`: the receiver's form for an address typed from the other phone.
+- `transfer.app.install`, `transfer.app.install.opened`, `transfer.app.install.unsupported`: the installer
+  hand-off on Android. "Installer" is the system screen that installs an app; it must not read as a separate
+  program the leader has to find.
+- Drafted by an AI agent in fifteen locales; none reviewed.

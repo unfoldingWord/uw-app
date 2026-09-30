@@ -125,11 +125,12 @@ export type TransportLink = {
 
 export type Advertisement = {
   readonly code: string;
+  readonly address: string | undefined;
   accept(timeoutMs: number): Promise<TransportLink | undefined>;
   stop(): Promise<void>;
 };
 
-export type AppPackage = { path: string; bytes: number };
+export type AppPackage = { source: string; bytes: number };
 
 export type Transport = {
   available(): Promise<boolean>;
@@ -139,6 +140,7 @@ export type Transport = {
   discover(timeoutMs: number): Promise<readonly Peer[]>;
   connect(peer: Peer, timeoutMs: number): Promise<TransportLink>;
   appPackage(): Promise<AppPackage | undefined>;
+  install(path: string): Promise<void>;
 };
 
 export type AudioSource = { kind: 'file'; path: string } | { kind: 'url'; url: string };

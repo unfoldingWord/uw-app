@@ -34,7 +34,7 @@ export type PlanItem = { key: string; bytes: number };
 export const appItemKey = 'app';
 
 export type Message =
-  | { kind: 'hello'; platform: DevicePlatform }
+  | { kind: 'hello'; platform: DevicePlatform; code?: string }
   | { kind: 'offer'; offer: WireOffer }
   | { kind: 'accept'; resources: readonly WireChoice[]; app: boolean }
   | { kind: 'plan'; items: readonly PlanItem[] }
@@ -185,10 +185,24 @@ function planItemOf(value: unknown): PlanItem | undefined {
   return { key: value.key, bytes: value.bytes };
 }
 
+const pairingCodeShape = /^\d{4,8}$/;
+
+function helloOf(header: Header): Message | undefined {
+  if (!isPlatform(header.platform)) {
+    return undefined;
+  }
+  if (header.code === undefined) {
+    return { kind: 'hello', platform: header.platform };
+  }
+  return typeof header.code === 'string' && pairingCodeShape.test(header.code)
+    ? { kind: 'hello', platform: header.platform, code: header.code }
+    : undefined;
+}
+
 function messageOf(header: Header, body: Uint8Array): Message | undefined {
   switch (header.kind) {
     case 'hello':
-      return isPlatform(header.platform) ? { kind: 'hello', platform: header.platform } : undefined;
+      return helloOf(header);
     case 'offer': {
       const offer = offerOf(header.offer);
       return offer === undefined ? undefined : { kind: 'offer', offer };

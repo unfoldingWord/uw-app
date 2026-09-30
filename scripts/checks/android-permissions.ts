@@ -7,6 +7,13 @@ const androidAdmitted: Readonly<Record<string, string>> = {
   [permission('MODIFY_AUDIO_SETTINGS')]: 'Story and passage audio through expo-audio (ST-4)',
 };
 
+export const installerPermission = permission('REQUEST_INSTALL_PACKAGES');
+
+const androidAdmittedOnApk: Readonly<Record<string, string>> = {
+  [installerPermission]:
+    'The apk build hands a received app package to the system installer (SH-2); Google Play restricts it, so every other build blocks it',
+};
+
 export const androidDangerous: readonly string[] = [
   'READ_CALENDAR',
   'WRITE_CALENDAR',
@@ -56,14 +63,19 @@ const androidAlsoRefused: readonly string[] = [
   'SYSTEM_ALERT_WINDOW',
   'FOREGROUND_SERVICE',
   'FOREGROUND_SERVICE_MEDIA_PLAYBACK',
+  'CHANGE_NETWORK_STATE',
 ].map(permission);
 
 export const androidRefused: readonly string[] = [...androidDangerous, ...androidAlsoRefused].filter(
   (name) => !(name in androidAdmitted),
 );
 
-export function isAdmitted(name: string): boolean {
-  return name in androidAdmitted;
+export function isAdmitted(name: string, installerBuild = false): boolean {
+  return name in androidAdmitted || (installerBuild && name in androidAdmittedOnApk);
+}
+
+export function androidBlockedOn(installerBuild: boolean): readonly string[] {
+  return installerBuild ? androidRefused : [...androidRefused, ...Object.keys(androidAdmittedOnApk)];
 }
 
 export type LibraryPermission = { manifest: string; name: string };
@@ -91,10 +103,11 @@ export function permissionsInManifest(xml: string): string[] {
 export function libraryPermissionFindings(
   library: readonly LibraryPermission[],
   blocked: ReadonlySet<string>,
+  installerBuild = false,
 ): string[] {
   const findings: string[] = [];
   for (const entry of library) {
-    if (!isAdmitted(entry.name) && !blocked.has(entry.name)) {
+    if (!isAdmitted(entry.name, installerBuild) && !blocked.has(entry.name)) {
       findings.push(
         `${entry.manifest} merges ${entry.name} into the app, and it is neither admitted in scripts/checks/android-permissions.ts nor in android.blockedPermissions`,
       );

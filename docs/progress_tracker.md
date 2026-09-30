@@ -3,6 +3,42 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-30 N2 Transport radio and the Android app package (issues #2 and #3)
+
+Node v22.22.2. Nothing ran on a phone. No Swift or Kotlin was compiled: the sandbox has no Xcode, Android SDK
+or Gradle. The two-phone spike (proposal step 4) has not run, so the Transport exception row stays open.
+
+- Red first. `sim/scenarios/SH-1.receiver-proves-the-code.ts` failed with "the sender has an address to type
+  or scan" (`offered.address` undefined) before the port change; with the address in place and the sender's
+  code check disabled it failed with "a wrong code is declined" (`false`, expected `transfer.declined`).
+  `sim/scenarios/SH-2.receiver-opens-the-installer.ts` failed with `installs()` `[]`, expected
+  `['transfer/app/unfoldingword.apk']`, while `installApp` did not call the port. The permissions check failed
+  with "eas.json profile apk does not set UW_ANDROID_PACKAGE_INSTALLER=1 (SH-2)" against the old `eas.json`.
+- Kernel: the receiver's `hello` carries the pairing code; the sender reads it first, declines a missing or
+  wrong code with `transfer.declined` (a `Failure`, step `transfer`), closes that link and keeps
+  advertising (at most eight refusals). `transfer.connectAt(address, code)`, `transfer.installApp()`. The
+  app package is adopted into `transfer/outgoing/app.apk` when it is accepted. Port: `Advertisement.address`,
+  `AppPackage.source`, `Transport.install` (proposal `docs/proposals/2026-09-30-transport-port-address-install.md`).
+- Platform adapter: `react-native-tcp-socket` 6.4.3 behind `src/platform/transport.ts`, a length-prefixed
+  link with pause and resume at 4 MB and 1 MB unread (`src/platform/stream-link.ts`, 4 tests in Node), and
+  the local Expo module `modules/uw-radio` (Kotlin `NsdManager`, Swift `NetService`, local IPv4, Android
+  `sourceDir` when not split, `ACTION_VIEW` installer). `expo-modules-autolinking resolve` lists `uw-radio`
+  for Android (`org.unfoldingword.radio.UwRadioModule`) and Apple (pod `UwRadio`), and
+  `react-native-config` lists `react-native-tcp-socket`. Nothing beyond that was checked for the native code.
+- Config: iOS `NSLocalNetworkUsageDescription` and `NSBonjourServices: ["_uwapp._tcp"]`;
+  `REQUEST_INSTALL_PACKAGES` only when `UW_ANDROID_PACKAGE_INSTALLER=1`, set by the new `apk` profile in
+  `eas.json`. `expo config --type introspect` showed the permission only with the flag set.
+- Screens: the sender shows its address and a QR code of `unfoldingword://transfer?address=…&code=…` while it
+  waits; the receiver can type an address and code, and the link opens Receive with both filled in; a
+  received app has an Install the app button. Not rendered on a phone; see the shots line below.
+- `npm run verify`: green (658 tests in 62 files, 54 scenarios, 7 checks, trace 0 unproven, contract 21 fixture
+  burritos, live skipped offline; bundle android 1923 and iOS 1790 modules).
+- `npm run shots -- --only transfer-typed` and `--only transfer`: light, dark, reduced-blur and rtl rendered in
+  Chromium, no notes after the Connect button was made large. The sender's waiting screen with the QR code was
+  not shot (the harness presses one control per shot).
+- Not verified: any of the native code compiling; discovery, the local network prompt, throughput, the
+  installer hand-off, or the system camera opening the QR link, on any phone; the socket library under the
+  New Architecture (it uses the legacy `NativeModules` bridge; INFERRED to work through the interop layer).
 ## 2026-09-30 N1 native configuration, backup and release fixes (issues #4, #5, #26, #45, #48)
 
 Node v22.22.2. Nothing ran on a phone. No Swift or Kotlin was compiled (no Xcode, no Android SDK here).

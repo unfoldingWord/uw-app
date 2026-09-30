@@ -35,7 +35,7 @@ export function createPlatformPorts(policy: HostPolicy): Ports {
     db: createPlatformDb(),
     kv: createPlatformKv(),
     http,
-    transport: createPlatformTransport(platform),
+    transport: createPlatformTransport({ platform, uriOf: root.uriOf }),
     audio: createPlatformAudio({ policy, http, uriOf: root.uriOf }),
     shareSheet: createPlatformShareSheet({ platform, uriOf: root.uriOf }),
     picker: createPlatformPicker(),

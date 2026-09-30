@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { androidRefused } from './android-permissions.ts';
-import { nativeConfigOf, permissionFindings } from './permissions.ts';
+import { androidBlockedOn, androidRefused } from './android-permissions.ts';
+import {
+  easFindings,
+  installerFlag,
+  installerPermission,
+  nativeConfigOf,
+  permissionFindings,
+  radioFindings,
+} from './permissions.ts';
 
 function introspected(options: {
   permissions: { name: string; remove?: boolean }[];
@@ -78,7 +85,9 @@ function introspected(options: {
   };
 }
 
-const blocked = androidRefused.map((name) => ({ name, remove: true }));
+const blocked = androidBlockedOn(false).map((name) => ({ name, remove: true }));
+
+const apkBlocked = androidRefused.map((name) => ({ name, remove: true }));
 
 describe('permissionFindings', () => {
   it('passes a manifest that blocks every refused permission and backs nothing up', () => {
@@ -220,6 +229,142 @@ describe('permissionFindings', () => {
     );
     expect(permissionFindings(config)).toEqual([
       'android:dataExtractionRules is not @xml/data_extraction_rules, so Android 12 and later copies notes, groups and names to a new phone in a device-to-device transfer',
+    ]);
+  });
+});
+
+describe('the installer permission on the apk build and every other build', () => {
+  it('asks every build but the apk build to block REQUEST_INSTALL_PACKAGES, and the apk build to request it unblocked', () => {
+    const store = nativeConfigOf(introspected({ permissions: apkBlocked, allowBackup: 'false' }));
+    expect(permissionFindings(store)).toEqual([
+      `${installerPermission} is not in android.blockedPermissions, so a library manifest could still merge it in`,
+    ]);
+    const requestedOnStore = nativeConfigOf(
+      introspected({ permissions: [{ name: installerPermission }, ...blocked], allowBackup: 'false' }),
+    );
+    expect(permissionFindings(requestedOnStore)).toEqual([
+      `Android manifest requests ${installerPermission}, which is not on the admitted list in scripts/checks/android-permissions.ts`,
+    ]);
+    const blockedOnApk = nativeConfigOf(introspected({ permissions: blocked, allowBackup: 'false' }));
+    expect(permissionFindings(blockedOnApk, true)).toEqual([
+      `${installerPermission} is admitted and also in android.blockedPermissions; keep it in one list`,
+    ]);
+  });
+
+  it('admits a library manifest that declares the installer permission only on the apk build', () => {
+    const library = [
+      {
+        manifest: 'node_modules/example/android/src/main/AndroidManifest.xml',
+        name: installerPermission,
+      },
+    ];
+    const apk = nativeConfigOf(
+      introspected({ permissions: [{ name: installerPermission }, ...apkBlocked], allowBackup: 'false' }),
+      library,
+    );
+    expect(permissionFindings(apk, true)).toEqual([]);
+    const unblockedStore = nativeConfigOf(
+      introspected({ permissions: apkBlocked, allowBackup: 'false' }),
+      library,
+    );
+    expect(permissionFindings(unblockedStore)).toEqual([
+      `${installerPermission} is not in android.blockedPermissions, so a library manifest could still merge it in`,
+      `node_modules/example/android/src/main/AndroidManifest.xml merges ${installerPermission} into the app, and it is neither admitted in scripts/checks/android-permissions.ts nor in android.blockedPermissions`,
+    ]);
+  });
+
+  it('passes the CHANGE_NETWORK_STATE that react-native-tcp-socket declares only while it is blocked', () => {
+    const library = [
+      {
+        manifest: 'node_modules/react-native-tcp-socket/android/src/main/AndroidManifest.xml',
+        name: 'android.permission.CHANGE_NETWORK_STATE',
+      },
+    ];
+    expect(
+      permissionFindings(
+        nativeConfigOf(introspected({ permissions: blocked, allowBackup: 'false' }), library),
+      ),
+    ).toEqual([]);
+    const unblocked = nativeConfigOf(
+      introspected({
+        permissions: blocked.filter(
+          (permission) => permission.name !== 'android.permission.CHANGE_NETWORK_STATE',
+        ),
+        allowBackup: 'false',
+      }),
+      library,
+    );
+    expect(permissionFindings(unblocked)).toEqual([
+      'android.permission.CHANGE_NETWORK_STATE is not in android.blockedPermissions, so a library manifest could still merge it in',
+      'node_modules/react-native-tcp-socket/android/src/main/AndroidManifest.xml merges android.permission.CHANGE_NETWORK_STATE into the app, and it is neither admitted in scripts/checks/android-permissions.ts nor in android.blockedPermissions',
+    ]);
+  });
+});
+
+describe('radioFindings and easFindings', () => {
+  const radio = {
+    NSLocalNetworkUsageDescription: 'The app looks for the other phone only while you send or receive.',
+    NSBonjourServices: ['_uwapp._tcp'],
+  };
+
+  it('admits the local network prompt, the one Bonjour service and the installer only on the apk build', () => {
+    const store = nativeConfigOf(
+      introspected({ permissions: blocked, allowBackup: 'false', infoPlist: radio }),
+    );
+    expect(permissionFindings(store)).toEqual([]);
+    expect(radioFindings(store, false)).toEqual([]);
+    const apk = nativeConfigOf(
+      introspected({
+        permissions: [{ name: installerPermission }, ...apkBlocked],
+        allowBackup: 'false',
+        infoPlist: radio,
+      }),
+    );
+    expect(permissionFindings(apk, true)).toEqual([]);
+    expect(radioFindings(apk, true)).toEqual([]);
+    expect(radioFindings(apk, false)).toEqual([
+      'Android manifest requests android.permission.REQUEST_INSTALL_PACKAGES outside the apk build; Google Play restricts it (SH-2)',
+    ]);
+    expect(radioFindings(store, true)).toEqual([
+      'The apk build does not request android.permission.REQUEST_INSTALL_PACKAGES, so the received app cannot be installed (SH-2)',
+    ]);
+  });
+
+  it('refuses a missing local network prompt and any other Bonjour service', () => {
+    const config = nativeConfigOf(
+      introspected({
+        permissions: blocked,
+        allowBackup: 'false',
+        infoPlist: { NSBonjourServices: ['_http._tcp'] },
+      }),
+    );
+    expect(radioFindings(config, false)).toEqual([
+      'Info.plist has no NSLocalNetworkUsageDescription, so iOS cannot ask for local network access when a transfer starts (SH-1)',
+      'Info.plist NSBonjourServices is ["_http._tcp"]; only _uwapp._tcp is admitted (SH-1)',
+    ]);
+  });
+
+  it('asks the apk profile to set the installer flag and no store profile to set it', () => {
+    expect(
+      easFindings({
+        build: {
+          base: { env: { EXPO_NO_TELEMETRY: '1' } },
+          preview: { extends: 'base' },
+          apk: { extends: 'preview', env: { [installerFlag]: '1' } },
+          production: { extends: 'base', distribution: 'store' },
+        },
+      }),
+    ).toEqual([]);
+    expect(
+      easFindings({
+        build: {
+          base: { env: { [installerFlag]: '1' } },
+          production: { extends: 'base', distribution: 'store' },
+        },
+      }),
+    ).toEqual([
+      `eas.json profile apk does not set ${installerFlag}=1 (SH-2)`,
+      `eas.json store profile production sets ${installerFlag}; the Play build never declares ${installerPermission}`,
     ]);
   });
 });

@@ -54,7 +54,7 @@ export default scenario(
       locale.region,
       locale.timeZone,
       moved.offered.code,
-      'peer-',
+      '192.0.2.',
       'sender',
       'phone',
     ]) {

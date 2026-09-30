@@ -4,12 +4,16 @@ import { portError } from './errors';
 export type MemoryTransport = Transport & {
   setAvailable(available: boolean): void;
   expireWaits(): void;
+  setInstaller(allowed: boolean): void;
+  installs(): readonly string[];
 };
+
+export type AppPackageSource = AppPackage | (() => AppPackage | undefined);
 
 export type TransportTap = (chunk: Uint8Array) => void;
 
 export type TransportBus = {
-  transport(options: { platform: DevicePlatform; appPackage?: AppPackage }): MemoryTransport;
+  transport(options: { platform: DevicePlatform; appPackage?: AppPackageSource }): MemoryTransport;
   cut(): void;
   cutAfter(bytes: number): void;
   tap(listener: TransportTap): () => void;
@@ -30,6 +34,10 @@ type Listing = {
 };
 
 const defaultMaxChunkBytes = 64 * 1024;
+
+function memoryAddress(count: number): string {
+  return `192.0.2.${count}:47000`;
+}
 
 function channel(): Channel {
   return { inbox: [], waiters: [], closed: false };
@@ -99,8 +107,10 @@ export function createTransportBus(options: { maxChunkBytes?: number } = {}): Tr
     };
   }
 
-  function transport(settings: { platform: DevicePlatform; appPackage?: AppPackage }): MemoryTransport {
+  function transport(settings: { platform: DevicePlatform; appPackage?: AppPackageSource }): MemoryTransport {
     let available = true;
+    let installer = settings.platform === 'android';
+    const installs: string[] = [];
     const own = new Set<string>();
     const requireAvailable = (): void => {
       if (!available) {
@@ -114,12 +124,13 @@ export function createTransportBus(options: { maxChunkBytes?: number } = {}): Tr
       advertise: async (code): Promise<Advertisement> => {
         requireAvailable();
         peerCount += 1;
-        const peer: Peer = { id: `peer-${peerCount}`, code, platform: settings.platform };
+        const peer: Peer = { id: memoryAddress(peerCount), code, platform: settings.platform };
         const listing: Listing = { peer, owner: self, incoming: [], waiters: [] };
         listings.set(peer.id, listing);
         own.add(peer.id);
         return {
           code,
+          address: peer.id,
           accept: () => {
             const ready = listing.incoming.shift();
             if (ready !== undefined || !listings.has(peer.id)) {
@@ -149,7 +160,11 @@ export function createTransportBus(options: { maxChunkBytes?: number } = {}): Tr
         const toListener = channel();
         const toCaller = channel();
         channels.add(toListener).add(toCaller);
-        const caller: Peer = { id: `peer-${(peerCount += 1)}`, code: peer.code, platform: settings.platform };
+        const caller: Peer = {
+          id: memoryAddress((peerCount += 1)),
+          code: peer.code,
+          platform: settings.platform,
+        };
         const listenerSide = link(caller, toCaller, toListener);
         const waiter = listing.waiters.shift();
         if (waiter === undefined) {
@@ -159,7 +174,18 @@ export function createTransportBus(options: { maxChunkBytes?: number } = {}): Tr
         }
         return link(peer, toListener, toCaller);
       },
-      appPackage: async () => settings.appPackage,
+      appPackage: async () =>
+        typeof settings.appPackage === 'function' ? settings.appPackage() : settings.appPackage,
+      install: async (path) => {
+        if (!installer) {
+          throw portError('transfer.unsupported', 'this build cannot open the package installer');
+        }
+        installs.push(path);
+      },
+      setInstaller: (allowed) => {
+        installer = allowed && settings.platform === 'android';
+      },
+      installs: () => installs.slice(),
       setAvailable: (next) => {
         available = next;
       },

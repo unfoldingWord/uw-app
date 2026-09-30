@@ -20,6 +20,10 @@ const networkClients = [
   'expo-notifications',
 ];
 
+export const admittedSockets: Readonly<Record<string, string>> = {
+  'react-native-tcp-socket': 'src/platform/transport.ts',
+};
+
 const reportingSdks =
   /^(@sentry\/|sentry-expo$|@bugsnag\/|@segment\/|@amplitude\/|amplitude-js$|mixpanel|@react-native-firebase\/|firebase$|@firebase\/|@datadog\/|posthog|@newrelic\/|newrelic|appcenter|@microsoft\/applicationinsights|react-native-google-analytics|expo-analytics|expo-insights$|@expo\/insights|expo-firebase|@react-native-community\/netinfo-telemetry|react-native-device-info$)/;
 
@@ -27,12 +31,20 @@ export type DependencyInput = {
   runtime: readonly string[];
   locked: readonly LockedPackage[];
   documented: readonly string[];
+  importers?: Readonly<Record<string, readonly string[]>>;
 };
 
 export function dependencyFindings(input: DependencyInput): string[] {
   const findings: string[] = [];
   for (const name of input.runtime) {
-    if (networkClients.includes(name)) {
+    const admitted = admittedSockets[name];
+    if (admitted !== undefined) {
+      for (const file of input.importers?.[name] ?? []) {
+        if (file !== admitted) {
+          findings.push(`${file} imports ${name}; only ${admitted} opens a transfer socket (SH-1)`);
+        }
+      }
+    } else if (networkClients.includes(name)) {
       findings.push(`${name} opens connections itself; the network is reached only through the Http port`);
     }
     if (!input.documented.includes(name)) {

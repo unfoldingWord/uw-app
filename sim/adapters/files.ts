@@ -10,6 +10,7 @@ export type MemoryFiles = Files & {
   failWrites(fail: boolean): void;
   failRename(targetPrefix: string, times?: number): void;
   offerExternal(external: string, data: Uint8Array): void;
+  externalBytes(external: string): number | undefined;
   onWrite(listener: (operation: FileWrite, path: string, bytes: number) => void): () => void;
   onRead(listener: (operation: FileRead, path: string, bytes: number) => void): () => void;
   used(): number;
@@ -306,6 +307,7 @@ export function createMemoryFiles(options: { capacity?: number } = {}): MemoryFi
         return undefined;
       }
     },
+    externalBytes: (uri) => external.get(uri)?.byteLength,
     offerExternal: (uri, data) => {
       external.set(uri, data.slice());
     },
