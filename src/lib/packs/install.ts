@@ -20,7 +20,7 @@ import type { EventDraft } from '../journal/journal';
 import type { ModulePorts } from '../module';
 import type { HttpDownloaded } from '../ports';
 import { checkBurrito, type CheckedBurrito } from './burrito';
-import { buildAudioPack, buildImagePack, type BuiltDirectory } from './built';
+import { buildAudioPack, buildImagePack, type BuiltDirectory, type OnItems } from './built';
 import { isWordsBurrito, measuredBytes, restoreSharedPayload, shareWordsPayload } from './shared';
 import {
   burritoRoot,
@@ -48,7 +48,7 @@ type Offer = {
   row: ResourceRow | undefined;
   bytes: number | undefined;
   choice: CatalogChoice | undefined;
-  fetch(stage: string, index: number, onBytes: (bytes: number) => void): Promise<Fetched>;
+  fetch(stage: string, index: number, onBytes: (bytes: number) => void, onItems: OnItems): Promise<Fetched>;
 };
 
 export type Resolved = {
@@ -122,7 +122,7 @@ function builtOffer(ports: ModulePorts, choice: CatalogChoice): Offer {
     row: choice.row,
     bytes: choice.bytes,
     choice,
-    fetch: (stage, index, onBytes) => build(ports, choice, `${stage}/${index}`, onBytes),
+    fetch: (stage, index, onBytes, onItems) => build(ports, choice, `${stage}/${index}`, onBytes, onItems),
   };
 }
 
@@ -505,9 +505,16 @@ export function createInstaller(context: InstallerContext): Installer {
       const before = progress.bytes;
       let burrito: InstalledBurrito;
       try {
-        const fetched = await offer.fetch(stage, index, (bytes) => {
-          progress.bytes = before + bytes;
-        });
+        const fetched = await offer.fetch(
+          stage,
+          index,
+          (bytes) => {
+            progress.bytes = before + bytes;
+          },
+          (done, total) => {
+            progress.items = { done, total };
+          },
+        );
         if (!fetched.ok) {
           throw new InstallFailure(fetched.code);
         }
@@ -528,6 +535,7 @@ export function createInstaller(context: InstallerContext): Installer {
         progress.bytes = before;
         continue;
       }
+      delete progress.items;
       placed.push(burrito.root);
       added.push(burrito);
       progress.resources = index + 1;

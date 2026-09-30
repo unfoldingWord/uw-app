@@ -35,6 +35,7 @@ export type InstallProgress = {
   resources: number;
   total: number;
   bytes: number;
+  items?: { done: number; total: number };
 };
 
 export type InstallOutcome =
