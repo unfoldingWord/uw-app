@@ -11,6 +11,7 @@ import { ImportSection, OpenedFile, openedKey, type RunImport } from './ImportSe
 import { openedParam } from './intent';
 import { LanguageList } from './LanguageList';
 import { MissingSection } from './MissingSection';
+import { MoreSection } from './MoreSection';
 import { withOutcome, type Failures, type Outcome } from './outcomes';
 import { RemoveSheet, type PendingRemove } from './RemoveSheet';
 import { StorageSection } from './StorageSection';
@@ -143,6 +144,11 @@ export default function LanguagesScreen() {
         autonym={currentAutonym}
         failures={failures}
         onRetry={(language) => run(language, () => languages.download(language))}
+      />
+      <MoreSection
+        autonym={currentAutonym}
+        failures={failures}
+        onInstall={(key, item) => run(key, () => languages.installMore(item))}
       />
       <ExtrasSection
         version={version}

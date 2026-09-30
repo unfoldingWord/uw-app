@@ -274,6 +274,9 @@ export const vi: LocaleTable = {
   'languages.update': 'Cập nhật',
   'languages.updateDetail': '{version} đã sẵn sàng, {size}.',
   'languages.installing': 'Đang kiểm tra và cài đặt',
+  'languages.more.title': 'Thêm để tải xuống',
+  'languages.more.about':
+    'Các nhà xuất bản khác và tài nguyên thêm cho {language}, chỉ tải xuống khi bạn chọn.',
   'languages.release': '{publisher} · {version}',
   'languages.missing.title': 'Chưa có trên điện thoại này',
   'languages.missing.about': 'Một phần của {language} chưa tải xuống được, và bạn có thể thử lại.',

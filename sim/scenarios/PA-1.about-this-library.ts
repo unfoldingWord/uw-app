@@ -29,11 +29,11 @@ export default scenario(
       summary.stats.map((stat) => [stat.value, stat.label]),
       [
         [3, 'languages'],
-        [21, 'published releases'],
+        [23, 'published releases'],
         [14, 'resource types'],
       ],
     );
-    assert.deepEqual(summary.publishers, ['unfoldingWord', 'Door43-Catalog']);
+    assert.deepEqual(summary.publishers, ['unfoldingWord', 'Door43-Catalog', 'Worldview']);
     assert.equal(
       summary.publishedBy,
       'unfoldingWord and the church organizations it serves with, in 3 languages. Every resource carries the name of the organization that made it, under CC BY-SA 4.0.',

@@ -289,6 +289,9 @@ export const hi: LocaleTable = {
   'languages.update': 'अपडेट करें',
   'languages.updateDetail': '{version} तैयार है, {size}।',
   'languages.installing': 'जाँच और इंस्टॉल हो रहा है',
+  'languages.more.title': 'डाउनलोड के लिए और',
+  'languages.more.about':
+    '{language} के लिए दूसरे प्रकाशक और अतिरिक्त संसाधन, जो तभी डाउनलोड होते हैं जब आप उन्हें चुनते हैं।',
   'languages.release': '{publisher} · {version}',
   'languages.missing.title': 'अभी इस फ़ोन पर नहीं है',
   'languages.missing.about': '{language} का एक भाग डाउनलोड नहीं हुआ, और आप फिर से कोशिश कर सकते हैं।',

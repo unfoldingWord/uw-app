@@ -1,4 +1,5 @@
 import { compareReleases } from '../catalog/normalize';
+import { comparePublishers, compareText } from '../order';
 import type { CatalogRelease } from '../catalog/types';
 import type { PackId, ResourceRow } from '../domain/pack';
 import { resourceKey } from '../domain/release';
@@ -10,14 +11,73 @@ function awaitsSource(release: CatalogRelease): boolean {
   return release.row !== undefined && rowsAwaitingSource.includes(release.row);
 }
 
+const literalPairCodes: readonly string[] = ['ult', 'glt'];
+
+const simplifiedPairCodes: readonly string[] = ['ust', 'gst'];
+
+const leadingPublisher = 'unfoldingWord';
+
+const door43Catalog = 'Door43-Catalog';
+
+function isGatewayOrganization(publisher: string, language: string): boolean {
+  return publisher.toLowerCase() === `${language.toLowerCase()}_gl`;
+}
+
+function publisherRank(publisher: string, language: string): number {
+  if (publisher === leadingPublisher) {
+    return 0;
+  }
+  if (isGatewayOrganization(publisher, language)) {
+    return 1;
+  }
+  return publisher === door43Catalog ? 2 : 3;
+}
+
+function comparePreferredPublishers(language: string, left: string, right: string): number {
+  return publisherRank(left, language) - publisherRank(right, language) || comparePublishers(left, right);
+}
+
+function comparePreferred(left: CatalogRelease, right: CatalogRelease): number {
+  return (
+    comparePreferredPublishers(left.language, left.publisher, right.publisher) ||
+    compareText(left.resource, right.resource) ||
+    compareText(left.tag, right.tag)
+  );
+}
+
+function codeOf(release: CatalogRelease): string {
+  const resource = release.resource.toLowerCase();
+  const prefix = `${release.language.toLowerCase()}_`;
+  return resource.startsWith(prefix)
+    ? resource.slice(prefix.length)
+    : (resource.split('_').at(-1) ?? resource);
+}
+
+function isPairText(release: CatalogRelease): boolean {
+  const code = codeOf(release);
+  return literalPairCodes.includes(code) || simplifiedPairCodes.includes(code);
+}
+
+function publishersPair(texts: readonly CatalogRelease[]): CatalogRelease[] {
+  const publisher = texts.find(isPairText)?.publisher;
+  const own = texts.filter((release) => release.publisher === publisher);
+  const literal = own.find((release) => literalPairCodes.includes(codeOf(release)));
+  const simplified = own.find((release) => simplifiedPairCodes.includes(codeOf(release)));
+  return [literal, simplified].flatMap((release) => release ?? []);
+}
+
 export function defaultReleases(releases: readonly CatalogRelease[], pack: PackId): CatalogRelease[] {
+  const inPack = releases
+    .filter((release) => release.pack === pack && !awaitsSource(release))
+    .sort(comparePreferred);
+  const isText = (release: CatalogRelease) => release.kind === 'language' && release.row === 'text';
   const chosen = new Map<string, CatalogRelease>();
-  for (const release of [...releases].sort(compareReleases)) {
-    if (release.pack === pack && !awaitsSource(release) && !chosen.has(release.resource)) {
+  for (const release of inPack.filter((item) => !isText(item))) {
+    if (!chosen.has(release.resource)) {
       chosen.set(release.resource, release);
     }
   }
-  return [...chosen.values()].sort(compareReleases);
+  return [...publishersPair(inPack.filter(isText)), ...chosen.values()].sort(compareReleases);
 }
 
 export function optionalReleases(releases: readonly CatalogRelease[], pack: PackId): CatalogRelease[] {

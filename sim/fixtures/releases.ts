@@ -109,6 +109,7 @@ const languages = {
 const released = '2026-09-01T00:00:00Z';
 const unfoldingWord = 'unfoldingWord';
 const door43Catalog = 'Door43-Catalog';
+const thirdPartyPublisher = 'Worldview';
 
 const textFlavor = {
   usfmVersion: '3.0',
@@ -271,6 +272,35 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     currentScope: bookScope(simplifiedBooks),
     books: bookCodes(simplifiedBooks),
     ingredients: textIngredients(simplifiedBooks, 'ust', 'qaa'),
+  }),
+  release({
+    resource: 'qaa_t4t',
+    tag: 'v1',
+    language: languages.qaa,
+    subject: 'Bible',
+    title: 'Fixture Translation for Translators',
+    abbreviation: 'T4T',
+    flavorType: 'scripture',
+    flavor: 'textTranslation',
+    flavorDetails: textFlavor,
+    currentScope: bookScope(simplifiedBooks),
+    books: bookCodes(simplifiedBooks),
+    ingredients: textIngredients(simplifiedBooks, 't4t', 'qaa'),
+  }),
+  release({
+    publisher: thirdPartyPublisher,
+    resource: 'qaa_bsb',
+    tag: 'v1',
+    language: languages.qaa,
+    subject: 'Bible',
+    title: 'Fixture Berean Standard Bible',
+    abbreviation: 'BSB',
+    flavorType: 'scripture',
+    flavor: 'textTranslation',
+    flavorDetails: textFlavor,
+    currentScope: bookScope(simplifiedBooks),
+    books: bookCodes(simplifiedBooks),
+    ingredients: textIngredients(simplifiedBooks, 'bsb', 'qaa'),
   }),
   release({
     resource: 'qaa_tn',

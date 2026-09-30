@@ -280,6 +280,9 @@ export const my: LocaleTable = {
   'languages.update': 'အပ်ဒိတ်လုပ်ရန်',
   'languages.updateDetail': '{version} အသင့်ဖြစ်ပါပြီ၊ {size}။',
   'languages.installing': 'စစ်ဆေးပြီး ထည့်သွင်းနေသည်',
+  'languages.more.title': 'ဒေါင်းလုဒ်ရန် နောက်ထပ်',
+  'languages.more.about':
+    '{language} အတွက် အခြားထုတ်ဝေသူများနှင့် ထပ်ဆောင်းအရင်းအမြစ်များ၊ သင်ရွေးမှသာ ဒေါင်းလုဒ်လုပ်ပါသည်။',
   'languages.release': '{publisher} · {version}',
   'languages.missing.title': 'ဤဖုန်းတွင် မရှိသေးပါ',
   'languages.missing.about': '{language} ၏ အစိတ်အပိုင်းတစ်ခု မဒေါင်းလုဒ်ရသေးပါ၊ ထပ်မံကြိုးစားနိုင်ပါသည်။',

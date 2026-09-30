@@ -15,7 +15,7 @@ const expectedFixtureRows: readonly (readonly [RegExp, RowId])[] = [
   [/_obs$/, 'stories'],
   [/-audio$/, 'audio'],
   [/^obs-images$/, 'images'],
-  [/_(ult|ust|uhb|ugnt)$/, 'text'],
+  [/_(ult|ust|t4t|bsb|uhb|ugnt)$/, 'text'],
   [/_tn$/, 'notes'],
   [/_twl$/, 'wordLinks'],
   [/_tq$/, 'questions'],

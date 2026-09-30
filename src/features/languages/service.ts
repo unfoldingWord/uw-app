@@ -3,6 +3,7 @@ import type { CatalogLanguage, CatalogRelease, ScriptDirection } from '@lib/cata
 import type { FailureCode } from '@lib/domain/failures';
 import { imagePackId, languagePackId, originalPackId, type PackId } from '@lib/domain/pack';
 import type { Kernel } from '@lib/kernel';
+import { optionalReleases } from '@lib/packs/plan';
 import type { InstallOutcome, PackUpdate, RemoveOutcome, Storage } from '@lib/packs/types';
 import { languagesWords, type LanguagesWords } from './strings';
 
@@ -27,6 +28,8 @@ export type OptionalDownload = {
   readonly installed: boolean;
 };
 
+export type MoreDownload = OptionalDownload & { readonly detail: string };
+
 export type MissingResource = {
   readonly publisher: string;
   readonly resource: string;
@@ -50,6 +53,8 @@ export type LanguagesService = {
   downloadImages(): Promise<InstallOutcome>;
   audio(language: string): readonly OptionalDownload[];
   originals(): readonly OptionalDownload[];
+  more(): readonly MoreDownload[];
+  installMore(item: MoreDownload): Promise<InstallOutcome>;
   install(pack: PackId): Promise<InstallOutcome>;
   remove(pack: PackId): Promise<RemoveOutcome>;
   storage(): Promise<Storage>;
@@ -180,6 +185,27 @@ export function createLanguagesService(kernel: Kernel): LanguagesService {
       optional(kernel.catalog.originals()).filter(
         (item) => item.pack === originalPackId(item.release.language),
       ),
+    more() {
+      const language = kernel.preferences.contentLanguage();
+      if (language === undefined) {
+        return [];
+      }
+      const pack = languagePackId(language);
+      const current = words();
+      const present = new Set(
+        (kernel.packs.installed().find((item) => item.pack === pack)?.burritos ?? []).map(
+          (burrito) => `${burrito.provenance.publisher}/${burrito.provenance.resource}`,
+        ),
+      );
+      return optionalReleases(kernel.catalog.releases(language), pack).map((release) => ({
+        release,
+        pack,
+        title: release.title,
+        detail: current.t('languages.release', { publisher: release.publisher, version: release.tag }),
+        installed: present.has(`${release.publisher}/${release.resource}`),
+      }));
+    },
+    installMore: (item) => kernel.packs.installOptional(item.pack, item.release),
     install: (pack) => kernel.packs.installFromCatalog(pack),
     remove: (pack) => kernel.packs.remove(pack),
     storage: () => kernel.packs.storage(),

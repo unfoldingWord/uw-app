@@ -295,6 +295,9 @@ export const ptBR: LocaleTable = {
   'languages.update': 'Atualizar',
   'languages.updateDetail': '{version} está pronta, {size}.',
   'languages.installing': 'Verificando e instalando',
+  'languages.more.title': 'Mais para baixar',
+  'languages.more.about':
+    'Outras editoras e recursos extras para {language}, baixados só quando você os escolhe.',
   'languages.release': '{publisher} · {version}',
   'languages.missing.title': 'Ainda não está neste celular',
   'languages.missing.about': 'Uma parte de {language} não foi baixada, e você pode tentar de novo.',

@@ -28,7 +28,7 @@ export default scenario(
     });
     const qaa = listed.find((item) => item.language === 'qaa');
     assert.equal(qaa?.autonym, 'Fixture A');
-    assert.equal(qaa?.resources, 12, 'one per resource, however many publishers release it');
+    assert.equal(qaa?.resources, 14, 'one per resource, however many publishers release it');
     assert.deepEqual(
       phone.kernel.catalog.originals().map((release) => release.language),
       ['el-x-koine', 'hbo'],
@@ -72,10 +72,10 @@ export default scenario(
     assert.equal(failure?.type === 'Failure' && failure.payload.code, 'http.offline');
     assert.equal(phone.kernel.catalog.languages().length, 3, 'a failed refresh keeps the known catalog');
     assert.deepEqual(phone.kernel.snapshot().modules.catalog, {
-      releases: 21,
+      releases: 23,
       languages: [
         { language: 'en', resources: 2, installed: false },
-        { language: 'qaa', resources: 12, installed: false },
+        { language: 'qaa', resources: 14, installed: false },
         { language: 'qab', resources: 2, installed: true },
       ],
       originals: ['el-x-koine', 'hbo'],

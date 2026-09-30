@@ -287,6 +287,9 @@ export const bn: LocaleTable = {
   'languages.update': 'আপডেট করুন',
   'languages.updateDetail': '{version} প্রস্তুত, {size}।',
   'languages.installing': 'যাচাই ও ইনস্টল হচ্ছে',
+  'languages.more.title': 'আরও ডাউনলোড করার জন্য',
+  'languages.more.about':
+    '{language}-এর জন্য অন্য প্রকাশক ও অতিরিক্ত সম্পদ, আপনি বেছে নিলে তবেই ডাউনলোড হয়।',
   'languages.release': '{publisher} · {version}',
   'languages.missing.title': 'এখনও এই ফোনে নেই',
   'languages.missing.about': '{language}-এর একটি অংশ ডাউনলোড হয়নি, আপনি আবার চেষ্টা করতে পারেন।',

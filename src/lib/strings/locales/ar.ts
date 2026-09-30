@@ -335,6 +335,8 @@ export const ar: LocaleTable = {
   'languages.update': 'تحديث',
   'languages.updateDetail': '{version} جاهز، {size}.',
   'languages.installing': 'جارٍ التحقق والتثبيت',
+  'languages.more.title': 'المزيد للتنزيل',
+  'languages.more.about': 'ناشرون آخرون وموارد إضافية لـ {language}، تُنزَّل فقط عندما تختارها.',
   'languages.release': '{publisher} · {version}',
   'languages.missing.title': 'لم يصل بعد إلى هذا الهاتف',
   'languages.missing.about': 'لم يُنزَّل جزء من {language}، ويمكنك المحاولة مرة أخرى.',

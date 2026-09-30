@@ -86,4 +86,7 @@ export const languages = {
   'languages.release': '{publisher} · {version}',
   'languages.missing.title': 'Not yet on this phone',
   'languages.missing.about': 'Part of {language} did not download, and you can try again.',
+  'languages.more.title': 'More to download',
+  'languages.more.about':
+    'Other publishers and extra resources for {language}, downloaded only when you choose them.',
 } as const;

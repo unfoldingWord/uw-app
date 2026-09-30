@@ -288,6 +288,9 @@ export const fa: LocaleTable = {
   'languages.update': 'به‌روزرسانی',
   'languages.updateDetail': '{version} آماده است، {size}.',
   'languages.installing': 'در حال بررسی و نصب',
+  'languages.more.title': 'موارد بیشتر برای دانلود',
+  'languages.more.about':
+    'ناشران دیگر و منابع بیشتر برای {language}، که فقط وقتی انتخابشان کنید دانلود می‌شوند.',
   'languages.release': '{publisher} · {version}',
   'languages.missing.title': 'هنوز روی این گوشی نیست',
   'languages.missing.about': 'بخشی از {language} دانلود نشد و شما می‌توانید دوباره تلاش کنید.',

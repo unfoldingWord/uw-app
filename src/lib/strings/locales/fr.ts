@@ -301,6 +301,9 @@ export const fr: LocaleTable = {
   'languages.update': 'Mettre à jour',
   'languages.updateDetail': '{version} est prête, {size}.',
   'languages.installing': 'Vérification et installation',
+  'languages.more.title': 'Plus à télécharger',
+  'languages.more.about':
+    'D’autres éditeurs et des ressources en plus pour {language}, téléchargés seulement si vous les choisissez.',
   'languages.release': '{publisher} · {version}',
   'languages.missing.title': 'Pas encore sur ce téléphone',
   'languages.missing.about': 'Une partie de {language} ne s’est pas téléchargée, et vous pouvez réessayer.',
