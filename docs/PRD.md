@@ -529,6 +529,9 @@ Decisions taken in the requirements interview of 2026-09-29 with Jesse Griffin. 
 | 81 | iOS discovery uses `dns_sd` (register, browse, resolve, get address), not the deprecated `NetService`, and opens no connection to resolve an address. (2026-09-30, issue #64) |
 | 82 | The iOS local network prompt comes from the string table and is written as `InfoPlist.strings` through Expo's `locales` config for English and each signed-off locale only, as the app's own words are. (2026-09-30, issue #64) |
 | 83 | The counts are sent through the Http port, one batch a day when online, each the counts no earlier batch carried (exactly `leaving()` on a phone that has sent nothing), to one endpoint set by `telemetryEndpoint`; while it is unset nothing is sent, no host is added, the privacy manifest declares nothing and the privacy screen says nothing is sent. The endpoint and its receiver (a Cloudflare Worker) are pending a human decision. (2026-09-30, issue #52) |
+| 84 | One screen scaffold, header and text component live in `src/shared/ui` (`Screen`, `ScreenScaffold`, `Header`, `ThemedText`); a feature keeps only parts that are its own. A screen title is the prototype's: 28 px with no back control, 24 px with one, 17 px semibold when centred. (2026-09-30, issue #37) |
+| 85 | A tappable glass surface recoils (`--recoil-squash`, `--dur-recoil`, then the `gg-recoil` rebound on `--ease-settle` over `--dur-morph`); buttons keep `--press-scale`. The DotRing is the loading state, and dense screens sit on the aurora at 0.5. (2026-09-30, issue #41) |
+| 86 | A link inline in a sentence keeps its text size as its touch target: React Native's `Text` takes no hit slop, and WCAG 2.5.8 exempts inline targets. Every other target reaches 44 px counting hit slop. (2026-09-30, issue #62) |
 
 ---
 

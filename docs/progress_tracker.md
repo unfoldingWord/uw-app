@@ -3,6 +3,32 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-30 C1 shared UI structure and design fidelity for v1.1.0 (#37, #41, #62)
+
+Node v22.22.2; Chromium through playwright-core 1.56.1 for the shots. Nothing ran on a phone.
+
+- Red first: `src/shared/glass/recoil.test.ts` and `src/features/study/screens/parts/touchExtent.test.ts` failed
+  with no module behind them before `recoil.ts` and `touchExtent.ts` existed. `src/shared/ui/headerTitle.test.ts`
+  was written with the header change, not before it; the red for #37 is the old code itself (the shared `Header`
+  set a back-control title at 28 px, the feature copies at 19 px). The red for the targets is the shots count
+  below, taken on main before any edit.
+- `npm run shots` before (be4f785): "182 screenshots and the contact sheet in shots/; 173 targets under 44 px
+  counting hit slop, 0 text boxes escaping their parent". After: "182 screenshots ...; 39 targets under 44 px
+  counting hit slop, 0 text boxes escaping their parent". Every one of the 39 is a link inline in a sentence
+  (Study articles and notes); React Native's `Text` takes no hit slop, so they stay (PRD decision 86).
+- Looked at with Read: settings in rtl (the back chevron now points outward on the right; the first run showed
+  an empty circle because a transform on the SVG itself does not render on web, so the mirrored glyph is wrapped
+  in a View), settings dark, about reduced-blur (brand header, 900 at 24 px), study ur (Study's labels in
+  Nastaliq, the chapter chevrons mirrored), study-library hi, formation-session light (centred 17 px title, dense
+  aurora), formation-session-end large-text, home large-text (the Formation card stacks its tile above the text).
+- Request for Claude Design (issue #62, not done here, `design-system/` is not edited in code): tokens for the
+  Nastaliq line height (the `urdu: 2` factor in `scriptLineHeights`) and for the no-tracking rule in script faces,
+  both still literals in `src/shared/theme/createTheme.ts`.
+- `npm run verify` green: 759 tests in 80 files, 58 scenarios, trace 51 Must, 21 fixture burritos, both native bundles clean.
+- Not verified: anything on a phone, including the recoil and the DotRing under Reduce Motion, the hit slop of
+  the Study choice pills and the mirrored icons with `I18nManager.isRTL` after the direction reload.
+  Seen in large-text and left alone: "Play and discuss" overflows its button in the session dock.
+
 ## 2026-09-30 B v1.1.0 transport and telemetry (#21, #64, #52)
 
 Node v22.22.2. Nothing ran on a phone, no Swift or Kotlin was compiled (no toolchain in this sandbox), and
