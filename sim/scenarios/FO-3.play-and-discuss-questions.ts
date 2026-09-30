@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
 import { audioPackId, imagePackId, languagePackId } from '@lib/domain/pack';
-import { parseReference } from '@lib/domain/reference';
 import { installFromCatalog, withFormation } from '../install';
 import { scenario } from '../scenario';
 import { servicesOf } from '../services';
@@ -45,13 +44,22 @@ export default scenario(
     const services = servicesOf(device);
     assert.equal(services.formation.listen(session.play.audio), undefined, 'no story audio, no player');
 
-    await installFromCatalog(device, [audioPackId('qaa', 'qaa_ult')]);
-    const ruth = parseReference('RUT 1:1');
-    assert.ok(ruth.ok);
-    const [clip] = (await device.kernel.corpus.passage(ruth.reference, { language: 'qaa' }))?.audio ?? [];
-    assert.ok(clip, 'a clip on the phone stands in for story audio the fixtures do not carry');
+    await installFromCatalog(device, [audioPackId('qaa', 'qaa_obs')]);
+    const heard = await device.kernel.formation.session('foundations', 1, 'qaa');
+    assert.ok(heard?.track === 'foundations' && heard.play.audio.state === 'available');
+    const { clip } = heard.play.audio;
+    assert.deepEqual([clip.book, clip.chapter, clip.mimeType], ['OBS', 1, 'audio/mp4']);
+    assert.equal(clip.provenance.resource, 'qaa_obs', 'the story audio pack plays in the session');
+    assert.match(clip.provenance.licence, /CC BY-SA 4\.0/);
+    assert.ok(await device.adapters.files.exists(clip.path));
+    const second = await device.kernel.formation.session('foundations', 2, 'qaa');
+    assert.deepEqual(
+      second?.track === 'foundations' ? second.play.audio : undefined,
+      { state: 'not-available' },
+      'a story the audio pack does not carry has none',
+    );
     device.adapters.audio.provide({ kind: 'file', path: clip.path }, 60_000);
-    const story = services.formation.listen({ state: 'available', clip });
+    const story = services.formation.listen(heard.play.audio);
     assert.ok(story);
     assert.equal((await story.toggle()).state, 'playing');
     world.clock.advance(6_000);

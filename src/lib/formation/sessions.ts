@@ -97,6 +97,7 @@ async function foundationsSession(
     return undefined;
   }
   const own = await view.movements(number, language);
+  const clip = await view.storyAudio(number, language);
   const layer: MovementLayer =
     own === undefined
       ? { state: 'not-in-language', english: await englishFor(view, number, options) }
@@ -113,7 +114,10 @@ async function foundationsSession(
     language,
     outline: outlineOf(shown),
     story,
-    play: { frames: story.frames, audio: { state: 'not-available' } },
+    play: {
+      frames: story.frames,
+      audio: clip === undefined ? { state: 'not-available' } : { state: 'available', clip },
+    },
     movements: layer,
   };
 }

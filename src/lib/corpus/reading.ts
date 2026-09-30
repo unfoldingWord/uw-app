@@ -2,6 +2,7 @@ import type { Library } from './library';
 import { academyPrefix, wordLinkArticle, wordsPrefix } from './links';
 import {
   academyArticle,
+  audioClips,
   images,
   movements,
   stories,
@@ -10,13 +11,14 @@ import {
   storyWordLinkRows,
   wordArticle,
 } from './loaders';
-import { movementSectionOrder } from './layout';
+import { movementSectionOrder, storiesBook } from './layout';
 import { renderMarkdown } from './markdown';
 import { isStudyResource } from './readings';
 import type { Entry } from './tables';
 import type { HelpsReference } from './tsv';
 import type {
   Article,
+  AudioClip,
   Block,
   Frame,
   MovementSection,
@@ -147,6 +149,28 @@ async function storyHelps(library: Library, language: string, story: number) {
     }
   }
   return { notes, questions, wordLinks };
+}
+
+export async function assembleStoryAudio(
+  library: Library,
+  story: number,
+  language: string,
+): Promise<AudioClip | undefined> {
+  for (const entry of library.of(language, ['audio']).filter((item) => item.books.includes(storiesBook))) {
+    const clip = (await audioClips(library, entry)).find(
+      (item) => item.book === storiesBook && item.chapter === story,
+    );
+    if (clip !== undefined) {
+      return {
+        book: clip.book,
+        chapter: clip.chapter,
+        path: clip.path,
+        mimeType: clip.mimeType,
+        provenance: entry.provenance,
+      };
+    }
+  }
+  return undefined;
 }
 
 export async function assembleStory(

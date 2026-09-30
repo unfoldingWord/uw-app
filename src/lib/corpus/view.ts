@@ -2,13 +2,14 @@ import { stableJson } from '../json';
 import type { Db, Files } from '../ports';
 import { contentsOf } from './contents';
 import { createLibrary } from './library';
-import { assembleArticle, assembleMovements, assembleStory } from './reading';
+import { assembleArticle, assembleMovements, assembleStory, assembleStoryAudio } from './reading';
 import { loadEntries, loadTitles } from './tables';
-import type { Article, Contents, Movements, Story } from './types';
+import type { Article, AudioClip, Contents, Movements, Story } from './types';
 
 export type CorpusView = {
   contents(language: string): Promise<Contents>;
   story(number: number, language: string): Promise<Story | undefined>;
+  storyAudio(story: number, language: string): Promise<AudioClip | undefined>;
   movements(story: number, language: string): Promise<Movements | undefined>;
   article(id: string, language: string): Promise<Article | undefined>;
 };
@@ -40,6 +41,10 @@ export function corpusView(files: Files, db: Db): CorpusView {
     story: async (number, language) => {
       await catchUp();
       return assembleStory(library, number, language);
+    },
+    storyAudio: async (story, language) => {
+      await catchUp();
+      return assembleStoryAudio(library, story, language);
     },
     movements: async (story, language) => {
       await catchUp();
