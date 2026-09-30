@@ -166,6 +166,8 @@ A rule that lives only in prose drifts. Each of these has a check in `verify` an
 | Nothing unused | knip over files, dependencies, exports and types |
 | Every Must requirement is proven | `trace --enforce` fails on a Must ID with no scenario named for it, unless the ID is on the documented list in `sim/trace.ts` and a test names it (SE-2, PRD DX-4); the DX-4 scenario runs the same check |
 | No harness module in a phone bundle | `bundle` exports Android and iOS with source maps and fails on any module from `sim/`, `scripts/`, sql.js or react-native-web |
+| This page matches the tree | the `architecture` check fails when the module, port or event count stated here, or the modules, ports and events listed here, differ from `kernelModules`, `Ports` and `eventSchemas` |
+| No permission merged past the admitted list | the device CI's Android job diffs `aapt2 dump permissions` of the built APK against `scripts/checks/android-permissions.ts` (`scripts/apk-permissions.ts`) and fails on a permission neither admitted nor the app's own receiver permission, and on a blocked one a Maven dependency merged back |
 | Content matches the contract | `contract` validates every fixture burrito against `docs/content-contract.md` |
 
 ## Where a change goes
