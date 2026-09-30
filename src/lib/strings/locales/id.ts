@@ -376,6 +376,12 @@ export const id: LocaleTable = {
   'privacy.count.impactStoryOpens': 'Berapa kisah dampak yang dibuka',
   'privacy.dropped':
     'Jika hitungan tidak bisa dikirim, hitungan itu dibuang dan tidak ada yang berubah bagi Anda.',
+  'privacy.summary.sending':
+    'Hanya hitungan di bawah ini yang keluar dari ponsel ini tanpa Anda memilih untuk mengirimnya.',
+  'privacy.counts.sending':
+    'Aplikasi hanya menghitung angka-angka ini, di ponsel ini, dan hanya mengirim angka ini, satu kelompok sehari saat Anda sedang online.',
+  'privacy.sending.later':
+    'Jika satu kelompok tidak dapat dikirim, kelompok itu menunggu hari berikutnya, dan tidak ada yang berubah bagi Anda.',
   'privacy.never':
     'Aplikasi tidak pernah meminta lokasi, kontak, atau akun Anda, dan tidak memakai analitik pihak ketiga.',
   'privacy.local':

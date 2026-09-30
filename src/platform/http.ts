@@ -125,12 +125,18 @@ export function createPlatformHttp(options: PlatformHttpOptions): Http {
       const response = await fetch(url, {
         method: request.method ?? 'GET',
         headers: { ...headers },
+        ...(request.body === undefined ? {} : { body: new Uint8Array(request.body) }),
         redirect: 'manual',
         credentials: 'omit',
         signal: progress.signal,
       });
       const location = response.headers.get('location');
-      if (!redirectStatuses.has(response.status) || location === null || hop >= maxRedirects) {
+      if (
+        request.method === 'POST' ||
+        !redirectStatuses.has(response.status) ||
+        location === null ||
+        hop >= maxRedirects
+      ) {
         return { kind: 'landed', url, response };
       }
       await response.body?.cancel();

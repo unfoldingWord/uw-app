@@ -7,7 +7,14 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { createHomeService } from '@features/home/service';
 import { createOnboardingService } from '@features/onboarding/service';
 import { createSettingsService, type Appearance } from '@features/settings/service';
-import { createKernel, createStartFaults, hostOf, isAllowedUrl, type Kernel } from '@lib/kernel';
+import {
+  createKernel,
+  createStartFaults,
+  hostOf,
+  isAllowedUrl,
+  telemetryEndpoint,
+  type Kernel,
+} from '@lib/kernel';
 import { reducedBlurByDefault } from '@platform/display';
 import { createPlatformLocale } from '@platform/locale';
 import { discoverMigrations } from '@platform/migrations';
@@ -29,9 +36,11 @@ async function openKernel(): Promise<Kernel> {
     migrations: discoverMigrations(),
     localeGate,
     faults: startFaults.pending(),
+    ...(telemetryEndpoint === undefined ? {} : { telemetryEndpoint }),
   });
   await kernel.start();
   startFaults.clear();
+  void kernel.telemetry.send().catch(() => undefined);
   return kernel;
 }
 
@@ -89,7 +98,11 @@ function useResume(kernel: Kernel | undefined): void {
     }
     const subscription = AppState.addEventListener('change', (state) => {
       if (state === 'active') {
-        void kernel.resume().catch(() => false);
+        void kernel
+          .resume()
+          .catch(() => false)
+          .then(() => kernel.telemetry.send())
+          .catch(() => undefined);
       }
     });
     return () => subscription.remove();

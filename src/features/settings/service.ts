@@ -262,13 +262,14 @@ export function createSettingsService(kernel: Kernel): SettingsService {
     remove: (pack) => kernel.packs.remove(pack),
     privacy: () => {
       const current = words();
+      const sending = kernel.telemetry.sending();
       return {
         title: current.t('privacy.title'),
-        summary: current.t('privacy.summary'),
-        intro: current.t('privacy.counts'),
+        summary: current.t(sending ? 'privacy.summary.sending' : 'privacy.summary'),
+        intro: current.t(sending ? 'privacy.counts.sending' : 'privacy.counts'),
         counts: leavingFolds.map((fold) => ({ fold, label: current.t(`privacy.count.${fold}`) })),
         notes: [
-          current.t('privacy.dropped'),
+          current.t(sending ? 'privacy.sending.later' : 'privacy.dropped'),
           current.t('privacy.never'),
           current.t('privacy.local'),
           current.t('privacy.backup'),

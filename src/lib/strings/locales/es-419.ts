@@ -409,6 +409,10 @@ export const es419: LocaleTable = {
   'privacy.count.invitationTaps': 'Cuántas veces se tocó la invitación a colaborar',
   'privacy.count.impactStoryOpens': 'Cuántas historias de impacto se abrieron',
   'privacy.dropped': 'Si los conteos no se pueden enviar, se descartan y nada cambia para ti.',
+  'privacy.summary.sending': 'Solo los conteos de abajo salen de este teléfono sin que tú elijas enviarlos.',
+  'privacy.counts.sending':
+    'La app cuenta solo estos números, en este teléfono, y envía solo estos, en un lote al día cuando tienes conexión.',
+  'privacy.sending.later': 'Si un lote no se puede enviar, espera al día siguiente, y nada cambia para ti.',
   'privacy.never':
     'La aplicación nunca pide tu ubicación, tus contactos ni una cuenta, y no usa análisis de terceros.',
   'privacy.local':

@@ -373,6 +373,11 @@ export const vi: LocaleTable = {
   'privacy.count.invitationTaps': 'Số lần lời mời đồng hành được chạm',
   'privacy.count.impactStoryOpens': 'Số câu chuyện tác động đã được mở',
   'privacy.dropped': 'Nếu không gửi được, các con số sẽ bị bỏ qua và không có gì thay đổi với bạn.',
+  'privacy.summary.sending': 'Chỉ các số đếm dưới đây rời khỏi điện thoại này mà bạn không cần chọn gửi.',
+  'privacy.counts.sending':
+    'Ứng dụng chỉ đếm những con số này, trên điện thoại này, và chỉ gửi chúng, mỗi ngày một đợt khi bạn có mạng.',
+  'privacy.sending.later':
+    'Nếu một đợt không gửi được, nó sẽ chờ đến ngày hôm sau, và không có gì thay đổi với bạn.',
   'privacy.never':
     'Ứng dụng không bao giờ hỏi vị trí, danh bạ hay tài khoản của bạn, và không dùng công cụ phân tích của bên thứ ba.',
   'privacy.local':

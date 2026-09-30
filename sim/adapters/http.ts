@@ -20,6 +20,7 @@ export type SentRequest = {
   readonly method: string;
   readonly url: string;
   readonly headers: Readonly<Record<string, string>>;
+  readonly body?: Uint8Array;
 };
 
 export type MemoryHttp = Http & {
@@ -89,7 +90,12 @@ export function createMemoryHttp(options: {
 
   function respond(request: HttpRequest): HttpResponse {
     log.push(`${request.method ?? 'GET'} ${request.url}`);
-    sentLog.push({ method: request.method ?? 'GET', url: request.url, headers: { ...request.headers } });
+    sentLog.push({
+      method: request.method ?? 'GET',
+      url: request.url,
+      headers: { ...request.headers },
+      ...(request.body === undefined ? {} : { body: request.body.slice() }),
+    });
     if (!isAllowedUrl(request.url, hosts)) {
       return { kind: 'refused', host: hostOf(request.url) };
     }

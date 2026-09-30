@@ -401,6 +401,12 @@ export const nl: LocaleTable = {
   'privacy.count.impactStoryOpens': 'Hoeveel verhalen van impact zijn geopend',
   'privacy.dropped':
     'Als de tellingen niet verstuurd kunnen worden, vervallen ze en verandert er voor jou niets.',
+  'privacy.summary.sending':
+    'Alleen de aantallen hieronder verlaten deze telefoon zonder dat je ervoor kiest ze te versturen.',
+  'privacy.counts.sending':
+    'De app telt alleen deze aantallen, op deze telefoon, en verstuurt alleen die, in één bundel per dag als je online bent.',
+  'privacy.sending.later':
+    'Als een bundel niet verstuurd kan worden, wacht hij tot de volgende dag, en voor jou verandert er niets.',
   'privacy.never':
     'De app vraagt nooit om je locatie, je contacten of een account, en gebruikt geen analyse van derden.',
   'privacy.local':

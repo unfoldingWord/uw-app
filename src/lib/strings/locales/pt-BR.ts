@@ -408,6 +408,11 @@ export const ptBR: LocaleTable = {
   'privacy.count.invitationTaps': 'Quantas vezes o convite de parceria foi tocado',
   'privacy.count.impactStoryOpens': 'Quantas histórias de impacto foram abertas',
   'privacy.dropped': 'Se as contagens não puderem ser enviadas, elas são descartadas e nada muda para você.',
+  'privacy.summary.sending': 'Só as contagens abaixo saem deste celular sem que você escolha enviá-las.',
+  'privacy.counts.sending':
+    'O aplicativo conta só estes números, neste celular, e envia só eles, em um lote por dia quando você está conectado.',
+  'privacy.sending.later':
+    'Se um lote não puder ser enviado, ele espera o dia seguinte, e nada muda para você.',
   'privacy.never':
     'O aplicativo nunca pede sua localização, seus contatos ou uma conta, e não usa análises de terceiros.',
   'privacy.local':

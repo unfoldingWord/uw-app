@@ -60,7 +60,7 @@ export type Kv = {
   keys(): Promise<readonly string[]>;
 };
 
-export type HttpMethod = 'GET' | 'HEAD';
+export type HttpMethod = 'GET' | 'HEAD' | 'POST';
 
 export type HttpProgress = (receivedBytes: number, totalBytes: number | undefined) => void;
 
@@ -74,6 +74,7 @@ export type HttpRequest = {
   method?: HttpMethod;
   timeoutMs: number;
   headers?: Readonly<Record<string, string>>;
+  body?: Uint8Array;
   onProgress?: HttpProgress;
   cancel?: HttpCancel;
 };

@@ -1,6 +1,8 @@
 import type { ExpoConfig } from 'expo/config';
 import { withDataExtractionRules } from './plugins/data-extraction-rules/index.ts';
+import { collectedDataTypes } from './plugins/privacy-manifest/index.ts';
 import { localNetworkUsage, systemPromptLocales } from './plugins/system-prompts/index.ts';
+import { telemetryEndpoint } from './src/lib/network.ts';
 import { locales } from './src/lib/strings/locales.ts';
 
 const iosBundleIdentifier = 'com.unfoldingword.iosapp';
@@ -106,7 +108,7 @@ const config: ExpoConfig = {
     privacyManifests: {
       NSPrivacyTracking: false,
       NSPrivacyTrackingDomains: [],
-      NSPrivacyCollectedDataTypes: [],
+      NSPrivacyCollectedDataTypes: collectedDataTypes(telemetryEndpoint),
       NSPrivacyAccessedAPITypes: [
         {
           NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults',

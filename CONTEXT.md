@@ -200,6 +200,10 @@ _Avoid_: log, history, telemetry (telemetry is derived from it)
 The one file a leader shares from Settings so someone can help: the journal written out as a document, and the snapshot beside it. `npm run replay` rebuilds a device from it. In code the journal half is `JournalExport`, written by `journal.export()` and read by `parseJournalExport`; "export" names only that code, never a word a leader sees, and the file leaves the device only through Share. By default it leaves out what the leader read (the passages, articles and stories opened, and bookmarks), keeping every event; "Include what I read" puts them in for that one share.
 _Avoid_: log file, dump, backup
 
+**Batch**:
+The counts a device sends in one request to the telemetry endpoint: the PRD 9 folds no earlier batch carried, at most one a day, only when online and only once an endpoint is set. Journaled as `TelemetrySent`.
+_Avoid_: report, ping, upload
+
 **Snapshot**:
 The whole state of a device folded into one document: packs, corpus summary, groups, preferences, journal tail.
 _Avoid_: dump, state, export

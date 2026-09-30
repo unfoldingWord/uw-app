@@ -1,4 +1,5 @@
 import type { StartFault } from '@lib/faults';
+import { allowedHostsFor } from '@lib/network';
 import type { JournalResume } from '@lib/journal/journal';
 import { createKernel, type Kernel } from '@lib/kernel';
 import type { AppPackage, Clock, DeviceLocale, DevicePlatform, Ids } from '@lib/ports';
@@ -25,6 +26,7 @@ export type DeviceOptions = {
   resume?: JournalResume;
   localeGate?: LocaleGate;
   startFaults?: readonly StartFault[];
+  telemetryEndpoint?: string;
 };
 
 export type SimAdapters = {
@@ -65,7 +67,11 @@ export function createSimDevice(name: string, world: DeviceWorld, options: Devic
     files,
     db: createMemoryDb(),
     kv: createMemoryKv(),
-    http: createMemoryHttp({ network: world.network, files }),
+    http: createMemoryHttp({
+      network: world.network,
+      files,
+      hosts: allowedHostsFor(options.telemetryEndpoint),
+    }),
     transport: world.bus.transport(
       platform === 'android'
         ? {
@@ -87,6 +93,7 @@ export function createSimDevice(name: string, world: DeviceWorld, options: Devic
       ...(options.journalLimit === undefined ? {} : { journalLimit: options.journalLimit }),
       ...(options.resume === undefined ? {} : { resume: options.resume }),
       ...(options.localeGate === undefined ? {} : { localeGate: options.localeGate }),
+      ...(options.telemetryEndpoint === undefined ? {} : { telemetryEndpoint: options.telemetryEndpoint }),
     });
   let kernel = boot(options.startFaults);
   return {

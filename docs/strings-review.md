@@ -221,3 +221,7 @@ Dates are formatted by the screen layer with the platform's date formatting, and
   that it looks only on the local network.
 - `transfer.typed.invalid` now says six-digit: the pairing code grew from four digits to six.
 - Drafted by an AI agent in fifteen locales; none reviewed.
+- `privacy.summary.sending`, `privacy.counts.sending` and `privacy.sending.later` (issue #52): the privacy
+  screen's summary, intro and note once a telemetry endpoint is set and the app sends its counts. Until then the
+  screen keeps `privacy.summary`, `privacy.counts` and `privacy.dropped`, which say nothing is sent yet. "Batch"
+  is one small bundle of numbers sent once a day; it must not read as a file or a report about the leader.

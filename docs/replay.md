@@ -119,6 +119,8 @@ with no `AppOpened` yet; a restart in replay journals the same event at the same
   journal: its `receivedApp` fact comes from the file in `transfer/app/`, which a replay does not have, and
   the replay names that divergence in the snapshot. `AppInstallerOpened`, journaled when the system installer
   opens on that package, is `verbatim` and replays as recorded.
+- **A batch of counts.** `TelemetrySent` is `verbatim`: replay appends it as recorded, so what was sent folds
+  the same way, and a replay device has no telemetry endpoint, so it never sends.
 - **A platform fault at boot.** A fault the platform raised before any kernel existed, such as the iCloud backup
   exclusion failing closed, is journaled by the next kernel that starts as a `Failure` before `AppOpened`
   (`KernelOptions.faults`). Replay restarts the device on memory adapters, which raise no such fault, so the

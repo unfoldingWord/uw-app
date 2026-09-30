@@ -396,6 +396,12 @@ export const sw: LocaleTable = {
   'privacy.count.invitationTaps': 'Mara ngapi mwaliko wa ushirika umeguswa',
   'privacy.count.impactStoryOpens': 'Hadithi ngapi za matokeo zimefunguliwa',
   'privacy.dropped': 'Hesabu zisipoweza kutumwa, zinaachwa na hakuna kinachobadilika kwako.',
+  'privacy.summary.sending':
+    'Hesabu zilizo hapa chini pekee ndizo hutoka kwenye simu hii bila wewe kuchagua kuzituma.',
+  'privacy.counts.sending':
+    'Programu huhesabu namba hizi pekee, kwenye simu hii, na hutuma hizi pekee, kwa kundi moja kwa siku ukiwa mtandaoni.',
+  'privacy.sending.later':
+    'Kundi likishindwa kutumwa, husubiri siku inayofuata, na hakuna kinachobadilika kwako.',
   'privacy.never':
     'Programu haiombi kamwe mahali ulipo, anwani zako au akaunti, na haitumii uchambuzi wa watu wengine.',
   'privacy.local':

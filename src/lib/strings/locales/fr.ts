@@ -422,6 +422,12 @@ export const fr: LocaleTable = {
   'privacy.count.impactStoryOpens': 'Combien d’histoires d’impact ont été ouvertes',
   'privacy.dropped':
     'Si les comptes ne peuvent pas être envoyés, ils sont abandonnés et rien ne change pour vous.',
+  'privacy.summary.sending':
+    'Seuls les chiffres ci-dessous quittent ce téléphone sans que vous choisissiez de les envoyer.',
+  'privacy.counts.sending':
+    'L’application compte seulement ces chiffres, sur ce téléphone, et n’envoie qu’eux, en un lot par jour quand vous êtes connecté.',
+  'privacy.sending.later':
+    'Si un lot ne peut pas être envoyé, il attend le jour suivant, et rien ne change pour vous.',
   'privacy.never':
     'L’application ne demande jamais votre position, vos contacts ni un compte, et n’utilise aucune mesure d’audience externe.',
   'privacy.local':

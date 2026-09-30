@@ -43,6 +43,11 @@ export const about = {
   'privacy.count.invitationTaps': 'How many times the partner invitation was tapped',
   'privacy.count.impactStoryOpens': 'How many impact stories were opened',
   'privacy.dropped': 'If the counts cannot be sent, they are dropped and nothing changes for you.',
+  'privacy.summary.sending': 'Only the counts below leave this phone without you choosing to send them.',
+  'privacy.counts.sending':
+    'The app counts only these numbers, on this phone, and sends only them, in one batch a day when you are online.',
+  'privacy.sending.later':
+    'If a batch cannot be sent, it waits for the next day, and nothing changes for you.',
   'privacy.never':
     'The app never asks for your location, contacts or an account, and uses no outside analytics.',
   'privacy.local': 'Names, groups, notes and progress stay on this phone unless you transfer or share them.',
