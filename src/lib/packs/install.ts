@@ -21,6 +21,7 @@ import type { ModulePorts } from '../module';
 import type { HttpDownloaded } from '../ports';
 import { checkBurrito, type CheckedBurrito } from './burrito';
 import { buildAudioPack, buildImagePack, type BuiltDirectory } from './built';
+import { isWordsBurrito, measuredBytes, restoreSharedPayload, shareWordsPayload } from './shared';
 import {
   burritoRoot,
   collectGarbage,
@@ -401,6 +402,29 @@ export function createInstaller(context: InstallerContext): Installer {
     return { root, row: checked.burrito.row, bytes: checked.burrito.bytes, provenance };
   }
 
+  async function shareWords(
+    kept: readonly InstalledBurrito[],
+    added: readonly InstalledBurrito[],
+  ): Promise<InstalledBurrito[]> {
+    const combined = [...kept, ...added];
+    const wordsRoots = combined.filter(isWordsBurrito).map((burrito) => burrito.root);
+    const wordsChanged = added.some(isWordsBurrito);
+    const result: InstalledBurrito[] = [];
+    for (const burrito of combined) {
+      const touched = burrito.row === 'wordLinks' && (wordsChanged || added.includes(burrito));
+      if (!touched) {
+        result.push(burrito);
+        continue;
+      }
+      if (!added.includes(burrito)) {
+        await restoreSharedPayload(files, burrito.root);
+      }
+      await shareWordsPayload(files, burrito.root, wordsRoots);
+      result.push({ ...burrito, bytes: await measuredBytes(files, burrito.root) });
+    }
+    return result;
+  }
+
   async function run(
     install: string,
     resolved: Resolved,
@@ -467,7 +491,7 @@ export function createInstaller(context: InstallerContext): Installer {
     if (added.length === 0 && firstFailure !== undefined) {
       throw new InstallFailure(firstFailure.code, firstFailure);
     }
-    const burritos = [...kept, ...added].sort((left, right) =>
+    const burritos = (await shareWords(kept, added)).sort((left, right) =>
       compareText(resourceKey(left.provenance), resourceKey(right.provenance)),
     );
     const pack: InstalledPack = {

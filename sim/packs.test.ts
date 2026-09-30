@@ -3,7 +3,10 @@ import { readArchive, writeArchive } from '@lib/burrito/archive';
 import { fromUtf8, utf8 } from '@lib/burrito/files';
 import { imagePackId, languagePackId } from '@lib/domain/pack';
 import { archiveUrlOf } from '@lib/domain/release';
+import { admittedRows } from '@lib/burrito/flavors';
+import { validate } from '@lib/burrito/validate';
 import { fromCatalog, fromFile, fromPeer, type PeerSession } from '@lib/packs/source';
+import { readBurrito } from '@lib/packs/tree';
 import { fixturePeer } from './peer';
 import { createWorld } from './world';
 
@@ -213,5 +216,30 @@ describe('packs interface (LA-2, LA-6, LA-7, SH-3)', () => {
     expect(device.kernel.journal.read().filter((entry) => entry.type === 'PackInstallStarted')).toHaveLength(
       1,
     );
+  });
+
+  it('keeps Word Links whole when the Words burrito it shares articles with is replaced (#15)', async () => {
+    const { device } = await phone();
+    await device.kernel.catalog.refresh();
+    const pack = languagePackId('qaa');
+    expect((await device.kernel.packs.installFromCatalog(pack)).ok).toBe(true);
+    const words = device.kernel.catalog
+      .releases('qaa')
+      .filter((release) => release.resource === 'qaa_tw' && release.kind === 'language');
+    const replaced = await device.kernel.packs.install(fromCatalog(words), { pack });
+    expect(replaced.ok).toBe(true);
+    const installed = device.kernel.packs.installed().find((item) => item.pack === pack);
+    const links = installed?.burritos.find((burrito) => burrito.provenance.resource === 'qaa_twl');
+    const tw = installed?.burritos.find((burrito) => burrito.provenance.resource === 'qaa_tw');
+    expect(links && tw && links.root !== tw.root).toBe(true);
+    const files = device.adapters.files;
+    expect(
+      files
+        .tree()
+        .some((path) => !path.endsWith('/') && path.startsWith(`${links?.root ?? ''}/ingredients/payload/`)),
+    ).toBe(false);
+    const whole = await readBurrito(files, links?.root ?? '');
+    expect(validate(whole, { rows: admittedRows }).ok).toBe(true);
+    expect(links?.bytes).toBe(await files.size(links?.root ?? ''));
   });
 });
