@@ -197,7 +197,7 @@ The bounded, append-only record of events on a device, including failures. It le
 _Avoid_: log, history, telemetry (telemetry is derived from it)
 
 **Diagnostics file**:
-The one file a leader shares from Settings so someone can help: the journal written out as a document, and the snapshot beside it. `npm run replay` rebuilds a device from it. In code the journal half is `JournalExport`, written by `journal.export()` and read by `parseJournalExport`; "export" names only that code, never a word a leader sees, and the file leaves the device only through Share.
+The one file a leader shares from Settings so someone can help: the journal written out as a document, and the snapshot beside it. `npm run replay` rebuilds a device from it. In code the journal half is `JournalExport`, written by `journal.export()` and read by `parseJournalExport`; "export" names only that code, never a word a leader sees, and the file leaves the device only through Share. By default it leaves out what the leader read (the passages, articles and stories opened, and bookmarks), keeping every event; "Include what I read" puts them in for that one share.
 _Avoid_: log file, dump, backup
 
 **Snapshot**:
@@ -245,3 +245,7 @@ _Avoid_: setting (that is the screen), option, config
 **Locale**:
 The language of the app's own words: buttons, labels, settings. One of sixteen.
 _Avoid_: UI language, interface language, translation
+
+**Locale sign-off**:
+A native speaker's review of one drafted locale, recorded with a reviewer and a date in `docs/strings-review.md` and by date in `localeSignOffs`. Only English and the signed-off locales are offered; an unreviewed locale resolves to English. The sim and the web render harness run the **drafts** gate, which offers all sixteen; the app runs the **reviewed** gate.
+_Avoid_: approval, certification, translation review (in code)
