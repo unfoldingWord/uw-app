@@ -7,7 +7,7 @@ import type { FixtureRelease } from './releases.ts';
 const fixtureMtime = new Date(2026, 8, 1, 0, 0, 0);
 const generator = { softwareName: 'uw-app sim fixtures', softwareVersion: '1' };
 
-function licenceText(release: FixtureRelease): string {
+export function licenceText(release: FixtureRelease): string {
   return [
     '# License',
     '',

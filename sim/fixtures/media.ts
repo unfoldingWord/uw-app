@@ -36,10 +36,20 @@ export function greyJpeg(variant: number): Uint8Array {
   ]);
 }
 
-const mpegOneLayerThreeMono32k = [0xff, 0xfb, 0x10, 0xc0];
-const frameBytes = 104;
+const fileTypeBox = [0x00, 0x00, 0x00, 0x18, 0x66, 0x74, 0x79, 0x70, 0x4d, 0x34, 0x41, 0x20];
+const compatibleBrands = [0x00, 0x00, 0x02, 0x00, 0x4d, 0x34, 0x41, 0x20, 0x69, 0x73, 0x6f, 0x6d];
 
-export function silentMp3(frames: number): Uint8Array {
-  const frame = [...mpegOneLayerThreeMono32k, ...new Array<number>(frameBytes - 4).fill(0)];
-  return Uint8Array.from(new Array<number[]>(frames).fill(frame).flat());
+export function silentM4a(seconds: number): Uint8Array {
+  const freeBox = [
+    0x00,
+    0x00,
+    0x00,
+    0x08 + seconds,
+    0x66,
+    0x72,
+    0x65,
+    0x65,
+    ...new Array<number>(seconds).fill(0),
+  ];
+  return Uint8Array.from([...fileTypeBox, ...compatibleBrands, ...freeBox]);
 }

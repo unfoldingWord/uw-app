@@ -82,13 +82,15 @@ function countOf(words: StudyWords, type: CardType, input: LibraryInput): string
 }
 
 function isInstalled(release: CatalogRelease, installed: readonly InstalledPack[]): boolean {
-  return installed.some((pack) =>
-    pack.burritos.some(
-      (burrito) =>
-        burrito.provenance.publisher === release.publisher &&
-        burrito.provenance.resource === release.resource &&
-        burrito.provenance.language === release.language,
-    ),
+  return installed.some(
+    (pack) =>
+      (release.pack === undefined || pack.pack === release.pack) &&
+      pack.burritos.some(
+        (burrito) =>
+          burrito.provenance.publisher === release.publisher &&
+          burrito.provenance.resource === release.resource &&
+          burrito.provenance.language === release.language,
+      ),
   );
 }
 

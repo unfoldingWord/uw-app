@@ -4,7 +4,7 @@ import { repositoryCode, type IngredientEntry } from './metadata';
 
 export type RowId = ResourceRow;
 
-type RowStatus = 'pinned' | 'provisional';
+type RowStatus = 'pinned' | 'app-written' | 'provisional';
 
 export type ListedIngredient = {
   readonly key: string;
@@ -39,6 +39,7 @@ export const mimeTypes = {
   markdown: 'text/markdown',
   yaml: 'text/yaml',
   mp3: 'audio/mpeg',
+  m4a: 'audio/mp4',
   jpeg: 'image/jpeg',
 } as const;
 
@@ -470,6 +471,10 @@ function provisional(id: RowId, resource: string, form: Omit<RowForm, 'resource'
   return { id, status: 'provisional', resource, forms: [{ resource, ...form }] };
 }
 
+function appWritten(id: RowId, resource: string, form: Omit<RowForm, 'resource'>): ContractRow {
+  return { id, status: 'app-written', resource, forms: [{ resource, ...form }] };
+}
+
 const provisionalRows: readonly ContractRow[] = [
   provisional('formation', 'Theological formation', {
     flavorType: provisionalFlavors.formation.flavorType,
@@ -477,13 +482,13 @@ const provisionalRows: readonly ContractRow[] = [
     appliesTo: always,
     check: movementsPerStory,
   }),
-  provisional('audio', 'Audio', {
+  appWritten('audio', 'Audio', {
     flavorType: provisionalFlavors.audio.flavorType,
     flavors: [provisionalFlavors.audio.flavor],
     appliesTo: always,
     check: scopedAudio,
   }),
-  provisional('images', 'Story images', {
+  appWritten('images', 'Story images', {
     flavorType: provisionalFlavors.images.flavorType,
     flavors: [provisionalFlavors.images.flavor],
     appliesTo: always,

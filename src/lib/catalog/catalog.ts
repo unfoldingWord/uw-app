@@ -5,12 +5,21 @@ import { defineModule } from '../module';
 import type { ModulePorts } from '../module';
 import type { HttpResponse } from '../ports';
 import { readInstalledPacks } from '../packs/store';
+import { withBuiltReleases } from './built';
 import { languagesOf, releasesIn, searchLanguages } from './languages';
-import { compareReleases, normalizePage, uniqueReleases } from './normalize';
-import { catalogTables, readCatalogReleases, replaceCatalogReleases } from './store';
-import type { CatalogLanguage, CatalogRelease } from './types';
+import { compareReleases, normalizeLanguageNames, normalizePage, uniqueReleases } from './normalize';
+import {
+  catalogTables,
+  readCatalogReleases,
+  readLanguageNames,
+  replaceCatalogReleases,
+  replaceLanguageNames,
+} from './store';
+import type { CatalogLanguage, CatalogRelease, LanguageName } from './types';
 
 export const catalogSearchUrl = `${door43}/api/v1/catalog/search?stage=prod&topic=tc-ready`;
+
+const catalogLanguagesUrl = `${door43}/api/v1/catalog/list/languages?stage=prod&topic=tc-ready`;
 
 const catalogTimeoutMs = 20_000;
 
@@ -85,7 +94,15 @@ async function fetchCatalog(ports: ModulePorts): Promise<Fetched> {
       break;
     }
   }
-  return { ok: true, releases: uniqueReleases(releases), dropped };
+  return { ok: true, releases: withBuiltReleases(uniqueReleases(releases)), dropped };
+}
+
+async function fetchLanguageNames(ports: ModulePorts): Promise<Map<string, LanguageName> | undefined> {
+  const response = await ports.http.request({ url: catalogLanguagesUrl, timeoutMs: catalogTimeoutMs });
+  if (response.kind !== 'response' || response.status < 200 || response.status >= 300) {
+    return undefined;
+  }
+  return normalizeLanguageNames(parse(response.body));
 }
 
 export const catalogModule = defineModule<CatalogApi>({
@@ -94,10 +111,11 @@ export const catalogModule = defineModule<CatalogApi>({
   create(context) {
     const { ports } = context;
     let releases: readonly CatalogRelease[] = [];
+    let names: ReadonlyMap<string, LanguageName> = new Map();
     let installed = new Set<string>();
     let queue: Promise<unknown> = Promise.resolve();
 
-    const languages = (): readonly CatalogLanguage[] => languagesOf(releases, installed);
+    const languages = (): readonly CatalogLanguage[] => languagesOf(releases, installed, names);
 
     function refresh(): Promise<RefreshOutcome> {
       const next = queue.then(refreshNow, refreshNow);
@@ -113,13 +131,20 @@ export const catalogModule = defineModule<CatalogApi>({
         return { ok: false, code: fetched.code };
       }
       const next = [...fetched.releases].sort(compareReleases);
+      const listed = await fetchLanguageNames(ports);
       try {
-        await ports.db.transaction((session) => replaceCatalogReleases(session, next));
+        await ports.db.transaction(async (session) => {
+          await replaceCatalogReleases(session, next);
+          if (listed !== undefined) {
+            await replaceLanguageNames(session, listed);
+          }
+        });
       } catch {
         await context.emit({ type: 'Failure', payload: { code: 'db.io', context: { step: 'catalog' } } });
         return { ok: false, code: 'db.io' };
       }
       releases = next;
+      names = listed ?? names;
       const counted = languages().length;
       await context.emit({
         type: 'CatalogRefreshed',
@@ -141,6 +166,7 @@ export const catalogModule = defineModule<CatalogApi>({
       async start() {
         try {
           releases = await readCatalogReleases(ports.db);
+          names = await readLanguageNames(ports.db);
           installed = new Set(
             (await readInstalledPacks(ports.db)).flatMap((pack) =>
               pack.kind === 'language' && pack.language !== undefined ? [pack.language] : [],

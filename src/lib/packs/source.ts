@@ -1,5 +1,6 @@
 import type { FailureCode } from '../domain/failures';
 import type { PackId, ResourceRow } from '../domain/pack';
+import type { BuiltKind, ReleaseAsset } from '../catalog/types';
 import type { ReleaseRef } from '../domain/release';
 
 export type CatalogChoice = ReleaseRef & {
@@ -8,6 +9,9 @@ export type CatalogChoice = ReleaseRef & {
   published?: string;
   row?: ResourceRow | undefined;
   bytes?: number | undefined;
+  subject?: string;
+  assets?: readonly ReleaseAsset[];
+  built?: BuiltKind | undefined;
 };
 
 export type PeerBurrito = ReleaseRef & { row: ResourceRow; bytes: number; commit?: string };

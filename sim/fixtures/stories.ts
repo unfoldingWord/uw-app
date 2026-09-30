@@ -70,7 +70,7 @@ export function frameImageName(story: number, frame: number): string {
   return `obs-en-${String(story).padStart(2, '0')}-${String(frame).padStart(2, '0')}.jpg`;
 }
 
-function frameImageUrl(story: number, frame: number): string {
+export function frameImageUrl(story: number, frame: number): string {
   return `https://cdn.door43.org/obs/jpg/360px/${frameImageName(story, frame)}`;
 }
 

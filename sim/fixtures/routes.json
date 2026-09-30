@@ -15,8 +15,28 @@
     "contentType": "application/zip"
   },
   {
+    "url": "https://git.door43.org/unfoldingWord/qaa_ult/releases/download/v1/qaa_ult_v1_rut_001_128kbps.m4a",
+    "file": "assets/unfoldingWord/qaa_ult/v1/qaa_ult_v1_rut_001_128kbps.m4a",
+    "contentType": "audio/mp4"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/qaa_ult/raw/tag/v1/LICENSE.md",
+    "file": "assets/unfoldingWord/qaa_ult/v1/LICENSE.md",
+    "contentType": "text/markdown"
+  },
+  {
     "url": "https://git.door43.org/unfoldingWord/qaa_ust/sb/v1.zip",
     "file": "sb/unfoldingWord/qaa_ust/v1.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/qaa_t4t/sb/v1.zip",
+    "file": "sb/unfoldingWord/qaa_t4t/v1.zip",
+    "contentType": "application/zip"
+  },
+  {
+    "url": "https://git.door43.org/Worldview/qaa_bsb/sb/v1.zip",
+    "file": "sb/Worldview/qaa_bsb/v1.zip",
     "contentType": "application/zip"
   },
   {
@@ -50,6 +70,21 @@
     "contentType": "application/zip"
   },
   {
+    "url": "https://git.door43.org/unfoldingWord/qaa_obs/releases/download/v1/qaa_obs_v1_01_128kbps.m4a",
+    "file": "assets/unfoldingWord/qaa_obs/v1/qaa_obs_v1_01_128kbps.m4a",
+    "contentType": "audio/mp4"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/qaa_obs/releases/download/v1/qaa_obs_v1_01_64kbps.m4a",
+    "file": "assets/unfoldingWord/qaa_obs/v1/qaa_obs_v1_01_64kbps.m4a",
+    "contentType": "audio/mp4"
+  },
+  {
+    "url": "https://git.door43.org/unfoldingWord/qaa_obs/raw/tag/v1/LICENSE.md",
+    "file": "assets/unfoldingWord/qaa_obs/v1/LICENSE.md",
+    "contentType": "text/markdown"
+  },
+  {
     "url": "https://git.door43.org/Door43-Catalog/qaa_obs/sb/v2.zip",
     "file": "sb/Door43-Catalog/qaa_obs/v2.zip",
     "contentType": "application/zip"
@@ -72,11 +107,6 @@
   {
     "url": "https://git.door43.org/unfoldingWord/qaa_obs-tf/sb/v1.zip",
     "file": "sb/unfoldingWord/qaa_obs-tf/v1.zip",
-    "contentType": "application/zip"
-  },
-  {
-    "url": "https://git.door43.org/unfoldingWord/qaa_ult-audio/sb/v1.zip",
-    "file": "sb/unfoldingWord/qaa_ult-audio/v1.zip",
     "contentType": "application/zip"
   },
   {
@@ -110,8 +140,38 @@
     "contentType": "application/zip"
   },
   {
-    "url": "https://git.door43.org/unfoldingWord/obs-images/sb/v1.zip",
-    "file": "sb/unfoldingWord/obs-images/v1.zip",
-    "contentType": "application/zip"
+    "url": "https://cdn.door43.org/obs/jpg/360px/obs-en-01-01.jpg",
+    "file": "assets/cdn/obs-en-01-01.jpg",
+    "contentType": "image/jpeg"
+  },
+  {
+    "url": "https://cdn.door43.org/obs/jpg/360px/obs-en-01-02.jpg",
+    "file": "assets/cdn/obs-en-01-02.jpg",
+    "contentType": "image/jpeg"
+  },
+  {
+    "url": "https://cdn.door43.org/obs/jpg/360px/obs-en-01-03.jpg",
+    "file": "assets/cdn/obs-en-01-03.jpg",
+    "contentType": "image/jpeg"
+  },
+  {
+    "url": "https://cdn.door43.org/obs/jpg/360px/obs-en-02-01.jpg",
+    "file": "assets/cdn/obs-en-02-01.jpg",
+    "contentType": "image/jpeg"
+  },
+  {
+    "url": "https://cdn.door43.org/obs/jpg/360px/obs-en-02-02.jpg",
+    "file": "assets/cdn/obs-en-02-02.jpg",
+    "contentType": "image/jpeg"
+  },
+  {
+    "url": "https://cdn.door43.org/obs/jpg/360px/obs-en-03-01.jpg",
+    "file": "assets/cdn/obs-en-03-01.jpg",
+    "contentType": "image/jpeg"
+  },
+  {
+    "url": "https://cdn.door43.org/obs/jpg/360px/obs-en-03-02.jpg",
+    "file": "assets/cdn/obs-en-03-02.jpg",
+    "contentType": "image/jpeg"
   }
 ]

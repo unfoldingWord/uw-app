@@ -10,6 +10,8 @@ import { ExtrasSection } from './ExtrasSection';
 import { ImportSection, OpenedFile, openedKey, type RunImport } from './ImportSection';
 import { openedParam } from './intent';
 import { LanguageList } from './LanguageList';
+import { MissingSection } from './MissingSection';
+import { MoreSection } from './MoreSection';
 import { withOutcome, type Failures, type Outcome } from './outcomes';
 import { RemoveSheet, type PendingRemove } from './RemoveSheet';
 import { StorageSection } from './StorageSection';
@@ -37,6 +39,8 @@ export default function LanguagesScreen() {
   const rows = languages.list(query);
   const everyRow = languages.list();
   const installing = running > 0 || everyRow.some((row) => row.installing);
+  const current = languages.current();
+  const currentAutonym = everyRow.find((row) => row.language === current)?.autonym ?? current ?? '';
 
   useEffect(() => {
     if (!installing) {
@@ -133,6 +137,18 @@ export default function LanguagesScreen() {
             return row.offline || row.installing ? { ok: true } : languages.download(row.language);
           })
         }
+      />
+      <MissingSection
+        version={version}
+        language={current}
+        autonym={currentAutonym}
+        failures={failures}
+        onRetry={(language) => run(language, () => languages.download(language))}
+      />
+      <MoreSection
+        autonym={currentAutonym}
+        failures={failures}
+        onInstall={(key, item) => run(key, () => languages.installMore(item))}
       />
       <ExtrasSection
         version={version}

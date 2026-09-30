@@ -65,7 +65,9 @@ export function ExtrasSection({ version, failures, onInstall }: ExtrasSectionPro
   }));
   return (
     <>
-      <ExtraRow extra={images} failures={failures} onInstall={onInstall} />
+      {languages.imagesAvailable() ? (
+        <ExtraRow extra={images} failures={failures} onInstall={onInstall} />
+      ) : null}
       {originals.map((extra) => (
         <ExtraRow key={extra.pack} extra={extra} failures={failures} onInstall={onInstall} />
       ))}

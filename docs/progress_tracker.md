@@ -3,6 +3,49 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-30 Integration: catalog and packs onto the corpus batch
+
+Node v22.22.2. Nothing ran on a phone and nothing ran against live DCS (HTTP 403 from the sandbox).
+
+- Cherry-picked the catalog and packs batch (#10, #12, #17, #14, #8, #15, #16, #54) onto the corpus batch
+  (#11, #12, #13, #18). Only this tracker conflicted. `npm run fixtures` after both sides left every fixture
+  byte-identical, and no scenario count changed.
+- `scripts/contract-ingest.ts` now calls `kernel.corpus.attachment('en', books)` directly for GEN RUT PSA MAT JHN
+  ROM 3JN, prints each book's rate and fails below 95 percent overall or when a book is not counted.
+- Dry-run of the ingest step with `fetch` served from `sim/fixtures/routes.json`: runs end to end; its
+  assertions fail as expected on the fixture world and the en_tn line reports no quoted notes. The same
+  `attachment` read on the fixture `qaa` pack counts RUT 1 of 2 and 3JN 3 of 3.
+- `npm run verify`: green (669 tests in 64 files, 54 scenarios, 7 checks, trace 51 Must and 0 unproven, contract
+  21 fixture burritos, live skipped offline).
+- Not verified: the live en_tn rate, and how long the seven books take on a CI runner.
+
+## 2026-09-30 Catalog and packs on live data (#10, #12, #17, #14, #8, #15, #16, #54)
+
+Node v22.22.2 in a sandbox with no route to git.door43.org or cdn.door43.org (HTTP 403). Nothing ran on a
+phone and nothing ran against live DCS.
+
+- Red first: `LA-2.partial-pack-names-failed-release` failed before the installer change (formation still in the
+  defaults); `src/lib/packs/plan.test.ts` failed 4 of 4 before the default pair and publisher order; LA-1 failed
+  with `'Fixture A' !== 'Fixture language A'` and `catalog.test.ts` with `normalizeLanguageNames is not a
+  function` before the languages list; LA-3 and LA-4 failed with `pack.mixed-packs` with the app-built offer
+  disabled; `LA-6.word-links-share-words-payload` failed ("the same article is not extracted a second time")
+  before the Words payload was shared.
+- Mutations for #54, each run in this worktree and reverted: disabling the language override in
+  `corpus/reading.ts` `imageFor` turns LA-3 red; removing the on-disk size check in `install.ts`
+  `verifyOnDisk` turns LA-7 red; `textContentType="password"` on the onboarding name field turns ON-4 red.
+- `npm run verify`: green (661 tests in 63 files, 54 scenarios, 7 checks, trace 51 Must requirements and 0
+  unproven, contract 21 fixture burritos, live skipped offline; bundle android 1917 and iOS 1784 modules).
+- `npm run shots -- --only languages,study-audio`: 7 screenshots (light, dark, reduced blur, and right to left for
+  Languages), 0 console errors; the "More to download" section renders with each publisher. The "Not yet on this
+  phone" section has no shot (the fixture world installs whole packs).
+- The live CI step (`scripts/contract-ingest.ts`) was dry-run once against the fixture routes with `fetch`
+  replaced, to check it runs end to end; its assertions failed there as expected (21 entries, 3 languages). The
+  en_tn attachment assertion reports the corpus `attachment` read as missing until issue #11 lands.
+- Not verified: any live install, the real languages list shape (`lc`, `ang`, `ln`, `ld` is taken from issue
+  #14), release asset naming beyond `ahr_obs_v1_NN_128kbps.m4a` (Bible chapter asset names are an inference),
+  the raw `LICENSE.md` URL at a tag for audio, the size figures in PRD 8.4 after the change (derived, not
+  measured), story 1's picture and one chapter of audio on a phone (#8 asks for a recorded phone run).
+
 ## 2026-09-30 N2 Transport radio and the Android app package (issues #2 and #3)
 
 Node v22.22.2. Nothing ran on a phone. No Swift or Kotlin was compiled: the sandbox has no Xcode, Android SDK

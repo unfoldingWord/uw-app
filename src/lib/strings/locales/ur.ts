@@ -289,6 +289,12 @@ export const ur: LocaleTable = {
   'languages.update': 'اپ ڈیٹ کریں',
   'languages.updateDetail': '{version} تیار ہے، {size}۔',
   'languages.installing': 'جانچ اور انسٹال ہو رہا ہے',
+  'languages.more.title': 'ڈاؤن لوڈ کے لیے مزید',
+  'languages.more.about':
+    '{language} کے لیے دوسرے ناشر اور اضافی وسائل، جو صرف تب ڈاؤن لوڈ ہوتے ہیں جب آپ انہیں چنیں۔',
+  'languages.release': '{publisher} · {version}',
+  'languages.missing.title': 'ابھی اس فون پر نہیں',
+  'languages.missing.about': '{language} کا ایک حصہ ڈاؤن لوڈ نہیں ہوا، اور آپ دوبارہ کوشش کر سکتے ہیں۔',
   'storage.title': 'اسٹوریج',
   'storage.summary': 'اس فون پر {used} · {free} خالی',
   'storage.language': '{language} · {size}',

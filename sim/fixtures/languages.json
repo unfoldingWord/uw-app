@@ -1,1 +1,46 @@
-{ "ok": true, "data": ["el-x-koine", "en", "hbo", "qaa", "qab", "zxx"] }
+{
+  "ok": true,
+  "data": [
+    {
+      "lc": "el-x-koine",
+      "ln": "Κοινή",
+      "ang": "Koine Greek",
+      "ld": "ltr",
+      "gw": false,
+      "lr": "",
+      "alt": [],
+      "cc": []
+    },
+    { "lc": "en", "ln": "English", "ang": "English", "ld": "ltr", "gw": true, "lr": "", "alt": [], "cc": [] },
+    {
+      "lc": "hbo",
+      "ln": "עִבְרִית",
+      "ang": "Ancient Hebrew",
+      "ld": "rtl",
+      "gw": false,
+      "lr": "",
+      "alt": [],
+      "cc": []
+    },
+    {
+      "lc": "qaa",
+      "ln": "Fixture A",
+      "ang": "Fixture language A",
+      "ld": "ltr",
+      "gw": true,
+      "lr": "",
+      "alt": [],
+      "cc": []
+    },
+    {
+      "lc": "qab",
+      "ln": "Fixture B",
+      "ang": "Fixture language B",
+      "ld": "ltr",
+      "gw": false,
+      "lr": "",
+      "alt": [],
+      "cc": []
+    }
+  ]
+}

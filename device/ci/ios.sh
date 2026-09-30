@@ -22,7 +22,7 @@ status=0
 ) || status=$?
 
 echo "::group::screenshots (base64 jpeg)"
-bash "$GITHUB_WORKSPACE/device/ci/print-shots.sh" "$out"
+bash "$GITHUB_WORKSPACE/device/ci/print-shots.sh" "$out" "$HOME/.maestro/tests"
 echo "::endgroup::"
 
 xcrun simctl spawn "$udid" log show --style compact --last 20m \

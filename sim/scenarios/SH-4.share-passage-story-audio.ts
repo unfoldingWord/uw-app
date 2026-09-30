@@ -12,7 +12,7 @@ export default scenario(
   async (world) => {
     const phone = world.device('phone');
     await phone.start();
-    await installFromCatalog(phone, [languagePackId('qaa'), audioPackId('qaa', 'qaa_ult-audio')]);
+    await installFromCatalog(phone, [languagePackId('qaa'), audioPackId('qaa', 'qaa_ult')]);
     phone.adapters.http.setOnline(false);
     const { corpus, share } = phone.kernel;
     const ruth = parseReference('RUT 1:16');
@@ -43,7 +43,7 @@ export default scenario(
     assert.ok(clip, 'Ruth 1 has audio in the fixture');
     const heard = await share.audio(clip, { locale: 'en' });
     assert.ok(heard.ok && heard.outcome === 'shared');
-    assert.deepEqual(heard.payload.file, { path: clip.path, mimeType: 'audio/mpeg' });
+    assert.deepEqual(heard.payload.file, { path: clip.path, mimeType: 'audio/mp4' });
     assert.ok(heard.payload.text.includes(getTheAppLink));
 
     const french = await share.passage(passage, { locale: 'fr' });
