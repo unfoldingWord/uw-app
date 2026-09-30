@@ -258,8 +258,6 @@ function storyFiles(ingredients: readonly ListedIngredient[]): RowMismatch | und
   return undefined;
 }
 
-const academyArticle = /^([^/]+)\/[^/]+\/01\.md$/;
-
 const configFile = 'config.yaml';
 
 function configsOf(ingredients: readonly ListedIngredient[]): ListedIngredient[] | RowMismatch {
@@ -286,20 +284,7 @@ function articleTree(ingredients: readonly ListedIngredient[]): RowMismatch | un
     return { path: 'ingredients', message: 'no Markdown article ingredient' };
   }
   const configs = configsOf(ingredients);
-  if (!Array.isArray(configs)) {
-    return configs;
-  }
-  const listed = new Set(configs.map((config) => config.path));
-  for (const ingredient of ofType(ingredients, mimeTypes.markdown)) {
-    const section = academyArticle.exec(ingredient.path)?.[1];
-    if (section !== undefined && !listed.has(`${section}/${configFile}`)) {
-      return {
-        path: `ingredients/${section}/${configFile}`,
-        message: `the Academy section ${section} has no ${configFile}`,
-      };
-    }
-  }
-  return undefined;
+  return Array.isArray(configs) ? undefined : configs;
 }
 
 function movementsPerStory(ingredients: readonly ListedIngredient[]): RowMismatch | undefined {
