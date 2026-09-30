@@ -59,7 +59,7 @@ the contract for what it must provide.
 npm run sim -- <scenario>         run one scenario; print the snapshot and journal
 npm run sim -- all                every scenario
 npm run replay -- <journal.json>  rebuild a device from a shared diagnostics file
-npm run trace                     Must requirement IDs with no scenario and no test
+npm run trace                     fail on any Must requirement ID with no scenario and no test
 npm run contract                  validate fixture burritos, and a live release when online
 npm run check                     lint and format
 npm run verify                    the whole chain, the same one CI runs

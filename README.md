@@ -26,45 +26,53 @@ internet.
 
 ## Status
 
-The first release is built end to end in the sim and bundles for both
-platforms; it has not yet run on a phone. What each release criterion still
+v1.0.0 is built end to end in the sim and bundles for both platforms; it has
+not yet run on a phone. Release builds start on an Android emulator and an iOS
+simulator in CI (`.github/workflows/device.yml`), and every screen is
+photographed in Chromium by the render harness (`npm run shots`; the contact
+sheets are in [docs/shots/](docs/shots/)). What each release criterion still
 needs is in [docs/release-checklist.md](docs/release-checklist.md), and what
 actually ran is in [docs/progress_tracker.md](docs/progress_tracker.md).
 
-**Built and proven in the sim** (every Must requirement has a scenario in
-`sim/scenarios/`, `npm run trace`): onboarding, Home, Study (passages with
-attached helps, literal and simplified text, articles, search, the original
+**Built and proven in the sim** (`npm run trace`: 51 Must requirements, 50
+with a scenario in `sim/scenarios/` and SE-2 proven by a test, since the sim
+renders nothing): onboarding, Home, Study (passages with attached helps and
+introductions, literal and simplified text, articles, search, the original
 languages), Formation (tracks, groups, sessions with the five movements and
 the fallback), Languages and downloads (language, image and audio packs,
-updates, storage), share out, import from a file, the partner invitation and
-impact stories, Settings, diagnostics and replay. Transfer is proven on the
-sim's memory radio.
+partial packs, optional downloads, updates, storage), share out, import from a
+file, the partner invitation and impact stories, Settings, diagnostics and
+replay. Transfer is proven on the sim's memory bus. The live catalog is read in
+CI: the contract step validates the live releases and installs the default
+English and Indonesian packs from DCS.
 
-**Needs a phone:** the platform adapters, glass rendering in light, dark and
-reduced blur, RTL, dynamic type, screen readers, audio, and a journal exported
-from a phone replaying in the sim.
+**Built, not yet run on a phone:** the Transport radio (TCP on a shared local
+network, mDNS discovery, a typed or scanned address; ADR 0013), the Android app
+package hand-off, the iCloud backup exclusion
+([proposal](docs/proposals/2026-09-29-backup-exclusion.md)) and Android's
+exclusion from cloud backup and device-to-device transfer. The image and audio
+packs are burritos the app writes around catalog assets (ADR 0006); audio is
+download-only in v1.0.0.
+
+**Needs a phone:** the platform adapters, the radio (a two-phone spike, 60 MB
+both ways), glass rendering in light, dark and reduced blur, RTL, dynamic type,
+screen readers, audio, and a diagnostics file from a phone replaying in the sim.
 
 **Blocked:**
 
-- The Transport radio: phone-to-phone transfer shows as unavailable until
-  [the radio proposal](docs/proposals/2026-09-29-transport-radio.md) is
-  decided and built.
 - The five-movement formation content: DCS does not yet build its burrito
-  archive (reported as an HTTP 500), so Formation runs on a provisional
-  fixture flavor.
-- Audio streaming: v1.0.0 plays audio only from a downloaded Audio Pack, which
-  the app writes as a burrito around a release's audio assets
-  ([ADR 0006](docs/adr/0006-app-written-burritos-around-catalog-assets.md));
-  streaming waits until DCS carries audio (ST-4).
-- iCloud backup: packs and the database sit in `Documents`, which iOS backs
-  up; `modules/backup-exclusion` ([proposal](docs/proposals/2026-09-29-backup-exclusion.md))
-  keeps them out but has not run on an iPhone, and that run must be recorded
-  before App Store submission. Android backs nothing up and migrates nothing.
+  archive (HTTP 500 for `en_obs-tf` v4), so Formation runs on a provisional
+  fixture flavor and installs only on request.
+- The locales: each of the fifteen drafted translations ships only once a
+  native speaker signs it off (`docs/strings-review.md`); until then the app
+  offers English.
 - The impact story copy and feed: communications review.
-- The store listings: the app replaces the existing "unfoldingWord" records, so
-  iOS keeps the bundle identifier `com.unfoldingword.iosapp`; the Android
-  package and signing key wait on the Play account holder, and the short link
-  domain for share-out on Product.
+- The store listings: iOS keeps the existing App Store record's bundle
+  identifier `com.unfoldingword.iosapp`; the Android package and signing key
+  wait on the Play account holder (the DRI), and the short link domain for
+  share-out on Product.
+- Sending the anonymous counts: v1.0.0 counts on the phone and sends nothing;
+  sending is v1.1 (ADR 0012).
 
 ## The cockpit
 
@@ -75,14 +83,14 @@ rendering and radios.
 npm run sim -- <scenario>         run one scenario; print the snapshot and journal
 npm run sim -- all                every scenario
 npm run replay -- <journal.json>  rebuild a device from a shared diagnostics file
-npm run trace                     Must requirement IDs with no scenario and no test
+npm run trace                     fail on any Must requirement ID with no scenario and no test
 npm run contract                  validate fixture burritos, and a live release when online
 npm run check                     lint and format
 npm run verify                    the whole chain, the same one CI runs
 ```
 
-`npm run checks` runs the rule checks on their own (owns, network,
-permissions, provenance, routes, strings, tokens), and `npm run icons` redraws
+`npm run checks` runs the rule checks on their own (locale sign-off, network,
+owns, permissions, provenance, routes, strings, tokens), and `npm run icons` redraws
 `assets/` from the logo mark and the colour tokens.
 
 ## Run on a device
@@ -124,9 +132,8 @@ store credentials live in EAS, not here. Read the signing note in
 [docs/release-checklist.md](docs/release-checklist.md) before the first
 public build.
 
-The `permissions` check guards what the native projects ask for. The Transport
-radio will be the first change that admits a new permission, by name, in
-`scripts/checks/permissions.ts`.
+The `permissions` check guards what the native projects ask for: every
+permission is admitted by name with its reason, or blocked.
 
 ## Licence
 
