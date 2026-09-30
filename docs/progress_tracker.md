@@ -3,6 +3,33 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-30 Catalog and packs on live data (#10, #12, #17, #14, #8, #15, #16, #54)
+
+Node v22.22.2 in a sandbox with no route to git.door43.org or cdn.door43.org (HTTP 403). Nothing ran on a
+phone and nothing ran against live DCS.
+
+- Red first: `LA-2.partial-pack-names-failed-release` failed before the installer change (formation still in the
+  defaults); `src/lib/packs/plan.test.ts` failed 4 of 4 before the default pair and publisher order; LA-1 failed
+  with `'Fixture A' !== 'Fixture language A'` and `catalog.test.ts` with `normalizeLanguageNames is not a
+  function` before the languages list; LA-3 and LA-4 failed with `pack.mixed-packs` with the app-built offer
+  disabled; `LA-6.word-links-share-words-payload` failed ("the same article is not extracted a second time")
+  before the Words payload was shared.
+- Mutations for #54, each run in this worktree and reverted: disabling the language override in
+  `corpus/reading.ts` `imageFor` turns LA-3 red; removing the on-disk size check in `install.ts`
+  `verifyOnDisk` turns LA-7 red; `textContentType="password"` on the onboarding name field turns ON-4 red.
+- `npm run verify`: green (661 tests in 63 files, 54 scenarios, 7 checks, trace 51 Must requirements and 0
+  unproven, contract 21 fixture burritos, live skipped offline; bundle android 1917 and iOS 1784 modules).
+- `npm run shots -- --only languages,study-audio`: 7 screenshots (light, dark, reduced blur, and right to left for
+  Languages), 0 console errors; the "More to download" section renders with each publisher. The "Not yet on this
+  phone" section has no shot (the fixture world installs whole packs).
+- The live CI step (`scripts/contract-ingest.ts`) was dry-run once against the fixture routes with `fetch`
+  replaced, to check it runs end to end; its assertions failed there as expected (21 entries, 3 languages). The
+  en_tn attachment assertion reports the corpus `attachment` read as missing until issue #11 lands.
+- Not verified: any live install, the real languages list shape (`lc`, `ang`, `ln`, `ld` is taken from issue
+  #14), release asset naming beyond `ahr_obs_v1_NN_128kbps.m4a` (Bible chapter asset names are an inference),
+  the raw `LICENSE.md` URL at a tag for audio, the size figures in PRD 8.4 after the change (derived, not
+  measured), story 1's picture and one chapter of audio on a phone (#8 asks for a recorded phone run).
+
 ## 2026-09-30 Corpus: note attachment, reading choice, quoted TSV cells, introductions (#11, #12, #13, #18)
 
 Node v22.22.2; Chromium 141 through playwright-core 1.56.1 for the shots. Nothing ran on a phone. Nothing
