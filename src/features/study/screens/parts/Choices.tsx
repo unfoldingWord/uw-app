@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
-import { touchSlop } from '@shared/glass/pressGate';
+import { minimumTouchTarget, touchSlop } from '@shared/glass/pressGate';
 import { useTheme } from '@shared/theme';
 import { Say } from './Say';
 import { choicePillExtent } from './touchExtent';
@@ -51,6 +51,7 @@ function ChoicePill<K extends string>({
         styles.pill,
         compact ? undefined : styles.grow,
         {
+          minWidth: minimumTouchTarget,
           paddingVertical: compact ? theme.space.sp3 : theme.space.sp4,
           paddingHorizontal: theme.space.sp6,
           borderRadius: theme.radius.rPill,
