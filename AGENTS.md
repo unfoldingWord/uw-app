@@ -82,7 +82,7 @@ adapter; versions live in `package.json`.
 | Kv | expo-sqlite key-value or MMKV | One writer per key (rule 3) |
 | Http | fetch behind `src/platform/http.ts` | Timeout, host allowlist and offline signal in one place |
 | Transport | **open: proposal required** | Constraint: iOS to Android both ways, no network. The memory adapter exists first; the spike picks the radio |
-| Audio | expo-audio | Streams online, plays a downloaded file offline |
+| Audio | expo-audio | Plays a downloaded file from an Audio Pack; no streaming in v1.0.0 (ST-4) |
 | ShareSheet | expo-sharing and the RN `Share` API | Provenance attached to every payload |
 | Locale | expo-localization | Region for the invitation comes from here, never from location |
 | Clock, Ids | `Date.now`, `crypto.randomUUID` | Injected so the sim can pin them |

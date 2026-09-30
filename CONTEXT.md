@@ -185,7 +185,7 @@ The address a screen renders a picture from: a story frame image in a pack or a 
 _Avoid_: image URL, picture link, remote image
 
 **Player**:
-The kernel's one audio player. It plays one audio clip at a time, a chapter of an Audio Pack or a story's audio, from its file on the device or from an allowlisted stream, and reports idle, loading, playing, paused, ended or failed with a code. Only a failure enters the journal; the position never does.
+The kernel's one audio player. It plays one audio clip at a time, a chapter of an Audio Pack or a story's audio, from its file on the device (audio is download-only in v1.0.0), and reports idle, loading, playing, paused, ended or failed with a code. Only a failure enters the journal; the position never does.
 _Avoid_: media player, audio engine, track
 
 **Event**:

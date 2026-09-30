@@ -52,8 +52,10 @@ from a phone replaying in the sim.
 - The five-movement formation content: DCS does not yet build its burrito
   archive (reported as an HTTP 500), so Formation runs on a provisional
   fixture flavor.
-- Audio: DCS does not yet carry audio in burritos, so audio packs are a
-  provisional flavor too, to be attached as release assets.
+- Audio streaming: v1.0.0 plays audio only from a downloaded Audio Pack, which
+  the app writes as a burrito around a release's audio assets
+  ([ADR 0006](docs/adr/0006-app-written-burritos-around-catalog-assets.md));
+  streaming waits until DCS carries audio (ST-4).
 - iCloud backup: packs and the database sit in `Documents`, which iOS backs
   up; `modules/backup-exclusion` ([proposal](docs/proposals/2026-09-29-backup-exclusion.md))
   keeps them out but has not run on an iPhone, and that run must be recorded

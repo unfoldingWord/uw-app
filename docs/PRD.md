@@ -148,7 +148,7 @@ Requirement identifiers are stable and can be referenced from issues. "Must" is 
 | ST-1 | Study opens to the passage view on the last-read reference. | Must |
 | ST-2 | Passage view: book, chapter and verse navigation; the Bible text on top; the helps for that passage below it: notes, word links, questions. Notes are attached to the verse and, where alignment data allows, to the quoted words. | Must |
 | ST-3 | Bible text toggle between the literal text and the simplified text, labelled in plain words ("Close to the original" and "Everyday words"), when both exist for the language. | Must |
-| ST-4 | Audio bar on the passage view when the release carries audio; streams when online, downloadable for offline. | Must |
+| ST-4 | Audio bar on the passage view when the release carries audio. In v1.0.0 audio is download-only: it plays from an Audio Pack on the phone, and the bar offers the download when the pack is not there. Streaming is revisited when DCS carries audio (decision log, issue #53). | Must |
 | ST-5 | A library button opens the catalog for the current language: one card per resource type with counts, download state and the publishing organization. unfoldingWord resources are listed first. | Must |
 | ST-6 | Article reader for Translation Words and Translation Academy, with in-article links resolving to other articles and to passages. | Must |
 | ST-7 | Original-language texts (Hebrew Old Testament, Greek New Testament) appear in the catalog as an optional download outside any language pack, and read as plain text. | Must |
