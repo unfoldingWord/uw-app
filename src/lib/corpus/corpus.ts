@@ -37,8 +37,6 @@ import type {
 } from './types';
 
 export type CorpusApi = {
-  ingest(source: CorpusSource): Promise<void>;
-  drop(pack: string): Promise<void>;
   languages(): readonly string[];
   summary(language: string): CorpusSummary;
   bookName(book: string, language: string): string;
@@ -286,8 +284,6 @@ export const corpusModule = defineModule<CorpusApi>({
     };
 
     const api: CorpusApi = {
-      ingest,
-      drop: (pack) => serial(() => dropPack(pack)),
       languages: () => contentLanguages(library),
       summary: (language) => summarize(library, language),
       bookName: (book, language) => bookNameIn(library, book, language),

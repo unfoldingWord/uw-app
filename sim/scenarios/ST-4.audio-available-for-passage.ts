@@ -44,7 +44,7 @@ export default scenario(
     const contents = await corpus.contents('qaa');
     assert.deepEqual(contents.audio, [{ book: 'RUT', chapter: 1 }]);
 
-    await corpus.drop(audioPack);
+    assert.ok((await device.kernel.packs.remove(audioPack)).ok);
     const dropped = await corpus.passage(reference('RUT 1:16'), { language: 'qaa' });
     assert.deepEqual(dropped?.audio, [], 'removing the audio pack removes the audio bar');
 
