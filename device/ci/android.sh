@@ -15,10 +15,16 @@ adb wait-for-device
 adb install -r "$apk" || exit 1
 adb logcat -c || true
 
+aapt2="$(ls "$ANDROID_HOME"/build-tools/*/aapt2 2>/dev/null | sort -V | tail -n 1)"
+package="$([ -n "$aapt2" ] && "$aapt2" dump packagename "$apk" 2>/dev/null | head -n 1)"
+package="${package:-org.unfoldingword.app}"
+echo "Maestro drives $package"
+
 status=0
 (
   cd "$out" &&
     maestro test "${tags[@]}" \
+      -e APP_ID="$package" \
       --format junit --output report.xml \
       --test-output-dir . \
       --debug-output debug \
