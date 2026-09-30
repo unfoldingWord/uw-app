@@ -1,6 +1,7 @@
 import { fromUtf8, metadataPath } from '../burrito/files';
 import { isRecord } from '../burrito/metadata';
 import type { Files } from '../ports';
+import { parentOf } from './tree';
 import type { InstalledBurrito } from './types';
 
 const wordsPayload = 'ingredients/payload/';
@@ -51,6 +52,14 @@ export async function measuredBytes(files: Files, root: string): Promise<number>
   return total;
 }
 
+async function pruneEmptyBelow(files: Files, directory: string, stop: string): Promise<void> {
+  let path = directory;
+  while (path.startsWith(`${stop}/`) && (await files.exists(path)) && (await files.list(path)).length === 0) {
+    await files.remove(path);
+    path = parentOf(path);
+  }
+}
+
 export async function shareWordsPayload(
   files: Files,
   root: string,
@@ -72,6 +81,7 @@ export async function shareWordsPayload(
       (await files.exists(path))
     ) {
       await files.remove(path);
+      await pruneEmptyBelow(files, parentOf(path), `${root}/ingredients`);
     }
   }
 }
@@ -128,6 +138,7 @@ export async function restoreSharedPayload(files: Files, root: string): Promise<
     if (key.startsWith(wordsPayload) && !(await files.exists(path))) {
       const bytes = await lookup(key);
       if (bytes !== undefined) {
+        await files.mkdir(parentOf(path));
         await files.writeBytes(path, bytes);
       }
     }
