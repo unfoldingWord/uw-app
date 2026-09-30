@@ -1,4 +1,4 @@
-appId: org.unfoldingword.app
+appId: ${APP_ID}
 name: The three tabs Home, Study and Formation
 ---
 - runFlow: common/start.yaml

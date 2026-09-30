@@ -1,4 +1,4 @@
-appId: org.unfoldingword.app
+appId: ${APP_ID}
 ---
 - launchApp:
     clearState: true
