@@ -121,6 +121,8 @@ export const fr: LocaleTable = {
   'study.helps.heading': '{helps} · verset {verse}',
   'study.helps.tapTerm': 'Touchez un terme pour ouvrir son article.',
   'study.helps.noNotes': 'Pas de notes pour ce verset.',
+  'study.helps.bookIntro': 'À propos de ce livre',
+  'study.helps.chapterIntro': 'À propos du chapitre {chapter}',
   'study.helps.noWordLinks': 'Pas de liens de mots pour ce verset.',
   'study.helps.noQuestions': 'Pas de questions pour ce verset.',
   'study.helps.notDownloaded': 'Les aides pour ce passage ne sont pas encore sur ce téléphone.',

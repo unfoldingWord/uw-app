@@ -123,6 +123,8 @@ export const ru: LocaleTable = {
   'study.helps.heading': '{helps} · стих {verse}',
   'study.helps.tapTerm': 'Нажмите на термин, чтобы открыть статью о нём.',
   'study.helps.noNotes': 'К этому стиху нет примечаний.',
+  'study.helps.bookIntro': 'Об этой книге',
+  'study.helps.chapterIntro': 'О главе {chapter}',
   'study.helps.noWordLinks': 'К этому стиху нет ссылок на слова.',
   'study.helps.noQuestions': 'К этому стиху нет вопросов.',
   'study.helps.notDownloaded': 'Пособий к этому отрывку пока нет на этом телефоне.',

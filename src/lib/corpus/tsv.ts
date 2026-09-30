@@ -3,7 +3,7 @@ export type TsvRow = Readonly<Record<string, string>>;
 export type HelpsPoint = { readonly chapter: number; readonly verse: number };
 
 export type HelpsReference =
-  | { readonly kind: 'intro' }
+  | { readonly kind: 'intro'; readonly chapter?: number }
   | {
       readonly kind: 'verses';
       readonly ranges: readonly { readonly start: HelpsPoint; readonly end: HelpsPoint }[];
@@ -182,8 +182,10 @@ function point(text: string, chapter: number | undefined): HelpsPoint | undefine
 
 export function parseHelpsReference(text: string): HelpsReference | undefined {
   const trimmed = text.trim();
-  if (introPattern.test(trimmed)) {
-    return { kind: 'intro' };
+  const intro = introPattern.exec(trimmed);
+  if (intro !== null) {
+    const chapter = Number(intro[1]);
+    return Number.isInteger(chapter) && chapter > 0 ? { kind: 'intro', chapter } : { kind: 'intro' };
   }
   const ranges: { start: HelpsPoint; end: HelpsPoint }[] = [];
   let chapter: number | undefined;

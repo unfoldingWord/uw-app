@@ -110,6 +110,13 @@ export type Note = Sourced & {
   readonly words: readonly WordSpan[];
 };
 
+export type Introduction = Sourced & {
+  readonly id: string;
+  readonly study: boolean;
+  readonly chapter?: number;
+  readonly blocks: readonly Block[];
+};
+
 export type WordLink = Sourced & {
   readonly id: string;
   readonly reference: string;
@@ -140,6 +147,7 @@ export type Passage = {
   readonly language: string;
   readonly text: PassageText;
   readonly availableTexts: readonly TextChoice[];
+  readonly intros: readonly Introduction[];
   readonly notes: readonly Note[];
   readonly wordLinks: readonly WordLink[];
   readonly questions: readonly Question[];

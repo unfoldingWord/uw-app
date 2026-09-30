@@ -26,6 +26,7 @@ export type {
   Block,
   FullTextHit,
   Inline,
+  Introduction,
   LinkTarget,
   Note,
   Passage,

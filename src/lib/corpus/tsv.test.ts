@@ -34,7 +34,7 @@ describe('parseHelpsReference', () => {
 
   it('marks introductions and refuses what it cannot read', () => {
     expect(parseHelpsReference('front:intro')).toEqual({ kind: 'intro' });
-    expect(parseHelpsReference('3:intro')).toEqual({ kind: 'intro' });
+    expect(parseHelpsReference('3:intro')).toEqual({ kind: 'intro', chapter: 3 });
     expect(parseHelpsReference('chapter one')).toBeUndefined();
     expect(parseHelpsReference('')).toBeUndefined();
   });
@@ -92,7 +92,14 @@ describe('helps rows', () => {
       'RUT\t1\t16\tab12\trc://*/ta/man/translate/figs-idiom\tאֱלֹהַ֖יִךְ\t1\tyour God\tNote text<br>more\n';
     expect(noteRows(nine)).toEqual([
       { reference: { kind: 'intro' }, id: 'x1', support: '', quote: '', occurrence: 0, note: '# Ruth' },
-      { reference: { kind: 'intro' }, id: 'x2', support: '', quote: '', occurrence: 0, note: 'Chapter one' },
+      {
+        reference: { kind: 'intro', chapter: 1 },
+        id: 'x2',
+        support: '',
+        quote: '',
+        occurrence: 0,
+        note: 'Chapter one',
+      },
       {
         reference: {
           kind: 'verses',
@@ -125,7 +132,7 @@ describe('parseHelpsReference in the forms releases carry', () => {
       kind: 'verses',
       ranges: [{ start: { chapter: 1, verse: 2 }, end: { chapter: 1, verse: 4 } }],
     });
-    expect(parseHelpsReference('2:front')).toEqual({ kind: 'intro' });
+    expect(parseHelpsReference('2:front')).toEqual({ kind: 'intro', chapter: 2 });
   });
 });
 

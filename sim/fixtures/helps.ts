@@ -42,6 +42,15 @@ export const bookNotes: Readonly<Record<string, HelpsTable>> = {
         '1',
         'Ruth promises to worship the God of Naomi. Alternate translation: "your God will be the God I worship"',
       ],
+      [
+        '1:intro',
+        'r004',
+        '',
+        '',
+        '',
+        '0',
+        '# Ruth 1 general notes\\n\\nNaomi loses her husband and her sons, and Ruth goes with her. See [Ruth 1:16](../01/16.md).',
+      ],
     ],
   },
   '3JN': {

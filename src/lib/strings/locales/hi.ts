@@ -119,6 +119,8 @@ export const hi: LocaleTable = {
   'study.helps.heading': '{helps} · पद {verse}',
   'study.helps.tapTerm': 'किसी शब्द का लेख खोलने के लिए उसे छुएँ।',
   'study.helps.noNotes': 'इस पद के लिए कोई टिप्पणी नहीं है।',
+  'study.helps.bookIntro': 'इस पुस्तक के बारे में',
+  'study.helps.chapterIntro': 'अध्याय {chapter} के बारे में',
   'study.helps.noWordLinks': 'इस पद के लिए कोई शब्द लिंक नहीं है।',
   'study.helps.noQuestions': 'इस पद के लिए कोई प्रश्न नहीं है।',
   'study.helps.notDownloaded': 'इस खंड की सहायता सामग्री अभी इस फ़ोन पर नहीं है।',

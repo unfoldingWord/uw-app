@@ -119,6 +119,8 @@ export const ur: LocaleTable = {
   'study.helps.heading': '{helps} · آیت {verse}',
   'study.helps.tapTerm': 'کسی لفظ کا مضمون کھولنے کے لیے اسے چھوئیں۔',
   'study.helps.noNotes': 'اس آیت کے لیے کوئی نوٹ نہیں ہے۔',
+  'study.helps.bookIntro': 'اس کتاب کے بارے میں',
+  'study.helps.chapterIntro': 'باب {chapter} کے بارے میں',
   'study.helps.noWordLinks': 'اس آیت کے لیے الفاظ کا کوئی ربط نہیں ہے۔',
   'study.helps.noQuestions': 'اس آیت کے لیے کوئی سوال نہیں ہے۔',
   'study.helps.notDownloaded': 'اس حصے کی مددگار معلومات ابھی اس فون پر نہیں ہیں۔',

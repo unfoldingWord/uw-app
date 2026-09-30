@@ -121,6 +121,8 @@ export const ptBR: LocaleTable = {
   'study.helps.heading': '{helps} · versículo {verse}',
   'study.helps.tapTerm': 'Toque em um termo para abrir o artigo.',
   'study.helps.noNotes': 'Não há notas para este versículo.',
+  'study.helps.bookIntro': 'Sobre este livro',
+  'study.helps.chapterIntro': 'Sobre o capítulo {chapter}',
   'study.helps.noWordLinks': 'Não há links de palavras para este versículo.',
   'study.helps.noQuestions': 'Não há perguntas para este versículo.',
   'study.helps.notDownloaded': 'As ajudas para esta passagem ainda não estão neste celular.',

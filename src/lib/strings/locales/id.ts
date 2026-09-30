@@ -113,6 +113,8 @@ export const id: LocaleTable = {
   'study.helps.heading': '{helps} · ayat {verse}',
   'study.helps.tapTerm': 'Ketuk istilah untuk membuka artikelnya.',
   'study.helps.noNotes': 'Tidak ada catatan untuk ayat ini.',
+  'study.helps.bookIntro': 'Tentang kitab ini',
+  'study.helps.chapterIntro': 'Tentang pasal {chapter}',
   'study.helps.noWordLinks': 'Tidak ada tautan kata untuk ayat ini.',
   'study.helps.noQuestions': 'Tidak ada pertanyaan untuk ayat ini.',
   'study.helps.notDownloaded': 'Bantuan untuk perikop ini belum ada di ponsel ini.',

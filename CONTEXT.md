@@ -46,6 +46,10 @@ _Avoid_: ULT, UST, GLT, GST in anything a user sees; Bible (ambiguous)
 The verse-bound resources shown with a passage: **Notes**, **Word Links** and **Questions**.
 _Avoid_: resource strip, annotations, translation helps
 
+**Introduction**:
+A **Note** on a whole book or a whole chapter rather than on a verse. A passage that opens the book carries the book's introduction, and a passage that opens a chapter carries that chapter's; they are shown first among the notes.
+_Avoid_: intro note, overview, general notes
+
 **Article**:
 A standalone piece of reference text: a **Word** entry (Translation Words) or an **Academy** article (Translation Academy).
 _Avoid_: page, entry, topic

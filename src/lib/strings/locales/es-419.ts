@@ -121,6 +121,8 @@ export const es419: LocaleTable = {
   'study.helps.heading': '{helps} · versículo {verse}',
   'study.helps.tapTerm': 'Toca un término para abrir su artículo.',
   'study.helps.noNotes': 'No hay notas para este versículo.',
+  'study.helps.bookIntro': 'Sobre este libro',
+  'study.helps.chapterIntro': 'Sobre el capítulo {chapter}',
   'study.helps.noWordLinks': 'No hay enlaces de palabras para este versículo.',
   'study.helps.noQuestions': 'No hay preguntas para este versículo.',
   'study.helps.notDownloaded': 'Las ayudas para este pasaje todavía no están en este teléfono.',

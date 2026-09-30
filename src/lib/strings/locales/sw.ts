@@ -119,6 +119,8 @@ export const sw: LocaleTable = {
   'study.helps.heading': '{helps} · mstari wa {verse}',
   'study.helps.tapTerm': 'Gusa neno ili kufungua makala yake.',
   'study.helps.noNotes': 'Hakuna maelezo kwa mstari huu.',
+  'study.helps.bookIntro': 'Kuhusu kitabu hiki',
+  'study.helps.chapterIntro': 'Kuhusu sura ya {chapter}',
   'study.helps.noWordLinks': 'Hakuna viungo vya maneno kwa mstari huu.',
   'study.helps.noQuestions': 'Hakuna maswali kwa mstari huu.',
   'study.helps.notDownloaded': 'Misaada ya kifungu hiki bado haiko kwenye simu hii.',

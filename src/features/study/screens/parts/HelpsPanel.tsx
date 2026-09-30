@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { GlassButton, GlassIconButton, GlassSurface, Icon } from '@shared/glass';
 import { useTheme } from '@shared/theme';
-import type { LinkTarget, Note, Passage, Question } from '../../service';
+import type { Introduction, LinkTarget, Note, Passage, Question } from '../../service';
 import type { StudyWords } from '../../strings';
 import { Blocks } from './Blocks';
 import { Choices } from './Choices';
@@ -108,6 +108,30 @@ function NoteItem({
   );
 }
 
+function IntroItem({
+  words,
+  intro,
+  language,
+  onLink,
+}: {
+  words: StudyWords;
+  intro: Introduction;
+  language: string;
+  onLink: (target: LinkTarget) => void;
+}) {
+  const theme = useTheme();
+  return (
+    <View style={{ gap: theme.space.sp3, padding: theme.space.sp5 }}>
+      <Say role="overline" tone="dim">
+        {intro.chapter === undefined
+          ? words.t('study.helps.bookIntro')
+          : words.t('study.helps.chapterIntro', { chapter: String(intro.chapter) })}
+      </Say>
+      <Blocks blocks={intro.blocks} language={language} onLink={onLink} compact />
+    </View>
+  );
+}
+
 function QuestionItem({
   words,
   question,
@@ -162,7 +186,8 @@ export function HelpsPanel({
 }: HelpsPanelProps) {
   const theme = useTheme();
   const language = passage.language;
-  const helps = at === undefined ? { notes: [], wordLinks: [], questions: [] } : helpsAt(passage, at);
+  const helps =
+    at === undefined ? { intros: [], notes: [], wordLinks: [], questions: [] } : helpsAt(passage, at);
   const choices = (Object.keys(tabKeys) as HelpsTab[]).map((key) => ({
     key,
     label: words.t(tabKeys[key]),
@@ -171,7 +196,7 @@ export function HelpsPanel({
   const available = hasHelps(passage);
   const count =
     tab === 'notes'
-      ? helps.notes.length
+      ? helps.intros.length + helps.notes.length
       : tab === 'wordLinks'
         ? helps.wordLinks.length
         : helps.questions.length;
@@ -219,18 +244,23 @@ export function HelpsPanel({
             {words.t(emptyKeys[tab])}
           </Say>
         ) : tab === 'notes' ? (
-          helps.notes.map((note) => (
-            <NoteItem
-              key={note.id}
-              words={words}
-              note={note}
-              focused={note.id === focused}
-              language={language}
-              onFocus={onFocus}
-              onLink={onLink}
-              labelOf={labelOf}
-            />
-          ))
+          <>
+            {helps.intros.map((intro) => (
+              <IntroItem key={intro.id} words={words} intro={intro} language={language} onLink={onLink} />
+            ))}
+            {helps.notes.map((note) => (
+              <NoteItem
+                key={note.id}
+                words={words}
+                note={note}
+                focused={note.id === focused}
+                language={language}
+                onFocus={onFocus}
+                onLink={onLink}
+                labelOf={labelOf}
+              />
+            ))}
+          </>
         ) : tab === 'wordLinks' ? (
           <View style={{ gap: theme.space.sp4 }}>
             <View style={[styles.wrap, { gap: theme.space.sp3 }]}>

@@ -119,6 +119,8 @@ export const fa: LocaleTable = {
   'study.helps.heading': '{helps} · آیهٔ {verse}',
   'study.helps.tapTerm': 'برای باز کردن مقالهٔ هر واژه، روی آن بزنید.',
   'study.helps.noNotes': 'برای این آیه یادداشتی نیست.',
+  'study.helps.bookIntro': 'دربارهٔ این کتاب',
+  'study.helps.chapterIntro': 'دربارهٔ باب {chapter}',
   'study.helps.noWordLinks': 'برای این آیه پیوند واژه‌ای نیست.',
   'study.helps.noQuestions': 'برای این آیه پرسشی نیست.',
   'study.helps.notDownloaded': 'راهنماهای این بخش هنوز روی این گوشی نیستند.',

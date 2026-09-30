@@ -101,6 +101,26 @@ export default scenario(
     assert.ok(bethlehem, 'a note on a verse with no alignment is still attached to the verse');
     assert.deepEqual(bethlehem.words, []);
     assert.ok(!opening.notes.some((note) => note.id === 'r001'), 'the book introduction is not a verse help');
+    assert.deepEqual(
+      opening.intros.map((intro) => [intro.id, intro.chapter ?? 'book']),
+      [
+        ['r001', 'book'],
+        ['r004', 1],
+      ],
+      'a passage that opens the book carries its introduction, then the chapter introduction',
+    );
+    const chapterIntro = opening.intros.find((intro) => intro.id === 'r004');
+    assert.equal(chapterIntro?.provenance.resource, 'qaa_tn');
+    assert.deepEqual(
+      chapterIntro?.blocks.flatMap((block) =>
+        block.kind === 'paragraph'
+          ? block.children.flatMap((inline) => (inline.kind === 'link' ? [inline.target] : []))
+          : [],
+      ),
+      [{ kind: 'passage', reference: 'RUT 1:16' }],
+      'a relative link in an introduction resolves against its book',
+    );
+    assert.deepEqual(ruth.intros, [], 'a passage inside a chapter carries no introduction');
 
     const letter = await corpus.passage(reference('3JN 1:1'), { language: 'qaa' });
     assert.ok(letter);
