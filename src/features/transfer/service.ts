@@ -1,17 +1,18 @@
 import type { FailureCode } from '@lib/domain/failures';
 import { languagePackId, type PackId } from '@lib/domain/pack';
 import type { Kernel } from '@lib/kernel';
-import { fromPeer } from '@lib/packs/source';
-import type { InstallOutcome } from '@lib/packs/types';
-import type { DevicePlatform, Peer } from '@lib/ports';
-import type { WireChoice, WireResource } from '@lib/transfer/protocol';
+import { fromPeer, type InstallOutcome } from '@lib/packs/types';
 import type {
+  DevicePlatform,
   IncomingOutcome,
+  Peer,
   ReceivedApp,
   TransferResult,
   TransferRole,
   TransferState,
   TransferStatus,
+  WireChoice,
+  WireResource,
 } from '@lib/transfer/types';
 import { qrMatrixOf, qrPathOf, transferLink, typedEntryOf, type QrMatrix } from './fallback';
 import { transferWords, type TransferWords } from './strings';

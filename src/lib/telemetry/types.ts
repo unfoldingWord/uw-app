@@ -1,1 +1,1 @@
-export { leavingFolds, type LeavingFold } from './folds';
+export { telemetryFolds, type TelemetryFold } from './folds';

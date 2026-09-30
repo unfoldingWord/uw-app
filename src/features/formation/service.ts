@@ -11,8 +11,7 @@ import type {
 } from '@lib/formation/types';
 import type { FailureCode } from '@lib/domain/failures';
 import type { Kernel } from '@lib/kernel';
-import { clipControls, clockTime, type ClipControls } from '@lib/player/controls';
-import type { PlayerStatus } from '@lib/player/player';
+import { clipControls, clockTime, type ClipControls, type PlayerStatus } from '@lib/player/types';
 import type { Written } from '@lib/written';
 import { formationWords, type FormationWords } from './strings';
 
@@ -32,8 +31,7 @@ export type {
   TrainingSession,
 } from '@lib/formation/types';
 export type { FormationWords } from './strings';
-export type { ClipControls } from '@lib/player/controls';
-export type { PlayerStatus } from '@lib/player/player';
+export type { ClipControls, PlayerStatus } from '@lib/player/types';
 export type { StoryAudio } from '@lib/formation/types';
 
 export type { Written } from '@lib/written';

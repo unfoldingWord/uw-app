@@ -1,4 +1,4 @@
-import type { Bookmark, BookmarkTarget } from '@lib/bookmarks/bookmarks';
+import type { Bookmark, BookmarkTarget } from '@lib/bookmarks/types';
 import type {
   Article,
   AudioClip,
@@ -15,10 +15,9 @@ import { imagePackId, languagePackId, type PackId } from '@lib/domain/pack';
 import { formatReference, parseReference } from '@lib/domain/reference';
 import type { Kernel } from '@lib/kernel';
 import type { InstallOutcome } from '@lib/packs/types';
-import { clipControls, clockTime, type ClipControls } from '@lib/player/controls';
-import type { PlayerStatus } from '@lib/player/player';
+import { clipControls, clockTime, type ClipControls, type PlayerStatus } from '@lib/player/types';
 import type { Written } from '@lib/written';
-import { isStoryAudio } from '@lib/catalog/built';
+import { isStoryAudio } from '@lib/catalog/types';
 import { libraryCards, type LibraryCard } from './library';
 import { studyWords, type StudyWords } from './strings';
 
@@ -39,9 +38,8 @@ export type {
   WordSpan,
 } from '@lib/corpus/types';
 export type { LibraryCard } from './library';
-export type { ClipControls } from '@lib/player/controls';
-export type { PlayerStatus } from '@lib/player/player';
-export { skipMs } from '@lib/player/controls';
+export type { ClipControls, PlayerStatus } from '@lib/player/types';
+export { skipMs } from '@lib/player/types';
 
 export type BookEntry = {
   readonly code: string;

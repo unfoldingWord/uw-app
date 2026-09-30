@@ -8,8 +8,8 @@ import {
   needsDirectionChange,
   type Direction,
   type Locale,
-} from '@lib/strings/locales';
-import { telemetryFolds, type TelemetryFold } from '@lib/telemetry/folds';
+} from '@lib/strings/types';
+import { telemetryFolds, type TelemetryFold } from '@lib/telemetry/types';
 import { settingsWords, type SettingsWords } from './strings';
 
 export type ThemeChoice = 'system' | 'light' | 'dark';

@@ -1,11 +1,10 @@
-import type { Bookmark } from '@lib/bookmarks/bookmarks';
-import type { RefreshOutcome } from '@lib/catalog/catalog';
+import type { Bookmark } from '@lib/bookmarks/types';
+import type { RefreshOutcome } from '@lib/catalog/types';
 import { languagePackId, type PackId } from '@lib/domain/pack';
 import type { Position } from '@lib/formation/types';
 import type { Kernel } from '@lib/kernel';
 import type { InstallOutcome, InstallProgress, PackUpdate } from '@lib/packs/types';
-import type { Invitation, StoriesRefreshOutcome } from '@lib/partners/partners';
-import type { ImpactStory } from '@lib/partners/stories';
+import type { ImpactStory, Invitation, StoriesRefreshOutcome } from '@lib/partners/types';
 import { refused, written, type Written } from '@lib/written';
 import { homeWords, type HomeWords } from './strings';
 
