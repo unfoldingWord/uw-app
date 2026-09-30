@@ -3,6 +3,7 @@ import { idsOf, inputOf, replayClassOf, type DomainEvent } from '@lib/domain/eve
 import type { JournalEntry } from '@lib/journal/entry';
 import { parseJournalExport } from '@lib/journal/export';
 import { stableJson } from '@lib/json';
+import { readingLeftOut } from '@lib/share/reading';
 import { createMemoryIds } from './adapters/ids';
 import { createPlaybackClock, createPlaybackIds } from './adapters/playback';
 import type { SimDevice } from './device';
@@ -25,8 +26,9 @@ const shownDivergences = 10;
 
 export function mintedIds(events: readonly DomainEvent[]): readonly string[] {
   const redone = new Set<string>();
+  const unredoable = new Set(events.filter(readingLeftOut).flatMap((event) => idsOf(inputOf(event))));
   for (const event of events) {
-    if (replayClassOf(event.type) !== 'verbatim') {
+    if (replayClassOf(event.type) !== 'verbatim' && !readingLeftOut(event)) {
       for (const id of idsOf(inputOf(event))) {
         redone.add(id);
       }
@@ -35,7 +37,7 @@ export function mintedIds(events: readonly DomainEvent[]): readonly string[] {
   const seen = new Set<string>();
   for (const event of events) {
     for (const id of idsOf(inputOf(event))) {
-      if (redone.has(id)) {
+      if (redone.has(id) && !unredoable.has(id)) {
         seen.add(id);
       }
     }

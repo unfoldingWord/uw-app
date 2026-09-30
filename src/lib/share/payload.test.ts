@@ -105,34 +105,41 @@ describe('share payloads (SH-4, SH-5)', () => {
   });
 
   it('describes the journal file in one sentence and writes a journal export with the snapshot beside it', () => {
-    expect(journalPayload(words, 'en')).toMatchObject({
+    expect(journalPayload(words, 'en', 'left-out').text).toBe(words.t('diagnostics.body', 'en'));
+    expect(journalPayload(words, 'en', 'included')).toMatchObject({
       title: 'Share diagnostics',
+      text: words.t('diagnostics.body.reading', 'en'),
       file: { path: 'diagnostics/journal.json', mimeType: 'application/json' },
       provenance: [],
     });
     const document = JSON.parse(
-      diagnosticsDocument({
-        journal: {
-          format: 'unfoldingword-journal',
-          version: 2,
-          limit: 10,
-          dropped: 0,
-          baseline: {},
-          events: [],
+      diagnosticsDocument(
+        {
+          journal: {
+            format: 'unfoldingword-journal',
+            version: 2,
+            limit: 10,
+            dropped: 0,
+            baseline: {},
+            events: [],
+          },
+          snapshot: {
+            version: 1,
+            journal: { limit: 10, size: 0, dropped: 0, lastSeq: 0, unpersisted: 0, tail: [] },
+            modules: {},
+          },
         },
-        snapshot: {
-          version: 1,
-          journal: { limit: 10, size: 0, dropped: 0, lastSeq: 0, unpersisted: 0, tail: [] },
-          modules: {},
-        },
-      }),
+        'left-out',
+      ),
     ) as Record<string, unknown>;
+    expect(document.reading).toBe('left-out');
     expect(Object.keys(document).sort()).toEqual([
       'baseline',
       'dropped',
       'events',
       'format',
       'limit',
+      'reading',
       'snapshot',
       'version',
     ]);

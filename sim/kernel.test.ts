@@ -290,6 +290,16 @@ describe('replay (DX-3)', () => {
     ).toEqual(['b', 'a']);
   });
 
+  it('never plays back the id of a bookmark whose target a shared file left out', () => {
+    expect(
+      mintedIds([
+        { type: 'BookmarkAdded', at: 1, payload: { bookmark: 'a', target: 'story', language: 'qaa' } },
+        { type: 'BookmarkRemoved', at: 2, payload: { bookmark: 'a' } },
+        { type: 'GroupCreated', at: 3, payload: { group: 'b' } },
+      ]),
+    ).toEqual(['b']);
+  });
+
   it('plays back only ids a redone command mints again, never one only a verbatim event carries', () => {
     expect(
       mintedIds([

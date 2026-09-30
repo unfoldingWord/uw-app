@@ -438,8 +438,11 @@ export const ptBR: LocaleTable = {
     'Nada sai deste celular sem que você escolha enviar. O aplicativo conta aberturas, downloads, transferências e compartilhamentos no total, sem identificadores.',
   'diagnostics.title': 'Compartilhar diagnóstico',
   'diagnostics.body':
-    'O arquivo traz um registro do que o aplicativo fez neste celular e um resumo do que há nele, sem nomes, notas ou identificadores.',
+    'O arquivo traz um registro do que o aplicativo fez neste celular e um resumo do que há nele, sem as passagens, os artigos e as histórias que você abriu ou salvou, e sem nomes, notas ou identificadores.',
   'diagnostics.action': 'Compartilhar o arquivo',
+  'diagnostics.body.reading':
+    'O arquivo traz um registro do que o aplicativo fez neste celular, um resumo do que há nele e as passagens, os artigos e as histórias que você abriu ou salvou, sem nomes, notas ou identificadores.',
+  'diagnostics.includeReading': 'Incluir o que eu li',
   'failure.http.offline': 'Você está off-line. Tente de novo quando estiver conectado.',
   'failure.http.timeout': 'A biblioteca demorou demais para responder. Tente de novo em um instante.',
   'failure.http.status': 'A biblioteca não respondeu como esperado. Tente de novo mais tarde.',

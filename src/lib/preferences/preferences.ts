@@ -152,6 +152,9 @@ export const preferencesModule = defineModule<PreferencesApi>({
           return;
         }
         const { language, reference } = entry.payload;
+        if (reference === undefined) {
+          return;
+        }
         lastPassages.set(language, reference);
         await store(lastPassageKey(language), reference);
       },

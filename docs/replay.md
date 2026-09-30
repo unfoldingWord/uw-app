@@ -120,7 +120,19 @@ with no `AppOpened` yet; a restart in replay journals the same event at the same
   the replay names that divergence in the snapshot.
 - **A share.** `ShareSent` is `verbatim` and names the kind and the language, never the text. The journal
   file a leader shares (`diagnostics/journal.json`, DX-2) is a journal export with the device snapshot beside
-  it under `snapshot`, so `npm run replay` reads it as it is.
+  it under `snapshot` and a `reading` field, so `npm run replay` reads it as it is.
+- **What a leader read, unless they include it.** By default the shared file leaves reading out
+  (`reading: "left-out"`, `leaveOutReading` in `src/lib/share/reading.ts`): every event stays, with its time,
+  but `PassageOpened`, `ArticleOpened`, `StoryOpened` and `BookmarkAdded` lose their `reference`, `article`
+  and `story` fields, the snapshot counts the bookmarks instead of listing them, and the last passage per
+  language is gone. Those three fields are optional in the event table so the file still parses. Such a file
+  replays without error and rebuilds everything else: packs, corpus, groups and their positions, preferences
+  other than the last passage, telemetry folds, transfers and failures. It cannot rebuild a bookmark or the
+  last passage read, so the replayed device has no bookmarks, a replay names each left-out `BookmarkAdded` as
+  a divergence, and its id is never played back (`readingLeftOut`, used by `mintedIds`), so the ids of later
+  commands still line up. A report that needs a bookmark or the reading position to reproduce asks the
+  leader to share again with "Include what I read" on (`reading: "included"`); that file is the whole journal
+  and snapshot and replays to the same snapshot (DX-2).
 - **The world's weather.** A download that failed because the phone was offline fails again only if the replay
   world is offline too. A scenario that reproduces a field report scripts the world first, for example
   `device.adapters.http.script(url, 'offline')`, and then replays.

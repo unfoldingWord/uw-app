@@ -405,8 +405,11 @@ export const id: LocaleTable = {
     'Tidak ada yang keluar dari ponsel ini kecuali yang Anda pilih untuk dikirim. Aplikasi menghitung pembukaan, unduhan, pengiriman, dan berbagi secara keseluruhan, tanpa tanda pengenal.',
   'diagnostics.title': 'Bagikan diagnostik',
   'diagnostics.body':
-    'Berkas ini berisi catatan tentang apa yang dilakukan aplikasi di ponsel ini dan ringkasan isinya, tanpa nama, catatan pribadi, atau tanda pengenal.',
+    'Berkas ini berisi catatan tentang apa yang dilakukan aplikasi di ponsel ini dan ringkasan isinya, tanpa bagian Alkitab, artikel, dan cerita yang Anda buka atau simpan, serta tanpa nama, catatan pribadi, atau tanda pengenal.',
   'diagnostics.action': 'Bagikan berkas',
+  'diagnostics.body.reading':
+    'Berkas ini berisi catatan tentang apa yang dilakukan aplikasi di ponsel ini, ringkasan isinya, serta bagian Alkitab, artikel, dan cerita yang Anda buka atau simpan, tanpa nama, catatan pribadi, atau tanda pengenal.',
+  'diagnostics.includeReading': 'Sertakan yang saya baca',
   'failure.http.offline': 'Anda sedang luring. Coba lagi saat tersambung.',
   'failure.http.timeout': 'Perpustakaan terlalu lama menjawab. Coba lagi sebentar lagi.',
   'failure.http.status': 'Perpustakaan tidak menjawab seperti yang diharapkan. Coba lagi nanti.',

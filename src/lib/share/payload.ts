@@ -5,6 +5,7 @@ import type { JournalExport } from '../journal/export';
 import type { SharePayload } from '../ports';
 import type { Locale } from '../strings/locales';
 import type { StringsApi } from '../strings/strings';
+import type { Reading } from './reading';
 
 export const getTheAppLink = 'https://unfoldingword.org';
 
@@ -79,15 +80,15 @@ export function audioPayload(words: Words, locale: Locale, clip: AudioClip): Sha
   };
 }
 
-export function journalPayload(words: Words, locale: Locale): SharePayload {
+export function journalPayload(words: Words, locale: Locale, reading: Reading): SharePayload {
   return {
     title: words.t('diagnostics.title', locale),
-    text: words.t('diagnostics.body', locale),
+    text: words.t(reading === 'included' ? 'diagnostics.body.reading' : 'diagnostics.body', locale),
     file: { path: diagnosticsPath, mimeType: diagnosticsMimeType },
     provenance: [],
   };
 }
 
-export function diagnosticsDocument(report: JournalReport): string {
-  return `${JSON.stringify({ ...report.journal, snapshot: report.snapshot }, null, 2)}\n`;
+export function diagnosticsDocument(report: JournalReport, reading: Reading): string {
+  return `${JSON.stringify({ ...report.journal, reading, snapshot: report.snapshot }, null, 2)}\n`;
 }

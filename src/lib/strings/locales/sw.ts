@@ -424,8 +424,11 @@ export const sw: LocaleTable = {
     'Hakuna kinachotoka kwenye simu hii ambacho hukuchagua kutuma. Programu inahesabu ufunguzi, upakuaji, utumaji na ushirikishaji kwa jumla, bila vitambulisho.',
   'diagnostics.title': 'Shiriki uchunguzi',
   'diagnostics.body':
-    'Faili hili lina kumbukumbu ya kile programu ilichofanya kwenye simu hii na muhtasari wa kilichomo, bila majina, maelezo wala vitambulisho.',
+    'Faili hili lina kumbukumbu ya kile programu ilichofanya kwenye simu hii na muhtasari wa kilichomo, bila vifungu, makala na hadithi ulizofungua au kuhifadhi, na bila majina, maelezo wala vitambulisho.',
   'diagnostics.action': 'Shiriki faili',
+  'diagnostics.body.reading':
+    'Faili hili lina kumbukumbu ya kile programu ilichofanya kwenye simu hii, muhtasari wa kilichomo na vifungu, makala na hadithi ulizofungua au kuhifadhi, bila majina, maelezo wala vitambulisho.',
+  'diagnostics.includeReading': 'Jumuisha nilichosoma',
   'failure.http.offline': 'Uko nje ya mtandao. Jaribu tena ukiunganishwa.',
   'failure.http.timeout': 'Maktaba imechelewa kujibu. Jaribu tena baada ya muda mfupi.',
   'failure.http.status': 'Maktaba haikujibu kama ilivyotarajiwa. Jaribu tena baadaye.',

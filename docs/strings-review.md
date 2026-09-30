@@ -57,6 +57,11 @@ Change a value in place; set it to `null` to fall back to English for that key w
   `settings.reducedMotion.about`, drafted in every locale at once. The setting stops the glass from drifting,
   floating and breathing; the word should be the one the phone's own accessibility settings use for Reduce
   Motion in that language.
+- **Drafted with issue #20 (2026-09-30).** `diagnostics.body` was rewritten and `diagnostics.body.reading` and
+  `diagnostics.includeReading` added, in every locale at once. The two bodies must each name exactly what the
+  shared file holds: without, then with, the passages, articles and stories the leader opened or saved. The
+  toggle label is first person ("Include what I read"), as the issue's decision words it; check it reads as the
+  leader's own choice.
 - **Search examples.** `search.placeholder` and `search.empty` use Ruth 2 and covenant as examples; the book
   name and the word should be the ones a reader in that language would type.
 
