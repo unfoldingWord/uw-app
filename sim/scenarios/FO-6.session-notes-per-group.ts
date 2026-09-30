@@ -3,6 +3,7 @@ import { languagePackId } from '@lib/domain/pack';
 import { stableJson } from '@lib/json';
 import { installFromCatalog } from '../install';
 import { scenario } from '../scenario';
+import { valueOf } from '../written';
 
 const tuesdayNote = 'Maria asked why God rested on the seventh day';
 const youthNote = 'Talk again about the garden next week';
@@ -15,15 +16,15 @@ export default scenario(
     await device.start();
     await installFromCatalog(device, [languagePackId('qaa')]);
     const formation = () => device.kernel.formation;
-    const tuesday = await formation().create('Tuesday group');
-    const youth = await formation().create('Youth leaders');
+    const tuesday = valueOf(await formation().create('Tuesday group'));
+    const youth = valueOf(await formation().create('Youth leaders'));
     assert.ok(tuesday && youth);
 
     assert.equal(formation().note(tuesday.id, 'foundations', 1), undefined);
-    assert.equal(await formation().saveNote(tuesday.id, 'foundations', 1, 'first thoughts'), true);
-    assert.equal(await formation().saveNote(tuesday.id, 'foundations', 1, tuesdayNote), true);
-    assert.equal(await formation().saveNote(youth.id, 'foundations', 1, youthNote), true);
-    assert.equal(await formation().saveNote('group-999999', 'foundations', 1, youthNote), false);
+    assert.equal((await formation().saveNote(tuesday.id, 'foundations', 1, 'first thoughts'))?.ok, true);
+    assert.equal((await formation().saveNote(tuesday.id, 'foundations', 1, tuesdayNote))?.ok, true);
+    assert.equal((await formation().saveNote(youth.id, 'foundations', 1, youthNote))?.ok, true);
+    assert.equal(await formation().saveNote('group-999999', 'foundations', 1, youthNote), undefined);
 
     await device.restart();
     assert.equal(formation().note(tuesday.id, 'foundations', 1), tuesdayNote);
@@ -47,7 +48,7 @@ export default scenario(
     }
     assert.equal((device.kernel.snapshot().modules.formation as { notes: number }).notes, 2);
 
-    assert.equal(await formation().remove(youth.id), true);
+    assert.equal((await formation().remove(youth.id))?.ok, true);
     assert.equal(formation().note(youth.id, 'foundations', 1), undefined, 'a deleted group takes its notes');
   },
 );

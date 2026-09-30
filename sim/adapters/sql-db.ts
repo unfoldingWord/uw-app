@@ -2,7 +2,7 @@ import type { Db, DbTransaction, DbRow, RunResult, SqlValue } from '@lib/ports';
 import { portError } from './errors';
 
 export type MemoryDb = Db & {
-  failWrites(fail: boolean): void;
+  failWrites(fail: boolean | RegExp): void;
   onWrite(listener: (sql: string, params: readonly SqlValue[]) => void): () => void;
   tables(): readonly string[];
   close(): void;
@@ -19,7 +19,7 @@ export type SqlEngine = {
 const writeStatement = /^\s*(insert|update|delete|replace|create|drop|alter)\b/i;
 
 export function createSqlDb(engine: SqlEngine): MemoryDb {
-  let failing = false;
+  let failing: boolean | RegExp = false;
   let lock: Promise<unknown> = Promise.resolve();
   const listeners = new Set<(sql: string, params: readonly SqlValue[]) => void>();
 
@@ -29,7 +29,8 @@ export function createSqlDb(engine: SqlEngine): MemoryDb {
         listener(sql, params);
       }
     }
-    if (failing && writeStatement.test(sql)) {
+    const refused = failing instanceof RegExp ? failing.test(sql) : failing;
+    if (refused && writeStatement.test(sql)) {
       throw portError('db.io', 'the database refused a write');
     }
   }

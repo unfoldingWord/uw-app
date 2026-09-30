@@ -1,8 +1,9 @@
 import { corpusView } from '../corpus/view';
-import { sessionMovements } from '../domain/events';
+import { sessionMovements, type EventInput } from '../domain/events';
 import type { JsonValue } from '../json';
 import { defineModule } from '../module';
 import type { DbTransaction } from '../ports';
+import { dbWrite, refused, written, type Written } from '../written';
 import { firstPosition, isReachable, positionAt, progressOf, stepFrom } from './position';
 import { assembleSession, sessionCount, sessionTitle, trackSummaries } from './sessions';
 import {
@@ -39,17 +40,17 @@ export type FormationApi = {
   groups(): readonly Group[];
   group(id: string): Group | undefined;
   active(): Group | undefined;
-  create(name: string): Promise<Group | undefined>;
-  rename(group: string, name: string): Promise<Group | undefined>;
-  remove(group: string): Promise<boolean>;
-  activate(group: string): Promise<Group | undefined>;
-  advance(group: string, to: Position): Promise<Group | undefined>;
-  start(group: string, language: string): Promise<Group | undefined>;
-  complete(group: string): Promise<Group | undefined>;
+  create(name: string): Promise<Written<Group> | undefined>;
+  rename(group: string, name: string): Promise<Written<Group> | undefined>;
+  remove(group: string): Promise<Written<true> | undefined>;
+  activate(group: string): Promise<Written<Group> | undefined>;
+  advance(group: string, to: Position): Promise<Written<Group> | undefined>;
+  start(group: string, language: string): Promise<Written<Group> | undefined>;
+  complete(group: string): Promise<Written<Group> | undefined>;
   progress(group: string, language: string): Promise<Progress | undefined>;
   next(group: string, language: string): Promise<NextSession | undefined>;
   note(group: string, track: Track, session: number): string | undefined;
-  saveNote(group: string, track: Track, session: number, text: string): Promise<boolean>;
+  saveNote(group: string, track: Track, session: number, text: string): Promise<Written<true> | undefined>;
 };
 
 const standIn = '';
@@ -87,6 +88,7 @@ export const formationModule = defineModule<FormationApi>({
     const notes = new Map<string, string>();
     let active: string | undefined;
     let work: Promise<unknown> = Promise.resolve();
+    const write = dbWrite(context);
 
     const serial = <T>(task: () => Promise<T>): Promise<T> => {
       const result = work.then(task, task);
@@ -97,105 +99,132 @@ export const formationModule = defineModule<FormationApi>({
     const ordered = (): GroupRow[] =>
       [...groups.values()].sort((left, right) => left.ordinal - right.ordinal);
 
-    const store = async (row: GroupRow, activate: boolean): Promise<Group> => {
-      await db.transaction(async (session: DbTransaction) => {
+    const persist = (row: GroupRow, activate: boolean): Promise<void> =>
+      db.transaction(async (session: DbTransaction) => {
         await saveGroup(session, row);
         if (activate && active !== row.id) {
           await saveActive(session, row.id);
         }
       });
+
+    const commit = async (
+      row: GroupRow,
+      activate: boolean,
+      events: readonly [EventInput, ...EventInput[]],
+    ): Promise<Written<Group>> => {
+      const failed = await write(events[0].type, () => persist(row, activate));
+      if (failed !== undefined) {
+        return refused(failed);
+      }
+      for (const event of events) {
+        await context.emit(event);
+      }
       groups.set(row.id, row);
       if (activate) {
         active = row.id;
       }
-      return publicGroup(row);
+      return written(publicGroup(row));
     };
 
-    const createGroup = async (name: string): Promise<Group> => {
+    const createGroup = async (name: string): Promise<Written<Group>> => {
       const id = ids.next();
-      await context.emit({ type: 'GroupCreated', payload: { group: id } });
       const ordinal = Math.max(0, ...[...groups.values()].map((row) => row.ordinal)) + 1;
-      return store({ id, name, position: firstPosition, ordinal }, active === undefined);
+      return commit({ id, name, position: firstPosition, ordinal }, active === undefined, [
+        { type: 'GroupCreated', payload: { group: id } },
+      ]);
     };
 
-    const renameGroup = async (id: string, name: string | undefined): Promise<Group | undefined> => {
+    const renameGroup = async (id: string, name: string | undefined): Promise<Written<Group> | undefined> => {
       const row = groups.get(id);
       if (row === undefined) {
         return undefined;
       }
-      await context.emit({ type: 'GroupRenamed', payload: { group: id } });
-      return store(name === undefined ? row : { ...row, name }, false);
+      return commit(name === undefined ? row : { ...row, name }, false, [
+        { type: 'GroupRenamed', payload: { group: id } },
+      ]);
     };
 
-    const removeGroup = async (id: string): Promise<boolean> => {
+    const removeGroup = async (id: string): Promise<Written<true> | undefined> => {
       if (!groups.has(id)) {
-        return false;
+        return undefined;
+      }
+      const successor = active === id ? ordered().find((row) => row.id !== id)?.id : active;
+      const failed = await write('GroupDeleted', () =>
+        db.transaction(async (session) => {
+          await deleteGroup(session, id);
+          if (successor !== active) {
+            await saveActive(session, successor);
+          }
+        }),
+      );
+      if (failed !== undefined) {
+        return refused(failed);
       }
       await context.emit({ type: 'GroupDeleted', payload: { group: id } });
-      const successor = active === id ? ordered().find((row) => row.id !== id)?.id : active;
-      await db.transaction(async (session) => {
-        await deleteGroup(session, id);
-        if (successor !== active) {
-          await saveActive(session, successor);
-        }
-      });
       groups.delete(id);
       for (const key of [...notes.keys()].filter((key) => key.startsWith(`${id}:`))) {
         notes.delete(key);
       }
       active = successor;
-      return true;
+      return written(true);
     };
 
-    const activateGroup = async (id: string): Promise<Group | undefined> => {
+    const activateGroup = async (id: string): Promise<Written<Group> | undefined> => {
       const row = groups.get(id);
       if (row === undefined) {
         return undefined;
       }
       if (active === id) {
-        return publicGroup(row);
+        return written(publicGroup(row));
+      }
+      const failed = await write('GroupActivated', () =>
+        db.transaction((session) => saveActive(session, id)),
+      );
+      if (failed !== undefined) {
+        return refused(failed);
       }
       await context.emit({ type: 'GroupActivated', payload: { group: id } });
-      await db.transaction((session) => saveActive(session, id));
       active = id;
-      return publicGroup(row);
+      return written(publicGroup(row));
     };
 
-    const advanceGroup = async (id: string, to: Position): Promise<Group | undefined> => {
+    const advanceGroup = async (id: string, to: Position): Promise<Written<Group> | undefined> => {
       const row = groups.get(id);
       if (row === undefined || !isReachable(to)) {
         return undefined;
       }
       const position = positionAt(to.track, to.session, to.movement);
-      await context.emit({
-        type: 'PositionChanged',
-        payload: {
-          group: id,
-          track: position.track,
-          session: position.session,
-          ...(position.movement === undefined ? {} : { movement: position.movement }),
+      return commit({ ...row, position }, true, [
+        {
+          type: 'PositionChanged',
+          payload: {
+            group: id,
+            track: position.track,
+            session: position.session,
+            ...(position.movement === undefined ? {} : { movement: position.movement }),
+          },
         },
-      });
-      return store({ ...row, position }, true);
+      ]);
     };
 
     const beginSession = async (
       id: string,
       position: Position,
       language: string,
-    ): Promise<Group | undefined> => {
+    ): Promise<Written<Group> | undefined> => {
       const row = groups.get(id);
       if (row === undefined) {
         return undefined;
       }
-      await context.emit({
-        type: 'SessionStarted',
-        payload: { group: id, track: position.track, session: position.session, language },
-      });
-      return store({ ...row, started: startedKey(position) }, true);
+      return commit({ ...row, started: startedKey(position) }, true, [
+        {
+          type: 'SessionStarted',
+          payload: { group: id, track: position.track, session: position.session, language },
+        },
+      ]);
     };
 
-    const startSession = async (id: string, language: string): Promise<Group | undefined> => {
+    const startSession = async (id: string, language: string): Promise<Written<Group> | undefined> => {
       const row = groups.get(id);
       if (row === undefined) {
         return undefined;
@@ -205,47 +234,62 @@ export const formationModule = defineModule<FormationApi>({
         return undefined;
       }
       if (row.started === startedKey(row.position)) {
-        return publicGroup(row);
+        return written(publicGroup(row));
       }
       return beginSession(id, row.position, language);
     };
 
-    const completeAt = async (id: string, position: Position): Promise<Group | undefined> => {
+    const completeAt = async (id: string, position: Position): Promise<Written<Group> | undefined> => {
       const row = groups.get(id);
       if (row === undefined || position.track === 'topics') {
         return undefined;
       }
-      if (position.track === 'foundations') {
-        await context.emit({
-          type: 'MovementCompleted',
-          payload: {
-            group: id,
-            track: position.track,
-            session: position.session,
-            movement: position.movement ?? 'observation',
-          },
-        });
-      } else {
-        await context.emit({ type: 'LessonCompleted', payload: { group: id, session: position.session } });
-      }
+      const done: EventInput =
+        position.track === 'foundations'
+          ? {
+              type: 'MovementCompleted',
+              payload: {
+                group: id,
+                track: position.track,
+                session: position.session,
+                movement: position.movement ?? 'observation',
+              },
+            }
+          : { type: 'LessonCompleted', payload: { group: id, session: position.session } };
       const step = stepFrom(position);
-      if (step.sessionCompleted) {
-        await context.emit({
-          type: 'SessionCompleted',
-          payload: { group: id, track: position.track, session: position.session },
-        });
-      }
-      return store({ ...row, position: step.next }, true);
+      return commit(
+        { ...row, position: step.next },
+        true,
+        step.sessionCompleted
+          ? [
+              done,
+              {
+                type: 'SessionCompleted',
+                payload: { group: id, track: position.track, session: position.session },
+              },
+            ]
+          : [done],
+      );
     };
 
-    const writeNote = async (id: string, track: Track, session: number, text: string): Promise<boolean> => {
+    const writeNote = async (
+      id: string,
+      track: Track,
+      session: number,
+      text: string,
+    ): Promise<Written<true> | undefined> => {
       if (!groups.has(id) || !isSessionNumber(session)) {
-        return false;
+        return undefined;
+      }
+      const failed = await write('SessionNoteSaved', () =>
+        db.transaction((transaction) => saveNote(transaction, { group: id, track, session, text })),
+      );
+      if (failed !== undefined) {
+        return refused(failed);
       }
       await context.emit({ type: 'SessionNoteSaved', payload: { group: id, track, session } });
-      await db.transaction((transaction) => saveNote(transaction, { group: id, track, session, text }));
       notes.set(noteKey(id, { track, session }), text);
-      return true;
+      return written(true);
     };
 
     const api: FormationApi = {

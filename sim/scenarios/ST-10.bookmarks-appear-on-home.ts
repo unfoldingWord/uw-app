@@ -3,6 +3,7 @@ import { stableJson } from '@lib/json';
 import { scenario } from '../scenario';
 import { replayJournal } from '../replay';
 import { servicesOf } from '../services';
+import { valueOf } from '../written';
 
 export default scenario(
   'ST-10',
@@ -18,10 +19,10 @@ export default scenario(
     assert.equal(opened.state, 'passage');
     assert.equal(opened.state === 'passage' && opened.view.saved, undefined);
     const passage = { target: 'passage', reference: 'RUT 1:1', language: 'qaa' } as const;
-    const saved = await services.study.save(passage);
+    const saved = valueOf(await services.study.save(passage));
     assert.ok(saved !== undefined);
     assert.equal(
-      await services.study.save(passage).then((again) => again?.id),
+      await services.study.save(passage).then((again) => valueOf(again)?.id),
       saved.id,
       'saving twice keeps one',
     );
@@ -40,7 +41,7 @@ export default scenario(
       services.home.saved().map((item) => item.kind),
       ['story', 'word', 'passage'],
     );
-    assert.equal(await services.study.unsave(saved.id), true);
+    assert.equal((await services.study.unsave(saved.id))?.ok, true);
     assert.deepEqual(
       services.home.saved().map((item) => item.kind),
       ['story', 'word'],

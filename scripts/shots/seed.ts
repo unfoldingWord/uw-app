@@ -80,7 +80,8 @@ async function furnish(device: SimDevice): Promise<void> {
   for (const audio of services.languages.audio('qaa')) {
     await expectOk(`install ${audio.pack}`, services.languages.install(audio.pack));
   }
-  const group = await services.formation.create('Tuesday group');
+  const created = await services.formation.create('Tuesday group');
+  const group = created?.ok === true ? created.value : undefined;
   if (group === undefined) {
     throw new Error('the QA device image could not create a group');
   }

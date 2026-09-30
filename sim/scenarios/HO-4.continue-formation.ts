@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { scenario } from '../scenario';
 import { servicesOf } from '../services';
+import { valueOf } from '../written';
 
 export default scenario(
   'HO-4',
@@ -13,7 +14,7 @@ export default scenario(
     assert.ok((await (await services.onboarding.choose('qaa')).done).ok);
     assert.equal(await services.home.continueFormation(), undefined, 'no group, no card');
 
-    const group = await services.formation.create('Tuesday group');
+    const group = valueOf(await services.formation.create('Tuesday group'));
     assert.ok(group !== undefined);
     const card = await services.home.continueFormation();
     assert.deepEqual(card, {

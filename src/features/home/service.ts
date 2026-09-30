@@ -6,6 +6,7 @@ import type { Kernel } from '@lib/kernel';
 import type { InstallOutcome, InstallProgress, PackUpdate } from '@lib/packs/types';
 import type { Invitation, StoriesRefreshOutcome } from '@lib/partners/partners';
 import type { ImpactStory } from '@lib/partners/stories';
+import type { Written } from '@lib/written';
 import { homeWords, type HomeWords } from './strings';
 
 export type LocalTime = { readonly at: number; readonly utcOffsetMinutes: number };
@@ -109,7 +110,7 @@ export type HomeService = {
   download(): Promise<DownloadView>;
   completeDownload(): Promise<InstallOutcome | undefined>;
   saved(): readonly SavedItem[];
-  removeSaved(id: string): Promise<boolean>;
+  removeSaved(id: string): Promise<Written<true> | undefined>;
   invitation(at: number): InvitationCard;
   invitationShown(at: number): Promise<void>;
   tapInvitation(): Promise<void>;

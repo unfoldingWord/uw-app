@@ -1,10 +1,12 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback } from 'react';
-import { FlatList } from 'react-native';
+import { useCallback, useState } from 'react';
+import { FlatList, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { FailureCode } from '@lib/domain/failures';
 import { GlassButton, GlassIconButton, GlassSurface, Icon } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
+import { Notice } from '@shared/ui';
 import { createStudyService } from '../service';
 import { Attribution } from './parts/Attribution';
 import { ScreenFrame, TopBar } from './parts/Frame';
@@ -32,6 +34,7 @@ export default function StoryScreen() {
   const load = useCallback(() => service.story(number), [service, number]);
   const { value, reload } = useLoaded(load);
   const language = service.language() ?? '';
+  const [failure, setFailure] = useState<FailureCode | undefined>(undefined);
 
   if (value === undefined) {
     return <ScreenFrame />;
@@ -78,11 +81,11 @@ export default function StoryScreen() {
             label={words.t(saved === undefined ? 'common.bookmark.add' : 'common.bookmark.remove')}
             size={theme.space.sp14}
             onPress={async () => {
-              if (saved === undefined) {
-                await service.save({ target: 'story', story: story.number, language });
-              } else {
-                await service.unsave(saved.id);
-              }
+              const outcome =
+                saved === undefined
+                  ? await service.save({ target: 'story', story: story.number, language })
+                  : await service.unsave(saved.id);
+              setFailure(outcome === undefined || outcome.ok ? undefined : outcome.code);
               await reload();
             }}
           >
@@ -90,6 +93,11 @@ export default function StoryScreen() {
           </GlassIconButton>
         }
       />
+      {failure === undefined ? null : (
+        <View style={{ paddingHorizontal: theme.space.gutterScreen, paddingTop: theme.space.sp4 }}>
+          <Notice text={words.t(`failure.${failure}`)} />
+        </View>
+      )}
       <FlatList
         data={story.frames}
         keyExtractor={(frame) => String(frame.number)}

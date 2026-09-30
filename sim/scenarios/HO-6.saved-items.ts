@@ -13,12 +13,15 @@ export default scenario(
     assert.ok((await (await services.onboarding.choose('qaa')).done).ok);
     assert.deepEqual(services.home.saved(), []);
 
-    assert.ok(await services.study.save({ target: 'passage', reference: 'RUT 1:1', language: 'qaa' }));
-    assert.ok(await services.study.save({ target: 'article', article: 'tw/bible/kt/god', language: 'qaa' }));
+    assert.ok((await services.study.save({ target: 'passage', reference: 'RUT 1:1', language: 'qaa' }))?.ok);
     assert.ok(
-      await services.study.save({ target: 'article', article: 'ta/translate/figs-idiom', language: 'qaa' }),
+      (await services.study.save({ target: 'article', article: 'tw/bible/kt/god', language: 'qaa' }))?.ok,
     );
-    assert.ok(await services.study.save({ target: 'story', story: 2, language: 'qaa' }));
+    assert.ok(
+      (await services.study.save({ target: 'article', article: 'ta/translate/figs-idiom', language: 'qaa' }))
+        ?.ok,
+    );
+    assert.ok((await services.study.save({ target: 'story', story: 2, language: 'qaa' }))?.ok);
 
     const saved = services.home.saved();
     assert.deepEqual(
@@ -52,7 +55,7 @@ export default scenario(
     assert.equal(opened.state === 'passage' && opened.view.reference, 'RUT 1:1');
     const [first] = saved;
     assert.ok(first !== undefined);
-    assert.equal(await services.home.removeSaved(first.bookmark.id), true);
+    assert.equal((await services.home.removeSaved(first.bookmark.id))?.ok, true);
     assert.equal(services.home.saved().length, 3);
   },
 );

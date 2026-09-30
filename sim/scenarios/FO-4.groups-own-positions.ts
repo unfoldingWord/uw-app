@@ -3,6 +3,7 @@ import { languagePackId } from '@lib/domain/pack';
 import { stableJson } from '@lib/json';
 import { installFromCatalog } from '../install';
 import { scenario } from '../scenario';
+import { valueOf } from '../written';
 
 const names = ['Tuesday group', 'Youth leaders', 'Women of Grace Fellowship'];
 
@@ -17,8 +18,8 @@ export default scenario(
 
     assert.deepEqual(formation().groups(), []);
     assert.equal(await formation().create('   '), undefined, 'a group needs a name');
-    const tuesday = await formation().create(names[0] ?? '');
-    const youth = await formation().create(`  ${names[1] ?? ''} `);
+    const tuesday = valueOf(await formation().create(names[0] ?? ''));
+    const youth = valueOf(await formation().create(`  ${names[1] ?? ''} `));
     assert.ok(tuesday && youth);
     assert.equal(youth.name, 'Youth leaders');
     assert.deepEqual(tuesday.position, { track: 'foundations', session: 1, movement: 'observation' });
@@ -60,11 +61,11 @@ export default scenario(
     );
 
     await formation().rename(youth.id, names[2] ?? '');
-    const third = await formation().create('Elders');
+    const third = valueOf(await formation().create('Elders'));
     assert.ok(third);
     await formation().activate(youth.id);
     assert.equal(formation().active()?.id, youth.id);
-    assert.equal(await formation().remove(third.id), true);
+    assert.equal((await formation().remove(third.id))?.ok, true);
     assert.equal(formation().group(third.id), undefined);
 
     await device.restart();
