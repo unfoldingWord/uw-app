@@ -8,6 +8,7 @@ const dump = [
   "uses-permission: name='android.permission.ACCESS_NETWORK_STATE'",
   "uses-permission: name='android.permission.VIBRATE'",
   "uses-permission: name='android.permission.MODIFY_AUDIO_SETTINGS'",
+  "uses-permission: name='android.permission.WAKE_LOCK'",
   "uses-permission: name='org.unfoldingword.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'",
 ].join('\n');
 
@@ -25,6 +26,7 @@ describe('apkPermissionsOf (aapt2 dump permissions)', () => {
         'android.permission.ACCESS_NETWORK_STATE',
         'android.permission.VIBRATE',
         'android.permission.MODIFY_AUDIO_SETTINGS',
+        'android.permission.WAKE_LOCK',
         'org.unfoldingword.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION',
         'android.permission.WRITE_EXTERNAL_STORAGE',
         'android.permission.CAMERA',

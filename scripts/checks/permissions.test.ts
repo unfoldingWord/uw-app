@@ -124,14 +124,14 @@ describe('permissionFindings', () => {
   it('refuses a permission that is on neither list, arbitrary loads and an entitlement', () => {
     const config = nativeConfigOf(
       introspected({
-        permissions: [{ name: 'android.permission.WAKE_LOCK' }, ...blocked],
+        permissions: [{ name: 'android.permission.RECEIVE_BOOT_COMPLETED' }, ...blocked],
         allowBackup: 'false',
         infoPlist: { NSAppTransportSecurity: { NSAllowsArbitraryLoads: true } },
         entitlements: { 'com.apple.developer.icloud-container-identifiers': [] },
       }),
     );
     expect(permissionFindings(config)).toEqual([
-      'Android manifest requests android.permission.WAKE_LOCK, which is not on the admitted list in scripts/checks/android-permissions.ts',
+      'Android manifest requests android.permission.RECEIVE_BOOT_COMPLETED, which is not on the admitted list in scripts/checks/android-permissions.ts',
       'Info.plist allows arbitrary loads; the Http port only reaches allowlisted hosts over HTTPS',
       'iOS entitlements carry com.apple.developer.icloud-container-identifiers, which nothing in the PRD needs',
     ]);

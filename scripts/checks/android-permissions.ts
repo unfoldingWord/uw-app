@@ -5,6 +5,8 @@ const androidAdmitted: Readonly<Record<string, string>> = {
   [permission('ACCESS_NETWORK_STATE')]: "The Http adapter's offline signal through expo-network",
   [permission('VIBRATE')]: 'The light haptic on press through expo-haptics',
   [permission('MODIFY_AUDIO_SETTINGS')]: 'Story and passage audio through expo-audio (ST-4)',
+  [permission('WAKE_LOCK')]:
+    'A normal install-time permission a Maven dependency of the native modules merges in; it shows no prompt and reads nothing, and the manifest-merger report device/ci/apk-report.sh prints names the dependency',
 };
 
 export const installerPermission = permission('REQUEST_INSTALL_PACKAGES');

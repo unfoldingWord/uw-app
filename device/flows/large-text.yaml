@@ -9,7 +9,7 @@ tags:
     text: 'Allow'
     optional: true
 - extendedWaitUntil:
-    visible: 'Choose your language'
+    visible: 'Every resource.*'
     timeout: 90000
 - waitForAnimationToEnd:
     timeout: 5000

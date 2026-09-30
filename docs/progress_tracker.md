@@ -3,6 +3,27 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-30 D3 first device CI run of the v1.1.0 checks (#65)
+
+The first GitHub Actions run of the device workflow on this branch (run 36775488208, job `android`) built the
+release APK and passed the main pass. It failed on `scripts/apk-permissions.ts`:
+`android.permission.WAKE_LOCK is in the APK and neither admitted in scripts/checks/android-permissions.ts nor blocked in app.config.ts`.
+The same permission is in the APK built for #67 (run 36773826225, `Merged manifest permissions`), so it was already
+shipping and the new check caught it. `expo-audio`'s own manifest declares only `MODIFY_AUDIO_SETTINGS`, so a Maven
+dependency merges it in. The sandbox cannot fetch Google Maven AARs (dl.google.com answers 403), so which dependency
+is not verified. `device/ci/apk-report.sh` now prints the manifest-merger report's source for each permission.
+
+- `WAKE_LOCK` is admitted rather than blocked. It is a normal install-time permission: no prompt and no data. Blocking
+  it without knowing the library that acquires a wake lock risks a `SecurityException` at runtime.
+- Replaying the check on that run's permission dump: before the change `FAIL` with the line above, after it
+  `apk permissions: pass for a store build of org.unfoldingword.app; 6 merged permissions`.
+- The large-text flow (optional) failed both passes on `"Choose your language" is visible`. The failure
+  screenshot shows the welcome at font scale 2.0 with the tagline filling the screen and the heading below the fold.
+  The flow now waits for the tagline and scrolls to the controls, as it already did for `Continue in English`.
+  Not yet rerun.
+- The optional `download-language` flow failed both passes on `"Next chapter" is visible`. It stays optional (#73).
+- `npm run verify` green locally.
+
 ## 2026-09-30 D2 v1.1.0 checks, lint layers and device CI (#23, #31, #32, #33, #65)
 
 Node v22.22.2. Nothing ran on a phone, an emulator or a simulator: the sandbox has no KVM and no Xcode, and the

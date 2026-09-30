@@ -15,6 +15,11 @@ echo "Size: $bytes bytes ($megabytes MB)"
 echo "$badging"
 echo "Merged manifest permissions:"
 echo "$permissions"
+merger="${MANIFEST_MERGER_REPORT:-android/app/build/outputs/logs/manifest-merger-release-report.txt}"
+if [ -f "$merger" ]; then
+  echo "Where each permission came from (manifest-merger report):"
+  grep -A 2 '^uses-permission' "$merger" || true
+fi
 
 {
   echo "## Android release APK"
