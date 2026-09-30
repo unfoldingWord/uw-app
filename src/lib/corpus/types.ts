@@ -272,3 +272,11 @@ export type KindSummary = {
 };
 
 export type CorpusSummary = Readonly<Partial<Record<CorpusKind, KindSummary>>>;
+
+export type AttachmentCount = { readonly quoted: number; readonly attached: number };
+
+export type NotesAttachment = Sourced &
+  AttachmentCount & {
+    readonly text?: string;
+    readonly books: Readonly<Record<string, AttachmentCount>>;
+  };

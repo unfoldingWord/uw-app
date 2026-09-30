@@ -503,3 +503,21 @@ describe('corpus follows Packs through PackInstalled and PackRemoved (LA-2, LA-6
     expect(await notesReleases(device)).toEqual(['qaa_tn@v1']);
   });
 });
+
+describe('corpus note attachment', () => {
+  it('counts the quoted notes of each installed notes burrito and how many attach to a word', async () => {
+    const device = await phone([qaa]);
+    const [notes, ...others] = await device.kernel.corpus.attachment('qaa');
+    expect(others).toEqual([]);
+    expect(notes?.provenance.resource).toBe('qaa_tn');
+    expect(notes?.text).toBe('qaa_ult');
+    expect(notes?.books).toEqual({
+      RUT: { quoted: 2, attached: 1 },
+      '3JN': { quoted: 3, attached: 3 },
+    });
+    expect([notes?.quoted, notes?.attached]).toEqual([5, 4]);
+    const letter = await device.kernel.corpus.attachment('qaa', ['3JN']);
+    expect(letter[0]?.books).toEqual({ '3JN': { quoted: 3, attached: 3 } });
+    expect(await device.kernel.corpus.attachment('qab')).toEqual([]);
+  });
+});

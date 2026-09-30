@@ -5,6 +5,7 @@ import type { JsonValue } from '../json';
 import { defineModule } from '../module';
 import { estimateIndex, indexedKinds, searchIndex } from './fulltext';
 import { createIndexing } from './indexing';
+import { notesAttachment } from './attachment';
 import { analyze, type Analysis } from './ingest';
 import { createLibrary, type Library } from './library';
 import { contentsOf } from './contents';
@@ -28,6 +29,7 @@ import type {
   KindSummary,
   LinkTarget,
   Movements,
+  NotesAttachment,
   Passage,
   PassageOptions,
   SearchResults,
@@ -55,6 +57,7 @@ export type CorpusApi = {
   reindex(language: string): Promise<IndexStatus>;
   dropIndex(language: string): Promise<void>;
   fullText(query: string, language: string): Promise<FullTextHit[]>;
+  attachment(language: string, books?: readonly string[]): Promise<readonly NotesAttachment[]>;
 };
 
 const kindOrder: readonly CorpusKind[] = [
@@ -356,6 +359,7 @@ export const corpusModule = defineModule<CorpusApi>({
           });
           return hits;
         }),
+      attachment: (language, books) => read(() => notesAttachment(library, language, books)),
     };
 
     return {
