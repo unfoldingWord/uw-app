@@ -1,6 +1,6 @@
 import type { IngredientInput } from '@lib/burrito/build';
 import { utf8 } from '@lib/burrito/files';
-import { mimeTypes, provisionalFlavors, storyImagesDirectory } from '@lib/burrito/flavors';
+import { mimeTypes, unpinnedFlavors, storyImagesDirectory } from '@lib/burrito/flavors';
 import type { JsonValue, Scope } from '@lib/burrito/metadata';
 import { academyArticles, wordArticles, type ArticleFile } from './articles.ts';
 import {
@@ -447,8 +447,8 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     subject: 'OBS Theological Formation',
     title: 'Fixture OBS Theological Formation',
     abbreviation: 'OBSTF',
-    flavorType: provisionalFlavors.formation.flavorType,
-    flavor: provisionalFlavors.formation.flavor,
+    flavorType: unpinnedFlavors.formation.flavorType,
+    flavor: unpinnedFlavors.formation.flavor,
     ingredients: formationIngredients(),
   }),
   release({
@@ -494,8 +494,8 @@ export const fixtureReleases: readonly FixtureRelease[] = [
     subject: 'OBS Theological Formation',
     title: 'OBS Theological Formation (fixture)',
     abbreviation: 'OBSTF',
-    flavorType: provisionalFlavors.formation.flavorType,
-    flavor: provisionalFlavors.formation.flavor,
+    flavorType: unpinnedFlavors.formation.flavorType,
+    flavor: unpinnedFlavors.formation.flavor,
     ingredients: formationIngredients(),
   }),
   release({

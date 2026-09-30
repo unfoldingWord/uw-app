@@ -61,7 +61,7 @@ export function isTsv(ingredient: Pick<ListedIngredient, 'entry'>): boolean {
   return ingredient.entry.mimeType === mimeTypes.tsv;
 }
 
-export const provisionalFlavors = {
+export const unpinnedFlavors = {
   formation: { flavorType: 'peripheral', flavor: 'x-OBSTheologicalFormation' },
   audio: { flavorType: 'scripture', flavor: 'audioTranslation' },
   images: { flavorType: 'peripheral', flavor: 'x-obsImages' },
@@ -462,20 +462,20 @@ function appWritten(id: RowId, resource: string, form: Omit<RowForm, 'resource'>
 
 const provisionalRows: readonly ContractRow[] = [
   provisional('formation', 'Theological formation', {
-    flavorType: provisionalFlavors.formation.flavorType,
-    flavors: [provisionalFlavors.formation.flavor],
+    flavorType: unpinnedFlavors.formation.flavorType,
+    flavors: [unpinnedFlavors.formation.flavor],
     appliesTo: always,
     check: movementsPerStory,
   }),
   appWritten('audio', 'Audio', {
-    flavorType: provisionalFlavors.audio.flavorType,
-    flavors: [provisionalFlavors.audio.flavor],
+    flavorType: unpinnedFlavors.audio.flavorType,
+    flavors: [unpinnedFlavors.audio.flavor],
     appliesTo: always,
     check: scopedAudio,
   }),
   appWritten('images', 'Story images', {
-    flavorType: provisionalFlavors.images.flavorType,
-    flavors: [provisionalFlavors.images.flavor],
+    flavorType: unpinnedFlavors.images.flavorType,
+    flavors: [unpinnedFlavors.images.flavor],
     appliesTo: always,
     check: storyImages,
   }),

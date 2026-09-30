@@ -3,7 +3,7 @@ import { bytesToHex } from '@noble/hashes/utils.js';
 import { readArchive } from '../burrito/archive';
 import { burritoMetadata, licenceIngredient } from '../burrito/build';
 import { fromUtf8, ingredientsDirectory, metadataPath, utf8 } from '../burrito/files';
-import { mimeTypes, provisionalFlavors, storyImagesDirectory } from '../burrito/flavors';
+import { mimeTypes, unpinnedFlavors, storyImagesDirectory } from '../burrito/flavors';
 import { licenceKeyOf } from '../burrito/licence';
 import type { IngredientEntry, JsonValue, Scope } from '../burrito/metadata';
 import type { BurritoFacts, IngredientFact } from '../burrito/validate';
@@ -348,7 +348,7 @@ export async function buildImagePack(
     directory,
     choice,
     {
-      ...provisionalFlavors.images,
+      ...unpinnedFlavors.images,
       language: { tag: 'zxx', name: { en: 'No linguistic content' } },
       abbreviation: 'obs-images',
     },
@@ -381,7 +381,7 @@ export async function buildAudioPack(
     directory,
     choice,
     {
-      ...provisionalFlavors.audio,
+      ...unpinnedFlavors.audio,
       language: { tag: choice.language, name: { en: choice.language } },
       abbreviation: `${choice.resource}-audio`,
       flavorDetails: {
