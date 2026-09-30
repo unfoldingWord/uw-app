@@ -3,6 +3,22 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-30 Integration: catalog and packs onto the corpus batch
+
+Node v22.22.2. Nothing ran on a phone and nothing ran against live DCS (HTTP 403 from the sandbox).
+
+- Cherry-picked the catalog and packs batch (#10, #12, #17, #14, #8, #15, #16, #54) onto the corpus batch
+  (#11, #12, #13, #18). Only this tracker conflicted. `npm run fixtures` after both sides left every fixture
+  byte-identical, and no scenario count changed.
+- `scripts/contract-ingest.ts` now calls `kernel.corpus.attachment('en', books)` directly for GEN RUT PSA MAT JHN
+  ROM 3JN, prints each book's rate and fails below 95 percent overall or when a book is not counted.
+- Dry-run of the ingest step with `fetch` served from `sim/fixtures/routes.json`: runs end to end; its
+  assertions fail as expected on the fixture world and the en_tn line reports no quoted notes. The same
+  `attachment` read on the fixture `qaa` pack counts RUT 1 of 2 and 3JN 3 of 3.
+- `npm run verify`: green (669 tests in 64 files, 54 scenarios, 7 checks, trace 51 Must and 0 unproven, contract
+  21 fixture burritos, live skipped offline).
+- Not verified: the live en_tn rate, and how long the seven books take on a CI runner.
+
 ## 2026-09-30 Catalog and packs on live data (#10, #12, #17, #14, #8, #15, #16, #54)
 
 Node v22.22.2 in a sandbox with no route to git.door43.org or cdn.door43.org (HTTP 403). Nothing ran on a

@@ -15,7 +15,7 @@ const languagesListUrl = 'https://git.door43.org/api/v1/catalog/list/languages?s
 const minimumEntries = 300;
 const minimumLanguages = 190;
 const minimumAttachment = 0.95;
-const attachmentBooks: readonly string[] = ['RUT', 'TIT', '3JN'];
+const attachmentBooks: readonly string[] = ['GEN', 'RUT', 'PSA', 'MAT', 'JHN', 'ROM', '3JN'];
 const defaultLanguages = ['en', 'id'] as const;
 const smokePassage = 'TIT 1:1';
 const smokeStory = 1;
@@ -63,36 +63,37 @@ function diagnosis(label: string, bytes: Uint8Array): Outcome {
     : outcome(false, `default: ${label}: ${report.kind} ${report.rule} at ${report.path}: ${report.message}`);
 }
 
-type NotesAttachmentRead = {
-  attachment(
-    language: string,
-    books?: readonly string[],
-  ): Promise<readonly { provenance: { resource: string }; quoted: number; attached: number }[]>;
-};
-
-function readsAttachment(value: object): value is NotesAttachmentRead {
-  return 'attachment' in value && typeof value.attachment === 'function';
+function percent(attached: number, quoted: number): string {
+  return quoted === 0 ? 'none quoted' : `${((attached / quoted) * 100).toFixed(1)} percent`;
 }
 
-export async function attachmentOutcome(kernel: Kernel, language: string): Promise<Outcome> {
-  const corpus: object = kernel.corpus;
-  if (!readsAttachment(corpus)) {
-    return outcome(false, 'default: en_tn attachment: the corpus has no attachment read yet (issue #11)');
-  }
-  const found = (await corpus.attachment(language, attachmentBooks)).find(
-    (item) => item.provenance.resource === `${language}_tn`,
+async function attachmentOutcomes(kernel: Kernel, language: string): Promise<Outcome[]> {
+  const resource = `${language}_tn`;
+  const asked = attachmentBooks.join(' ');
+  const found = (await kernel.corpus.attachment(language, attachmentBooks)).find(
+    (item) => item.provenance.resource === resource,
   );
   if (found === undefined || found.quoted === 0) {
-    return outcome(
-      false,
-      `default: ${language}_tn attachment: no quoted notes in ${attachmentBooks.join(' ')}`,
-    );
+    return [outcome(false, `default: ${resource} attachment: no quoted notes in ${asked}`)];
   }
+  const perBook = attachmentBooks.map((book) => {
+    const count = found.books[book];
+    return count === undefined
+      ? `${book} not counted`
+      : `${book} ${count.attached} of ${count.quoted} (${percent(count.attached, count.quoted)})`;
+  });
+  const missing = attachmentBooks.filter((book) => found.books[book] === undefined);
   const rate = found.attached / found.quoted;
-  return outcome(
-    rate >= minimumAttachment,
-    `default: ${language}_tn attaches ${found.attached} of ${found.quoted} quoted notes in ${attachmentBooks.join(' ')} (${(rate * 100).toFixed(1)} percent, at least ${minimumAttachment * 100} asked)`,
-  );
+  return [
+    {
+      line: `note  default: ${resource} attachment against ${found.text ?? 'no reading'} by book: ${perBook.join(', ')}`,
+      failed: false,
+    },
+    outcome(
+      rate >= minimumAttachment && missing.length === 0,
+      `default: ${resource} attaches ${found.attached} of ${found.quoted} quoted notes in ${asked} (${percent(found.attached, found.quoted)}, at least ${minimumAttachment * 100} asked)${missing.length > 0 ? `; not counted ${missing.join(' ')}` : ''}`,
+    ),
+  ];
 }
 
 async function servedCatalog(world: World, catalog: Extract<LiveCatalog, { ok: true }>): Promise<Outcome> {
@@ -248,7 +249,7 @@ export async function ingestSmoke(catalog: Extract<LiveCatalog, { ok: true }>): 
     for (const language of defaultLanguages) {
       lines.push(...(await readBack(phone, language, language === 'en')));
     }
-    lines.push(await attachmentOutcome(phone.kernel, 'en'));
+    lines.push(...(await attachmentOutcomes(phone.kernel, 'en')));
     return lines;
   } catch (error) {
     return [outcome(false, `default: ${messageOf(error)}`)];
