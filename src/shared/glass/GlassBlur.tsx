@@ -1,17 +1,23 @@
 import { BlurView, type BlurTint } from 'expo-blur';
 import { Platform, StyleSheet } from 'react-native';
 import { useTheme, type Blur } from '@shared/theme';
-import { useBlurTarget } from './context';
+import { blurRenders } from './blurLayers';
+import { useBlurTarget, useInsideGlass } from './context';
 
 export type GlassBlurProps = { blur: Blur; tone: 'light' | 'night'; radius: number };
 
 export function GlassBlur({ blur, tone, radius }: GlassBlurProps) {
   const theme = useTheme();
   const target = useBlurTarget();
-  if (theme.reducedBlur || blur.intensity === 0) {
-    return null;
-  }
-  if (Platform.OS === 'android' && target === undefined) {
+  const insideGlass = useInsideGlass();
+  const renders = blurRenders({
+    reducedBlur: theme.reducedBlur,
+    intensity: blur.intensity,
+    platform: Platform.OS,
+    hasTarget: target !== undefined,
+    insideGlass,
+  });
+  if (!renders) {
     return null;
   }
   const tint: BlurTint =
