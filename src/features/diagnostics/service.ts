@@ -2,7 +2,12 @@ import type { FailureCode } from '@lib/domain/failures';
 import type { Kernel } from '@lib/kernel';
 import { diagnosticsWords, type DiagnosticsWords } from './strings';
 
-export type DiagnosticsView = { readonly title: string; readonly body: string; readonly action: string };
+export type DiagnosticsView = {
+  readonly title: string;
+  readonly body: string;
+  readonly action: string;
+  readonly includeReading: string;
+};
 
 export type DiagnosticsDone =
   | { readonly state: 'shared' }
@@ -11,8 +16,8 @@ export type DiagnosticsDone =
 
 export type DiagnosticsService = {
   words(): DiagnosticsWords;
-  view(): DiagnosticsView;
-  share(): Promise<DiagnosticsDone>;
+  view(includeReading: boolean): DiagnosticsView;
+  share(includeReading: boolean): Promise<DiagnosticsDone>;
 };
 
 export function createDiagnosticsService(kernel: Kernel): DiagnosticsService {
@@ -20,17 +25,21 @@ export function createDiagnosticsService(kernel: Kernel): DiagnosticsService {
 
   return {
     words,
-    view() {
+    view(includeReading) {
       const current = words();
       return {
         title: current.t('diagnostics.title'),
-        body: current.t('diagnostics.body'),
+        body: current.t(includeReading ? 'diagnostics.body.reading' : 'diagnostics.body'),
         action: current.t('diagnostics.action'),
+        includeReading: current.t('diagnostics.includeReading'),
       };
     },
-    async share() {
+    async share(includeReading) {
       const report = { journal: kernel.journal.export(), snapshot: kernel.snapshot() };
-      const result = await kernel.share.journal(report, { locale: kernel.preferences.locale() });
+      const result = await kernel.share.journal(report, {
+        locale: kernel.preferences.locale(),
+        includeReading,
+      });
       return result.ok
         ? { state: result.outcome }
         : { state: 'failed', code: result.code, message: words().t(`failure.${result.code}`) };

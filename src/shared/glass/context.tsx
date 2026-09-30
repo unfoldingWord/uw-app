@@ -3,6 +3,8 @@ import type { View } from 'react-native';
 
 const ContentColorContext = createContext<string | undefined>(undefined);
 
+const GlassLayerContext = createContext(false);
+
 const BlurTargetContext = createContext<RefObject<View | null> | undefined>(undefined);
 
 export function ContentColor({ color, children }: { color: string; children?: ReactNode }) {
@@ -19,4 +21,12 @@ export function BlurTarget({ target, children }: { target: RefObject<View | null
 
 export function useBlurTarget(): RefObject<View | null> | undefined {
   return useContext(BlurTargetContext);
+}
+
+export function GlassLayer({ children }: { children?: ReactNode }) {
+  return <GlassLayerContext.Provider value>{children}</GlassLayerContext.Provider>;
+}
+
+export function useInsideGlass(): boolean {
+  return useContext(GlassLayerContext);
 }

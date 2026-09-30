@@ -3,10 +3,13 @@ import {
   direction,
   isLocale,
   locales,
+  offeredLocales,
+  releaseGate,
   resolveLocale,
   sourceLocale,
   type Direction,
   type Locale,
+  type LocaleGate,
 } from './locales';
 import { tables } from './locales/index';
 import { pluralCategory } from './plural';
@@ -76,7 +79,9 @@ const keys = Object.keys(english) as Key[];
 
 export type LocaleTables = Readonly<Record<Locale, LocaleTable>>;
 
-export function createStrings(localeTables: LocaleTables): StringsApi {
+export function createStrings(localeTables: LocaleTables, gate: LocaleGate = releaseGate): StringsApi {
+  const offered = offeredLocales(gate);
+
   function t<K extends StringKey>(key: K, locale: Locale, ...params: StringParams<K>): string {
     const template = stringIn(localeTables[locale], key) ?? stringIn(english, key) ?? key;
     return interpolate(template, params[0] ?? {});
@@ -112,13 +117,26 @@ export function createStrings(localeTables: LocaleTables): StringsApi {
     };
   }
 
-  return { locales, t, plural, direction, resolveLocale, isLocale, completeness, words };
+  return {
+    locales: offered,
+    t,
+    plural,
+    direction,
+    resolveLocale: (tags) => resolveLocale(tags, offered),
+    isLocale: (value): value is Locale => isLocale(value) && offered.includes(value),
+    completeness,
+    words,
+  };
 }
 
-export const stringsModule = defineModule<StringsApi>({
-  events: [],
-  owns: ownsNothing,
-  create() {
-    return { api: createStrings(tables) };
-  },
-});
+export function stringsModuleFor(gate: LocaleGate) {
+  return defineModule<StringsApi>({
+    events: [],
+    owns: ownsNothing,
+    create() {
+      return { api: createStrings(tables, gate) };
+    },
+  });
+}
+
+export const stringsModule = stringsModuleFor(releaseGate);

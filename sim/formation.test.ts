@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { languagePackId, type PackId } from '@lib/domain/pack';
 import { installFromCatalog, withFormation } from './install';
 import { createWorld } from './world';
+import { valueOf } from './written';
 
 async function phone(packs: readonly PackId[]) {
   const device = createWorld().device('phone');
@@ -15,8 +16,8 @@ describe('formation at its interface', () => {
     const device = await phone([languagePackId('qaa')]);
     const formation = device.kernel.formation;
     expect(formation.active()).toBeUndefined();
-    const tuesday = await formation.create('Tuesday group');
-    const youth = await formation.create('Youth leaders');
+    const tuesday = valueOf(await formation.create('Tuesday group'));
+    const youth = valueOf(await formation.create('Youth leaders'));
     expect(tuesday && youth).toBeTruthy();
     if (tuesday === undefined || youth === undefined) {
       return;
@@ -52,8 +53,8 @@ describe('formation at its interface', () => {
   it('counts formation sessions started per language, once per group and session (PRD section 9)', async () => {
     const device = await phone([languagePackId('qaa'), languagePackId('qab')]);
     const formation = device.kernel.formation;
-    const group = await formation.create('Tuesday group');
-    const other = await formation.create('Youth leaders');
+    const group = valueOf(await formation.create('Tuesday group'));
+    const other = valueOf(await formation.create('Youth leaders'));
     if (group === undefined || other === undefined) {
       throw new Error('groups were not created');
     }
@@ -68,7 +69,7 @@ describe('formation at its interface', () => {
   it('walks Training one lesson at a time with LessonCompleted and SessionCompleted', async () => {
     const device = await phone([languagePackId('qaa')]);
     const formation = device.kernel.formation;
-    const group = await formation.create('Translators');
+    const group = valueOf(await formation.create('Translators'));
     if (group === undefined) {
       throw new Error('the group was not created');
     }
@@ -95,7 +96,7 @@ describe('formation at its interface', () => {
     const before = device.kernel.journal.stats().lastSeq;
     expect(await formation.create(' \n ')).toBeUndefined();
     expect(await formation.rename('group-000404', 'Grace')).toBeUndefined();
-    expect(await formation.remove('group-000404')).toBe(false);
+    expect(await formation.remove('group-000404')).toBeUndefined();
     expect(await formation.activate('group-000404')).toBeUndefined();
     expect(await formation.complete('group-000404')).toBeUndefined();
     expect(await formation.progress('group-000404', 'qaa')).toBeUndefined();

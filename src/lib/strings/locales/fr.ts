@@ -436,6 +436,8 @@ export const fr: LocaleTable = {
   'settings.theme.about': 'Clair, sombre ou comme le téléphone.',
   'settings.reducedBlur': 'Réduire le flou',
   'settings.reducedBlur.about': 'Un verre plus simple, plus léger pour les téléphones anciens.',
+  'settings.reducedMotion': 'Réduire les animations',
+  'settings.reducedMotion.about': 'Le verre reste immobile au lieu de flotter et de respirer.',
   'settings.firstName': 'Prénom',
   'settings.firstName.about': 'Utilisé seulement dans la salutation, seulement sur ce téléphone.',
   'settings.fullText': 'Rechercher dans tous les textes',
@@ -455,8 +457,11 @@ export const fr: LocaleTable = {
     'Rien ne quitte ce téléphone sans que vous ayez choisi de l’envoyer. L’application compte les ouvertures, téléchargements, transferts et partages au total, sans identifiant.',
   'diagnostics.title': 'Partager le diagnostic',
   'diagnostics.body':
-    'Le fichier contient un relevé de ce que l’application a fait sur ce téléphone et un résumé de ce qu’il contient, sans noms, notes ni identifiants.',
+    'Le fichier contient un relevé de ce que l’application a fait sur ce téléphone et un résumé de ce qu’il contient, sans les passages, articles et histoires que vous avez ouverts ou enregistrés, et sans noms, notes ni identifiants.',
   'diagnostics.action': 'Partager le fichier',
+  'diagnostics.body.reading':
+    'Le fichier contient un relevé de ce que l’application a fait sur ce téléphone, un résumé de ce qu’il contient et les passages, articles et histoires que vous avez ouverts ou enregistrés, sans noms, notes ni identifiants.',
+  'diagnostics.includeReading': 'Inclure ce que j’ai lu',
   'failure.http.offline': 'Vous êtes hors ligne. Réessayez une fois connecté.',
   'failure.http.timeout': 'La bibliothèque a mis trop de temps à répondre. Réessayez dans un instant.',
   'failure.http.status': 'La bibliothèque n’a pas répondu comme prévu. Réessayez plus tard.',

@@ -17,6 +17,7 @@ import {
   type SessionMovementId,
   type Track,
   type TrainingSession,
+  type Written,
 } from '../service';
 import { Blocks } from './parts/Blocks';
 import { Card } from './parts/Card';
@@ -25,6 +26,7 @@ import { FrameCard } from './parts/FrameCard';
 import { Line } from './parts/Line';
 import { MovementsCard } from './parts/MovementsCard';
 import { NotesCard } from './parts/NotesCard';
+import { settle, type WriteResult } from './parts/outcome';
 import { Screen } from './parts/Screen';
 import { useLoad } from './parts/useLoad';
 import { sectionTitle, sessionHref, storyShareHref } from './parts/wording';
@@ -179,23 +181,18 @@ async function placeGroup(
   track: Track,
   number: number,
   movement?: SessionMovementId,
-): Promise<Group | undefined> {
+): Promise<Written<Group> | undefined> {
   const here =
     atSession(group, track, number) && (movement === undefined || group.position.movement === movement);
   return here
-    ? group
+    ? { ok: true, value: group }
     : service.advance(group.id, { track, session: number, ...(movement === undefined ? {} : { movement }) });
 }
 
-function useFailure(): [FailureCode | undefined, (work: () => Promise<unknown>) => Promise<void>] {
+function useFailure(): [FailureCode | undefined, (work: () => Promise<WriteResult>) => Promise<void>] {
   const [failure, setFailure] = useState<FailureCode | undefined>(undefined);
-  const run = useCallback(async (work: () => Promise<unknown>) => {
-    try {
-      const result = await work();
-      setFailure(result === undefined ? 'unexpected' : undefined);
-    } catch (error) {
-      setFailure(failureCodeOf(error));
-    }
+  const run = useCallback(async (work: () => Promise<WriteResult>) => {
+    setFailure(await settle(work));
   }, []);
   return [failure, run];
 }
@@ -294,7 +291,7 @@ function Foundations({
     if (group !== undefined && !passed) {
       await run(async () => {
         const placed = await placeGroup(service, group, 'foundations', session.number);
-        return placed === undefined ? undefined : service.start(group.id);
+        return placed?.ok === true ? service.start(group.id) : placed;
       });
       await onChanged();
     }
@@ -306,7 +303,7 @@ function Foundations({
     }
     await run(async () => {
       const placed = await placeGroup(service, group, 'foundations', session.number, selected);
-      return placed === undefined ? undefined : service.complete(group.id);
+      return placed?.ok === true ? service.complete(group.id) : placed;
     });
     const next = sessionMovementIds[sessionMovementIds.indexOf(selected) + 1];
     if (next !== undefined) {
@@ -426,7 +423,11 @@ function Foundations({
               <Line role="overline" tone="dim" accessibilityRole="header">
                 {sectionTitle(words, section.id)}
               </Line>
-              <Blocks blocks={section.blocks} tone={section.id === 'key-idea' ? 'title' : 'body'} />
+              <Blocks
+                blocks={section.blocks}
+                tone={section.id === 'key-idea' ? 'title' : 'body'}
+                language={formation?.language ?? service.language()}
+              />
             </View>
           ))}
         </Card>
@@ -456,6 +457,7 @@ function Foundations({
         <MovementsCard
           words={words}
           source={service.languageName(formation.language)}
+          language={formation.language}
           movements={formation.movements}
           selected={selected}
           done={done}
@@ -468,7 +470,7 @@ function Foundations({
           <Line role="overline" tone="dim" accessibilityRole="header">
             {sectionTitle(words, section.id)}
           </Line>
-          <Blocks blocks={section.blocks} />
+          <Blocks blocks={section.blocks} language={formation?.language ?? service.language()} />
         </Card>
       ))}
       {failure === undefined ? null : (
@@ -549,7 +551,7 @@ function Training({
     }
     await run(async () => {
       const placed = await placeGroup(service, group, 'training', session.number);
-      return placed === undefined ? undefined : service.complete(group.id);
+      return placed?.ok === true ? service.complete(group.id) : placed;
     });
     await onChanged();
   };
@@ -574,7 +576,7 @@ function Training({
             {session.article.subtitle}
           </Line>
         )}
-        <Blocks blocks={session.article.blocks} />
+        <Blocks blocks={session.article.blocks} language={service.language()} />
       </Card>
       {group === undefined ? null : finished ? (
         <Card level={1}>

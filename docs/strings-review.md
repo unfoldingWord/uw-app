@@ -3,11 +3,45 @@
 Every locale file under `src/lib/strings/locales/` lists every key of the English table. The fifteen
 translations were written by an AI agent on 2026-09-29, not by native speakers, and none has been reviewed.
 Release criterion 6 asks for complete strings; complete here means every key has a value, not that the value
-is right. Until a native speaker signs off a locale, treat it as a draft.
+is right. Until a native speaker signs off a locale, treat it as a draft; the app does not offer it (see Sign-off).
 
 How to review: read the English table by area (`src/lib/strings/en/*.ts`), then the locale file key by key.
 Change a value in place; set it to `null` to fall back to English for that key while a better wording is found.
 `npm run checks` reports placeholders, plural forms and the voice rules; it cannot judge meaning or tone.
+
+## Sign-off
+
+A locale ships only once a native speaker signs it off (issue #51). Until then it is not offered as the app
+language: Settings lists English and the signed-off locales only, and a phone set to an unreviewed language
+opens in English, with every string in English. The drafted table stays in the repository, and a reviewed
+locale still falls back to English key by key wherever its value is `null`.
+
+To sign a locale off, fill in the reviewer and the date (YYYY-MM-DD) in its row below and set the same date
+for that locale in `localeSignOffs` in `src/lib/strings/locales.ts`, in the same commit. The
+`locale-signoff` check in `npm run checks` fails when the two disagree. The code carries only the date, never
+the reviewer's name.
+
+The sim runs every locale regardless: a scenario device created with `localeGate: 'drafts'` offers all sixteen,
+so the right-to-left scenarios for Arabic, Urdu and Farsi keep running before those locales are reviewed. The
+release gate is `releaseGate` in `src/lib/strings/locales.ts` (`reviewed`).
+
+| Locale | Reviewer | Date |
+|---|---|---|
+| es-419 |  |  |
+| fr |  |  |
+| hi |  |  |
+| ru |  |  |
+| ar |  |  |
+| zh-Hans |  |  |
+| sw |  |  |
+| pt-BR |  |  |
+| id |  |  |
+| vi |  |  |
+| bn |  |  |
+| ur |  |  |
+| fa |  |  |
+| my |  |  |
+| nl |  |  |
 
 ## What every reviewer should check
 
@@ -53,6 +87,15 @@ Change a value in place; set it to `null` to fall back to English for that key w
   `study.helps.chapterIntro` label the book and chapter introductions shown first among the notes. The word
   for "book" should be the one used for a book of the Bible (ar uses سفر), and "chapter" the one the Bible
   text itself uses (fa and ur باب, id pasal).
+- **Drafted with the Reduce motion override (issue #36).** `settings.reducedMotion` and
+  `settings.reducedMotion.about`, drafted in every locale at once. The setting stops the glass from drifting,
+  floating and breathing; the word should be the one the phone's own accessibility settings use for Reduce
+  Motion in that language.
+- **Drafted with issue #20 (2026-09-30).** `diagnostics.body` was rewritten and `diagnostics.body.reading` and
+  `diagnostics.includeReading` added, in every locale at once. The two bodies must each name exactly what the
+  shared file holds: without, then with, the passages, articles and stories the leader opened or saved. The
+  toggle label is first person ("Include what I read"), as the issue's decision words it; check it reads as the
+  leader's own choice.
 - **Search examples.** `search.placeholder` and `search.empty` use Ruth 2 and covenant as examples; the book
   name and the word should be the ones a reader in that language would type.
 

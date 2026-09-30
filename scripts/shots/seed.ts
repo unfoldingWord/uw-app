@@ -7,13 +7,38 @@ import { createTransportBus } from '@sim/adapters/transport';
 import { createSimDevice, type SimDevice } from '@sim/device';
 import { serveFixtures } from '@sim/fixtures/serve';
 import { servicesOf } from '@sim/services';
-import { encodeBytes, imagePath, type DeviceImage, type ImageRoute, type ImageVariant } from '@sim/web/image';
+import {
+  encodeBytes,
+  harnessLocaleGate,
+  imagePath,
+  type DeviceImage,
+  type ImageRoute,
+  type ImageVariant,
+} from '@sim/web/image';
 
 export const harnessMoment = Date.UTC(2026, 8, 29, 8, 20, 0);
 
 const englishLocale: DeviceLocale = { tag: 'en', region: 'US', timeZone: 'UTC', rtl: false };
 
 const arabicLocale: DeviceLocale = { tag: 'ar', region: 'EG', timeZone: 'UTC', rtl: true };
+
+const urduLocale: DeviceLocale = { tag: 'ur', region: 'PK', timeZone: 'UTC', rtl: true };
+
+const hindiLocale: DeviceLocale = { tag: 'hi', region: 'IN', timeZone: 'UTC', rtl: false };
+
+function deviceLocaleFor(variant: ImageVariant): DeviceLocale {
+  switch (variant) {
+    case 'rtl':
+    case 'fresh-rtl':
+      return arabicLocale;
+    case 'ur':
+      return urduLocale;
+    case 'hi':
+      return hindiLocale;
+    default:
+      return englishLocale;
+  }
+}
 
 type Recording = { network: MemoryNetwork; routes(): readonly ImageRoute[] };
 
@@ -62,7 +87,8 @@ async function furnish(device: SimDevice): Promise<void> {
   for (const audio of services.languages.audio('qaa')) {
     await expectOk(`install ${audio.pack}`, services.languages.install(audio.pack));
   }
-  const group = await services.formation.create('Tuesday group');
+  const created = await services.formation.create('Tuesday group');
+  const group = created?.ok === true ? created.value : undefined;
   if (group === undefined) {
     throw new Error('the QA device image could not create a group');
   }
@@ -105,9 +131,12 @@ async function deviceFor(variant: ImageVariant): Promise<{ device: SimDevice; re
   const recording = recordingNetwork();
   serveFixtures(recording.network);
   const bus = createTransportBus();
-  const arabic = variant === 'rtl' || variant === 'fresh-rtl';
-  const locale = arabic ? arabicLocale : englishLocale;
-  const device = createSimDevice(`qa-${variant}`, { clock, network: recording.network, bus }, { locale });
+  const locale = deviceLocaleFor(variant);
+  const device = createSimDevice(
+    `qa-${variant}`,
+    { clock, network: recording.network, bus },
+    { locale, localeGate: harnessLocaleGate },
+  );
   await device.start();
   if (variant === 'fresh' || variant === 'fresh-rtl') {
     return { device, recording };
@@ -119,6 +148,9 @@ async function deviceFor(variant: ImageVariant): Promise<{ device: SimDevice; re
   }
   if (variant === 'rtl') {
     await settings.setLocale('ar');
+  }
+  if (variant === 'ur' || variant === 'hi') {
+    await settings.setLocale(variant);
   }
   return { device, recording };
 }

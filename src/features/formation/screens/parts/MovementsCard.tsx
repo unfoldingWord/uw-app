@@ -1,16 +1,19 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { GlassButton, Icon } from '@shared/glass';
+import { touchSlop } from '@shared/glass/pressGate';
 import { useTheme } from '@shared/theme';
 import type { FormationWords, SessionMovement, SessionMovementId } from '../../service';
 import { Blocks } from './Blocks';
 import { Card } from './Card';
 import { Line } from './Line';
+import { movementChipExtent } from './touchExtent';
 import { movementTitle } from './wording';
 
 export type MovementsCardProps = {
   words: FormationWords;
   source: string;
+  language?: string;
   movements: readonly SessionMovement[];
   selected: SessionMovementId;
   done: ReadonlySet<SessionMovementId>;
@@ -21,6 +24,7 @@ export type MovementsCardProps = {
 export function MovementsCard({
   words,
   source,
+  language,
   movements,
   selected,
   done,
@@ -65,7 +69,7 @@ export function MovementsCard({
           ))}
         </View>
       ) : (
-        <Blocks blocks={movement.blocks} />
+        <Blocks blocks={movement.blocks} language={language} />
       )}
       {onComplete === undefined ? null : finished ? (
         <View style={[styles.done, { gap: theme.space.sp3 }]}>
@@ -103,7 +107,7 @@ function MovementChip({ label, active, done, onPress }: MovementChipProps) {
       accessibilityRole="tab"
       accessibilityLabel={label}
       accessibilityState={{ selected: active, checked: done }}
-      hitSlop={{ top: theme.space.sp4, bottom: theme.space.sp4 }}
+      {...touchSlop(movementChipExtent(theme))}
       onPress={onPress}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}

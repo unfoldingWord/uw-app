@@ -8,7 +8,7 @@ export default scenario(
   'SE-1',
   'settings hold the app language apart from the content language, the theme, the first name, the full-text index, storage, licence and About',
   async (world) => {
-    const phone = world.device('phone', { locale: { tag: 'fr-FR', region: 'FR' } });
+    const phone = world.device('phone', { locale: { tag: 'fr-FR', region: 'FR' }, localeGate: 'drafts' });
     await phone.start();
     const services = servicesOf(phone);
     assert.equal(services.settings.locale(), 'fr', 'the app language starts from the device locale');
@@ -29,6 +29,8 @@ export default scenario(
     assert.equal(services.settings.layoutDirection(), 'ltr');
     const directions: string[] = [];
     const stop = services.settings.onLayoutDirection((next) => directions.push(next));
+    const faces: string[] = [];
+    const stopFaces = services.settings.onLocale((next) => faces.push(next));
     assert.equal(await services.settings.setLocale('ar'), true);
     assert.equal(
       services.settings.layoutDirection(),
@@ -38,7 +40,9 @@ export default scenario(
     assert.equal(await services.settings.setLocale('fa'), true);
     assert.equal(await services.settings.setLocale('sw'), true);
     stop();
+    stopFaces();
     assert.deepEqual(directions, ['rtl', 'rtl', 'ltr'], 'the root layout hears each app language change');
+    assert.deepEqual(faces, ['ar', 'fa', 'sw'], 'the theme hears the app language to pick its script face');
     assert.equal(services.settings.layoutDirection(), 'ltr');
     assert.equal(
       phone.kernel.strings.words('en').t('settings.appLanguage.direction'),
@@ -51,12 +55,23 @@ export default scenario(
 
     await services.settings.setTheme('dark');
     await services.settings.setReducedBlur(true);
+    assert.equal(
+      services.settings.reducedMotion(),
+      undefined,
+      'reduce motion follows the phone until chosen',
+    );
+    const heard: unknown[] = [];
+    const stopHearing = services.settings.onAppearance((next) => heard.push(next.reducedMotion));
+    assert.equal(await services.settings.setReducedMotion(true), true);
+    stopHearing();
+    assert.deepEqual(heard, [true], 'the root layout hears the reduce motion override');
     assert.equal(await services.settings.setName('Jesse'), true);
     await phone.restart();
     let settings = servicesOf(phone).settings;
     assert.equal(settings.locale(), 'sw');
     assert.equal(settings.theme(), 'dark');
-    assert.deepEqual(settings.appearance(), { scheme: 'dark', reducedBlur: true });
+    assert.deepEqual(settings.appearance(), { scheme: 'dark', reducedBlur: true, reducedMotion: true });
+    assert.equal(settings.reducedMotion(), true, 'the override survives a restart');
     assert.equal(settings.name(), 'Jesse');
     assert.equal(JSON.stringify(phone.kernel.journal.export()).includes('Jesse'), false);
 
@@ -133,6 +148,7 @@ export default scenario(
         'appLanguage',
         'theme',
         'reducedBlur',
+        'reducedMotion',
         'firstName',
         'fullText',
         'storage',

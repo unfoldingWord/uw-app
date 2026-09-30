@@ -7,7 +7,7 @@ import { useKeyframeLoop } from './motion';
 import { referenceValues } from './referenceValues';
 import { shadowCss } from './shadows';
 import { coreFont } from './typeface';
-import { slopFor } from './pressGate';
+import { touchSlop } from './pressGate';
 import { usePress, type PressHandler } from './usePress';
 
 export type GlassButtonVariant = 'glass' | 'solid' | 'dark' | 'night' | 'quiet';
@@ -122,7 +122,7 @@ export function GlassButton({
   );
   const [vertical, horizontal] = referenceValues.glassButton.padding[size];
   const fontSize = fontSizeFor(theme, size);
-  const slop = slopFor(2 * vertical + fontSize * referenceValues.glassButton.lineHeight);
+  const slop = touchSlop(2 * vertical + fontSize * referenceValues.glassButton.lineHeight);
   const label = typeof children === 'string' ? children : undefined;
   const focusGlow = press.focused ? theme.shadow.glowFocus.css : undefined;
   const lift = press.hovered && !inert ? theme.motion.hoverLift.translateY : 0;
@@ -134,7 +134,7 @@ export function GlassButton({
       accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: inert, busy: working }}
       disabled={inert}
-      hitSlop={{ top: slop, bottom: slop }}
+      {...slop}
       testID={testID}
       {...press.handlers}
       style={[full ? styles.full : styles.hug, style]}
@@ -175,7 +175,7 @@ export function GlassButton({
             ) : (
               <Text
                 style={{
-                  ...coreFont(theme, theme.fontWeight.fwSemibold),
+                  ...coreFont(theme, theme.fontWeight.fwSemibold, label),
                   color: look.color,
                   fontSize,
                   lineHeight: fontSize * referenceValues.glassButton.lineHeight,

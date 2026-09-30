@@ -8,7 +8,7 @@ export default scenario(
   'HO-2',
   'Home shows the date and a greeting for the time of day, in local time, with the first name when given',
   async (world) => {
-    const phone = world.device('phone');
+    const phone = world.device('phone', { localeGate: 'drafts' });
     await phone.start();
     const { home, settings } = servicesOf(phone);
     const monday = Date.UTC(2026, 0, 5, 0, 0, 0);

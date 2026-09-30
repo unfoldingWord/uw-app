@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { failureCodeOf, type FailureCode } from '@lib/domain/failures';
+import type { FailureCode } from '@lib/domain/failures';
 import { GlassButton, GlassInput, Icon } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
@@ -14,6 +14,7 @@ import {
 } from '../service';
 import { Card, SectionTitle } from './parts/Card';
 import { Line } from './parts/Line';
+import { settle, type WriteResult } from './parts/outcome';
 import { Progress } from './parts/Progress';
 import { Screen } from './parts/Screen';
 import { useLoad } from './parts/useLoad';
@@ -30,13 +31,8 @@ async function listingOf(service: FormationService): Promise<Listing> {
   return { groups, active: service.active()?.id };
 }
 
-async function attempt(work: () => Promise<unknown>, fail: (code: FailureCode | undefined) => void) {
-  try {
-    const result = await work();
-    fail(result === undefined || result === false ? 'unexpected' : undefined);
-  } catch (error) {
-    fail(failureCodeOf(error));
-  }
+async function attempt(work: () => Promise<WriteResult>, fail: (code: FailureCode | undefined) => void) {
+  fail(await settle(work));
 }
 
 export default function GroupsScreen() {
@@ -131,15 +127,10 @@ function GroupCard({ service, words, group, progress, active, onChanged, onOpen 
   const line = groupLine(words, group, progress);
 
   const open = async () => {
-    try {
-      const activated = await service.activate(group.id);
-      if (activated === undefined) {
-        setFailure('unexpected');
-        return;
-      }
+    const failed = await settle(() => service.activate(group.id));
+    setFailure(failed);
+    if (failed === undefined) {
       onOpen();
-    } catch (error) {
-      setFailure(failureCodeOf(error));
     }
   };
   const rename = async () => {

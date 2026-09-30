@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { failureCodeOf, type FailureCode } from '@lib/domain/failures';
+import type { FailureCode } from '@lib/domain/failures';
 import { GlassInput } from '@shared/glass';
 import { useTheme } from '@shared/theme';
 import type { FormationService, FormationWords, Track } from '../../service';
 import { Card } from './Card';
 import { Line } from './Line';
+import { settle } from './outcome';
 
 const noteSettleMs = 900;
 
@@ -41,12 +42,8 @@ export function NotesCard({ service, words, group, track, session }: NotesCardPr
     }
     pending.current = undefined;
     setSaving({ state: 'saving' });
-    try {
-      const saved = await service.saveNote(group.id, track, session, text);
-      setSaving(saved ? { state: 'saved' } : { state: 'failed', code: 'unexpected' });
-    } catch (error) {
-      setSaving({ state: 'failed', code: failureCodeOf(error) });
-    }
+    const failed = await settle(() => service.saveNote(group.id, track, session, text));
+    setSaving(failed === undefined ? { state: 'saved' } : { state: 'failed', code: failed });
   };
 
   useEffect(

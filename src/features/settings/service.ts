@@ -16,7 +16,11 @@ export type ThemeChoice = 'system' | 'light' | 'dark';
 
 export type Scheme = 'light' | 'dark';
 
-export type Appearance = { readonly scheme?: Scheme; readonly reducedBlur?: boolean };
+export type Appearance = {
+  readonly scheme?: Scheme;
+  readonly reducedBlur?: boolean;
+  readonly reducedMotion?: boolean;
+};
 
 export type LocaleChoice = {
   readonly locale: Locale;
@@ -65,6 +69,7 @@ export type SettingsEntryId =
   | 'appLanguage'
   | 'theme'
   | 'reducedBlur'
+  | 'reducedMotion'
   | 'firstName'
   | 'fullText'
   | 'storage'
@@ -80,6 +85,7 @@ export type SettingsService = {
   locales(): readonly LocaleChoice[];
   locale(): Locale;
   setLocale(locale: Locale): Promise<boolean>;
+  onLocale(listener: (locale: Locale) => void): () => void;
   layoutDirection(): Direction;
   directionChangeNeeded(currentIsRTL: boolean): boolean;
   onLayoutDirection(listener: (direction: Direction) => void): () => void;
@@ -87,6 +93,8 @@ export type SettingsService = {
   setTheme(theme: ThemeChoice): Promise<boolean>;
   reducedBlur(): boolean | undefined;
   setReducedBlur(on: boolean): Promise<boolean>;
+  reducedMotion(): boolean | undefined;
+  setReducedMotion(on: boolean): Promise<boolean>;
   appearance(): Appearance;
   onAppearance(listener: (appearance: Appearance) => void): () => void;
   name(): string | undefined;
@@ -138,9 +146,11 @@ export function createSettingsService(kernel: Kernel): SettingsService {
   const appearance = (): Appearance => {
     const theme = preferences.get('home.theme');
     const blur = preferences.get('settings.reducedBlur');
+    const motion = preferences.get('settings.reducedMotion');
     return {
       ...(theme === 'light' || theme === 'dark' ? { scheme: theme } : {}),
       ...(blur === undefined ? {} : { reducedBlur: blur === 'on' }),
+      ...(motion === undefined ? {} : { reducedMotion: motion === 'on' }),
     };
   };
 
@@ -202,6 +212,12 @@ export function createSettingsService(kernel: Kernel): SettingsService {
     locale: () => preferences.locale(),
     setLocale: (locale) =>
       kernel.strings.isLocale(locale) ? preferences.set('settings.locale', locale) : Promise.resolve(false),
+    onLocale: (listener) =>
+      preferences.onChange((key) => {
+        if (key === 'settings.locale') {
+          listener(preferences.locale());
+        }
+      }),
     layoutDirection: () => direction(preferences.locale()),
     directionChangeNeeded: (currentIsRTL) => needsDirectionChange(preferences.locale(), currentIsRTL),
     onLayoutDirection: (listener) =>
@@ -217,10 +233,15 @@ export function createSettingsService(kernel: Kernel): SettingsService {
       return blur === undefined ? undefined : blur === 'on';
     },
     setReducedBlur: (on) => preferences.set('settings.reducedBlur', on ? 'on' : 'off'),
+    reducedMotion: () => {
+      const motion = preferences.get('settings.reducedMotion');
+      return motion === undefined ? undefined : motion === 'on';
+    },
+    setReducedMotion: (on) => preferences.set('settings.reducedMotion', on ? 'on' : 'off'),
     appearance,
     onAppearance: (listener) =>
       preferences.onChange((key) => {
-        if (key === 'home.theme' || key === 'settings.reducedBlur') {
+        if (key === 'home.theme' || key === 'settings.reducedBlur' || key === 'settings.reducedMotion') {
           listener(appearance());
         }
       }),
@@ -269,6 +290,11 @@ export function createSettingsService(kernel: Kernel): SettingsService {
           id: 'reducedBlur',
           title: current.t('settings.reducedBlur'),
           about: current.t('settings.reducedBlur.about'),
+        },
+        {
+          id: 'reducedMotion',
+          title: current.t('settings.reducedMotion'),
+          about: current.t('settings.reducedMotion.about'),
         },
         {
           id: 'firstName',

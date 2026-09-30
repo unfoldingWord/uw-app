@@ -28,12 +28,15 @@ export type ControlFinding = {
   readonly height: number;
 };
 
+export type EscapeFinding = { readonly text: string; readonly by: number };
+
 export type ShotResult = {
   readonly shot: string;
   readonly mode: Mode['name'];
   readonly file: string;
   readonly unnamed: readonly ControlFinding[];
   readonly small: readonly ControlFinding[];
+  readonly escaped: readonly EscapeFinding[];
   readonly overflow: boolean;
   readonly errors: readonly string[];
 };
@@ -56,13 +59,17 @@ async function shootOne(browser: Browser, origin: string, output: string, shot: 
     deviceScaleFactor: 2,
     colorScheme: mode.scheme,
     reducedMotion: 'reduce',
-    locale: mode.direction === 'rtl' ? 'ar-EG' : 'en-US',
+    locale: mode.browserLocale,
     timezoneId: 'UTC',
   });
   await context.clock.setSystemTime(harnessMoment);
   const variant = shot.fresh === true ? mode.freshVariant : mode.variant;
   await context.addInitScript({
-    content: `globalThis.uwQaHarness = ${JSON.stringify({ variant, direction: mode.direction })};\n${pageInit}`,
+    content: `globalThis.uwQaHarness = ${JSON.stringify({
+      variant,
+      direction: mode.direction,
+      textZoom: mode.textZoom ?? 1,
+    })};\n${pageInit}`,
   });
   const page = await context.newPage();
   const errors: string[] = [];
@@ -101,7 +108,11 @@ async function shootOne(browser: Browser, origin: string, output: string, shot: 
   }
   const file = join(output, `${shot.name}--${mode.name}.png`);
   await page.screenshot({ path: file });
-  const audit = (await page.evaluate(pageAudit)) as { controls: ControlFinding[]; overflow: boolean };
+  const audit = (await page.evaluate(pageAudit)) as {
+    controls: ControlFinding[];
+    escaped: EscapeFinding[];
+    overflow: boolean;
+  };
   await context.close();
   return {
     shot: shot.name,
@@ -109,6 +120,7 @@ async function shootOne(browser: Browser, origin: string, output: string, shot: 
     file,
     unnamed: audit.controls.filter((item) => item.name === ''),
     small: audit.controls.filter((item) => item.width < minimumTarget || item.height < minimumTarget),
+    escaped: audit.escaped,
     overflow: audit.overflow,
     errors,
   } satisfies ShotResult;

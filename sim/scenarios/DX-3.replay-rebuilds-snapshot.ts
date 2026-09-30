@@ -8,6 +8,7 @@ import { fixturePeer } from '../peer';
 import { replayJournal } from '../replay';
 import { scenario } from '../scenario';
 import { transferBetween } from '../transfer';
+import { valueOf } from '../written';
 
 const hour = 60 * 60 * 1000;
 
@@ -56,8 +57,8 @@ export default scenario(
     const ruth = parseReference('RUT 1:16');
     assert.ok(ruth.ok);
     assert.ok(await library.kernel.corpus.passage(ruth.reference, { language: 'qaa' }));
-    const tuesday = await library.kernel.formation.create('Tuesday group');
-    const youth = await library.kernel.formation.create('Youth leaders');
+    const tuesday = valueOf(await library.kernel.formation.create('Tuesday group'));
+    const youth = valueOf(await library.kernel.formation.create('Youth leaders'));
     assert.ok(tuesday && youth);
     await library.kernel.formation.start(tuesday.id, 'qaa');
     await library.kernel.formation.complete(tuesday.id);
@@ -67,7 +68,7 @@ export default scenario(
     await library.kernel.formation.complete(youth.id);
     await library.kernel.formation.rename(youth.id, 'Youth leaders on Friday');
     await library.kernel.formation.activate(tuesday.id);
-    const elders = await library.kernel.formation.create('Elders');
+    const elders = valueOf(await library.kernel.formation.create('Elders'));
     assert.ok(elders);
     await library.kernel.formation.remove(elders.id);
     await library.restart();

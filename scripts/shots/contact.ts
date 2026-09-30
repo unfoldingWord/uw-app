@@ -27,6 +27,7 @@ function figure(result: ShotResult): string {
     result.errors.length > 0 ? `${result.errors.length} errors` : '',
     result.unnamed.length > 0 ? `${result.unnamed.length} unnamed` : '',
     result.small.length > 0 ? `${result.small.length} small targets` : '',
+    result.escaped.length > 0 ? `${result.escaped.length} escaping text` : '',
     result.overflow ? 'overflows' : '',
   ].filter((note) => note !== '');
   const file = basename(result.file);

@@ -124,6 +124,10 @@ function mintLedger(module: string, ids: Ids): MintLedger {
       if (unannounced === undefined) {
         return;
       }
+      if (input.type === 'Failure') {
+        unannounced = undefined;
+        return;
+      }
       if (!idsOf(input).includes(unannounced)) {
         throw new Error(`${module} emitted ${input.type} before an event carried the id it minted`);
       }

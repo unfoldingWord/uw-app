@@ -58,6 +58,8 @@ export const about = {
   'settings.theme.about': 'Light, dark or follow the phone.',
   'settings.reducedBlur': 'Reduce blur',
   'settings.reducedBlur.about': 'Plainer glass that runs lighter on older phones.',
+  'settings.reducedMotion': 'Reduce motion',
+  'settings.reducedMotion.about': 'Keeps the glass still instead of drifting and breathing.',
   'settings.firstName': 'First name',
   'settings.firstName.about': 'Used only in the greeting, only on this phone.',
   'settings.fullText': 'Search inside every text',
@@ -76,6 +78,9 @@ export const about = {
     'Nothing leaves this phone that you did not choose to send. The app counts opens, downloads, transfers and shares in aggregate, with no identifiers.',
   'diagnostics.title': 'Share diagnostics',
   'diagnostics.body':
-    'The file holds a record of what the app did on this phone and a summary of what is on it, with no names, notes or identifiers.',
+    'The file holds a record of what the app did on this phone and a summary of what is on it, without the passages, articles and stories you opened or saved, and with no names, notes or identifiers.',
   'diagnostics.action': 'Share the file',
+  'diagnostics.body.reading':
+    'The file holds a record of what the app did on this phone, a summary of what is on it and the passages, articles and stories you opened or saved, with no names, notes or identifiers.',
+  'diagnostics.includeReading': 'Include what I read',
 } as const;

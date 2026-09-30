@@ -88,6 +88,7 @@ export default function SettingsScreen() {
   const appLanguage = entryOf(entries, 'appLanguage');
   const themeEntry = entryOf(entries, 'theme');
   const blur = entryOf(entries, 'reducedBlur');
+  const motion = entryOf(entries, 'reducedMotion');
   const firstName = entryOf(entries, 'firstName');
   const fullTextEntry = entryOf(entries, 'fullText');
   const links: readonly { id: SettingsEntryId; href: '/licence' | '/about' | '/privacy' }[] = [
@@ -176,6 +177,21 @@ export default function SettingsScreen() {
             label={words.t('settings.reducedBlur')}
             on={theme.reducedBlur}
             onChange={(on) => attempt(() => service.setReducedBlur(on))}
+          />
+        </View>
+        <View style={[styles.value, { gap: theme.space.sp6 }]}>
+          <View style={styles.grow}>
+            <Line role="body" tone="title" weight={theme.fontWeight.fwSemibold}>
+              {words.t('settings.reducedMotion')}
+            </Line>
+            <Line role="caption" tone="body">
+              {motion?.about ?? words.t('settings.reducedMotion.about')}
+            </Line>
+          </View>
+          <Toggle
+            label={words.t('settings.reducedMotion')}
+            on={theme.reducedMotion}
+            onChange={(on) => attempt(() => service.setReducedMotion(on))}
           />
         </View>
       </Card>

@@ -13,6 +13,7 @@ import type { FailureCode } from '@lib/domain/failures';
 import type { Kernel } from '@lib/kernel';
 import { clipControls, clockTime, type ClipControls } from '@lib/player/controls';
 import type { PlayerStatus } from '@lib/player/player';
+import type { Written } from '@lib/written';
 import { formationWords, type FormationWords } from './strings';
 
 export type { Block, Frame, Inline, MovementSection } from '@lib/corpus/types';
@@ -35,6 +36,8 @@ export type { ClipControls } from '@lib/player/controls';
 export type { PlayerStatus } from '@lib/player/player';
 export type { StoryAudio } from '@lib/formation/types';
 
+export type { Written } from '@lib/written';
+
 export type DownloadOutcome = { readonly ok: true } | { readonly ok: false; readonly code: FailureCode };
 
 export type FormationService = {
@@ -47,17 +50,17 @@ export type FormationService = {
   groups(): readonly Group[];
   group(id: string): Group | undefined;
   active(): Group | undefined;
-  create(name: string): Promise<Group | undefined>;
-  rename(group: string, name: string): Promise<Group | undefined>;
-  remove(group: string): Promise<boolean>;
-  activate(group: string): Promise<Group | undefined>;
-  advance(group: string, to: Position): Promise<Group | undefined>;
-  start(group: string): Promise<Group | undefined>;
-  complete(group: string): Promise<Group | undefined>;
+  create(name: string): Promise<Written<Group> | undefined>;
+  rename(group: string, name: string): Promise<Written<Group> | undefined>;
+  remove(group: string): Promise<Written<true> | undefined>;
+  activate(group: string): Promise<Written<Group> | undefined>;
+  advance(group: string, to: Position): Promise<Written<Group> | undefined>;
+  start(group: string): Promise<Written<Group> | undefined>;
+  complete(group: string): Promise<Written<Group> | undefined>;
   progress(group: string): Promise<Progress | undefined>;
   next(group: string): Promise<NextSession | undefined>;
   note(group: string, track: Track, session: number): string | undefined;
-  saveNote(group: string, track: Track, session: number, text: string): Promise<boolean>;
+  saveNote(group: string, track: Track, session: number, text: string): Promise<Written<true> | undefined>;
   languageName(language: string): string;
   download(pack: string): Promise<DownloadOutcome>;
   picture(frame: Frame): string | undefined;

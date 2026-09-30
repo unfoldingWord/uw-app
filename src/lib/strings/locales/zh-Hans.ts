@@ -376,6 +376,8 @@ export const zhHans: LocaleTable = {
   'settings.theme.about': '浅色、深色或跟随手机。',
   'settings.reducedBlur': '减少模糊',
   'settings.reducedBlur.about': '更简洁的玻璃效果，在旧手机上更流畅。',
+  'settings.reducedMotion': '减少动态效果',
+  'settings.reducedMotion.about': '玻璃保持静止，不再漂浮和律动。',
   'settings.firstName': '名字',
   'settings.firstName.about': '只用于问候，只保存在这部手机上。',
   'settings.fullText': '在所有文本中搜索',
@@ -394,8 +396,11 @@ export const zhHans: LocaleTable = {
     '除非你选择发送，否则任何内容都不会离开这部手机。应用只统计打开、下载、传送和分享的总数，不含任何识别信息。',
   'diagnostics.title': '分享诊断信息',
   'diagnostics.body':
-    '这个文件包含应用在这部手机上的操作记录，以及手机上内容的摘要，不含名字、笔记或识别信息。',
+    '这个文件包含应用在这部手机上的操作记录，以及手机上内容的摘要，不含你打开或收藏的经文、文章和故事，也不含名字、笔记或识别信息。',
   'diagnostics.action': '分享文件',
+  'diagnostics.body.reading':
+    '这个文件包含应用在这部手机上的操作记录、手机上内容的摘要，以及你打开或收藏的经文、文章和故事，不含名字、笔记或识别信息。',
+  'diagnostics.includeReading': '包括我读过的内容',
   'failure.http.offline': '你现在处于离线状态。联网后请重试。',
   'failure.http.timeout': '资料库响应时间过长。请稍后重试。',
   'failure.http.status': '资料库的响应与预期不同。请稍后重试。',

@@ -17,8 +17,11 @@ import {
   storyPayload,
   type JournalReport,
 } from './payload';
+import { leaveOutReading, type Reading } from './reading';
 
 export type ShareOptions = { locale: Locale };
+
+export type JournalShareOptions = ShareOptions & { includeReading?: boolean };
 
 export type ShareResult =
   { ok: true; outcome: ShareOutcome; payload: SharePayload } | { ok: false; code: FailureCode };
@@ -28,7 +31,7 @@ export type ShareApi = {
   passage(passage: Passage, options: ShareOptions): Promise<ShareResult>;
   story(story: Story, options: ShareOptions): Promise<ShareResult>;
   audio(clip: AudioClip, options: ShareOptions): Promise<ShareResult>;
-  journal(report: JournalReport, options: ShareOptions): Promise<ShareResult>;
+  journal(report: JournalReport, options: JournalShareOptions): Promise<ShareResult>;
 };
 
 type ShareKind = (typeof shareKinds)[number];
@@ -75,14 +78,16 @@ export const shareModule = defineModule<ShareApi>({
           }
           return hand('audio', clip.provenance.language, audioPayload(words, locale, clip));
         },
-        async journal(report, { locale }) {
+        async journal(report, { locale, includeReading = false }) {
+          const reading: Reading = includeReading ? 'included' : 'left-out';
+          const written = reading === 'included' ? report : leaveOutReading(report);
           try {
             await ports.files.mkdir(diagnosticsDirectory);
-            await ports.files.writeText(diagnosticsPath, diagnosticsDocument(report));
+            await ports.files.writeText(diagnosticsPath, diagnosticsDocument(written, reading));
           } catch (error) {
             return refuse(failureCodeOf(error));
           }
-          return hand('journal', undefined, journalPayload(words, locale));
+          return hand('journal', undefined, journalPayload(words, locale, reading));
         },
       },
     };

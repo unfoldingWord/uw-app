@@ -9,7 +9,7 @@ import { defineModule, ownsNothing, type ModuleContext } from '@lib/module';
 import { writeTargets } from '@lib/scope';
 import { createMemoryIds } from './adapters/ids';
 import { migrations } from './migrations';
-import { replayJournal } from './replay';
+import { mintedIds, replayJournal } from './replay';
 import { createWorld } from './world';
 
 function device() {
@@ -203,6 +203,39 @@ describe('what a module is handed (docs/replay.md rules 4 and 5, AGENTS.md rule 
     );
     await other.start();
     await expect(other.careless.silent()).rejects.toThrow('before an event carried the id');
+  });
+
+  it('lets a Failure close an id minted for a write that failed, so the next id is free to mint', async () => {
+    const refusing = defineModule<{ fail(): Promise<void>; succeed(): Promise<string> }>({
+      events: ['GroupCreated'],
+      owns: ownsNothing,
+      create: (context) => ({
+        api: {
+          fail: async () => {
+            context.ports.ids.next();
+            await context.emit({
+              type: 'Failure',
+              payload: { code: 'db.io', context: { type: 'GroupCreated' } },
+            });
+          },
+          succeed: async () => {
+            const group = context.ports.ids.next();
+            await context.emit({ type: 'GroupCreated', payload: { group } });
+            return group;
+          },
+        },
+      }),
+    });
+    const kernel = composeKernel(device().adapters, { refusing }, { migrations });
+    await kernel.start();
+    await kernel.refusing.fail();
+    const group = await kernel.refusing.succeed();
+    expect(kernel.journal.read().map((entry) => entry.type)).toEqual([
+      'AppOpened',
+      'Failure',
+      'GroupCreated',
+    ]);
+    expect(mintedIds(kernel.journal.read())).toEqual([group]);
   });
 
   it('lets a module write only the tables, directories and preference keys it owns', async () => {

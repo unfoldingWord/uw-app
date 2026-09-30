@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { Text, type AccessibilityRole, type StyleProp, type TextStyle } from 'react-native';
-import { fontFor } from '@shared/fonts';
-import { useTheme, type TextRole, type Theme } from '@shared/theme';
+import { textSample, uiFont, uiText, useTheme, type TextRole, type Theme } from '@shared/theme';
 
 export type Tone = 'title' | 'body' | 'muted' | 'dim' | 'faint' | 'onImage' | 'onInverse' | 'accent' | 'link';
 
@@ -67,12 +66,13 @@ export function Line({
   style,
 }: LineProps) {
   const theme = useTheme();
-  const text = theme.text[role];
+  const sample = textSample(children);
+  const text = uiText(theme, theme.text[role], sample);
   const family = brand
-    ? fontFor(theme.fontStack.fontBrand, weight ?? brandWeight(theme, role))
+    ? uiFont(theme, theme.fontStack.fontBrand, weight ?? brandWeight(theme, role), sample)
     : weight === undefined
       ? undefined
-      : fontFor(theme.fontStack.fontCore, weight);
+      : uiFont(theme, theme.fontStack.fontCore, weight, sample);
   return (
     <Text
       accessibilityRole={accessibilityRole}

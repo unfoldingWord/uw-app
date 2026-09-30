@@ -7,9 +7,10 @@ import { catalogModule } from './catalog/catalog';
 import { packsModule } from './packs/packs';
 import { playerModule } from './player/player';
 import { shareModule } from './share/share';
-import { stringsModule } from './strings/strings';
+import type { LocaleGate } from './strings/locales';
+import { stringsModule, stringsModuleFor } from './strings/strings';
 import { telemetryModule } from './telemetry/telemetry';
-import { preferencesModule } from './preferences/preferences';
+import { preferencesModule, preferencesModuleFor } from './preferences/preferences';
 import { bookmarksModule } from './bookmarks/bookmarks';
 import { partnersModule } from './partners/partners';
 import { transferModule } from './transfer/transfer';
@@ -34,6 +35,17 @@ export const kernelModules = {
 
 export type Kernel = ComposedKernel<typeof kernelModules>;
 
-export function createKernel(ports: Ports, options: KernelOptions): Kernel {
-  return composeKernel(ports, kernelModules, options);
+export type AppKernelOptions = KernelOptions & { localeGate?: LocaleGate };
+
+export function createKernel(ports: Ports, options: AppKernelOptions): Kernel {
+  const { localeGate, ...kernelOptions } = options;
+  const modules =
+    localeGate === undefined
+      ? kernelModules
+      : {
+          ...kernelModules,
+          strings: stringsModuleFor(localeGate),
+          preferences: preferencesModuleFor(localeGate),
+        };
+  return composeKernel(ports, modules, kernelOptions);
 }

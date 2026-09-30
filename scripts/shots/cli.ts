@@ -75,6 +75,7 @@ async function main(): Promise<void> {
         ...result.small.map(
           (item) => `small ${item.role} "${item.name.slice(0, 40)}" ${item.width}x${item.height}`,
         ),
+        ...result.escaped.map((item) => `text escapes its box by ${item.by} px "${item.text}"`),
         ...(result.overflow ? ['overflows the 360 px width'] : []),
       ];
       console.log(`${notes.length === 0 ? 'ok  ' : 'note'} ${result.shot} ${result.mode}`);
@@ -82,7 +83,11 @@ async function main(): Promise<void> {
         console.log(`       ${note}`);
       }
     }
-    console.log(`shots: ${results.length} screenshots and the contact sheet in shots/`);
+    const small = results.reduce((sum, result) => sum + result.small.length, 0);
+    const escaped = results.reduce((sum, result) => sum + result.escaped.length, 0);
+    console.log(
+      `shots: ${results.length} screenshots and the contact sheet in shots/; ${small} targets under 44 px counting hit slop, ${escaped} text boxes escaping their parent`,
+    );
   } finally {
     await served.close();
   }

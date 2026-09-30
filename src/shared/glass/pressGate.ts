@@ -41,3 +41,17 @@ export function createPressGate(onBusyChange: (busy: boolean) => void): PressGat
 export function slopFor(extent: number): number {
   return Math.max(0, Math.ceil((minimumTouchTarget - extent) / 2));
 }
+
+export type TouchSlop = {
+  readonly hitSlop: { top: number; bottom: number; left: number; right: number };
+  readonly dataSet: { readonly touchSlopV: number; readonly touchSlopH: number };
+};
+
+export function touchSlop(height: number, width: number = minimumTouchTarget): TouchSlop {
+  const vertical = slopFor(height);
+  const horizontal = slopFor(width);
+  return {
+    hitSlop: { top: vertical, bottom: vertical, left: horizontal, right: horizontal },
+    dataSet: { touchSlopV: vertical, touchSlopH: horizontal },
+  };
+}

@@ -387,6 +387,8 @@ export const vi: LocaleTable = {
   'settings.theme.about': 'Sáng, tối hoặc theo điện thoại.',
   'settings.reducedBlur': 'Giảm làm mờ',
   'settings.reducedBlur.about': 'Hiệu ứng kính đơn giản hơn, nhẹ hơn trên điện thoại cũ.',
+  'settings.reducedMotion': 'Giảm chuyển động',
+  'settings.reducedMotion.about': 'Kính đứng yên thay vì trôi và nhấp nháy.',
   'settings.firstName': 'Tên',
   'settings.firstName.about': 'Chỉ dùng trong lời chào, chỉ trên điện thoại này.',
   'settings.fullText': 'Tìm trong mọi bản văn',
@@ -405,8 +407,11 @@ export const vi: LocaleTable = {
     'Không có gì rời khỏi điện thoại này nếu bạn không chọn gửi. Ứng dụng đếm tổng số lần mở, tải, chuyển và chia sẻ, không kèm thông tin nhận dạng.',
   'diagnostics.title': 'Chia sẻ chẩn đoán',
   'diagnostics.body':
-    'Tệp này chứa bản ghi những gì ứng dụng đã làm trên điện thoại này và bản tóm tắt nội dung trên đó, không có tên, ghi chú hay thông tin nhận dạng.',
+    'Tệp này chứa bản ghi những gì ứng dụng đã làm trên điện thoại này và bản tóm tắt nội dung trên đó, không có các đoạn Kinh Thánh, bài viết và câu chuyện bạn đã mở hoặc lưu, cũng không có tên, ghi chú hay thông tin nhận dạng.',
   'diagnostics.action': 'Chia sẻ tệp',
+  'diagnostics.body.reading':
+    'Tệp này chứa bản ghi những gì ứng dụng đã làm trên điện thoại này, bản tóm tắt nội dung trên đó và các đoạn Kinh Thánh, bài viết và câu chuyện bạn đã mở hoặc lưu, không có tên, ghi chú hay thông tin nhận dạng.',
+  'diagnostics.includeReading': 'Kèm những gì tôi đã đọc',
   'failure.http.offline': 'Bạn đang ngoại tuyến. Hãy thử lại khi có mạng.',
   'failure.http.timeout': 'Thư viện phản hồi quá lâu. Hãy thử lại sau giây lát.',
   'failure.http.status': 'Thư viện không phản hồi như mong đợi. Hãy thử lại sau.',

@@ -1,4 +1,5 @@
 import type { DeviceLocale, DevicePlatform } from '@lib/ports';
+import type { LocaleGate } from '@lib/strings/locales';
 
 export type ImageRoute = {
   readonly url: string;
@@ -22,9 +23,11 @@ export type DeviceImage = {
   readonly routes: readonly ImageRoute[];
 };
 
-export const imageVariants = ['fresh', 'fresh-rtl', 'home', 'reduced-blur', 'rtl'] as const;
+export const imageVariants = ['fresh', 'fresh-rtl', 'home', 'reduced-blur', 'rtl', 'ur', 'hi'] as const;
 
 export type ImageVariant = (typeof imageVariants)[number];
+
+export const harnessLocaleGate: LocaleGate = 'drafts';
 
 export const imagePath = (variant: string): string => `qa/images/${variant}.json`;
 

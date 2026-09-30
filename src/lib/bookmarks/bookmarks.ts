@@ -3,6 +3,7 @@ import { fieldValidators } from '../domain/fields';
 import type { JsonValue } from '../json';
 import { defineModule } from '../module';
 import type { DbRow } from '../ports';
+import { dbWrite, refused, written, type Written } from '../written';
 
 export type BookmarkTarget =
   | { readonly target: 'passage'; readonly reference: string; readonly language: string }
@@ -14,8 +15,8 @@ export type Bookmark = BookmarkTarget & { readonly id: string };
 export type BookmarksApi = {
   list(): readonly Bookmark[];
   find(target: BookmarkTarget): Bookmark | undefined;
-  add(target: BookmarkTarget): Promise<Bookmark | undefined>;
-  remove(id: string): Promise<boolean>;
+  add(target: BookmarkTarget): Promise<Written<Bookmark> | undefined>;
+  remove(id: string): Promise<Written<true> | undefined>;
   onChange(listener: () => void): () => void;
 };
 
@@ -131,6 +132,7 @@ export const bookmarksModule = defineModule<BookmarksApi>({
     const { db, ids } = context.ports;
     const saved = new Map<string, Stored>();
     const listeners = new Set<() => void>();
+    const write = dbWrite(context);
 
     const ordered = (): Stored[] => [...saved.values()].sort((left, right) => right.ordinal - left.ordinal);
 
@@ -143,44 +145,52 @@ export const bookmarksModule = defineModule<BookmarksApi>({
     const find = (target: BookmarkTarget): Stored | undefined =>
       [...saved.values()].find((stored) => sameTarget(stored, target));
 
-    const add = async (target: BookmarkTarget): Promise<Bookmark | undefined> => {
+    const add = async (target: BookmarkTarget): Promise<Written<Bookmark> | undefined> => {
       if (!isValidTarget(target)) {
         return undefined;
       }
       const existing = find(target);
       if (existing !== undefined) {
-        return publicBookmark(existing);
+        return written(publicBookmark(existing));
       }
       const ordinal = Math.max(0, ...[...saved.values()].map((stored) => stored.ordinal)) + 1;
       const bookmark: Bookmark = { ...target, id: ids.next() };
-      await context.emit({ type: 'BookmarkAdded', payload: payloadOf(bookmark) });
       const stored: Stored = { ...bookmark, ordinal };
-      await db.run(
-        'INSERT OR REPLACE INTO bookmarks (id, ordinal, target, reference, article, story, language) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [
-          stored.id,
-          ordinal,
-          stored.target,
-          stored.target === 'passage' ? stored.reference : null,
-          stored.target === 'article' ? stored.article : null,
-          stored.target === 'story' ? stored.story : null,
-          stored.language,
-        ],
+      const failed = await write('BookmarkAdded', () =>
+        db.run(
+          'INSERT OR REPLACE INTO bookmarks (id, ordinal, target, reference, article, story, language) VALUES (?, ?, ?, ?, ?, ?, ?)',
+          [
+            stored.id,
+            ordinal,
+            stored.target,
+            stored.target === 'passage' ? stored.reference : null,
+            stored.target === 'article' ? stored.article : null,
+            stored.target === 'story' ? stored.story : null,
+            stored.language,
+          ],
+        ),
       );
+      if (failed !== undefined) {
+        return refused(failed);
+      }
+      await context.emit({ type: 'BookmarkAdded', payload: payloadOf(bookmark) });
       saved.set(stored.id, stored);
       notify();
-      return bookmark;
+      return written(bookmark);
     };
 
-    const remove = async (id: string): Promise<boolean> => {
+    const remove = async (id: string): Promise<Written<true> | undefined> => {
       if (!saved.has(id)) {
-        return false;
+        return undefined;
+      }
+      const failed = await write('BookmarkRemoved', () => db.run('DELETE FROM bookmarks WHERE id = ?', [id]));
+      if (failed !== undefined) {
+        return refused(failed);
       }
       await context.emit({ type: 'BookmarkRemoved', payload: { bookmark: id } });
-      await db.run('DELETE FROM bookmarks WHERE id = ?', [id]);
       saved.delete(id);
       notify();
-      return true;
+      return written(true);
     };
 
     const api: BookmarksApi = {

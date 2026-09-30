@@ -70,7 +70,7 @@ or replace). The host is on the allowlist (`src/lib/network.ts`). The shape the 
 - **Dismissed**: hidden for ninety days from the dismissal, then due again on the same rule, as a new
   cycle (**inference**: "every three months" is read as ninety days after the leader dismissed it; the PRD
   does not say whether the three months run from the dismissal or from first showing).
-- **Tapped**: counted (`InvitationTapped`, telemetry `invitationTaps`), does not hide the card
-  (**inference**).
+- **Tapped**: counted (`InvitationTapped`, telemetry `invitationTaps`) and ends the cycle: `tap()` also
+  journals `InvitationDismissed`, so the ninety days of quiet start from the tap (issue #56).
 - **Never modal**: the service hands Home a card; nothing in the kernel can show it over content. That the
   screen renders it as a card is for the Home screen to prove (T10).

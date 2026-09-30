@@ -3,6 +3,94 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-30 M10 merge of U1 and U2 onto N2, and the shots harness through the drafts gate
+
+Node v22.22.2; Chromium through playwright-core for the shots. Nothing ran on a phone.
+
+- Cherry-picked the U1 batch (#35, #36, #38, #39, #40) and the U2 batch (#56, #25, #27, #20, #51) onto the N2
+  branch. Conflicts were only in `docs/strings-review.md`, `docs/progress_tracker.md` and `docs/exceptions.md`;
+  every side was kept, newest first where the file is newest first.
+- Red observed: with both batches in, `npm run shots` rendered `settings--rtl.png` in English in a mirrored
+  layout, because the locale gate of #51 defaults to the release gate and the harness boots the root layout.
+- Fix: the web-only `src/platform/ports.web.ts` seam hands the root layout `drafts`, the native
+  `src/platform/ports.ts` hands it `reviewed`, and `scripts/shots/seed.ts` seeds with the same `drafts`.
+- Green observed: `npm run shots` printed "182 screenshots and the contact sheet in shots/; 173 targets under
+  44 px counting hit slop, 0 text boxes escaping their parent". `settings--rtl.png` shows the Arabic Settings
+  screen right to left, `settings--ur.png` Urdu in Nastaliq and `settings--hi.png` Hindi in Devanagari.
+  `npm run verify` is green: 734 tests, 56 scenarios, and both native bundles free of `sim/`.
+- Not verified: the native app on a phone still speaking English for an unreviewed phone locale (INFERRED from
+  `ports.ts` passing `reviewed`, the same gate as the kernel default, and the bundle check).
+
+## 2026-09-30 U2 share privacy, refused writes, invitation, locale gate (issues #20, #25, #27, #51, #56)
+
+Node v22.22.2. Nothing ran on a phone, and no screen was rendered (`npm run shots` was not run).
+
+- Red first: PA-2 and HO-7 failed on a tap that left the invitation due and on the missing `opensBrowser`
+  word (#56, #25). The new `DX-1.a-refused-write-is-a-failure` failed with an unhandled `db.io` rejection from
+  `study.save` (#27); the mint ledger test in `sim/kernel-reactions.test.ts` failed with "emitted Failure
+  before an event carried the id it minted" with the `compose.ts` change backed out. DX-2 failed on the
+  missing `reading` field of the shared file (#20), and the `mintedIds` test for a left-out bookmark failed
+  with the `sim/replay.ts` change backed out. `SE-1.unreviewed-locales-are-not-offered` failed with
+  `'fr' !== 'en'` and the `locale-signoff` check failed with no sign-off table (#51). The `settleAsync`,
+  `leaveOutReading`, `offeredLocales` and `signOffFindings` unit tests were written alongside their code.
+- #56: a tap journals `InvitationTapped` then `InvitationDismissed`. #25: both invitation links carry
+  `common.opensBrowser` as their hint.
+- #27: Bookmarks and Formation write first, emit on success, and on failure emit `Failure` (`db.io`,
+  `context.type` the event withheld) and return `{ ok: false, code }`. The memory Db's `failWrites` takes a
+  pattern. `useAsyncValue` reports `failure` and keeps the known value. Story screen shows a refused bookmark
+  in place.
+- #20: the diagnostics file leaves reading out by default; "Include what I read" keeps it. Three event
+  fields became optional. A left-out file replays without error and rebuilds all but bookmarks and the last
+  passage (`docs/replay.md`).
+- #51: only English and signed-off locales are offered (none today); sim devices may pass
+  `localeGate: 'drafts'`, which ON-1, HO-2, SE-1 and SH-4 now do.
+- One `npm run verify` run failed in vitest with `Failed to load tsconfig 'expo/tsconfig.base.json'` in 16
+  files while other worktrees were busy; the file exists, `npm run test` alone passed straight after, and the
+  rerun of `npm run verify` was green (INFERRED: a transient read failure under load).
+- `npm run verify`: green (669 tests in 64 files, 54 scenarios, 8 checks, trace 0 unproven, contract 21
+  fixture burritos, live skipped offline with HTTP 403; bundle android 1913 and iOS 1780 modules).
+- Not verified: the Story, Diagnostics, Groups, Session and Home invitation screens in light, dark and
+  reduced-blur; the screen reader reading the new hints and the toggle; the new strings in fifteen locales
+  (drafted, not reviewed).
+
+## 2026-09-30 U1 script faces, reduce motion, blur nesting, dynamic type and touch targets (#35, #36, #38, #39, #40)
+
+Node v22.22.2; Chromium through playwright-core for the shots. Nothing ran on a phone.
+
+- Red first: `src/shared/theme/script.test.ts` failed to import, then caught `withScript` dropping a semibold
+  title to weight 400, then (after the first `ur` and `hi` shots) failed on Nastaliq line height and script
+  tracking; SE-1 failed on the missing `onLocale`, then on the missing `setReducedMotion` and settings entry;
+  `src/shared/glass/blurLayers.test.ts`, `pressGate.test.ts` (`touchSlop`) and both `touchExtent.test.ts`
+  failed before their code; the new large-text shots reported the three tab labels escaping their 52 px pill
+  by 2 px on Home, Study and Formation.
+- #35: the theme carries the app locale (root layout, through `createSettingsService(kernel).locale()` and
+  `onLocale`). `src/shared/theme/script.ts` picks the face from the characters shown: ThemedText, the glass
+  button, chip and input, and the Settings, About and Formation Line primitives; Formation blocks go through
+  `contentText` keyed on the content language. Study keeps its imports through a re-export. Nastaliq gets a
+  line twice the font size and script faces drop letter spacing (exceptions row). Shots in `rtl` (ar), `ur`
+  and `hi` show Noto Sans Arabic, Noto Nastaliq Urdu and Noto Sans Devanagari; the Urdu header overlap and the
+  spaced Devanagari overlines seen in the first run are gone in the second.
+- #36: the root layout reads `AccessibilityInfo.isReduceMotionEnabled` and `reduceMotionChanged`; a
+  `settings.reducedMotion` override sits beside Reduce blur. In the harness (Chromium set to
+  `prefers-reduced-motion: reduce`) the Settings toggle reads on, so the system value reaches the theme on web.
+- #38: `GlassLayer` context; glass inside a `GlassSurface` renders no BlurView. Library shots look the same
+  before and after. The BlurView count per screen and frame times were not measured; the reduced-blur default
+  is unchanged.
+- #39: tab items and the Home Formation tile take `minHeight`; the tab clearance follows the measured bar.
+  The harness `large-text` mode zooms text 2x (the Android maximum font scale), a proxy only: React Native Web
+  ignores the platform font scale, `maxFontSizeMultiplier` and `adjustsFontSizeToFit`.
+- #40: `touchSlop` on Choice, MovementChip, both Toggles, GlassButton and GlassIconButton; the shots audit
+  counts the hit slop the controls declare.
+- `npm run verify`: green (670 tests in 66 files, 7 checks, 52 scenarios, trace 0 unproven, contract 21 fixture
+  burritos, live skipped offline, bundle android 1914 and iOS 1781 modules).
+- `npm run shots` before: 101 shots, 0 errors, 0 unnamed, 0 overflow, 383 controls under 44 px by drawn box.
+  After: 168 shots (new `ur`, `hi` and `large-text` modes), 0 errors, 0 unnamed, 0 overflow, 0 text boxes
+  escaping their parent, 124 targets under 44 px counting hit slop (92 in the original four modes). What is
+  left is in Study (the Choices chips and inline word links) and the Formation notes text area.
+- Not verified: anything on a phone (ar, ur and hi fonts on iOS and Android, Reduce Motion from the OS
+  setting, dynamic type at the platform maximum on both platforms, blur frame time on an Android 12 phone with
+  2 GB of RAM).
+
 ## 2026-09-30 Integration: catalog and packs onto the corpus batch
 
 Node v22.22.2. Nothing ran on a phone and nothing ran against live DCS (HTTP 403 from the sandbox).

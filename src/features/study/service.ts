@@ -17,6 +17,7 @@ import type { Kernel } from '@lib/kernel';
 import type { InstallOutcome } from '@lib/packs/types';
 import { clipControls, clockTime, type ClipControls } from '@lib/player/controls';
 import type { PlayerStatus } from '@lib/player/player';
+import type { Written } from '@lib/written';
 import { isStoryAudio } from '@lib/catalog/built';
 import { libraryCards, type LibraryCard } from './library';
 import { studyWords, type StudyWords } from './strings';
@@ -138,8 +139,8 @@ export type StudyService = {
   search(query: string): Promise<SearchView>;
   fullText(query: string): Promise<readonly FullTextHit[]>;
   saved(target: BookmarkTarget): Bookmark | undefined;
-  save(target: BookmarkTarget): Promise<Bookmark | undefined>;
-  unsave(id: string): Promise<boolean>;
+  save(target: BookmarkTarget): Promise<Written<Bookmark> | undefined>;
+  unsave(id: string): Promise<Written<true> | undefined>;
   picture(frame: Frame): string | undefined;
   listen(clip: Pick<AudioClip, 'path'>): ClipControls;
   audioTime(status: PlayerStatus): string;

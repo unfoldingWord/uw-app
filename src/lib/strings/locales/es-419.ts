@@ -423,6 +423,8 @@ export const es419: LocaleTable = {
   'settings.theme.about': 'Claro, oscuro o igual que el teléfono.',
   'settings.reducedBlur': 'Reducir el desenfoque',
   'settings.reducedBlur.about': 'Un vidrio más simple que funciona mejor en teléfonos antiguos.',
+  'settings.reducedMotion': 'Reducir el movimiento',
+  'settings.reducedMotion.about': 'El vidrio se queda quieto en lugar de flotar y moverse.',
   'settings.firstName': 'Nombre',
   'settings.firstName.about': 'Se usa solo en el saludo, solo en este teléfono.',
   'settings.fullText': 'Buscar dentro de todos los textos',
@@ -442,8 +444,11 @@ export const es419: LocaleTable = {
     'Nada sale de este teléfono si tú no decides enviarlo. La aplicación cuenta aperturas, descargas, transferencias y envíos en total, sin identificadores.',
   'diagnostics.title': 'Compartir diagnóstico',
   'diagnostics.body':
-    'El archivo contiene un registro de lo que hizo la aplicación en este teléfono y un resumen de lo que hay en él, sin nombres, notas ni identificadores.',
+    'El archivo contiene un registro de lo que hizo la aplicación en este teléfono y un resumen de lo que hay en él, sin los pasajes, artículos e historias que abriste o guardaste, y sin nombres, notas ni identificadores.',
   'diagnostics.action': 'Compartir el archivo',
+  'diagnostics.body.reading':
+    'El archivo contiene un registro de lo que hizo la aplicación en este teléfono, un resumen de lo que hay en él y los pasajes, artículos e historias que abriste o guardaste, sin nombres, notas ni identificadores.',
+  'diagnostics.includeReading': 'Incluir lo que leí',
   'failure.http.offline': 'Estás sin conexión. Intenta de nuevo cuando tengas conexión.',
   'failure.http.timeout': 'La biblioteca tardó demasiado en responder. Intenta de nuevo en un momento.',
   'failure.http.status': 'La biblioteca no respondió como se esperaba. Intenta de nuevo más tarde.',

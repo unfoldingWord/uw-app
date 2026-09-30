@@ -415,6 +415,8 @@ export const nl: LocaleTable = {
   'settings.theme.about': 'Licht, donker of zoals de telefoon.',
   'settings.reducedBlur': 'Minder vervaging',
   'settings.reducedBlur.about': 'Eenvoudiger glas dat lichter werkt op oudere telefoons.',
+  'settings.reducedMotion': 'Minder beweging',
+  'settings.reducedMotion.about': 'Het glas blijft stil in plaats van te zweven en te ademen.',
   'settings.firstName': 'Voornaam',
   'settings.firstName.about': 'Alleen gebruikt in de begroeting, alleen op deze telefoon.',
   'settings.fullText': 'Zoeken in alle teksten',
@@ -434,8 +436,11 @@ export const nl: LocaleTable = {
     'Niets verlaat deze telefoon als je er niet zelf voor kiest het te sturen. De app telt openingen, downloads, overdrachten en gedeelde items in totaal, zonder kenmerken.',
   'diagnostics.title': 'Diagnose delen',
   'diagnostics.body':
-    'Het bestand bevat een verslag van wat de app op deze telefoon deed en een overzicht van wat erop staat, zonder namen, aantekeningen of kenmerken.',
+    'Het bestand bevat een verslag van wat de app op deze telefoon deed en een overzicht van wat erop staat, zonder de passages, artikelen en verhalen die je opende of bewaarde, en zonder namen, aantekeningen of kenmerken.',
   'diagnostics.action': 'Het bestand delen',
+  'diagnostics.body.reading':
+    'Het bestand bevat een verslag van wat de app op deze telefoon deed, een overzicht van wat erop staat en de passages, artikelen en verhalen die je opende of bewaarde, zonder namen, aantekeningen of kenmerken.',
+  'diagnostics.includeReading': 'Neem op wat ik las',
   'failure.http.offline': 'Je bent offline. Probeer het opnieuw als je verbinding hebt.',
   'failure.http.timeout': 'De bibliotheek deed er te lang over om te antwoorden. Probeer het zo opnieuw.',
   'failure.http.status': 'De bibliotheek antwoordde niet zoals verwacht. Probeer het later opnieuw.',

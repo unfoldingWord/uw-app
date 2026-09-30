@@ -61,7 +61,13 @@ with no `AppOpened` yet; a restart in replay journals the same event at the same
    event is part of that reaction and emits only `follows` events: when a pack with text arrives or leaves
    for a language whose full-text index is wanted, Corpus rebuilds the index inside its `PackInstalled` or
    `PackRemoved` reaction and emits `IndexBuilt` with no `IndexStarted`, so the redone install emits it again
-   at the same place in the journal.
+   at the same place in the journal. A command whose only step that can fail is one local database write
+   (a bookmark, a group, a position, a note) is the other way round: it writes first and emits its event only
+   once the write has succeeded, so the journal never says a bookmark was added that the database refused. When
+   the write fails it emits only a `Failure` with the port's code (`db.io` when the error carries none) and the
+   event it would have emitted in `context.type`, and returns `{ ok: false, code }` (`Written` in
+   `src/lib/written.ts`). Replay has nothing to redo for it, so the rebuilt state is the same and the replay
+   names the recorded `Failure` as the first divergence.
 3. **The redo handler uses only the recorded payload.** If a command needs a value that the journal may not
    hold, such as text a leader typed, the redo supplies a neutral stand-in and the snapshot must not show the
    difference. This is why a snapshot shows that a first name is set, never the name.
@@ -72,8 +78,9 @@ with no `AppOpened` yet; a restart in replay journals the same event at the same
 5. **Every minted id appears in the next event.** An id taken from `Ids.next()` appears in an `id` field of the
    next event the command emits, before another id is minted. The kernel holds each module to this: the
    `Ids` a module is handed throws on a second mint while an id is unannounced, and `emit` throws on an event
-   that does not carry it. Replay plays ids back in the order they first
-   appear in the journal.
+   that does not carry it. The one way to close an id without carrying it is a `Failure`: an id minted for a
+   write that failed belongs to nothing, no event carries it, and replay never plays it back. Replay plays ids
+   back in the order they first appear in the journal.
 6. **Reactions are awaited and do not rerun.** `observe(entry)` is called for each module in journal order, as
    the entry is appended, and may return a promise; `emit` resolves only once every module's reaction to that
    entry has settled. A reaction that throws becomes a `Failure` with code `kernel.observer-failed` and the
@@ -113,7 +120,19 @@ with no `AppOpened` yet; a restart in replay journals the same event at the same
   the replay names that divergence in the snapshot.
 - **A share.** `ShareSent` is `verbatim` and names the kind and the language, never the text. The journal
   file a leader shares (`diagnostics/journal.json`, DX-2) is a journal export with the device snapshot beside
-  it under `snapshot`, so `npm run replay` reads it as it is.
+  it under `snapshot` and a `reading` field, so `npm run replay` reads it as it is.
+- **What a leader read, unless they include it.** By default the shared file leaves reading out
+  (`reading: "left-out"`, `leaveOutReading` in `src/lib/share/reading.ts`): every event stays, with its time,
+  but `PassageOpened`, `ArticleOpened`, `StoryOpened` and `BookmarkAdded` lose their `reference`, `article`
+  and `story` fields, the snapshot counts the bookmarks instead of listing them, and the last passage per
+  language is gone. Those three fields are optional in the event table so the file still parses. Such a file
+  replays without error and rebuilds everything else: packs, corpus, groups and their positions, preferences
+  other than the last passage, telemetry folds, transfers and failures. It cannot rebuild a bookmark or the
+  last passage read, so the replayed device has no bookmarks, a replay names each left-out `BookmarkAdded` as
+  a divergence, and its id is never played back (`readingLeftOut`, used by `mintedIds`), so the ids of later
+  commands still line up. A report that needs a bookmark or the reading position to reproduce asks the
+  leader to share again with "Include what I read" on (`reading: "included"`); that file is the whole journal
+  and snapshot and replays to the same snapshot (DX-2).
 - **The world's weather.** A download that failed because the phone was offline fails again only if the replay
   world is offline too. A scenario that reproduces a field report scripts the world first, for example
   `device.adapters.http.script(url, 'offline')`, and then replays.

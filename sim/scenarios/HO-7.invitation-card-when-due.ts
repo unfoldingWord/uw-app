@@ -28,6 +28,7 @@ export default scenario(
       dismiss: 'Not now',
       readMore: 'Read the full story on unfoldingword.org',
       securityNote: 'Names in this story are changed for security.',
+      opensBrowser: 'Opens in your browser',
     });
 
     await home.invitationShown(world.clock.now());
@@ -39,8 +40,11 @@ export default scenario(
     );
     await home.tapInvitation();
     assert.equal(phone.kernel.telemetry.counts().invitationTaps, 1);
-    await home.dismissInvitation();
-    assert.deepEqual(home.invitation(world.clock.now()), { state: 'not-due', reason: 'dismissed' });
+    assert.deepEqual(
+      home.invitation(world.clock.now()),
+      { state: 'not-due', reason: 'dismissed' },
+      'a tap ends the cycle',
+    );
 
     const exported = JSON.parse(JSON.stringify(phone.kernel.journal.export())) as unknown;
     const replayed = await replayJournal(world, exported, 'replayed');

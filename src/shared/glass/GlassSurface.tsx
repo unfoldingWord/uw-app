@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Animated, StyleSheet, View, type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
 import { backgroundImage, useTheme, type Theme } from '@shared/theme';
-import { ContentColor } from './context';
+import { ContentColor, GlassLayer } from './context';
 import { GlassBlur } from './GlassBlur';
 import { useKeyframeLoop } from './motion';
 import { referenceValues } from './referenceValues';
@@ -138,7 +138,9 @@ export function GlassSurface({
           />
         ) : null}
       </View>
-      <ContentColor color={color}>{children}</ContentColor>
+      <GlassLayer>
+        <ContentColor color={color}>{children}</ContentColor>
+      </GlassLayer>
     </Animated.View>
   );
 }

@@ -92,6 +92,7 @@ export function InvitationCard() {
           variant="quiet"
           size="sm"
           accessibilityLabel={words.readMore}
+          accessibilityHint={words.opensBrowser}
           onPress={() => Linking.openURL(story.link)}
         >
           <ButtonLabel tone="link">{words.readMore}</ButtonLabel>
@@ -106,8 +107,10 @@ export function InvitationCard() {
           style={styles.grow}
           full
           accessibilityLabel={words.action}
+          accessibilityHint={words.opensBrowser}
           onPress={async () => {
             await home.tapInvitation();
+            setVersion((current) => current + 1);
             await Linking.openURL(give);
           }}
         >

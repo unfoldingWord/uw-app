@@ -43,6 +43,20 @@ export default scenario(
       'due',
       'a US time zone is enough',
     );
+    await byZone.kernel.partners.shown(world.clock.now());
+    await byZone.kernel.partners.tap();
+    assert.deepEqual(
+      byZone.kernel.journal
+        .read()
+        .map((entry) => entry.type)
+        .filter((type) => type.startsWith('Invitation')),
+      ['InvitationShown', 'InvitationTapped', 'InvitationDismissed'],
+      'a tap on the invitation ends the cycle as a dismissal does',
+    );
+    assert.deepEqual(byZone.kernel.partners.invitation(world.clock.now()), {
+      state: 'not-due',
+      reason: 'dismissed',
+    });
 
     const phone = world.device('phone', { locale: { tag: 'en-US', region: 'US', timeZone: 'UTC' } });
     await phone.start();

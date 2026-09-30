@@ -58,7 +58,7 @@ export function GlassChip({ leading, tone = 'light', size = 'md', children, styl
         {typeof children === 'string' ? (
           <Text
             style={{
-              ...coreFont(theme, theme.fontWeight.fwMedium),
+              ...coreFont(theme, theme.fontWeight.fwMedium, children),
               color,
               fontSize,
               lineHeight: fontSize * reference.lineHeight,
