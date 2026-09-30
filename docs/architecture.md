@@ -22,7 +22,7 @@ Each layer is legible without the one below it. A screen reads a feature service
 ## The kernel
 
 ```ts
-createKernel(ports: Ports, options: { migrations, journalLimit?, tailSize?, resume?, localeGate? }): Kernel
+createKernel(ports: Ports, options: { migrations, journalLimit?, tailSize?, resume?, localeGate?, faults? }): Kernel
 
 Kernel = {
   telemetry, catalog, packs, corpus, formation, strings, preferences, bookmarks,
@@ -34,7 +34,7 @@ Kernel = {
 
 One composition root. The phone calls it once with platform adapters, from `app/_layout.tsx`. The sim calls it many times with memory adapters. Nothing else constructs a module. This is the single fact an agent needs to hold: everything the app can do is a call on the kernel, and everything the app has done is in its journal.
 
-The controls: `start()` runs the migrations, reads the journal and journals `AppOpened`; `resume()` journals `AppOpened` for a new day when the app returns to the foreground on a day that has none yet (PA-2 counts days of use), and does nothing otherwise; `snapshot()` folds every module; `redo(event)` replays one journaled event (DX-3). The options: `migrations` (discovered by reserved location, never listed), the journal's bound and tail size, a journal to resume, and `localeGate`, which is the release gate `reviewed` unless a caller passes `drafts` (the sim and the web render harness do, so the drafted locales run before a native speaker signs them off; issue #51).
+The controls: `start()` runs the migrations, reads the journal and journals `AppOpened`; `resume()` journals `AppOpened` for a new day when the app returns to the foreground on a day that has none yet (PA-2 counts days of use), and does nothing otherwise; `snapshot()` folds every module; `redo(event)` replays one journaled event (DX-3). The options: `migrations` (discovered by reserved location, never listed), the journal's bound and tail size, a journal to resume, and `localeGate`, which is the release gate `reviewed` unless a caller passes `drafts` (the sim and the web render harness do, so the drafted locales run before a native speaker signs them off; issue #51); and `faults`, the platform faults of boot attempts that failed before a kernel existed, which `start()` journals as `Failure` events with a code and a step, before `AppOpened` (`createStartFaults` in `src/lib/faults.ts`; the iCloud backup exclusion's fault carries the step `backup`; issue #64).
 
 ## Ports
 
@@ -72,7 +72,7 @@ Each is a deep module: small interface, tests at the interface, internals free t
 
 **Formation.** `tracks(language)`, `session(track, n)`, `groups()`, `create(group)`, `rename`, `remove`, `activate`, `advance(group, step)`, `start`, `complete`, `note`, `saveNote`. A state machine over positions. Language fallback (plain stories when movements are absent, English movements alongside when asked) is decided here, once.
 
-**Transfer.** Sender: `offer(plan)` advertises under a short code, `run(transfer)` sends what the receiver accepts. Receiver: `discover()`, `connect(peer)` (or `connectAt(address, code)` for a typed or scanned address) sends the pairing code and shows the offer, `accept(selection)` receives and verifies every archive and returns a peer delivery (`PeerDelivery`) that hands Packs each archive as the file it was received into (`{ ok: true, path }`), never its bytes; then it is just `packs.install(fromPeer(delivery))`. Either side: `cancel()`, `current()`, `decline()`. On Android the receiver hands a received app package to the system installer with `installApp()`. A state machine over the Transport port, speaking a small versioned protocol (`src/lib/transfer/protocol.ts`). Carries burritos, and on Android the app package.
+**Transfer.** Sender: `offer(plan)` advertises under a short code, `run(transfer)` sends what the receiver accepts. Receiver: `discover()`, `connect(peer)` (or `connectAt(address, code)` for a typed or scanned address) sends the pairing code and shows the offer, `accept(selection)` receives and verifies every archive and returns a peer delivery (`PeerDelivery`) that hands Packs each archive as the file it was received into (`{ ok: true, path }`), never its bytes; then it is just `packs.install(fromPeer(delivery))`. Either side: `cancel()`, `current()`, `decline()`. On Android the receiver hands a received app package to the system installer with `installApp()`, and journals `AppInstallerOpened` once the installer is open. A state machine over the Transport port, speaking a small versioned protocol (`src/lib/transfer/protocol.ts`). Carries burritos, and on Android the app package.
 
 **Share.** `passage(passage)`, `story(story)`, `audio(clip)`, `journal(report)`, each with the locale for its words. Builds payloads with provenance and the link from content the corpus already returned, hands them to ShareSheet. `journal(report)` shares the diagnostics file; by default it leaves out what the leader read (the `reference`, `article` and `story` fields of the opening events, and bookmarks), keeping every event, unless the leader turns on "Include what I read" for that one share (issue #20, `replay.md`).
 
@@ -103,7 +103,7 @@ Nothing it reads identifies the leader or the device. The glass primitives in `s
 
 ## Events are the spine
 
-Every module returns events; the kernel appends them to the journal. Modules never call each other's internals; where one needs to react to another, it reacts to an event. There are 43 (`eventSchemas` in `src/lib/domain/events.ts`), each with a replay class (`redo`, `follows` or `verbatim`, `replay.md`):
+Every module returns events; the kernel appends them to the journal. Modules never call each other's internals; where one needs to react to another, it reacts to an event. There are 44 (`eventSchemas` in `src/lib/domain/events.ts`), each with a replay class (`redo`, `follows` or `verbatim`, `replay.md`):
 
 ```
 AppOpened   Failure(code, context)
@@ -112,7 +112,7 @@ PackInstallStarted   PackInstallProgressed   PackInstalled   PackResourceFailed 
 PassageOpened   ArticleOpened   StoryOpened   SearchRun   IndexStarted   IndexBuilt   IndexDropped
 GroupCreated   GroupRenamed   GroupDeleted   GroupActivated   PositionChanged
 SessionStarted   MovementCompleted   SessionCompleted   SessionNoteSaved   LessonCompleted
-TransferOffered   TransferAccepted   TransferProgressed   TransferCompleted   TransferFailed
+TransferOffered   TransferAccepted   TransferProgressed   TransferCompleted   TransferFailed   AppInstallerOpened
 ImportReceived   ShareSent   BookmarkAdded   BookmarkRemoved   PreferenceChanged
 InvitationShown   InvitationTapped   InvitationDismissed
 ImpactStoryOpened   ImpactStoriesRefreshStarted   ImpactStoriesRefreshed

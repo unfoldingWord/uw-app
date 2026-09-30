@@ -209,6 +209,7 @@ export const eventSchemas = {
     },
   },
   TransferFailed: { replay: 'verbatim', payload: { transfer: 'id', role: transferRoles, code: 'code' } },
+  AppInstallerOpened: { replay: 'verbatim', payload: {} },
   ImportReceived: { replay: 'verbatim', payload: { install: 'id' } },
   ShareSent: { replay: 'verbatim', payload: { kind: shareKinds, language: 'language?' } },
   BookmarkAdded: {

@@ -99,6 +99,7 @@ export const transferModule = defineModule<TransferApi>({
     'TransferProgressed',
     'TransferCompleted',
     'TransferFailed',
+    'AppInstallerOpened',
   ],
   owns: { tables: [], directories: [transferDirectory], keys: [] },
   create(context) {
@@ -352,6 +353,7 @@ export const transferModule = defineModule<TransferApi>({
           return await refuse('files.not-found');
         }
         await ports.transport.install(app.path);
+        await context.emit({ type: 'AppInstallerOpened', payload: {} });
         return { ok: true };
       } catch (error) {
         return refuse(failureCodeOf(error));

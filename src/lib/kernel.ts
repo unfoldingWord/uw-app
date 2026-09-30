@@ -15,6 +15,7 @@ import { bookmarksModule } from './bookmarks/bookmarks';
 import { partnersModule } from './partners/partners';
 import { transferModule } from './transfer/transfer';
 
+export { createStartFaults } from './faults';
 export { hostOf, isAllowedUrl } from './network';
 
 export const kernelModules = {

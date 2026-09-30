@@ -7,6 +7,7 @@ import {
   type EventType,
 } from './domain/events';
 import { failureCodeOf } from './domain/failures';
+import type { StartFault } from './faults';
 import { allowlistedHttp } from './guard';
 import type { JournalEntry, JournalStats } from './journal/entry';
 import type { JournalBaseline, JournalExport } from './journal/export';
@@ -28,6 +29,7 @@ export type KernelOptions = {
   journalLimit?: number;
   tailSize?: number;
   resume?: JournalResume;
+  faults?: readonly StartFault[];
 };
 
 export type JournalView = {
@@ -285,6 +287,12 @@ export function composeKernel<M extends ModuleSet>(
             code: 'db.migration-failed',
             context: migrated.failed === undefined ? {} : { migration: migrated.failed },
           },
+        });
+      }
+      for (const fault of options.faults ?? []) {
+        await journal.append({
+          type: 'Failure',
+          payload: { code: fault.code, context: { step: fault.step } },
         });
       }
       for (const instance of instances.values()) {

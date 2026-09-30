@@ -1,3 +1,4 @@
+import type { StartFault } from '@lib/faults';
 import type { JournalResume } from '@lib/journal/journal';
 import { createKernel, type Kernel } from '@lib/kernel';
 import type { AppPackage, Clock, DeviceLocale, DevicePlatform, Ids } from '@lib/ports';
@@ -23,6 +24,7 @@ export type DeviceOptions = {
   ids?: Ids;
   resume?: JournalResume;
   localeGate?: LocaleGate;
+  startFaults?: readonly StartFault[];
 };
 
 export type SimAdapters = {
@@ -78,14 +80,15 @@ export function createSimDevice(name: string, world: DeviceWorld, options: Devic
     picker: createMemoryPicker(),
     locale: createMemoryLocale(options.locale),
   };
-  const boot = (): Kernel =>
+  const boot = (faults: readonly StartFault[] = []): Kernel =>
     createKernel(adapters, {
       migrations,
+      ...(faults.length === 0 ? {} : { faults }),
       ...(options.journalLimit === undefined ? {} : { journalLimit: options.journalLimit }),
       ...(options.resume === undefined ? {} : { resume: options.resume }),
       ...(options.localeGate === undefined ? {} : { localeGate: options.localeGate }),
     });
-  let kernel = boot();
+  let kernel = boot(options.startFaults);
   return {
     name,
     adapters,

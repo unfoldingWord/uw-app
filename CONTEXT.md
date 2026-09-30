@@ -139,7 +139,7 @@ Where an advertisement listens on the shared local network, as host and port. Sh
 _Avoid_: IP, endpoint, URL
 
 **App package**:
-The Android app file one phone sends another so it can be installed without a store (SH-2). iOS has none.
+The Android app file one phone sends another so it can be installed without a store (SH-2). iOS has none. Handing it to the system installer is journaled as `AppInstallerOpened`.
 _Avoid_: APK (in copy), binary, installer
 
 **Link**:

@@ -40,6 +40,7 @@ export type FailureCode = (typeof failureCodes)[number];
 
 export const failureSteps = [
   'start',
+  'backup',
   'catalog',
   'install',
   'peer',
