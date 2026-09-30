@@ -4,13 +4,14 @@ import type { Library } from './library';
 import { resolveLink, wordLinkArticle } from './links';
 import { audioClips, bookNotes, bookQuestions, bookWordLinks, textBook } from './loaders';
 import { renderMarkdown } from './markdown';
-import { isStudyResource, readingOfKind } from './readings';
+import { isPairText, isStudyResource, readingOfKind } from './readings';
 import type { Entry } from './tables';
 import type { HelpsReference } from './tsv';
 import type { UsfmBook } from './usfm';
 import type {
   AudioClip,
   ChapterTitle,
+  CorpusKind,
   Note,
   Passage,
   PassageOptions,
@@ -72,19 +73,43 @@ function helpsCover(reference: HelpsReference, verses: readonly Verse[]): boolea
   return verses.some((verse) => coversVerse(reference, verse));
 }
 
+function isChoice(kind: CorpusKind): kind is TextChoice {
+  return kind === 'literal' || kind === 'simplified';
+}
+
+function pairPublisher(texts: readonly Entry[]): string | undefined {
+  return texts.find(
+    (entry) => isChoice(entry.kind) && isPairText(entry.provenance.resource, entry.language, entry.kind),
+  )?.provenance.publisher;
+}
+
+export function readingTexts(library: Library, language: string, book: string): readonly Entry[] {
+  const texts = library.of(language, textKinds).filter((entry) => entry.books.includes(book));
+  const publisher = pairPublisher(texts);
+  if (publisher === undefined) {
+    return texts;
+  }
+  const paired = (entry: Entry): number =>
+    isChoice(entry.kind) && isPairText(entry.provenance.resource, entry.language, entry.kind) ? 0 : 1;
+  return texts
+    .filter((entry) => entry.kind === 'original' || entry.provenance.publisher === publisher)
+    .map((entry, order) => ({ entry, order }))
+    .sort((left, right) => paired(left.entry) - paired(right.entry) || left.order - right.order)
+    .map(({ entry }) => entry);
+}
+
+export function defaultText(texts: readonly Entry[], wanted?: Reading): Entry | undefined {
+  const pick = (kind: Reading): Entry | undefined => texts.find((entry) => entry.kind === kind);
+  return wanted === undefined ? (pick('literal') ?? pick('simplified') ?? pick('original')) : pick(wanted);
+}
+
 function chosenText(
   library: Library,
   reference: Reference,
   options: PassageOptions,
 ): { entry: Entry | undefined; texts: readonly Entry[] } {
-  const texts = library
-    .of(options.language, textKinds)
-    .filter((entry) => entry.books.includes(reference.book));
-  const wanted = options.text;
-  const pick = (kind: Reading): Entry | undefined => texts.find((entry) => entry.kind === kind);
-  const entry =
-    wanted === undefined ? (pick('literal') ?? pick('simplified') ?? pick('original')) : pick(wanted);
-  return { entry, texts };
+  const texts = readingTexts(library, options.language, reference.book);
+  return { entry: defaultText(texts, options.text), texts };
 }
 
 async function notesFor(

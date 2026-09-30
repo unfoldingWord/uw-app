@@ -37,6 +37,52 @@ export default scenario(
       'the helps stay with the passage when the text changes',
     );
 
+    for (const [publisher, resource, abbreviation] of [
+      ['unfoldingWord', 'qae_t4t', 't4t'],
+      ['Fixture-Press', 'qae_ust', 'ust'],
+      ['unfoldingWord', 'qae_ust', 'ust'],
+      ['unfoldingWord', 'qae_ult', 'ult'],
+    ] as const) {
+      const text = buildBurrito({
+        publisher,
+        resource,
+        commit: 'c0ffee',
+        dateCreated: '2026-09-01T00:00:00Z',
+        generator: { softwareName: 'ST-3', softwareVersion: '1' },
+        language: { tag: 'qae', name: { en: 'Fixture language E' } },
+        name: { en: `${publisher} ${abbreviation}` },
+        abbreviation: { en: abbreviation },
+        flavorType: 'scripture',
+        flavor: 'textTranslation',
+        licence: { statement: 'Released under CC BY-SA 4.0', text: 'CC BY-SA 4.0' },
+        ingredients: [
+          {
+            path: '08-RUT.usfm',
+            bytes: utf8(`\\id RUT\n\\c 1\n\\v 16 Ruth spoke in the ${publisher} ${abbreviation}.`),
+            mimeType: mimeTypes.usfm,
+            scope: { RUT: ['1'] },
+          },
+        ],
+      });
+      const path = `imports/${publisher}-${resource}.zip`;
+      await device.adapters.files.mkdir('imports');
+      await device.adapters.files.writeBytes(
+        path,
+        writeArchive(text, { root: resource, mtime: new Date(2026, 8, 1) }),
+      );
+      const added = await device.kernel.packs.install(fromFile(path));
+      assert.ok(added.ok, added.ok ? '' : added.code);
+    }
+    const byCode = await corpus.passage(parsed.reference, { language: 'qae' });
+    assert.equal(byCode?.text.provenance.resource, 'qae_ult', 'the literal reading is the ult');
+    const everyday = await corpus.passage(parsed.reference, { language: 'qae', text: 'simplified' });
+    assert.equal(
+      everyday?.text.verses[0]?.text,
+      'Ruth spoke in the unfoldingWord ust.',
+      'the simplified reading is the ust of the preferred publisher, never another simplified text or publisher',
+    );
+    assert.deepEqual(everyday?.availableTexts, ['literal', 'simplified']);
+
     const hebrew = await corpus.passage(parsed.reference, { language: 'hbo' });
     assert.equal(hebrew?.text.reading, 'original');
     assert.deepEqual(hebrew?.availableTexts, [], 'no toggle where neither reading exists');

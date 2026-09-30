@@ -43,6 +43,15 @@ export function readingOfText(
     : 'literal';
 }
 
+const pairCodes: Readonly<Record<TextChoice, readonly string[]>> = {
+  literal: ['ult', 'glt'],
+  simplified: ['ust', 'gst'],
+};
+
+export function isPairText(resource: string, language: string, choice: TextChoice): boolean {
+  return pairCodes[choice].includes(codeOf(resource, language));
+}
+
 const studyHelpsCodes: readonly string[] = ['sn', 'sq', 'obs-sn', 'obs-sq'];
 
 export function isStudyResource(resource: string, language: string): boolean {
