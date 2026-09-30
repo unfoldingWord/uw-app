@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuroraField, StatusBar } from '@shared/glass';
+import { referenceValues } from '@shared/glass/referenceValues';
 import { useTheme } from '@shared/theme';
 import { prototypeValues } from './prototypeValues';
 import { useTabBarGrowth } from './tabBarHeight';
@@ -11,7 +12,9 @@ export type ScreenClearance = 'tabs' | 'footer' | 'none';
 export type ScreenScaffoldProps = {
   header?: ReactNode;
   footer?: ReactNode;
+  dock?: ReactNode;
   scroll?: boolean;
+  dense?: boolean;
   clearance?: ScreenClearance;
   children?: ReactNode;
 };
@@ -25,7 +28,9 @@ export function useBottomInset(): number {
 export function ScreenScaffold({
   header,
   footer,
+  dock,
   scroll = true,
+  dense = false,
   clearance = 'none',
   children,
 }: ScreenScaffoldProps) {
@@ -41,11 +46,11 @@ export function ScreenScaffold({
   const content = {
     flexGrow: 1,
     paddingHorizontal: theme.space.gutterScreen,
-    paddingBottom: bottom + reserved,
+    paddingBottom: dock === undefined ? bottom + reserved : theme.space.sp8,
     gap: theme.space.gapStack,
   };
   return (
-    <AuroraField>
+    <AuroraField intensity={dense ? referenceValues.auroraField.denseIntensity : undefined}>
       <StatusBar />
       {header}
       {scroll ? (
@@ -59,6 +64,9 @@ export function ScreenScaffold({
         </ScrollView>
       ) : (
         <View style={[styles.fill, content]}>{children}</View>
+      )}
+      {dock === undefined ? null : (
+        <View style={{ paddingHorizontal: theme.space.sp5, paddingBottom: bottom }}>{dock}</View>
       )}
       {footer === undefined ? null : (
         <View

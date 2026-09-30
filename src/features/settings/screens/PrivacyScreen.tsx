@@ -2,10 +2,8 @@ import { useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
+import { Card, Screen, ThemedText } from '@shared/ui';
 import { createSettingsService } from '../service';
-import { Card } from './parts/Card';
-import { Line } from './parts/Line';
-import { Screen } from './parts/Screen';
 
 export default function PrivacyScreen() {
   const service = useService(createSettingsService);
@@ -17,14 +15,14 @@ export default function PrivacyScreen() {
   return (
     <Screen title={privacy.title} back={{ label: words.t('common.back'), onPress: () => router.back() }}>
       <Card level={2}>
-        <Line role="body" tone="title" weight={theme.fontWeight.fwSemibold}>
+        <ThemedText variant="body" tone="title" weight={theme.fontWeight.fwSemibold}>
           {privacy.summary}
-        </Line>
+        </ThemedText>
       </Card>
       <Card level={1}>
-        <Line role="body" tone="body">
+        <ThemedText variant="body" tone="body">
           {privacy.intro}
-        </Line>
+        </ThemedText>
         <View accessibilityRole="list" style={{ gap: theme.space.sp4 }}>
           {privacy.counts.map((count) => (
             <View key={count.fold} style={[styles.item, { gap: theme.space.sp4 }]}>
@@ -37,18 +35,18 @@ export default function PrivacyScreen() {
                   backgroundColor: theme.color.accentBlue,
                 }}
               />
-              <Line role="label" tone="title" style={styles.grow}>
+              <ThemedText variant="label" tone="title" style={styles.grow}>
                 {count.label}
-              </Line>
+              </ThemedText>
             </View>
           ))}
         </View>
       </Card>
       <Card level={1}>
         {privacy.notes.map((note) => (
-          <Line key={note} role="body" tone="body">
+          <ThemedText key={note} variant="body" tone="body">
             {note}
-          </Line>
+          </ThemedText>
         ))}
       </Card>
     </Screen>

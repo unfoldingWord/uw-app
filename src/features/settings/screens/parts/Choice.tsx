@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { Icon } from '@shared/glass';
 import { touchSlop } from '@shared/glass/pressGate';
 import { useTheme } from '@shared/theme';
-import { Line } from './Line';
+import { ThemedText } from '@shared/ui';
 import { choiceExtent } from './touchExtent';
 
 export type ChoiceProps = {
@@ -54,18 +54,18 @@ export function Choice({ label, detail, selected, onPress, direction }: ChoicePr
       ]}
     >
       <View style={styles.text}>
-        <Line
-          role="label"
+        <ThemedText
+          variant="label"
           tone="title"
           weight={selected ? theme.fontWeight.fwSemibold : theme.fontWeight.fwMedium}
           style={direction === undefined ? undefined : { writingDirection: direction }}
         >
           {label}
-        </Line>
+        </ThemedText>
         {detail === undefined ? null : (
-          <Line role="caption" tone="dim">
+          <ThemedText variant="caption" tone="dim">
             {detail}
-          </Line>
+          </ThemedText>
         )}
       </View>
       {selected ? <Icon name="check" size={theme.space.sp8} /> : null}

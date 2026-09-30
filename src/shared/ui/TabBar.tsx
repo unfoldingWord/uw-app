@@ -44,7 +44,7 @@ function Tab({ label, icon, focused, onPress }: Omit<TabItem, 'key'>) {
             ]
               .filter(Boolean)
               .join(', '),
-            transform: [{ scale: press.scale }],
+            transform: press.transform,
           },
         ]}
       >

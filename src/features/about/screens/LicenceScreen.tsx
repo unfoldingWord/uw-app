@@ -3,10 +3,8 @@ import { useCallback, useState } from 'react';
 import { GlassButton } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
+import { Card, Screen, SectionTitle, ThemedText } from '@shared/ui';
 import { createAboutService } from '../service';
-import { Card, SectionTitle } from './parts/Card';
-import { Line } from './parts/Line';
-import { Screen } from './parts/Screen';
 
 export default function LicenceScreen() {
   const service = useService(createAboutService);
@@ -19,9 +17,9 @@ export default function LicenceScreen() {
   return (
     <Screen title={licence.title} back={{ label: words.t('common.back'), onPress: () => router.back() }}>
       <Card level={2}>
-        <Line role="body" tone="title">
+        <ThemedText variant="body" tone="title">
           {licence.partners}
-        </Line>
+        </ThemedText>
         <GlassButton
           full
           variant="dark"
@@ -33,27 +31,27 @@ export default function LicenceScreen() {
       </Card>
       <Card level={1}>
         {licence.notices.map((notice) => (
-          <Line key={notice} role="body" tone="body">
+          <ThemedText key={notice} variant="body" tone="body">
             {notice}
-          </Line>
+          </ThemedText>
         ))}
       </Card>
       <SectionTitle>{licence.onPhoneTitle}</SectionTitle>
       {licence.onPhone.length === 0 ? (
-        <Line role="body" tone="dim">
+        <ThemedText variant="body" tone="dim">
           {words.t('storage.empty')}
-        </Line>
+        </ThemedText>
       ) : (
         <Card level={1} style={{ gap: theme.space.sp6 }}>
           {licence.onPhone.map((row) => (
-            <Line key={`${row.publisher}/${row.resource}/${row.version}`} role="label" tone="title">
+            <ThemedText key={`${row.publisher}/${row.resource}/${row.version}`} variant="label" tone="title">
               {words.t('common.attribution', {
                 resource: row.title,
                 publisher: row.publisher,
                 version: row.version,
                 licence: row.licence,
               })}
-            </Line>
+            </ThemedText>
           ))}
         </Card>
       )}

@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { FailureCode } from '@lib/domain/failures';
 import { GlassButton, GlassIconButton, GlassSurface, Icon } from '@shared/glass';
 import { useService } from '@shared/kernel';
-import { useTheme } from '@shared/theme';
+import { contentText, useTheme } from '@shared/theme';
 import { Notice } from '@shared/ui';
 import { createStudyService } from '../service';
 import { Attribution } from './parts/Attribution';
@@ -13,7 +13,6 @@ import { ScreenFrame, TopBar } from './parts/Frame';
 import { FramePicture } from './parts/FramePicture';
 import { passageHref, studyRoutes } from './parts/routes';
 import { Say } from './parts/Say';
-import { contentText } from './parts/script';
 import { StatePanel } from './parts/StatePanel';
 import { useLoaded } from './parts/useLoaded';
 
@@ -37,7 +36,7 @@ export default function StoryScreen() {
   const [failure, setFailure] = useState<FailureCode | undefined>(undefined);
 
   if (value === undefined) {
-    return <ScreenFrame />;
+    return <ScreenFrame loading={words.t('common.busy')} />;
   }
 
   if (value.state !== 'story') {

@@ -19,7 +19,7 @@ export type CardProps = {
 export function Card({
   padding = 'card',
   level = 2,
-  shadow = 'card',
+  shadow,
   compact = false,
   style,
   children,
@@ -35,9 +35,9 @@ export function Card({
   const surface = (
     <GlassSurface
       level={level}
-      blur="strong"
+      blur={level === 1 ? 'soft' : 'strong'}
       radius={radius}
-      shadow={shadow}
+      shadow={shadow ?? (level === 1 ? 'none' : 'card')}
       style={[{ padding: inner, gap: theme.space.sp4 }, style]}
     >
       {children}

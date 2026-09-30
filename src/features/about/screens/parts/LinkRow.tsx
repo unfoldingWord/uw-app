@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { GlassSurface, Icon } from '@shared/glass';
 import { useTheme } from '@shared/theme';
-import { Line } from './Line';
+import { ThemedText } from '@shared/ui';
 
 export type LinkRowProps = {
   title: string;
@@ -38,13 +38,18 @@ export function LinkRow({ title, about, hint, brand = false, external = true, on
         ]}
       >
         <View style={[styles.text, { gap: theme.space.sp1 }]}>
-          <Line role="body" tone="title" brand={brand} weight={theme.fontWeight.fwSemibold}>
+          <ThemedText
+            variant="body"
+            tone="title"
+            family={brand ? 'brand' : 'core'}
+            weight={theme.fontWeight.fwSemibold}
+          >
             {title}
-          </Line>
+          </ThemedText>
           {about === undefined ? null : (
-            <Line role="caption" tone="body" brand={brand}>
+            <ThemedText variant="caption" tone="body" family={brand ? 'brand' : 'core'}>
               {about}
-            </Line>
+            </ThemedText>
           )}
         </View>
         <Icon name={external ? 'arrowUpRight' : 'chevronRight'} size={theme.space.sp8} />

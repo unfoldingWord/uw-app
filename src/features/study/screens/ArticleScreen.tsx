@@ -4,14 +4,13 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GlassButton, GlassIconButton, GlassSurface, Icon } from '@shared/glass';
 import { useService } from '@shared/kernel';
-import { useTheme } from '@shared/theme';
+import { directionOf, useTheme } from '@shared/theme';
 import { createStudyService } from '../service';
 import { Attribution } from './parts/Attribution';
 import { Blocks } from './parts/Blocks';
 import { ScreenFrame, TopBar } from './parts/Frame';
 import { articleHref, studyRoutes, useOpenTarget } from './parts/routes';
 import { Say } from './parts/Say';
-import { directionOf } from './parts/script';
 import { StatePanel } from './parts/StatePanel';
 import { useLoaded } from './parts/useLoaded';
 
@@ -34,7 +33,7 @@ export default function ArticleScreen() {
   const language = service.language() ?? '';
 
   if (value === undefined) {
-    return <ScreenFrame />;
+    return <ScreenFrame loading={words.t('common.busy')} />;
   }
 
   if (value.state !== 'article') {

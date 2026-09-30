@@ -1,10 +1,8 @@
 import { StyleSheet, View } from 'react-native';
 import { GlassButton, GlassChip } from '@shared/glass';
 import { useTheme } from '@shared/theme';
+import { Card, ThemedText, Toggle } from '@shared/ui';
 import type { EnglishMovements, FormationWords } from '../../service';
-import { Card } from './Card';
-import { Line } from './Line';
-import { Toggle } from './Toggle';
 
 export type FallbackCardProps = {
   words: FormationWords;
@@ -53,12 +51,12 @@ export function FallbackCard({
           }}
         />
         <View style={[styles.grow, { gap: theme.space.sp1 }]}>
-          <Line role="label" tone="title" weight={theme.fontWeight.fwSemibold}>
+          <ThemedText variant="label" tone="title" weight={theme.fontWeight.fwSemibold}>
             {words.t('session.fallback.title', { language })}
-          </Line>
-          <Line role="caption" tone="body">
+          </ThemedText>
+          <ThemedText variant="caption" tone="body">
             {lineFor(words, english, language)}
-          </Line>
+          </ThemedText>
         </View>
         <Toggle label={words.t('session.fallback.toggle')} on={on} onChange={onToggle} />
       </View>
@@ -69,9 +67,9 @@ export function FallbackCard({
         </GlassButton>
       ) : null}
       {failure === undefined ? null : (
-        <Line role="caption" tone="body">
+        <ThemedText variant="caption" tone="body">
           {failure}
-        </Line>
+        </ThemedText>
       )}
     </Card>
   );

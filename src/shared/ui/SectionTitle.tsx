@@ -2,9 +2,9 @@ import { View } from 'react-native';
 import { useTheme } from '@shared/theme';
 import { ThemedText } from './ThemedText';
 
-export type SectionTitleProps = { children: string; trailing?: string };
+export type SectionTitleProps = { children: string; trailing?: string; brand?: boolean };
 
-export function SectionTitle({ children, trailing }: SectionTitleProps) {
+export function SectionTitle({ children, trailing, brand = false }: SectionTitleProps) {
   const theme = useTheme();
   return (
     <View
@@ -16,7 +16,12 @@ export function SectionTitle({ children, trailing }: SectionTitleProps) {
         paddingHorizontal: theme.space.sp2,
       }}
     >
-      <ThemedText variant="overline" tone="dim" accessibilityRole="header">
+      <ThemedText
+        variant="overline"
+        tone={brand ? 'accent' : 'dim'}
+        family={brand ? 'brand' : 'core'}
+        accessibilityRole="header"
+      >
         {children}
       </ThemedText>
       {trailing === undefined ? null : (

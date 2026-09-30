@@ -111,7 +111,7 @@ export default function StudyScreen() {
   };
 
   if (value === undefined) {
-    return <ScreenFrame />;
+    return <ScreenFrame loading={words.t('common.busy')} />;
   }
 
   const { view, books } = value;

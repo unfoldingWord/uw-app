@@ -4,10 +4,8 @@ import { View } from 'react-native';
 import { GlassButton, GlassSurface } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
+import { Card, Screen, ThemedText } from '@shared/ui';
 import { createAboutService, type ImpactStoryView } from '../service';
-import { Card } from './parts/Card';
-import { Line } from './parts/Line';
-import { Screen } from './parts/Screen';
 import { StoryWell } from './parts/StoryWell';
 
 export default function ImpactStoryScreen() {
@@ -39,9 +37,9 @@ export default function ImpactStoryScreen() {
     return (
       <Screen brand title={words.t('about.stories')} back={back}>
         <Card level={1}>
-          <Line role="body" tone="body" brand>
+          <ThemedText variant="body" tone="body" family="brand">
             {words.t('failure.files.not-found')}
-          </Line>
+          </ThemedText>
         </Card>
       </Screen>
     );
@@ -56,19 +54,19 @@ export default function ImpactStoryScreen() {
         style={{ padding: theme.space.sp5, gap: theme.space.sp6 }}
       >
         <StoryWell {...(story.image === undefined ? {} : { image: story.image, label: story.title })}>
-          <Line role="overline" tone="onImage" brand>
+          <ThemedText variant="overline" tone="onImage" family="brand">
             {story.overline}
-          </Line>
+          </ThemedText>
         </StoryWell>
         <View style={{ gap: theme.space.sp6, paddingHorizontal: theme.space.sp4 }}>
           {story.body.map((paragraph, index) => (
-            <Line key={index} role="body" tone="title" brand>
+            <ThemedText key={index} variant="body" tone="title" family="brand">
               {paragraph}
-            </Line>
+            </ThemedText>
           ))}
-          <Line role="caption" tone="dim" brand>
+          <ThemedText variant="caption" tone="dim" family="brand">
             {story.securityNote}
-          </Line>
+          </ThemedText>
         </View>
         <GlassButton
           full
@@ -77,9 +75,9 @@ export default function ImpactStoryScreen() {
           accessibilityHint={words.t('common.opensBrowser')}
           onPress={() => router.push(story.link)}
         >
-          <Line role="label" tone="onInverse" brand weight={theme.fontWeight.fwSemibold}>
+          <ThemedText variant="label" tone="inverse" family="brand" weight={theme.fontWeight.fwSemibold}>
             {story.readMore}
-          </Line>
+          </ThemedText>
         </GlassButton>
       </GlassSurface>
     </Screen>

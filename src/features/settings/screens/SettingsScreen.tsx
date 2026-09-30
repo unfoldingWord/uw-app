@@ -5,6 +5,7 @@ import { failureCodeOf, type FailureCode } from '@lib/domain/failures';
 import { GlassButton, GlassInput, Icon } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
+import { Card, ListRow, Screen, ThemedText, Toggle } from '@shared/ui';
 import {
   createSettingsService,
   type FullTextState,
@@ -14,13 +15,8 @@ import {
   type StorageView,
   type ThemeChoice,
 } from '../service';
-import { Card } from './parts/Card';
 import { Choice } from './parts/Choice';
-import { Line } from './parts/Line';
-import { Row } from './parts/Row';
-import { Screen } from './parts/Screen';
 import { StorageSection } from './parts/StorageSection';
-import { Toggle } from './parts/Toggle';
 import { useLoad } from './parts/useLoad';
 
 type Overview = {
@@ -99,23 +95,24 @@ export default function SettingsScreen() {
 
   return (
     <Screen
+      dense
       title={words.t('settings.title')}
       back={{ label: words.t('common.back'), onPress: () => router.back() }}
     >
       {failure === undefined ? null : (
-        <Line role="caption" tone="body" live>
+        <ThemedText variant="caption" tone="body" live>
           {words.t(`failure.${failure}`)}
-        </Line>
+        </ThemedText>
       )}
-      <Row
+      <ListRow
         title={words.t('settings.appLanguage')}
         detail={appLanguage?.about ?? words.t('settings.appLanguage.about')}
         selected={languagesOpen}
         trailing={
           <View style={[styles.value, { gap: theme.space.sp3 }]}>
-            <Line role="label" tone="dim">
+            <ThemedText variant="label" tone="dim">
               {current?.name ?? ''}
-            </Line>
+            </ThemedText>
             <Icon name="chevronDown" size={theme.space.sp8} />
           </View>
         }
@@ -137,18 +134,18 @@ export default function SettingsScreen() {
               }}
             />
           ))}
-          <Line role="caption" tone="dim">
+          <ThemedText variant="caption" tone="dim">
             {words.t('settings.appLanguage.direction')}
-          </Line>
+          </ThemedText>
         </Card>
       ) : null}
       <Card level={1}>
-        <Line role="body" tone="title" weight={theme.fontWeight.fwSemibold}>
+        <ThemedText variant="body" tone="title" weight={theme.fontWeight.fwSemibold}>
           {words.t('settings.theme')}
-        </Line>
-        <Line role="caption" tone="body">
+        </ThemedText>
+        <ThemedText variant="caption" tone="body">
           {themeEntry?.about ?? words.t('settings.theme.about')}
-        </Line>
+        </ThemedText>
         <View accessibilityRole="radiogroup" style={[styles.wrap, { gap: theme.space.gapInline }]}>
           {themeChoices.map((choice) => (
             <Choice
@@ -166,12 +163,12 @@ export default function SettingsScreen() {
       <Card level={1}>
         <View style={[styles.value, { gap: theme.space.sp6 }]}>
           <View style={styles.grow}>
-            <Line role="body" tone="title" weight={theme.fontWeight.fwSemibold}>
+            <ThemedText variant="body" tone="title" weight={theme.fontWeight.fwSemibold}>
               {words.t('settings.reducedBlur')}
-            </Line>
-            <Line role="caption" tone="body">
+            </ThemedText>
+            <ThemedText variant="caption" tone="body">
               {blur?.about ?? words.t('settings.reducedBlur.about')}
-            </Line>
+            </ThemedText>
           </View>
           <Toggle
             label={words.t('settings.reducedBlur')}
@@ -181,12 +178,12 @@ export default function SettingsScreen() {
         </View>
         <View style={[styles.value, { gap: theme.space.sp6 }]}>
           <View style={styles.grow}>
-            <Line role="body" tone="title" weight={theme.fontWeight.fwSemibold}>
+            <ThemedText variant="body" tone="title" weight={theme.fontWeight.fwSemibold}>
               {words.t('settings.reducedMotion')}
-            </Line>
-            <Line role="caption" tone="body">
+            </ThemedText>
+            <ThemedText variant="caption" tone="body">
               {motion?.about ?? words.t('settings.reducedMotion.about')}
-            </Line>
+            </ThemedText>
           </View>
           <Toggle
             label={words.t('settings.reducedMotion')}
@@ -196,12 +193,12 @@ export default function SettingsScreen() {
         </View>
       </Card>
       <Card level={1}>
-        <Line role="body" tone="title" weight={theme.fontWeight.fwSemibold}>
+        <ThemedText variant="body" tone="title" weight={theme.fontWeight.fwSemibold}>
           {words.t('settings.firstName')}
-        </Line>
-        <Line role="caption" tone="body">
+        </ThemedText>
+        <ThemedText variant="caption" tone="body">
           {firstName?.about ?? words.t('settings.firstName.about')}
-        </Line>
+        </ThemedText>
         <GlassInput
           accessibilityLabel={words.t('settings.firstName')}
           value={name}
@@ -220,21 +217,21 @@ export default function SettingsScreen() {
             {words.t('common.save')}
           </GlassButton>
           {nameState === 'idle' ? null : (
-            <Line role="caption" tone="dim" live style={styles.grow}>
+            <ThemedText variant="caption" tone="dim" live style={styles.grow}>
               {nameState === 'saved' ? words.t('common.done') : words.t(`failure.${nameState}`)}
-            </Line>
+            </ThemedText>
           )}
         </View>
       </Card>
       <Card level={1}>
         <View style={[styles.value, { gap: theme.space.sp6 }]}>
           <View style={styles.grow}>
-            <Line role="body" tone="title" weight={theme.fontWeight.fwSemibold}>
+            <ThemedText variant="body" tone="title" weight={theme.fontWeight.fwSemibold}>
               {words.t('settings.fullText')}
-            </Line>
-            <Line role="caption" tone="body">
+            </ThemedText>
+            <ThemedText variant="caption" tone="body">
               {fullText?.about ?? fullTextEntry?.about ?? words.t('common.busy')}
-            </Line>
+            </ThemedText>
           </View>
           <Toggle
             label={words.t('settings.fullText')}
@@ -257,7 +254,7 @@ export default function SettingsScreen() {
       {links.map((link) => {
         const entry = entryOf(entries, link.id);
         return entry === undefined ? null : (
-          <Row
+          <ListRow
             key={link.id}
             title={entry.title}
             detail={entry.about}
@@ -265,18 +262,18 @@ export default function SettingsScreen() {
           />
         );
       })}
-      <Row
+      <ListRow
         title={words.t('settings.diagnostics')}
         detail={words.t('settings.diagnostics.about')}
         onPress={() => router.push('/diagnostics')}
       />
-      <Line
-        role="caption"
+      <ThemedText
+        variant="caption"
         tone="faint"
         style={{ paddingHorizontal: theme.space.sp2, paddingTop: theme.space.sp6 }}
       >
         {service.footer()}
-      </Line>
+      </ThemedText>
     </Screen>
   );
 }

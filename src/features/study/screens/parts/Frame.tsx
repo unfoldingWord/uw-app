@@ -1,15 +1,20 @@
 import { useRouter } from 'expo-router';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { AuroraField, GlassIconButton, Icon, StatusBar } from '@shared/glass';
-import { useTheme } from '@shared/theme';
-import { Say } from './Say';
+import { AuroraField, StatusBar } from '@shared/glass';
+import { referenceValues } from '@shared/glass/referenceValues';
+import { Header, Loading } from '@shared/ui';
 
-export function ScreenFrame({ children }: { children?: ReactNode }) {
+export type ScreenFrameProps = { dense?: boolean; loading?: string; children?: ReactNode };
+
+export function ScreenFrame({ dense = false, loading, children }: ScreenFrameProps) {
   return (
-    <AuroraField style={styles.fill}>
+    <AuroraField
+      style={styles.fill}
+      intensity={dense ? referenceValues.auroraField.denseIntensity : undefined}
+    >
       <StatusBar />
-      <View style={styles.fill}>{children}</View>
+      <View style={styles.fill}>{loading === undefined ? children : <Loading label={loading} />}</View>
     </AuroraField>
   );
 }
@@ -24,49 +29,23 @@ export type TopBarProps = {
 };
 
 export function TopBar({ backLabel, overline, title, centered = false, trailing, children }: TopBarProps) {
-  const theme = useTheme();
   const router = useRouter();
   return (
-    <View
-      style={[
-        styles.row,
-        {
-          gap: theme.space.sp5,
-          paddingHorizontal: theme.space.gutterScreen,
-          paddingTop: theme.space.sp6,
-        },
-      ]}
+    <Header
+      back={{
+        label: backLabel,
+        onPress: () => (router.canGoBack() ? router.back() : router.navigate('/study')),
+      }}
+      overline={overline === undefined || overline.length === 0 ? undefined : overline}
+      title={title}
+      centred={centered}
+      trailing={trailing}
     >
-      <GlassIconButton
-        label={backLabel}
-        size={theme.space.sp14}
-        onPress={() => (router.canGoBack() ? router.back() : router.navigate('/study'))}
-      >
-        <Icon name="chevronLeft" />
-      </GlassIconButton>
-      <View style={[styles.fill, centered ? styles.centered : undefined]}>
-        {children ?? (
-          <>
-            {overline === undefined || overline.length === 0 ? null : (
-              <Say role="caption" tone="dim">
-                {overline}
-              </Say>
-            )}
-            {title === undefined ? null : (
-              <Say role={centered ? 'label' : 'hero'} tone="title" weight={centered ? 'semibold' : undefined}>
-                {title}
-              </Say>
-            )}
-          </>
-        )}
-      </View>
-      {trailing}
-    </View>
+      {children}
+    </Header>
   );
 }
 
 const styles = StyleSheet.create({
   fill: { flex: 1 },
-  row: { flexDirection: 'row', alignItems: 'center' },
-  centered: { alignItems: 'center' },
 });

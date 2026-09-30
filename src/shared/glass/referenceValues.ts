@@ -1,5 +1,5 @@
 export const referenceValues = {
-  auroraField: { insetPercent: 18, driftMs: 22000 },
+  auroraField: { insetPercent: 18, driftMs: 22000, denseIntensity: 0.5 },
   dotRing: {
     size: 170,
     rings: 7,

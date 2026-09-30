@@ -3,10 +3,9 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { GlassButton, Icon } from '@shared/glass';
 import { touchSlop } from '@shared/glass/pressGate';
 import { useTheme } from '@shared/theme';
+import { Card, ThemedText } from '@shared/ui';
 import type { FormationWords, SessionMovement, SessionMovementId } from '../../service';
 import { Blocks } from './Blocks';
-import { Card } from './Card';
-import { Line } from './Line';
 import { movementChipExtent } from './touchExtent';
 import { movementTitle } from './wording';
 
@@ -41,9 +40,9 @@ export function MovementsCard({
   const finished = done.has(movement.id);
   return (
     <Card level={2}>
-      <Line role="overline" tone="dim" accessibilityRole="header">
+      <ThemedText variant="overline" tone="dim" accessibilityRole="header">
         {words.t('session.talk.source', { language: source })}
-      </Line>
+      </ThemedText>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -63,9 +62,9 @@ export function MovementsCard({
       {movement.questions.length > 0 ? (
         <View style={{ gap: theme.space.sp6 }}>
           {movement.questions.map((question, index) => (
-            <Line key={index} role="body" tone="body">
+            <ThemedText key={index} variant="body" tone="body">
               {question}
-            </Line>
+            </ThemedText>
           ))}
         </View>
       ) : (
@@ -74,9 +73,9 @@ export function MovementsCard({
       {onComplete === undefined ? null : finished ? (
         <View style={[styles.done, { gap: theme.space.sp3 }]}>
           <Icon name="check" size={theme.space.sp8} />
-          <Line role="label" tone="dim">
+          <ThemedText variant="label" tone="dim">
             {words.t('common.joined', { first: title, second: words.t('common.done') })}
-          </Line>
+          </ThemedText>
         </View>
       ) : (
         <GlassButton
@@ -127,9 +126,9 @@ function MovementChip({ label, active, done, onPress }: MovementChipProps) {
       ]}
     >
       {done ? <Icon name="check" size={theme.fontSize.fsCaption} /> : null}
-      <Line role="caption" tone="title" weight={theme.fontWeight.fwMedium}>
+      <ThemedText variant="caption" tone="title" weight={theme.fontWeight.fwMedium}>
         {label}
-      </Line>
+      </ThemedText>
     </Pressable>
   );
 }
