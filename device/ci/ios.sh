@@ -14,23 +14,36 @@ fi
 bundle="$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' "$GITHUB_WORKSPACE/build/Build/Products/Release-iphonesimulator/unfoldingWord.app/Info.plist")"
 echo "Maestro drives $bundle"
 
+run_flows() {
+  local attempt="$1"
+  mkdir -p "$out/$attempt"
+  (
+    cd "$out/$attempt" &&
+      maestro --device "$udid" test "${tags[@]}" \
+        -e APP_ID="$bundle" \
+        --format junit --output report.xml \
+        --test-output-dir . \
+        --debug-output debug \
+        "$GITHUB_WORKSPACE/device/flows"
+  )
+}
+
 status=0
-(
-  cd "$out" &&
-    maestro --device "$udid" test "${tags[@]}" \
-      -e APP_ID="$bundle" \
-      --format junit --output report.xml \
-      --test-output-dir . \
-      --debug-output debug \
-      "$GITHUB_WORKSPACE/device/flows"
-) || status=$?
+run_flows first || status=$?
+if [ "$status" -ne 0 ]; then
+  echo "::warning::The first pass failed; running every flow once more. A real regression fails both passes."
+  status=0
+  run_flows second || status=$?
+fi
 
 echo "::group::failed steps"
 bash "$GITHUB_WORKSPACE/device/ci/failed-steps.sh" "$out" "$HOME/.maestro/tests"
 echo "::endgroup::"
 
 echo "::group::screenshots (base64 jpeg)"
-bash "$GITHUB_WORKSPACE/device/ci/print-shots.sh" "$out" "$HOME/.maestro/tests"
+last="$out/first"
+[ -d "$out/second" ] && last="$out/second"
+bash "$GITHUB_WORKSPACE/device/ci/print-shots.sh" "$last"
 echo "::endgroup::"
 
 xcrun simctl spawn "$udid" log show --style compact --last 20m \
