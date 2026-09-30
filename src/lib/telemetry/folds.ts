@@ -24,7 +24,7 @@ export const emptyTelemetry: Telemetry = Object.freeze({
   impactStoryOpens: 0,
 });
 
-export const leavingFolds = [
+export const telemetryFolds = [
   'appOpens',
   'languagePackDownloads',
   'transfersCompleted',
@@ -34,9 +34,9 @@ export const leavingFolds = [
   'impactStoryOpens',
 ] as const satisfies readonly (keyof Telemetry)[];
 
-export type LeavingFold = (typeof leavingFolds)[number];
+export type TelemetryFold = (typeof telemetryFolds)[number];
 
-export type LeavingCounts = Pick<Telemetry, LeavingFold>;
+export type LeavingCounts = Pick<Telemetry, TelemetryFold>;
 
 export function leavingCounts(counts: Telemetry): LeavingCounts {
   return {

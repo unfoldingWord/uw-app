@@ -5,7 +5,7 @@ import {
   foldDaysOfUse,
   foldTelemetry,
   leavingCounts,
-  leavingFolds,
+  telemetryFolds,
   telemetryStep,
 } from './folds';
 
@@ -126,7 +126,7 @@ describe('telemetry folds (PRD section 9)', () => {
   });
 
   it('lets only the section 9 fold list leave, with no platform pair split', () => {
-    expect([...leavingFolds]).toEqual([
+    expect([...telemetryFolds]).toEqual([
       'appOpens',
       'languagePackDownloads',
       'transfersCompleted',
@@ -136,8 +136,8 @@ describe('telemetry folds (PRD section 9)', () => {
       'impactStoryOpens',
     ]);
     const leaving = leavingCounts(foldTelemetry(events));
-    expect(Object.keys(leaving)).toEqual([...leavingFolds]);
-    expect(Object.keys(foldTelemetry(events)).sort()).toEqual([...leavingFolds].sort());
+    expect(Object.keys(leaving)).toEqual([...telemetryFolds]);
+    expect(Object.keys(foldTelemetry(events)).sort()).toEqual([...telemetryFolds].sort());
     expect(leaving.transfersCompleted).toBe(1);
   });
 
