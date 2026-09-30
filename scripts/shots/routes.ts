@@ -22,7 +22,7 @@ export type Shot = {
 
 const leftToRight: readonly Mode['name'][] = ['light', 'dark', 'reduced-blur', 'large-text'];
 
-export const largeTextZoom = 2;
+const largeTextZoom = 2;
 
 export const modes: readonly Mode[] = [
   {
