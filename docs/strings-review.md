@@ -74,7 +74,7 @@ release gate is `releaseGate` in `src/lib/strings/locales.ts` (`reviewed`).
   placeholder until comms supplies the website's security note (`docs/impact-stories.md`); a story that carries
   its own note shows that note instead.
 - **Drafted with the Transfer, Share and diagnostics services.** `transfer.code`, `transfer.code.hint` and
-  `transfer.nothing`. The code is the four digits both phones show while they pair; the word for it should be
+  `transfer.nothing`. The code is the six digits both phones show while they pair (four until v1.1.0, issue #64); the word for it should be
   the one people use for a short number read aloud, not a password or a PIN.
 - **Drafted in T11.** Seven keys were added with the Study screens and drafted in every locale at once:
   `study.helps.showResponse`, `study.helps.hideResponse`, `study.noLanguage`, `study.noLanguage.action`,

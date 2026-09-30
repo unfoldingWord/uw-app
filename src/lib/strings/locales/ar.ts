@@ -556,7 +556,7 @@ export const ar: LocaleTable = {
   'transfer.typed.address': 'العنوان من الهاتف الآخر',
   'transfer.typed.code': 'الرمز من الهاتف الآخر',
   'transfer.typed.connect': 'اتصل',
-  'transfer.typed.invalid': 'اكتب العنوان والرمز المكوّن من أربعة أرقام كما يعرضهما الهاتف الآخر.',
+  'transfer.typed.invalid': 'اكتب العنوان والرمز المكوّن من ستة أرقام كما يعرضهما الهاتف الآخر.',
   'transfer.app.install': 'ثبّت التطبيق',
   'transfer.app.install.opened': 'المثبّت مفتوح. اتبع خطواته حتى النهاية.',
   'transfer.app.install.unsupported':

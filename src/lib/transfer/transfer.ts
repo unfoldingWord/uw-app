@@ -58,8 +58,8 @@ const discoverTimeoutMs = 10 * 1000;
 const maximumRefusals = 8;
 
 export function pairingCode(transfer: string): string {
-  const value = Number.parseInt(md5Hex(utf8(transfer)).slice(0, 8), 16) % 10_000;
-  return String(value).padStart(4, '0');
+  const value = Number.parseInt(md5Hex(utf8(transfer)).slice(0, 8), 16) % 1_000_000;
+  return String(value).padStart(6, '0');
 }
 
 function resultOf(entry: JournalEntry): TransferResult | undefined {

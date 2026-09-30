@@ -452,7 +452,7 @@ export const zhHans: LocaleTable = {
   'transfer.typed.address': '另一部手机上的地址',
   'transfer.typed.code': '另一部手机上的代码',
   'transfer.typed.connect': '连接',
-  'transfer.typed.invalid': '请按另一部手机显示的样子输入地址和四位代码。',
+  'transfer.typed.invalid': '请按另一部手机显示的样子输入地址和六位代码。',
   'transfer.app.install': '安装应用',
   'transfer.app.install.opened': '安装程序已打开。请按步骤完成。',
   'transfer.app.install.unsupported': '这个版本的应用无法打开安装程序。请改从应用商店获取。',

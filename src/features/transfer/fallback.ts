@@ -6,7 +6,7 @@ export type TypedEntry = { readonly address: string; readonly code: string };
 
 const addressShape = /^[^\s:/?#]+:\d{1,5}$/;
 
-const codeShape = /^\d{4}$/;
+const codeShape = /^\d{6}$/;
 
 const transferLinkBase = 'unfoldingword://transfer';
 

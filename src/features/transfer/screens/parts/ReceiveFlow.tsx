@@ -155,7 +155,7 @@ function TypedEntry({
           placeholder={typed.code}
           value={stage.code}
           keyboardType="number-pad"
-          maxLength={4}
+          maxLength={6}
           onChangeText={(code) => onChange({ ...stage, code })}
         />
       </View>

@@ -510,7 +510,7 @@ export const ptBR: LocaleTable = {
   'transfer.typed.address': 'Endereço do outro celular',
   'transfer.typed.code': 'Código do outro celular',
   'transfer.typed.connect': 'Conectar',
-  'transfer.typed.invalid': 'Digite o endereço e o código de quatro dígitos como o outro celular mostra.',
+  'transfer.typed.invalid': 'Digite o endereço e o código de seis dígitos como o outro celular mostra.',
   'transfer.app.install': 'Instalar o aplicativo',
   'transfer.app.install.opened': 'O instalador está aberto. Siga as etapas para concluir.',
   'transfer.app.install.unsupported':

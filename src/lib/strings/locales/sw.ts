@@ -495,7 +495,7 @@ export const sw: LocaleTable = {
   'transfer.typed.address': 'Anwani kutoka simu nyingine',
   'transfer.typed.code': 'Msimbo kutoka simu nyingine',
   'transfer.typed.connect': 'Unganisha',
-  'transfer.typed.invalid': 'Andika anwani na msimbo wa tarakimu nne kama simu nyingine inavyoonyesha.',
+  'transfer.typed.invalid': 'Andika anwani na msimbo wa tarakimu sita kama simu nyingine inavyoonyesha.',
   'transfer.app.install': 'Sakinisha programu',
   'transfer.app.install.opened': 'Kisakinishi kimefunguliwa. Fuata hatua zake ili kumaliza.',
   'transfer.app.install.unsupported':

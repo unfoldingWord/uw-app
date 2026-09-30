@@ -488,7 +488,7 @@ export const bn: LocaleTable = {
   'transfer.typed.address': 'অন্য ফোনের ঠিকানা',
   'transfer.typed.code': 'অন্য ফোনের কোড',
   'transfer.typed.connect': 'যুক্ত করুন',
-  'transfer.typed.invalid': 'অন্য ফোন যেমন দেখায় ঠিক তেমন ঠিকানা এবং চার অঙ্কের কোড লিখুন।',
+  'transfer.typed.invalid': 'অন্য ফোন যেমন দেখায় ঠিক তেমন ঠিকানা এবং ছয় অঙ্কের কোড লিখুন।',
   'transfer.app.install': 'অ্যাপ ইনস্টল করুন',
   'transfer.app.install.opened': 'ইনস্টলার খোলা আছে। শেষ করতে এর ধাপগুলো অনুসরণ করুন।',
   'transfer.app.install.unsupported': 'অ্যাপের এই কপি ইনস্টলার খুলতে পারে না। বরং এর স্টোর থেকে অ্যাপটি নিন।',

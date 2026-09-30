@@ -541,7 +541,7 @@ export const ru: LocaleTable = {
   'transfer.typed.address': 'Адрес с другого телефона',
   'transfer.typed.code': 'Код с другого телефона',
   'transfer.typed.connect': 'Подключиться',
-  'transfer.typed.invalid': 'Введите адрес и четырёхзначный код так, как их показывает другой телефон.',
+  'transfer.typed.invalid': 'Введите адрес и шестизначный код так, как их показывает другой телефон.',
   'transfer.app.install': 'Установить приложение',
   'transfer.app.install.opened': 'Установщик открыт. Следуйте его шагам до конца.',
   'transfer.app.install.unsupported':

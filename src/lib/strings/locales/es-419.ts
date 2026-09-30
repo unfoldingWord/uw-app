@@ -512,7 +512,7 @@ export const es419: LocaleTable = {
   'transfer.typed.code': 'Código del otro teléfono',
   'transfer.typed.connect': 'Conectar',
   'transfer.typed.invalid':
-    'Escribe la dirección y el código de cuatro dígitos tal como los muestra el otro teléfono.',
+    'Escribe la dirección y el código de seis dígitos tal como los muestra el otro teléfono.',
   'transfer.app.install': 'Instalar la aplicación',
   'transfer.app.install.opened': 'El instalador está abierto. Sigue sus pasos para terminar.',
   'transfer.app.install.unsupported':

@@ -503,7 +503,7 @@ export const nl: LocaleTable = {
   'transfer.typed.address': 'Adres van de andere telefoon',
   'transfer.typed.code': 'Code van de andere telefoon',
   'transfer.typed.connect': 'Verbinden',
-  'transfer.typed.invalid': 'Typ het adres en de viercijferige code zoals de andere telefoon ze toont.',
+  'transfer.typed.invalid': 'Typ het adres en de zescijferige code zoals de andere telefoon ze toont.',
   'transfer.app.install': 'De app installeren',
   'transfer.app.install.opened': 'Het installatieprogramma is open. Volg de stappen om af te ronden.',
   'transfer.app.install.unsupported':

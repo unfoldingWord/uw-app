@@ -467,7 +467,7 @@ export const vi: LocaleTable = {
   'transfer.typed.address': 'Địa chỉ từ điện thoại kia',
   'transfer.typed.code': 'Mã từ điện thoại kia',
   'transfer.typed.connect': 'Kết nối',
-  'transfer.typed.invalid': 'Hãy nhập địa chỉ và mã bốn chữ số đúng như điện thoại kia hiển thị.',
+  'transfer.typed.invalid': 'Hãy nhập địa chỉ và mã sáu chữ số đúng như điện thoại kia hiển thị.',
   'transfer.app.install': 'Cài đặt ứng dụng',
   'transfer.app.install.opened': 'Trình cài đặt đang mở. Hãy làm theo các bước để hoàn tất.',
   'transfer.app.install.unsupported':

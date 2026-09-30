@@ -490,7 +490,7 @@ export const fa: LocaleTable = {
   'transfer.typed.address': 'نشانی گوشی دیگر',
   'transfer.typed.code': 'کد گوشی دیگر',
   'transfer.typed.connect': 'اتصال',
-  'transfer.typed.invalid': 'نشانی و کد چهاررقمی را همان‌طور که گوشی دیگر نشان می‌دهد وارد کنید.',
+  'transfer.typed.invalid': 'نشانی و کد شش‌رقمی را همان‌طور که گوشی دیگر نشان می‌دهد وارد کنید.',
   'transfer.app.install': 'نصب برنامه',
   'transfer.app.install.opened': 'نصب‌کننده باز است. برای پایان، مراحل آن را دنبال کنید.',
   'transfer.app.install.unsupported':

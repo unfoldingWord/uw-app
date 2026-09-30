@@ -490,7 +490,7 @@ export const hi: LocaleTable = {
   'transfer.typed.address': 'दूसरे फ़ोन का पता',
   'transfer.typed.code': 'दूसरे फ़ोन का कोड',
   'transfer.typed.connect': 'जोड़ें',
-  'transfer.typed.invalid': 'पता और चार अंकों का कोड वैसे ही लिखें जैसे दूसरा फ़ोन दिखाता है।',
+  'transfer.typed.invalid': 'पता और छह अंकों का कोड वैसे ही लिखें जैसे दूसरा फ़ोन दिखाता है।',
   'transfer.app.install': 'ऐप इंस्टॉल करें',
   'transfer.app.install.opened': 'इंस्टॉलर खुला है। पूरा करने के लिए उसके चरणों का पालन करें।',
   'transfer.app.install.unsupported':

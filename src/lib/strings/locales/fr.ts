@@ -528,7 +528,7 @@ export const fr: LocaleTable = {
   'transfer.typed.code': 'Code de l’autre téléphone',
   'transfer.typed.connect': 'Se connecter',
   'transfer.typed.invalid':
-    'Saisissez l’adresse et le code à quatre chiffres tels que l’autre téléphone les affiche.',
+    'Saisissez l’adresse et le code à six chiffres tels que l’autre téléphone les affiche.',
   'transfer.app.install': 'Installer l’application',
   'transfer.app.install.opened': 'Le programme d’installation est ouvert. Suivez ses étapes pour terminer.',
   'transfer.app.install.unsupported':

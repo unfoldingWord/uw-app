@@ -483,7 +483,7 @@ export const my: LocaleTable = {
   'transfer.typed.address': 'အခြားဖုန်းမှ လိပ်စာ',
   'transfer.typed.code': 'အခြားဖုန်းမှ ကုဒ်',
   'transfer.typed.connect': 'ချိတ်ဆက်ရန်',
-  'transfer.typed.invalid': 'အခြားဖုန်းတွင် ပြသည့်အတိုင်း လိပ်စာနှင့် ဂဏန်းလေးလုံးကုဒ်ကို ရိုက်ထည့်ပါ။',
+  'transfer.typed.invalid': 'အခြားဖုန်းတွင် ပြသည့်အတိုင်း လိပ်စာနှင့် ဂဏန်းခြောက်လုံးကုဒ်ကို ရိုက်ထည့်ပါ။',
   'transfer.app.install': 'အက်ပ်ကို ထည့်သွင်းရန်',
   'transfer.app.install.opened': 'ထည့်သွင်းစနစ် ပွင့်နေပါပြီ။ ပြီးဆုံးရန် ၎င်း၏ အဆင့်များကို လိုက်နာပါ။',
   'transfer.app.install.unsupported':

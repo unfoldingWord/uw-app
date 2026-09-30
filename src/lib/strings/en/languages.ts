@@ -84,7 +84,7 @@ export const languages = {
   'transfer.typed.address': 'Address from the other phone',
   'transfer.typed.code': 'Code from the other phone',
   'transfer.typed.connect': 'Connect',
-  'transfer.typed.invalid': 'Type the address and the four-digit code as the other phone shows them.',
+  'transfer.typed.invalid': 'Type the address and the six-digit code as the other phone shows them.',
   'transfer.app.install': 'Install the app',
   'transfer.app.install.opened': 'The installer is open. Follow its steps to finish.',
   'transfer.app.install.unsupported':

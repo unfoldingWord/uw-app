@@ -476,7 +476,7 @@ export const id: LocaleTable = {
   'transfer.typed.address': 'Alamat dari ponsel lain',
   'transfer.typed.code': 'Kode dari ponsel lain',
   'transfer.typed.connect': 'Hubungkan',
-  'transfer.typed.invalid': 'Ketik alamat dan kode empat angka persis seperti yang ditampilkan ponsel lain.',
+  'transfer.typed.invalid': 'Ketik alamat dan kode enam angka persis seperti yang ditampilkan ponsel lain.',
   'transfer.app.install': 'Pasang aplikasi',
   'transfer.app.install.opened': 'Penginstal sudah terbuka. Ikuti langkahnya sampai selesai.',
   'transfer.app.install.unsupported':
