@@ -21,6 +21,10 @@ status=0
       "$GITHUB_WORKSPACE/device/flows"
 ) || status=$?
 
+echo "::group::screenshots (base64 jpeg)"
+bash "$GITHUB_WORKSPACE/device/ci/print-shots.sh" "$out"
+echo "::endgroup::"
+
 xcrun simctl spawn "$udid" log show --style compact --last 20m \
   --predicate 'process == "unfoldingWord"' > "$out/simulator.log" 2>&1 || true
 if [ "$status" -ne 0 ]; then
