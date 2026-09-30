@@ -10,6 +10,7 @@ function introspected(options: {
 }): unknown {
   const intentData = options.intentData ?? [
     { scheme: 'content', mimeType: 'application/zip' },
+    { scheme: 'content', mimeType: 'application/x-zip-compressed' },
     { scheme: 'content', mimeType: 'application/octet-stream' },
   ];
   return {
@@ -131,6 +132,7 @@ describe('permissionFindings', () => {
     expect(permissionFindings(config)).toEqual([
       'An Android intent filter admits the scheme file; only unfoldingword and content are admitted, and a file URI would need storage permission',
       'Android does not offer the app to open application/zip over content, so a burrito cannot be opened from another app (SH-3)',
+      'Android does not offer the app to open application/x-zip-compressed over content, so a burrito cannot be opened from another app (SH-3)',
       'Android does not offer the app to open application/octet-stream over content, so a burrito cannot be opened from another app (SH-3)',
       'Info.plist declares the document type public.data; only public.zip-archive is admitted',
       'Info.plist declares no document type for public.zip-archive, so iOS never offers the app a burrito (SH-3)',

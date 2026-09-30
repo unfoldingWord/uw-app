@@ -34,7 +34,11 @@ export type IntentFilter = { actions: readonly string[]; data: readonly IntentDa
 
 const appScheme = 'unfoldingword';
 
-const importedMimeTypes: readonly string[] = ['application/zip', 'application/octet-stream'];
+const importedMimeTypes: readonly string[] = [
+  'application/zip',
+  'application/x-zip-compressed',
+  'application/octet-stream',
+];
 
 const admittedIntentSchemes: readonly string[] = [appScheme, 'content'];
 

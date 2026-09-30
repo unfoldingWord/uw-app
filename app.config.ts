@@ -8,7 +8,7 @@ const brand = {
   night: '#04161F',
 } as const;
 
-const archiveTypes = ['application/zip', 'application/octet-stream'];
+const archiveTypes = ['application/zip', 'application/x-zip-compressed', 'application/octet-stream'];
 
 const blockedPermissions = [
   'android.permission.RECORD_AUDIO',
