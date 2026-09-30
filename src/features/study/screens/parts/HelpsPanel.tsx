@@ -11,6 +11,8 @@ import { Say } from './Say';
 
 export type HelpsTab = 'notes' | 'wordLinks' | 'questions';
 
+export const helpsShare = '50%';
+
 export type HelpsPanelProps = {
   words: StudyWords;
   passage: Passage;
@@ -332,7 +334,7 @@ export function HelpsPanel({
 }
 
 const styles = StyleSheet.create({
-  panel: { flexShrink: 1, maxHeight: '50%' },
+  panel: { flexShrink: 1, maxHeight: helpsShare },
   row: { flexDirection: 'row', alignItems: 'center' },
   wrap: { flexDirection: 'row', flexWrap: 'wrap' },
   fill: { flex: 1 },
