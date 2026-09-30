@@ -20,3 +20,5 @@ export type CatalogLanguage = {
   resources: number;
   installed: boolean;
 };
+
+export type LanguageName = { englishName: string; autonym: string; direction: ScriptDirection };

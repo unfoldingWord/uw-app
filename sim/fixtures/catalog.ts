@@ -187,5 +187,18 @@ export function catalogSearch(releases: readonly FixtureRelease[]) {
 }
 
 export function catalogLanguages(releases: readonly FixtureRelease[]) {
-  return { ok: true, data: [...new Set(releases.map((release) => release.language.tag))].sort() };
+  const byTag = new Map(releases.map((release) => [release.language.tag, release.language]));
+  const data = [...byTag.values()]
+    .sort((left, right) => (left.tag < right.tag ? -1 : left.tag > right.tag ? 1 : 0))
+    .map((language) => ({
+      lc: language.tag,
+      ln: language.title,
+      ang: language.englishName,
+      ld: language.direction,
+      gw: language.gatewayLanguage,
+      lr: '',
+      alt: [],
+      cc: [],
+    }));
+  return { ok: true, data };
 }

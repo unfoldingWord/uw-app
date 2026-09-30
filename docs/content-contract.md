@@ -13,6 +13,7 @@ What the app accepts, stated so that both sides of the seam can check it: this r
   ```
 
   The catalog API does not carry this URL, but every entry carries `full_name` and `branch_or_tag_name`, from which the Catalog module derives it. Verified on 2026-09-29 (CI run 36618141715) for 17 current production releases; every one answered with a zip except `en_obs-tf` v4.
+- Language names: on every refresh the Catalog module also reads `GET /api/v1/catalog/list/languages?stage=prod&topic=tc-ready` and keeps, per language code `lc`, the anglicised name `ang`, the autonym `ln` and the direction `ld` (`gw` is ignored). The list is optional: when it fails, the refresh still succeeds, the names from the last good list stay, and a table of ISO 639 names is the fallback. The fixture copies this shape (INFERRED from issue #14; the live contract step asserts it).
 - Archive layout: one top-level directory named for the repository, holding `metadata.json`, `ingredients/`, and repository files that are not part of the burrito (`README.md`, `LICENSE.md`, `.github/`, `.gitea/`, `.gitignore`). The Packs module keeps the burrito and discards the rest.
 - The app never reads a Resource Container. If a release has no burrito archive, it is absent from the app; that is a supply gap to raise upstream, never a parser to write here.
 

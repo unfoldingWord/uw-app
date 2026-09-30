@@ -1,8 +1,8 @@
 import { packKinds, resourceRows, type PackKind, type ResourceRow } from '../domain/pack';
 import type { DbTransaction, DbRow, SqlValue } from '../ports';
-import type { CatalogRelease } from './types';
+import type { CatalogRelease, LanguageName } from './types';
 
-export const catalogTables = ['catalog_releases'] as const;
+export const catalogTables = ['catalog_releases', 'catalog_languages'] as const;
 
 const columns = [
   'publisher',
@@ -87,6 +87,33 @@ export async function replaceCatalogReleases(
     await session.run(
       `INSERT INTO catalog_releases (${columns.join(', ')}, position) VALUES (${placeholders})`,
       [...valuesOf(release), position],
+    );
+  }
+}
+
+export async function readLanguageNames(db: DbTransaction): Promise<Map<string, LanguageName>> {
+  const rows = await db.all('SELECT language, english_name, autonym, direction FROM catalog_languages');
+  return new Map(
+    rows.map((row) => [
+      textOf(row, 'language'),
+      {
+        englishName: textOf(row, 'english_name'),
+        autonym: textOf(row, 'autonym'),
+        direction: row.direction === 'rtl' ? 'rtl' : 'ltr',
+      },
+    ]),
+  );
+}
+
+export async function replaceLanguageNames(
+  session: DbTransaction,
+  names: ReadonlyMap<string, LanguageName>,
+): Promise<void> {
+  await session.run('DELETE FROM catalog_languages');
+  for (const [language, name] of names) {
+    await session.run(
+      'INSERT INTO catalog_languages (language, english_name, autonym, direction) VALUES (?, ?, ?, ?)',
+      [language, name.englishName, name.autonym, name.direction],
     );
   }
 }

@@ -4,7 +4,7 @@ import { fieldValidators } from '../domain/fields';
 import { packIdOf, packKindOf } from '../domain/pack';
 import { archiveUrlOf, resourceKey } from '../domain/release';
 import { rowOfSubject } from './subjects';
-import type { CatalogRelease } from './types';
+import type { CatalogRelease, LanguageName } from './types';
 
 export type CatalogPage =
   { ok: true; releases: readonly CatalogRelease[]; entries: number; dropped: number } | { ok: false };
@@ -97,5 +97,37 @@ export function compareReleases(left: CatalogRelease, right: CatalogRelease): nu
     comparePublishers(left.publisher, right.publisher) ||
     compareText(left.resource, right.resource) ||
     compareText(left.tag, right.tag)
+  );
+}
+
+function languageNameOf(item: unknown): [string, LanguageName] | undefined {
+  if (!isRecord(item)) {
+    return undefined;
+  }
+  const code = text(item.lc);
+  const englishName = text(item.ang);
+  if (code === undefined || englishName === undefined || !fieldValidators.language(code)) {
+    return undefined;
+  }
+  return [
+    code,
+    {
+      englishName,
+      autonym: text(item.ln) ?? englishName,
+      direction: text(item.ld) === 'rtl' ? 'rtl' : 'ltr',
+    },
+  ];
+}
+
+export function normalizeLanguageNames(document: unknown): Map<string, LanguageName> | undefined {
+  if (!isRecord(document) || document.ok === false || !Array.isArray(document.data)) {
+    return undefined;
+  }
+  const entries: readonly unknown[] = document.data;
+  return new Map(
+    entries.flatMap((item) => {
+      const found = languageNameOf(item);
+      return found === undefined ? [] : [found];
+    }),
   );
 }
