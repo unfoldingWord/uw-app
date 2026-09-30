@@ -14,7 +14,7 @@ import { createPlatformPicker } from './picker';
 import { createPlatformShareSheet } from './share-sheet';
 import { createPlatformTransport } from './transport';
 
-export const localeGate = 'reviewed';
+export { localeGate } from './locale-gate';
 
 function devicePlatform(): DevicePlatform {
   return Platform.OS === 'ios' ? 'ios' : 'android';
