@@ -131,7 +131,7 @@ export default scenario(
     const tags = tagsOf(phone);
     assert.equal(tags.qaa_tn, 'v2');
     assert.equal(tags.qaa_ult, 'v1');
-    assert.equal(Object.keys(tags).length, 12);
+    assert.equal(Object.keys(tags).length, 11);
     const secondRoots = rootsOf(phone);
     assert.notEqual(secondRoots.qaa_tn, notes, 'the new release has a directory of its own');
     assert.deepEqual(

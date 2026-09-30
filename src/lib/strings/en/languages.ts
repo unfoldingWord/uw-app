@@ -83,4 +83,7 @@ export const languages = {
   'languages.import.opened': 'You opened {name}. Install it on this phone?',
   'languages.import.install': 'Install',
   'languages.import.done': 'Installed from the file. It is ready to read offline.',
+  'languages.release': '{publisher} · {version}',
+  'languages.missing.title': 'Not yet on this phone',
+  'languages.missing.about': 'Part of {language} did not download, and you can try again.',
 } as const;

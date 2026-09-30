@@ -1,17 +1,30 @@
 import { compareReleases } from '../catalog/normalize';
 import type { CatalogRelease } from '../catalog/types';
-import type { PackId } from '../domain/pack';
+import type { PackId, ResourceRow } from '../domain/pack';
 import { resourceKey } from '../domain/release';
 import type { InstalledBurrito, InstalledPack, PackUpdate, ResourceUpdate } from './types';
+
+const rowsAwaitingSource: readonly ResourceRow[] = ['formation'];
+
+function awaitsSource(release: CatalogRelease): boolean {
+  return release.row !== undefined && rowsAwaitingSource.includes(release.row);
+}
 
 export function defaultReleases(releases: readonly CatalogRelease[], pack: PackId): CatalogRelease[] {
   const chosen = new Map<string, CatalogRelease>();
   for (const release of [...releases].sort(compareReleases)) {
-    if (release.pack === pack && !chosen.has(release.resource)) {
+    if (release.pack === pack && !awaitsSource(release) && !chosen.has(release.resource)) {
       chosen.set(release.resource, release);
     }
   }
   return [...chosen.values()].sort(compareReleases);
+}
+
+export function optionalReleases(releases: readonly CatalogRelease[], pack: PackId): CatalogRelease[] {
+  const chosen = new Set(defaultReleases(releases, pack).map(resourceKey));
+  return releases
+    .filter((release) => release.pack === pack && !chosen.has(resourceKey(release)))
+    .sort(compareReleases);
 }
 
 export function missingReleases(

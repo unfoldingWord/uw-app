@@ -2,12 +2,12 @@ import { compareText } from '../order';
 import { readCatalogReleases } from '../catalog/store';
 import type { CatalogRelease } from '../catalog/types';
 import { failureCodeOf } from '../domain/failures';
-import { languagePackId, packDirectory, packsDirectory, type PackId } from '../domain/pack';
-import { refOf } from '../domain/release';
+import { languagePackId, packDirectory, packsDirectory, type PackId, type ResourceRow } from '../domain/pack';
+import { refOf, resourceKey } from '../domain/release';
 import { defineModule } from '../module';
 import type { PickedFile } from '../ports';
-import { catalogOffer, createInstaller, resolveSource, type Resolved } from './install';
-import { defaultReleases, missingReleases, updatesOf } from './plan';
+import { catalogOffer, createInstaller, resolveSource, type FailedRelease, type Resolved } from './install';
+import { defaultReleases, missingReleases, optionalReleases, updatesOf } from './plan';
 import { fromCatalog, fromFile, type PackPlan, type PackSource } from './source';
 import { deleteInstalledPack, packTables, readInstalledPacks } from './store';
 import { inboxDirectory, recoverPacks } from './layout';
@@ -29,14 +29,17 @@ export type LanguageStatus = {
   installed: readonly InstalledBurrito[];
   missing: readonly CatalogRelease[];
   updates: readonly ResourceUpdate[];
+  failed: readonly FailedRelease[];
   complete: boolean;
 };
+
+export type CatalogInstallOptions = { withRows?: readonly ResourceRow[] };
 
 export type PacksApi = {
   install(source: PackSource, plan?: PackPlan): Promise<InstallOutcome>;
   importFile(external: string): Promise<InstallOutcome>;
   importPicked(): Promise<InstallOutcome | undefined>;
-  installFromCatalog(pack: PackId): Promise<InstallOutcome>;
+  installFromCatalog(pack: PackId, options?: CatalogInstallOptions): Promise<InstallOutcome>;
   update(pack: PackId): Promise<InstallOutcome>;
   remove(pack: PackId): Promise<RemoveOutcome>;
   installed(): readonly InstalledPack[];
@@ -45,7 +48,29 @@ export type PacksApi = {
   status(language: string): Promise<LanguageStatus>;
   storage(): Promise<Storage>;
   defaults(pack: PackId): Promise<readonly CatalogRelease[]>;
+  optional(pack: PackId): Promise<readonly CatalogRelease[]>;
+  installOptional(
+    pack: PackId,
+    release: Pick<CatalogRelease, 'publisher' | 'resource'>,
+  ): Promise<InstallOutcome>;
 };
+
+function chosenOptional(
+  releases: readonly CatalogRelease[],
+  pack: PackId,
+  current: InstalledPack | undefined,
+  rows: readonly ResourceRow[],
+): CatalogRelease[] {
+  const present = new Set((current?.burritos ?? []).map((burrito) => burrito.provenance.resource));
+  const chosen = new Map<string, CatalogRelease>();
+  for (const release of optionalReleases(releases, pack)) {
+    const wanted = release.row !== undefined && rows.includes(release.row);
+    if (wanted && !present.has(release.resource) && !chosen.has(release.resource)) {
+      chosen.set(release.resource, release);
+    }
+  }
+  return [...chosen.values()];
+}
 
 export const packsModule = defineModule<PacksApi>({
   events: [
@@ -61,6 +86,7 @@ export const packsModule = defineModule<PacksApi>({
     const { ports } = context;
     const installed = new Map<PackId, InstalledPack>();
     const progress = new Map<string, InstallProgress>();
+    const failures = new Map<PackId, readonly FailedRelease[]>();
     let queue: Promise<unknown> = Promise.resolve();
 
     function serial<T>(work: () => Promise<T>): Promise<T> {
@@ -75,6 +101,22 @@ export const packsModule = defineModule<PacksApi>({
       installed: () => installed,
       commit: (pack) => {
         installed.set(pack.pack, pack);
+      },
+      failed: (pack, releases) => {
+        const present = new Set(
+          (installed.get(pack)?.burritos ?? []).map((burrito) => resourceKey(burrito.provenance)),
+        );
+        const kept = (failures.get(pack) ?? []).filter(
+          (item) =>
+            !present.has(resourceKey(item)) &&
+            !releases.some((release) => resourceKey(release) === resourceKey(item)),
+        );
+        const next = [...kept, ...releases].filter((item) => !present.has(resourceKey(item)));
+        if (next.length === 0) {
+          failures.delete(pack);
+        } else {
+          failures.set(pack, next);
+        }
       },
       progress,
     });
@@ -132,10 +174,14 @@ export const packsModule = defineModule<PacksApi>({
       return picked === undefined ? undefined : importFile(picked.uri);
     }
 
-    function installFromCatalog(pack: PackId): Promise<InstallOutcome> {
+    function installFromCatalog(pack: PackId, options: CatalogInstallOptions = {}): Promise<InstallOutcome> {
       return serial(async () => {
         const current = installed.get(pack);
-        const missing = missingReleases(await catalogReleases(), pack, current);
+        const releases = await catalogReleases();
+        const missing = [
+          ...missingReleases(releases, pack, current),
+          ...chosenOptional(releases, pack, current, options.withRows ?? []),
+        ];
         if (missing.length === 0 && current !== undefined) {
           return { ok: true, install: undefined, pack: current };
         }
@@ -172,6 +218,7 @@ export const packsModule = defineModule<PacksApi>({
         }
         await context.emit({ type: 'PackRemoved', payload: { pack } });
         installed.delete(pack);
+        failures.delete(pack);
         try {
           await ports.db.transaction((session) => deleteInstalledPack(session, pack));
           await ports.files.remove(packDirectory(pack));
@@ -191,12 +238,14 @@ export const packsModule = defineModule<PacksApi>({
       const missing = missingReleases(releases, pack, current);
       const found = updatesOf(releases, current === undefined ? [] : [current])[0];
       const burritos = current?.burritos ?? [];
+      const missingKeys = new Set(missing.map(resourceKey));
       return {
         language,
         pack,
         installed: burritos,
         missing,
         updates: found?.resources ?? [],
+        failed: (failures.get(pack) ?? []).filter((item) => missingKeys.has(resourceKey(item))),
         complete: burritos.length > 0 && missing.length === 0,
       };
     }
@@ -229,6 +278,14 @@ export const packsModule = defineModule<PacksApi>({
         status,
         storage,
         defaults: async (pack) => defaultReleases(await catalogReleases(), pack),
+        optional: async (pack) => optionalReleases(await catalogReleases(), pack),
+        installOptional: (pack, wanted) =>
+          serial(async () => {
+            const chosen = optionalReleases(await catalogReleases(), pack).filter(
+              (release) => resourceKey(release) === resourceKey(wanted),
+            );
+            return installNow(fromCatalog(chosen), { pack });
+          }),
       },
       async start() {
         let roots: readonly string[] | undefined;
@@ -262,6 +319,9 @@ export const packsModule = defineModule<PacksApi>({
           })),
         })),
         installing: [...progress.values()].map((item) => ({ ...item })),
+        failed: [...failures.entries()]
+          .sort(([left], [right]) => compareText(left, right))
+          .map(([pack, releases]) => ({ pack, releases: releases.map((item) => ({ ...item })) })),
       }),
       redo: {
         PackInstallStarted: async (event) => {

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { audioPackId, imagePackId, languagePackId } from '@lib/domain/pack';
 import { parseReference } from '@lib/domain/reference';
-import { installFromCatalog } from '../install';
+import { installFromCatalog, withFormation } from '../install';
 import { scenario } from '../scenario';
 import { servicesOf } from '../services';
 
@@ -11,7 +11,7 @@ export default scenario(
   async (world) => {
     const device = world.device('phone');
     await device.start();
-    await installFromCatalog(device, [languagePackId('qaa'), imagePackId]);
+    await installFromCatalog(device, [languagePackId('qaa'), imagePackId], withFormation);
 
     const session = await device.kernel.formation.session('foundations', 1, 'qaa');
     assert.ok(session && session.track === 'foundations');

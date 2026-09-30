@@ -6,7 +6,6 @@ import { scenario } from '../scenario';
 const textRows = [
   'articles',
   'articles',
-  'formation',
   'notes',
   'questions',
   'stories',

@@ -27,6 +27,14 @@ export type OptionalDownload = {
   readonly installed: boolean;
 };
 
+export type MissingResource = {
+  readonly publisher: string;
+  readonly resource: string;
+  readonly title: string;
+  readonly detail: string;
+  readonly code: FailureCode | undefined;
+};
+
 export type ImportOutcome = { ok: true; installed: PackId | undefined } | { ok: false; code: FailureCode };
 
 export type LanguagesService = {
@@ -38,6 +46,7 @@ export type LanguagesService = {
   current(): string | undefined;
   select(language: string): Promise<boolean>;
   download(language: string): Promise<InstallOutcome>;
+  missing(): Promise<readonly MissingResource[]>;
   downloadImages(): Promise<InstallOutcome>;
   audio(language: string): readonly OptionalDownload[];
   originals(): readonly OptionalDownload[];
@@ -144,6 +153,26 @@ export function createLanguagesService(kernel: Kernel): LanguagesService {
     current: () => kernel.preferences.contentLanguage(),
     select: (language) => kernel.preferences.set('study.language', language),
     download: (language) => kernel.packs.installFromCatalog(languagePackId(language)),
+    async missing() {
+      const language = kernel.preferences.contentLanguage();
+      if (language === undefined) {
+        return [];
+      }
+      const status = await kernel.packs.status(language);
+      if (status.installed.length === 0) {
+        return [];
+      }
+      const current = words();
+      return status.missing.map((release) => ({
+        publisher: release.publisher,
+        resource: release.resource,
+        title: release.title,
+        detail: current.t('languages.release', { publisher: release.publisher, version: release.tag }),
+        code: status.failed.find(
+          (item) => item.publisher === release.publisher && item.resource === release.resource,
+        )?.code,
+      }));
+    },
     downloadImages: () => kernel.packs.installFromCatalog(imagePackId),
     audio: (language) =>
       optional(kernel.catalog.releases(language).filter((release) => release.kind === 'audio')),

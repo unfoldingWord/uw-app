@@ -10,7 +10,11 @@ type OptionalLiterals = { readonly optional: readonly string[] };
 
 type ScalarSpec = FieldKind | `${FieldKind}?` | readonly string[] | OptionalLiterals;
 
-type ListSpec = { readonly list: Readonly<Record<string, ScalarSpec>>; readonly max: number };
+type ListSpec = {
+  readonly list: Readonly<Record<string, ScalarSpec>>;
+  readonly max: number;
+  readonly optional?: true;
+};
 
 type FieldSpec = ScalarSpec | ListSpec;
 
@@ -65,6 +69,12 @@ const releaseRefSpec = {
   max: maximumPackBurritos,
 } as const;
 
+const failedReleaseSpec = {
+  list: { publisher: 'publisher', resource: 'resource', language: 'language', tag: 'tag', code: 'code' },
+  max: maximumPackBurritos,
+  optional: true,
+} as const;
+
 const installedBurritoSpec = {
   list: {
     root: 'path',
@@ -112,9 +122,20 @@ export const eventSchemas = {
       resources: 'count',
       bytes: 'bytes',
       burritos: installedBurritoSpec,
+      failed: failedReleaseSpec,
     },
   },
-  PackFailed: { replay: 'follows', payload: { install: 'id', pack: 'pack', code: 'code' } },
+  PackFailed: {
+    replay: 'follows',
+    payload: {
+      install: 'id',
+      pack: 'pack',
+      code: 'code',
+      publisher: 'publisher?',
+      resource: 'resource?',
+      tag: 'tag?',
+    },
+  },
   PackRemoved: { replay: 'redo', payload: { pack: 'pack' } },
   PassageOpened: { replay: 'verbatim', payload: { reference: 'reference', language: 'language' } },
   ArticleOpened: { replay: 'verbatim', payload: { article: 'article', language: 'language' } },
@@ -220,7 +241,7 @@ type ScalarOf<S> = S extends readonly (infer L)[]
         ? FieldTypes[S]
         : never;
 
-type Optional = `${string}?` | OptionalLiterals;
+type Optional = `${string}?` | OptionalLiterals | { readonly list: unknown; readonly optional: true };
 
 type RequiredFields<P> = { [K in keyof P as P[K] extends Optional ? never : K]: TypeOf<P[K]> };
 
@@ -267,7 +288,7 @@ function isListSpec(spec: FieldSpec): spec is ListSpec {
 }
 
 function isOptionalLiterals(spec: FieldSpec): spec is OptionalLiterals {
-  return typeof spec === 'object' && 'optional' in spec;
+  return typeof spec === 'object' && 'optional' in spec && !('list' in spec);
 }
 
 function recordProblem(specs: Readonly<Record<string, FieldSpec>>, value: unknown): string | undefined {
@@ -284,6 +305,9 @@ function recordProblem(specs: Readonly<Record<string, FieldSpec>>, value: unknow
 
 function fieldProblem(spec: FieldSpec, value: unknown): boolean {
   if (isListSpec(spec)) {
+    if (spec.optional === true && value === undefined) {
+      return false;
+    }
     return (
       !Array.isArray(value) ||
       value.length > spec.max ||

@@ -30,6 +30,14 @@ _Avoid_: bundle, zip, archive, container
 A set of resources installed on the device and replaced as one unit. Three kinds: **Language Pack** (every text resource for one language), **Image Pack** (the Open Bible Stories images, shared across languages), **Audio Pack** (audio for one resource in one language).
 _Avoid_: bundle, download, library (that is a screen)
 
+**Default Pack**:
+What a Language Pack holds when the leader downloads a language in one action: the preferred publisher's own Literal and Simplified text and the helps. Other publishers' texts and releases whose row has no source yet are **Optional Downloads**, listed in the library with their publisher and never installed unless the leader chooses them.
+_Avoid_: core set, bundle
+
+**Partial Pack**:
+A Language Pack installed without one or more of its optional resources because their download failed. The text is required: a failed Literal or Simplified text fails the whole install. The journal and the Languages screen name each failed release, and Retry installs only what is missing.
+_Avoid_: broken pack, incomplete download
+
 **Source**:
 Where a pack's burritos come from: the Catalog, a Peer, or a File.
 _Avoid_: origin, provider

@@ -36,6 +36,7 @@ describe('packs interface (LA-2, LA-6, LA-7, SH-3)', () => {
       language: 'qab',
       resources: 2,
       bytes: expect.any(Number) as number,
+      failed: [],
       burritos: [
         {
           root: 'packs/language/qab/id-000001/unfoldingWord/qab_obs',
@@ -73,17 +74,17 @@ describe('packs interface (LA-2, LA-6, LA-7, SH-3)', () => {
     const { device } = await phone();
     const before = await device.kernel.packs.status('qaa');
     expect(before).toMatchObject({ pack: 'language:qaa', installed: [], complete: false });
-    expect(before.missing).toHaveLength(12);
+    expect(before.missing).toHaveLength(11);
     await device.kernel.packs.install(fromCatalog(device.kernel.catalog.releases('qaa')), {
       resources: [{ publisher: 'unfoldingWord', resource: 'qaa_ult' }],
     });
     const partial = await device.kernel.packs.status('qaa');
     expect(partial.installed.map((burrito) => burrito.provenance.resource)).toEqual(['qaa_ult']);
-    expect(partial.missing).toHaveLength(11);
+    expect(partial.missing).toHaveLength(10);
     const seq = device.kernel.journal.stats().lastSeq;
     await device.kernel.packs.installFromCatalog(languagePackId('qaa'));
     const started = device.kernel.journal.read(seq).find((entry) => entry.type === 'PackInstallStarted');
-    expect(started?.type === 'PackInstallStarted' && started.payload.releases).toHaveLength(11);
+    expect(started?.type === 'PackInstallStarted' && started.payload.releases).toHaveLength(10);
     expect(await device.kernel.packs.status('qaa')).toMatchObject({ complete: true, missing: [] });
   });
 

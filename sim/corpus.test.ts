@@ -10,7 +10,7 @@ import { archiveUrlOf } from '@lib/domain/release';
 import { fromCatalog, fromFile } from '@lib/packs/source';
 import type { InstallOutcome, InstalledPack } from '@lib/packs/types';
 import type { SimDevice } from './device';
-import { installFromCatalog } from './install';
+import { installFromCatalog, withFormation } from './install';
 import { createWorld } from './world';
 
 function reference(text: string): Reference {
@@ -24,7 +24,7 @@ function reference(text: string): Reference {
 async function phone(packs: readonly PackId[]) {
   const device = createWorld().device('phone');
   await device.start();
-  await installFromCatalog(device, packs);
+  await installFromCatalog(device, packs, withFormation);
   return device;
 }
 

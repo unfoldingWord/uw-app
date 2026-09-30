@@ -107,7 +107,7 @@ export default scenario(
     assert.deepEqual(
       rebuilt.device.kernel.packs.installed().map((pack) => [pack.pack, pack.source, pack.burritos.length]),
       [
-        ['language:qaa', 'catalog', 12],
+        ['language:qaa', 'catalog', 11],
         ['language:qab', 'peer', 2],
       ],
     );
