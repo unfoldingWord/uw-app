@@ -1,10 +1,9 @@
 import { Fragment, type ReactNode } from 'react';
 import { StyleSheet, Text, View, type TextStyle } from 'react-native';
 import { fontFor } from '@shared/fonts';
-import { useTheme, type Theme } from '@shared/theme';
+import { contentText, type Theme, useTheme } from '@shared/theme';
 import type { Block, Inline, LinkTarget } from '../../service';
 import { roleStyle, toneColor } from './Say';
-import { contentText } from './script';
 
 export type BlocksProps = {
   blocks: readonly Block[];
@@ -92,7 +91,7 @@ function BlockView({ block, context, path }: { block: Block; context: Context; p
           accessibilityRole="header"
           selectable
           style={[
-            roleStyle(theme, context.compact ? 'label' : role, 'semibold'),
+            roleStyle(theme, context.compact ? 'label' : role, 'semibold', sample),
             { color: role === 'overline' ? toneColor(theme, 'dim') : toneColor(theme, 'title') },
           ]}
         >

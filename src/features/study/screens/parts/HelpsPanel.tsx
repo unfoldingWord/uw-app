@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { GlassButton, GlassIconButton, GlassSurface, Icon } from '@shared/glass';
-import { useTheme } from '@shared/theme';
+import { contentText, useTheme } from '@shared/theme';
 import type { Introduction, LinkTarget, Note, Passage, Question } from '../../service';
 import type { StudyWords } from '../../strings';
 import { Blocks } from './Blocks';
 import { Choices } from './Choices';
 import { hasHelps, helpsAt, type VerseKey } from './passage';
 import { Say } from './Say';
-import { contentText } from './script';
 
 export type HelpsTab = 'notes' | 'wordLinks' | 'questions';
 

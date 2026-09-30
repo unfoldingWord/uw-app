@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { touchSlop } from '@shared/glass/pressGate';
 import { useTheme } from '@shared/theme';
 import { Say } from './Say';
+import { choicePillExtent } from './touchExtent';
 
 export type Choice<K extends string> = {
   readonly key: K;
@@ -39,7 +41,7 @@ function ChoicePill<K extends string>({
       accessibilityRole="button"
       accessibilityLabel={choice.label}
       accessibilityState={{ selected: choice.selected }}
-      hitSlop={compact ? { top: theme.space.sp4, bottom: theme.space.sp4 } : undefined}
+      {...touchSlop(choicePillExtent(theme, compact))}
       onPress={() => onChoose(choice.key)}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}

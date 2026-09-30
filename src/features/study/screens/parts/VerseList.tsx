@@ -1,10 +1,9 @@
 import { memo, useEffect, useMemo, useRef, type ReactElement } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, type TextStyle } from 'react-native';
-import { useTheme } from '@shared/theme';
+import { contentText, type Direction, useTheme } from '@shared/theme';
 import type { Passage, Verse } from '../../service';
 import { keyOf, sameVerse, type VerseKey } from './passage';
 import { Say } from './Say';
-import { contentText, type Direction } from './script';
 
 export type VerseListProps = {
   passage: Passage;

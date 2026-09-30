@@ -27,9 +27,10 @@ import Settings from 'lucide-react-native/icons/settings';
 import Sparkle from 'lucide-react-native/icons/sparkle';
 import Sun from 'lucide-react-native/icons/sun';
 import Users from 'lucide-react-native/icons/users';
-import { I18nManager, type StyleProp, type ViewStyle } from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
 import { useTheme } from '@shared/theme';
 import { useContentColor } from './context';
+import { rightToLeftLayout } from './layoutDirection';
 import { referenceValues } from './referenceValues';
 
 const glyphs = {
@@ -93,7 +94,7 @@ export function Icon({
   const theme = useTheme();
   const contentColor = useContentColor();
   const Glyph = glyphs[name];
-  const mirrored = I18nManager.isRTL && directional.includes(name);
+  const mirrored = rightToLeftLayout() && directional.includes(name);
   return (
     <Glyph
       size={size}
