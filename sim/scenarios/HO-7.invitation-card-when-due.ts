@@ -39,8 +39,11 @@ export default scenario(
     );
     await home.tapInvitation();
     assert.equal(phone.kernel.telemetry.counts().invitationTaps, 1);
-    await home.dismissInvitation();
-    assert.deepEqual(home.invitation(world.clock.now()), { state: 'not-due', reason: 'dismissed' });
+    assert.deepEqual(
+      home.invitation(world.clock.now()),
+      { state: 'not-due', reason: 'dismissed' },
+      'a tap ends the cycle',
+    );
 
     const exported = JSON.parse(JSON.stringify(phone.kernel.journal.export())) as unknown;
     const replayed = await replayJournal(world, exported, 'replayed');

@@ -108,6 +108,7 @@ export function InvitationCard() {
           accessibilityLabel={words.action}
           onPress={async () => {
             await home.tapInvitation();
+            setVersion((current) => current + 1);
             await Linking.openURL(give);
           }}
         >

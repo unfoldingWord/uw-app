@@ -282,6 +282,7 @@ export const partnersModule = defineModule<PartnersApi>({
       },
       async tap() {
         await context.emit({ type: 'InvitationTapped', payload: {} });
+        await context.emit({ type: 'InvitationDismissed', payload: {} });
       },
       async dismiss() {
         await context.emit({ type: 'InvitationDismissed', payload: {} });
