@@ -1,8 +1,10 @@
-appId: org.unfoldingword.app
+appId: ${APP_ID}
 name: Settings switches the theme to dark and back
 ---
 - runFlow: common/start.yaml
-- tapOn: 'Settings'
+- tapOn:
+    text: 'Settings'
+    retryTapIfNoChange: true
 - extendedWaitUntil:
     visible: 'Theme'
     timeout: 15000

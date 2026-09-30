@@ -1,4 +1,4 @@
-appId: org.unfoldingword.app
+appId: ${APP_ID}
 name: Open Languages from Home and close it
 ---
 - runFlow: common/start.yaml
