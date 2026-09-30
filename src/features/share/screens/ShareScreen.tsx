@@ -93,9 +93,10 @@ export default function ShareScreen() {
   return (
     <ScreenScaffold header={header} scroll={false}>
       <View style={{ flexGrow: 1 }} />
-      {menu.value === undefined && target !== undefined ? null : ready === undefined ? (
+      {menu.value === undefined && target !== undefined && menu.failure === undefined ? null : ready ===
+        undefined ? (
         <Sheet>
-          <Notice text={words.t('failure.files.not-found')} />
+          <Notice text={words.t(`failure.${menu.failure ?? 'files.not-found'}`)} />
           <GlassButton variant="glass" full onPress={close}>
             {words.t('common.close')}
           </GlassButton>

@@ -18,12 +18,13 @@ export function UpdatesSection({ version, rows, failures, onUpdate }: UpdatesSec
   const words = languages.words();
   const updates = useAsyncValue(() => languages.updates(), [version]);
   const list = updates.value ?? [];
-  if (list.length === 0) {
+  if (list.length === 0 && updates.failure === undefined) {
     return null;
   }
   return (
     <>
       <SectionTitle>{words.t('languages.update')}</SectionTitle>
+      {updates.failure === undefined ? null : <Notice text={words.t(`failure.${updates.failure}`)} />}
       {list.map((update) => {
         const title = packName(words, rows, update);
         const failure = failures[update.pack];

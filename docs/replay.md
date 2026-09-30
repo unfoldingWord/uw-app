@@ -62,11 +62,11 @@ with no `AppOpened` yet; a restart in replay journals the same event at the same
    for a language whose full-text index is wanted, Corpus rebuilds the index inside its `PackInstalled` or
    `PackRemoved` reaction and emits `IndexBuilt` with no `IndexStarted`, so the redone install emits it again
    at the same place in the journal. A command whose only step that can fail is one local database write
-   (a bookmark, a group, a position, a note) is the other way round: it writes first and emits its event only
+   (a bookmark, a group, a position, a note, a preference) is the other way round: it writes first and emits its event only
    once the write has succeeded, so the journal never says a bookmark was added that the database refused. When
-   the write fails it emits only a `Failure` with the port's code (`db.io` when the error carries none) and the
-   event it would have emitted in `context.type`, and returns `{ ok: false, code }` (`Written` in
-   `src/lib/written.ts`). Replay has nothing to redo for it, so the rebuilt state is the same and the replay
+   the write fails it emits only a `Failure` with the port's code (`db.io` when the error carries none, `kv.io`
+   for a preference) and the event it would have emitted in `context.type`, and returns `{ ok: false, code }`
+   (`Written` in `src/lib/written.ts`); a preference write returns `false` and keeps the value it had. Replay has nothing to redo for it, so the rebuilt state is the same and the replay
    names the recorded `Failure` as the first divergence.
 3. **The redo handler uses only the recorded payload.** If a command needs a value that the journal may not
    hold, such as text a leader typed, the redo supplies a neutral stand-in and the snapshot must not show the

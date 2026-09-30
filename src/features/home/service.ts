@@ -6,7 +6,7 @@ import type { Kernel } from '@lib/kernel';
 import type { InstallOutcome, InstallProgress, PackUpdate } from '@lib/packs/types';
 import type { Invitation, StoriesRefreshOutcome } from '@lib/partners/partners';
 import type { ImpactStory } from '@lib/partners/stories';
-import type { Written } from '@lib/written';
+import { refused, written, type Written } from '@lib/written';
 import { homeWords, type HomeWords } from './strings';
 
 export type LocalTime = { readonly at: number; readonly utcOffsetMinutes: number };
@@ -103,7 +103,7 @@ export type WhatsNewItem = {
 export type HomeService = {
   words(): HomeWords;
   header(): HeaderView;
-  toggleTheme(system: Scheme): Promise<Scheme>;
+  toggleTheme(system: Scheme): Promise<Written<Scheme>>;
   greeting(local: LocalTime): Greeting;
   continueReading(): ReadingCard | undefined;
   continueFormation(): Promise<FormationCard | undefined>;
@@ -268,8 +268,7 @@ export function createHomeService(kernel: Kernel): HomeService {
       const theme = preferences.get('home.theme') ?? 'system';
       const shown = theme === 'system' ? system : theme;
       const next: Scheme = shown === 'dark' ? 'light' : 'dark';
-      await preferences.set('home.theme', next);
-      return next;
+      return (await preferences.set('home.theme', next)) ? written(next) : refused('kv.io');
     },
     greeting(local) {
       const shifted = new Date(local.at + local.utcOffsetMinutes * minuteMs);

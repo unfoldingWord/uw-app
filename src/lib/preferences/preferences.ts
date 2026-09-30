@@ -46,62 +46,61 @@ export function preferencesModuleFor(gate: LocaleGate) {
         }
       };
 
-      const kvFailed = async (error: unknown): Promise<void> => {
+      const kvFailed = async (error: unknown, announced: boolean): Promise<void> => {
         const code = failureCodeOf(error);
         await context.emit({
           type: 'Failure',
-          payload: { code: code === 'unexpected' ? 'kv.io' : code, context: {} },
+          payload: {
+            code: code === 'unexpected' ? 'kv.io' : code,
+            context: announced ? { type: 'PreferenceChanged' } : {},
+          },
         });
       };
 
-      const store = async (key: string, value: string | undefined): Promise<void> => {
+      const store = async (key: string, value: string | undefined, announced: boolean): Promise<boolean> => {
         try {
           if (value === undefined) {
             await kv.delete(key);
           } else {
             await kv.set(key, value);
           }
+          return true;
         } catch (error) {
-          await kvFailed(error);
+          await kvFailed(error, announced);
+          return false;
         }
       };
 
-      const record = async (key: PreferenceKey, value: string | undefined, apply: boolean): Promise<void> => {
-        const freeText = isFreeText(key);
+      const announce = async (key: PreferenceKey, value: string | undefined): Promise<void> => {
         await context.emit({
           type: 'PreferenceChanged',
-          payload: freeText || value === undefined ? { key } : { key, value },
+          payload: isFreeText(key) || value === undefined ? { key } : { key, value },
         });
-        if (!apply) {
-          return;
+      };
+
+      const record = async (key: PreferenceKey, value: string | undefined): Promise<boolean> => {
+        if (!(await store(key, value, true))) {
+          return false;
         }
+        await announce(key, value);
         if (value === undefined) {
           values.delete(key);
         } else {
           values.set(key, value);
         }
-        await store(key, value);
         notify(key);
+        return true;
       };
 
       const set = async (key: PreferenceKey, value: string | undefined): Promise<boolean> => {
         if (value === undefined) {
-          if (!isFreeText(key)) {
-            return false;
-          }
-          await record(key, undefined, true);
-          return true;
+          return isFreeText(key) ? record(key, undefined) : false;
         }
         const normalized = normalizedValue(key, value);
         if (normalized === undefined) {
-          if (key === 'home.name' && value.trim() === '') {
-            await record(key, undefined, true);
-            return true;
-          }
-          return false;
+          return key === 'home.name' && value.trim() === '' ? record(key, undefined) : false;
         }
-        await record(key, normalized, true);
-        return true;
+        return record(key, normalized);
       };
 
       const device = (): Locale => resolveLocale([deviceLocale.current().tag], offered);
@@ -158,7 +157,7 @@ export function preferencesModuleFor(gate: LocaleGate) {
             return;
           }
           lastPassages.set(language, reference);
-          await store(lastPassageKey(language), reference);
+          await store(lastPassageKey(language), reference, false);
         },
         snapshot(): JsonValue {
           const closed = Object.fromEntries(
@@ -176,7 +175,7 @@ export function preferencesModuleFor(gate: LocaleGate) {
           PreferenceChanged: async (event) => {
             const { key, value } = event.payload;
             if (value === undefined) {
-              await record(key, undefined, false);
+              await announce(key, undefined);
               return;
             }
             await set(key, value);

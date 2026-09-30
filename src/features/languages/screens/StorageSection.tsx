@@ -18,12 +18,20 @@ export function StorageSection({ version, rows, failures, onRemove }: StorageSec
   const words = languages.words();
   const storage = useAsyncValue(() => languages.storage(), [version]);
   const report = storage.value;
+  const failure =
+    storage.failure === undefined ? null : <Notice text={words.t(`failure.${storage.failure}`)} />;
   if (report === undefined) {
-    return null;
+    return failure === null ? null : (
+      <>
+        <SectionTitle>{words.t('storage.title')}</SectionTitle>
+        {failure}
+      </>
+    );
   }
   return (
     <>
       <SectionTitle>{words.t('storage.title')}</SectionTitle>
+      {failure}
       <Row
         title={words.t('storage.summary', {
           used: words.size(report.used),
@@ -33,7 +41,7 @@ export function StorageSection({ version, rows, failures, onRemove }: StorageSec
       {report.packs.length === 0 ? <EmptyState icon="folder" title={words.t('storage.empty')} /> : null}
       {report.packs.map((pack) => {
         const label = storageLabel(words, rows, pack, pack.bytes);
-        const failure = failures[pack.pack];
+        const refused = failures[pack.pack];
         return (
           <Row
             key={pack.pack}
@@ -48,7 +56,7 @@ export function StorageSection({ version, rows, failures, onRemove }: StorageSec
                 {words.t('languages.remove')}
               </GlassButton>
             }
-            below={failure === undefined ? undefined : <Notice text={words.t(`failure.${failure}`)} />}
+            below={refused === undefined ? undefined : <Notice text={words.t(`failure.${refused}`)} />}
           />
         );
       })}

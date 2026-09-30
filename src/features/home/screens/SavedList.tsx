@@ -1,7 +1,9 @@
+import { useState } from 'react';
+import type { FailureCode } from '@lib/domain/failures';
 import type { IconName } from '@shared/glass';
 import { GlassButton } from '@shared/glass';
 import { useService } from '@shared/kernel';
-import { EmptyState, Row, SectionTitle } from '@shared/ui';
+import { EmptyState, Notice, Row, SectionTitle } from '@shared/ui';
 import { createHomeService, type SavedItem, type SavedKind } from '../service';
 
 const kindIcons: Record<SavedKind, IconName> = {
@@ -16,6 +18,14 @@ export type SavedListProps = { items: readonly SavedItem[]; onOpen: (item: Saved
 export function SavedList({ items, onOpen }: SavedListProps) {
   const home = useService(createHomeService);
   const words = home.words();
+  const [failures, setFailures] = useState<Readonly<Record<string, FailureCode>>>({});
+  const remove = async (id: string) => {
+    const outcome = await home.removeSaved(id);
+    setFailures((current) => {
+      const rest = Object.fromEntries(Object.entries(current).filter(([key]) => key !== id));
+      return outcome === undefined || outcome.ok ? rest : { ...rest, [id]: outcome.code };
+    });
+  };
   return (
     <>
       <SectionTitle>{words.t('home.saved.title')}</SectionTitle>
@@ -24,6 +34,7 @@ export function SavedList({ items, onOpen }: SavedListProps) {
       ) : (
         items.map((item) => {
           const { title } = item;
+          const failure = failures[item.bookmark.id];
           return (
             <Row
               key={item.bookmark.id}
@@ -40,11 +51,12 @@ export function SavedList({ items, onOpen }: SavedListProps) {
                   variant="quiet"
                   accessibilityLabel={words.t('common.bookmark.remove')}
                   accessibilityHint={title}
-                  onPress={() => home.removeSaved(item.bookmark.id)}
+                  onPress={() => remove(item.bookmark.id)}
                 >
                   {words.t('common.remove')}
                 </GlassButton>
               }
+              below={failure === undefined ? undefined : <Notice text={words.t(`failure.${failure}`)} />}
             />
           );
         })
