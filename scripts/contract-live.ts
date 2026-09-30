@@ -1,6 +1,7 @@
 import { readArchive } from '@lib/burrito/archive';
 import { pinnedRows, type ContractRow, type RowId } from '@lib/burrito/flavors';
 import { readProvenance } from '@lib/burrito/metadata';
+import { unparsedTsv, unparsedTsvMessage } from '@lib/burrito/unparsed';
 import { validate, type ValidationReport } from '@lib/burrito/validate';
 import { readingOfText } from '@lib/corpus/readings';
 
@@ -155,7 +156,9 @@ export function checkArchive(
     ...(rowWrong ? [`expected ${expected}`] : []),
     ...(readingWrong ? [`expected ${reading}`] : []),
   ];
-  return { line: `${failed ? 'FAIL ' : 'ok   '} ${label}: ${details.join(', ')}`, failed };
+  const unparsed = unparsedTsvMessage(unparsedTsv(archive.files));
+  const note = unparsed === undefined ? '' : `\nnote  ${label}: ${unparsed}`;
+  return { line: `${failed ? 'FAIL ' : 'ok   '} ${label}: ${details.join(', ')}${note}`, failed };
 }
 
 export async function liveOutcomes(entries: readonly LiveEntry[]): Promise<Outcome[]> {
