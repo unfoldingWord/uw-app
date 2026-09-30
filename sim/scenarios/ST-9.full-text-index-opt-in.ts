@@ -102,7 +102,7 @@ export default scenario(
     assert.equal((await device.kernel.corpus.fullText('famine', 'qaa')).length, famine.length);
 
     const beforeAudio = device.kernel.journal.stats().lastSeq;
-    assert.ok((await device.kernel.packs.installFromCatalog(audioPackId('qaa', 'qaa_ult-audio'))).ok);
+    assert.ok((await device.kernel.packs.installFromCatalog(audioPackId('qaa', 'qaa_ult'))).ok);
     assert.deepEqual(device.kernel.corpus.index('qaa'), built, 'an audio pack leaves the index alone');
     assert.ok(!device.kernel.journal.read(beforeAudio).some((entry) => entry.type === 'IndexBuilt'));
 

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { languagePackId } from '@lib/domain/pack';
-import { installFromCatalog } from '../install';
+import { installFromCatalog, withFormation } from '../install';
 import { scenario } from '../scenario';
 
 export default scenario(
@@ -16,7 +16,7 @@ export default scenario(
       { track: 'training', sessions: 0 },
     ]);
 
-    await installFromCatalog(device, [languagePackId('qaa'), languagePackId('qab')]);
+    await installFromCatalog(device, [languagePackId('qaa'), languagePackId('qab')], withFormation);
     const contents = await device.kernel.corpus.contents('qaa');
     assert.equal(contents.stories.length, 3);
     assert.ok(contents.academy.length > 1);

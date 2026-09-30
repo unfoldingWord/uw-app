@@ -81,11 +81,11 @@ describe('packs, releases and languages', () => {
     expect(packKindOf('images', 'zxx')).toBe('image');
     expect(packKindOf('audio', 'qaa')).toBe('audio');
     expect(packIdOf('language', 'qaa', 'qaa_ult')).toBe('language:qaa');
-    expect(packIdOf('audio', 'qaa', 'qaa_ult-audio')).toBe('audio:qaa:qaa_ult-audio');
+    expect(packIdOf('audio', 'qaa', 'qaa_ult')).toBe('audio:qaa:qaa_ult');
     expect(packIdOf('original', 'hbo', 'hbo_uhb')).toBe('original:hbo');
     expect(packIdOf('image', 'zxx', 'obs-images')).toBe(imagePackId);
     expect(packDirectory('language:qaa')).toBe('packs/language/qaa');
-    expect(packDirectory('audio:qaa:qaa_ult-audio')).toBe('packs/audio/qaa/qaa_ult-audio');
+    expect(packDirectory('audio:qaa:qaa_ult')).toBe('packs/audio/qaa/qaa_ult');
   });
 
   it('names the same rows as the burrito contract', () => {

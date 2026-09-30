@@ -25,7 +25,7 @@ export default scenario(
   async (world) => {
     const sender = world.device('sender', { platform: 'ios' });
     await sender.start();
-    await installFromCatalog(sender, [languagePackId('qaa'), audioPackId('qaa', 'qaa_ult-audio')]);
+    await installFromCatalog(sender, [languagePackId('qaa'), audioPackId('qaa', 'qaa_ult')]);
     const receiver = world.device('receiver', { platform: 'android' });
     await receiver.start();
     receiver.adapters.http.setOnline(false);

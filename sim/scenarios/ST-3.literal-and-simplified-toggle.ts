@@ -17,6 +17,17 @@ export default scenario(
     const device = world.device('phone');
     await device.start();
     await installFromCatalog(device, [languagePackId('qaa'), originalPackId('hbo')]);
+    const installedTexts = device.kernel.packs
+      .installed()
+      .flatMap((pack) => (pack.pack === languagePackId('qaa') ? pack.burritos : []))
+      .filter((burrito) => burrito.row === 'text')
+      .map((burrito) => burrito.provenance.resource)
+      .sort();
+    assert.deepEqual(
+      installedTexts,
+      ['qaa_ult', 'qaa_ust'],
+      'the default pack carries the literal and simplified pair by resource code, no third-party text',
+    );
     const corpus = device.kernel.corpus;
     const parsed = parseReference('Ruth 1:16');
     assert.ok(parsed.ok);

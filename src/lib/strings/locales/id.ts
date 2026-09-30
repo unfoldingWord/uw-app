@@ -276,6 +276,12 @@ export const id: LocaleTable = {
   'languages.update': 'Perbarui',
   'languages.updateDetail': '{version} sudah siap, {size}.',
   'languages.installing': 'Memeriksa dan memasang',
+  'languages.more.title': 'Lainnya untuk diunduh',
+  'languages.more.about':
+    'Penerbit lain dan sumber tambahan untuk {language}, diunduh hanya jika Anda memilihnya.',
+  'languages.release': '{publisher} · {version}',
+  'languages.missing.title': 'Belum ada di ponsel ini',
+  'languages.missing.about': 'Sebagian {language} belum terunduh, dan Anda dapat mencoba lagi.',
   'storage.title': 'Penyimpanan',
   'storage.summary': '{used} di ponsel ini · {free} kosong',
   'storage.language': '{language} · {size}',

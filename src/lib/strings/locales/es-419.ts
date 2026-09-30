@@ -295,6 +295,12 @@ export const es419: LocaleTable = {
   'languages.update': 'Actualizar',
   'languages.updateDetail': '{version} está lista, {size}.',
   'languages.installing': 'Revisando e instalando',
+  'languages.more.title': 'Más para descargar',
+  'languages.more.about':
+    'Otras editoriales y recursos adicionales para {language}, que se descargan solo cuando los eliges.',
+  'languages.release': '{publisher} · {version}',
+  'languages.missing.title': 'Todavía no está en este teléfono',
+  'languages.missing.about': 'Una parte de {language} no se descargó, y puedes intentarlo de nuevo.',
   'storage.title': 'Almacenamiento',
   'storage.summary': '{used} en este teléfono · {free} libres',
   'storage.language': '{language} · {size}',

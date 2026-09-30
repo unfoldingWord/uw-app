@@ -3,6 +3,7 @@ import type { CatalogLanguage, CatalogRelease, ScriptDirection } from '@lib/cata
 import type { FailureCode } from '@lib/domain/failures';
 import { imagePackId, languagePackId, originalPackId, type PackId } from '@lib/domain/pack';
 import type { Kernel } from '@lib/kernel';
+import { optionalReleases } from '@lib/packs/plan';
 import type { InstallOutcome, PackUpdate, RemoveOutcome, Storage } from '@lib/packs/types';
 import { languagesWords, type LanguagesWords } from './strings';
 
@@ -27,6 +28,16 @@ export type OptionalDownload = {
   readonly installed: boolean;
 };
 
+export type MoreDownload = OptionalDownload & { readonly detail: string };
+
+export type MissingResource = {
+  readonly publisher: string;
+  readonly resource: string;
+  readonly title: string;
+  readonly detail: string;
+  readonly code: FailureCode | undefined;
+};
+
 export type ImportOutcome = { ok: true; installed: PackId | undefined } | { ok: false; code: FailureCode };
 
 export type LanguagesService = {
@@ -38,9 +49,13 @@ export type LanguagesService = {
   current(): string | undefined;
   select(language: string): Promise<boolean>;
   download(language: string): Promise<InstallOutcome>;
+  missing(): Promise<readonly MissingResource[]>;
   downloadImages(): Promise<InstallOutcome>;
+  imagesAvailable(): boolean;
   audio(language: string): readonly OptionalDownload[];
   originals(): readonly OptionalDownload[];
+  more(): readonly MoreDownload[];
+  installMore(item: MoreDownload): Promise<InstallOutcome>;
   install(pack: PackId): Promise<InstallOutcome>;
   remove(pack: PackId): Promise<RemoveOutcome>;
   storage(): Promise<Storage>;
@@ -144,6 +159,29 @@ export function createLanguagesService(kernel: Kernel): LanguagesService {
     current: () => kernel.preferences.contentLanguage(),
     select: (language) => kernel.preferences.set('study.language', language),
     download: (language) => kernel.packs.installFromCatalog(languagePackId(language)),
+    async missing() {
+      const language = kernel.preferences.contentLanguage();
+      if (language === undefined) {
+        return [];
+      }
+      const status = await kernel.packs.status(language);
+      if (status.installed.length === 0) {
+        return [];
+      }
+      const current = words();
+      return status.missing.map((release) => ({
+        publisher: release.publisher,
+        resource: release.resource,
+        title: release.title,
+        detail: current.t('languages.release', { publisher: release.publisher, version: release.tag }),
+        code: status.failed.find(
+          (item) => item.publisher === release.publisher && item.resource === release.resource,
+        )?.code,
+      }));
+    },
+    imagesAvailable: () =>
+      installedPacks(kernel).has(imagePackId) ||
+      kernel.catalog.all().some((release) => release.pack === imagePackId),
     downloadImages: () => kernel.packs.installFromCatalog(imagePackId),
     audio: (language) =>
       optional(kernel.catalog.releases(language).filter((release) => release.kind === 'audio')),
@@ -151,6 +189,27 @@ export function createLanguagesService(kernel: Kernel): LanguagesService {
       optional(kernel.catalog.originals()).filter(
         (item) => item.pack === originalPackId(item.release.language),
       ),
+    more() {
+      const language = kernel.preferences.contentLanguage();
+      if (language === undefined) {
+        return [];
+      }
+      const pack = languagePackId(language);
+      const current = words();
+      const present = new Set(
+        (kernel.packs.installed().find((item) => item.pack === pack)?.burritos ?? []).map(
+          (burrito) => `${burrito.provenance.publisher}/${burrito.provenance.resource}`,
+        ),
+      );
+      return optionalReleases(kernel.catalog.releases(language), pack).map((release) => ({
+        release,
+        pack,
+        title: release.title,
+        detail: current.t('languages.release', { publisher: release.publisher, version: release.tag }),
+        installed: present.has(`${release.publisher}/${release.resource}`),
+      }));
+    },
+    installMore: (item) => kernel.packs.installOptional(item.pack, item.release),
     install: (pack) => kernel.packs.installFromCatalog(pack),
     remove: (pack) => kernel.packs.remove(pack),
     storage: () => kernel.packs.storage(),

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { languagePackId } from '@lib/domain/pack';
 import { stableJson } from '@lib/json';
-import { installFromCatalog } from '../install';
+import { installFromCatalog, withFormation } from '../install';
 import { scenario } from '../scenario';
 import { valueOf } from '../written';
 
@@ -13,7 +13,7 @@ export default scenario(
   async (world) => {
     const device = world.device('phone');
     await device.start();
-    await installFromCatalog(device, [languagePackId('qaa')]);
+    await installFromCatalog(device, [languagePackId('qaa')], withFormation);
     const formation = () => device.kernel.formation;
 
     assert.deepEqual(formation().groups(), []);

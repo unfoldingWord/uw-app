@@ -290,6 +290,12 @@ export const sw: LocaleTable = {
   'languages.update': 'Sasisha',
   'languages.updateDetail': '{version} iko tayari, {size}.',
   'languages.installing': 'Inakagua na kusakinisha',
+  'languages.more.title': 'Zaidi za kupakua',
+  'languages.more.about':
+    'Wachapishaji wengine na rasilimali za ziada za {language}, zinapakuliwa tu unapozichagua.',
+  'languages.release': '{publisher} · {version}',
+  'languages.missing.title': 'Bado haipo kwenye simu hii',
+  'languages.missing.about': 'Sehemu ya {language} haikupakuliwa, na unaweza kujaribu tena.',
   'storage.title': 'Hifadhi',
   'storage.summary': '{used} kwenye simu hii · {free} wazi',
   'storage.language': '{language} · {size}',

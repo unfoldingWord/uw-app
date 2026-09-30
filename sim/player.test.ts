@@ -4,7 +4,7 @@ import { parseReference } from '@lib/domain/reference';
 import { installFromCatalog } from './install';
 import { createWorld } from './world';
 
-const ruthAudio = audioPackId('qaa', 'qaa_ult-audio');
+const ruthAudio = audioPackId('qaa', 'qaa_ult');
 
 async function phoneWithClip() {
   const world = createWorld();
@@ -26,7 +26,7 @@ async function phoneWithClip() {
 describe('player', () => {
   it('keeps the last clip asked for when two loads overlap', async () => {
     const { phone, path } = await phoneWithClip();
-    const stream = 'https://git.door43.org/unfoldingWord/qaa_ult-audio/raw/branch/master/01.mp3';
+    const stream = 'https://git.door43.org/unfoldingWord/qaa_ult/raw/branch/master/01.mp3';
     phone.adapters.audio.provide({ kind: 'url', url: stream }, 20_000);
     const player = phone.kernel.player;
     const [first, second] = await Promise.all([

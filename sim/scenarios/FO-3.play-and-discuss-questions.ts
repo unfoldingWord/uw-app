@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { audioPackId, imagePackId, languagePackId } from '@lib/domain/pack';
 import { parseReference } from '@lib/domain/reference';
-import { installFromCatalog } from '../install';
+import { installFromCatalog, withFormation } from '../install';
 import { scenario } from '../scenario';
 import { servicesOf } from '../services';
 
@@ -11,7 +11,7 @@ export default scenario(
   async (world) => {
     const device = world.device('phone');
     await device.start();
-    await installFromCatalog(device, [languagePackId('qaa'), imagePackId]);
+    await installFromCatalog(device, [languagePackId('qaa'), imagePackId], withFormation);
 
     const session = await device.kernel.formation.session('foundations', 1, 'qaa');
     assert.ok(session && session.track === 'foundations');
@@ -45,7 +45,7 @@ export default scenario(
     const services = servicesOf(device);
     assert.equal(services.formation.listen(session.play.audio), undefined, 'no story audio, no player');
 
-    await installFromCatalog(device, [audioPackId('qaa', 'qaa_ult-audio')]);
+    await installFromCatalog(device, [audioPackId('qaa', 'qaa_ult')]);
     const ruth = parseReference('RUT 1:1');
     assert.ok(ruth.ok);
     const [clip] = (await device.kernel.corpus.passage(ruth.reference, { language: 'qaa' }))?.audio ?? [];

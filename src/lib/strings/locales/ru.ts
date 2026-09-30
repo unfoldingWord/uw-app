@@ -319,6 +319,12 @@ export const ru: LocaleTable = {
   'languages.update': 'Обновить',
   'languages.updateDetail': 'Выпуск {version} готов, {size}.',
   'languages.installing': 'Проверка и установка',
+  'languages.more.title': 'Ещё для загрузки',
+  'languages.more.about':
+    'Другие издатели и дополнительные ресурсы для {language}; они загружаются, только если вы их выберете.',
+  'languages.release': '{publisher} · {version}',
+  'languages.missing.title': 'Пока нет на этом телефоне',
+  'languages.missing.about': 'Часть {language} не загрузилась, и вы можете попробовать ещё раз.',
   'storage.title': 'Хранилище',
   'storage.summary': '{used} на этом телефоне · свободно {free}',
   'storage.language': '{language} · {size}',

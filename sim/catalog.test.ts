@@ -31,11 +31,14 @@ describe('catalog interface (LA-1, LA-7)', () => {
     const { device } = await phone();
     expect(await device.kernel.catalog.refresh()).toEqual({
       ok: true,
-      releases: 21,
+      releases: 24,
       languages: 3,
       dropped: 0,
     });
-    expect(device.adapters.http.requests()).toEqual([`GET ${catalogPageUrl(1)}`]);
+    expect(device.adapters.http.requests()).toEqual([
+      `GET ${catalogPageUrl(1)}`,
+      'GET https://git.door43.org/api/v1/catalog/list/languages?stage=prod&topic=tc-ready',
+    ]);
     expect(catalogPageUrl(2)).toBe(`${catalogSearchUrl}&limit=50&page=2`);
     expect(device.kernel.journal.read().map((item) => item.type)).toEqual([
       'AppOpened',
@@ -43,10 +46,8 @@ describe('catalog interface (LA-1, LA-7)', () => {
       'CatalogRefreshed',
     ]);
     await device.restart();
-    expect(device.kernel.catalog.all()).toHaveLength(21);
-    expect(device.kernel.catalog.releases('qaa').map((release) => release.resource)).toContain(
-      'qaa_ult-audio',
-    );
+    expect(device.kernel.catalog.all()).toHaveLength(24);
+    expect(device.kernel.catalog.releases('qaa').map((release) => release.resource)).toContain('qaa_ult');
   });
 
   it('records offline, timeout, refused hosts and non-2xx answers as failures and keeps the known catalog', async () => {
@@ -59,7 +60,7 @@ describe('catalog interface (LA-1, LA-7)', () => {
     expect(lastFailure(device)).toEqual({ code: 'http.status', context: { step: 'catalog', status: 503 } });
     device.adapters.http.setOnline(false);
     expect(await device.kernel.catalog.refresh()).toEqual({ ok: false, code: 'http.offline' });
-    expect(device.kernel.catalog.all()).toHaveLength(21);
+    expect(device.kernel.catalog.all()).toHaveLength(24);
   });
 
   it('refuses a document that is not a catalog, and skips entries it cannot key', async () => {
@@ -67,7 +68,7 @@ describe('catalog interface (LA-1, LA-7)', () => {
     await device.kernel.catalog.refresh();
     world.network.serve(catalogPageUrl(1), { body: '<html>maintenance</html>' });
     expect(await device.kernel.catalog.refresh()).toEqual({ ok: false, code: 'catalog.invalid-response' });
-    expect(device.kernel.catalog.all()).toHaveLength(21);
+    expect(device.kernel.catalog.all()).toHaveLength(24);
     world.network.serve(catalogPageUrl(1), {
       body: JSON.stringify({
         ok: true,
@@ -100,13 +101,13 @@ describe('catalog interface (LA-1, LA-7)', () => {
     world.network.serve(catalogPageUrl(2), page(names(50, 50)));
     world.network.serve(catalogPageUrl(3), page(names(100, 7)));
     expect(await device.kernel.catalog.refresh()).toMatchObject({ ok: true, releases: 107 });
-    expect(device.adapters.http.requests()).toHaveLength(3);
+    expect(device.adapters.http.requests().filter((url) => url.includes('/catalog/search'))).toHaveLength(3);
     world.network.serve(catalogPageUrl(3), page([]));
     expect(await device.kernel.catalog.refresh()).toMatchObject({ ok: true, releases: 100 });
     world.network.serve(catalogPageUrl(2), page(names(50, 50), { 'x-total-count': '100' }));
     const before = device.adapters.http.requests().length;
     expect(await device.kernel.catalog.refresh()).toMatchObject({ ok: true, releases: 100 });
-    expect(device.adapters.http.requests().length - before).toBe(2);
+    expect(device.adapters.http.requests().length - before).toBe(3);
   });
 
   it('serves the fixture catalog the way DCS pages it: x-total-count, a Link header, last_updated', async () => {
@@ -126,7 +127,7 @@ describe('catalog interface (LA-1, LA-7)', () => {
     await new Promise((resolve) => setImmediate(resolve));
     const newer = device.kernel.catalog.refresh();
     release();
-    expect(await older).toMatchObject({ ok: true, releases: 21 });
+    expect(await older).toMatchObject({ ok: true, releases: 24 });
     world.network.serve(catalogPageUrl(1), { body: JSON.stringify({ ok: true, data: [entry('qaa_obs')] }) });
     expect(await newer).toEqual({ ok: true, releases: 1, languages: 1, dropped: 0 });
     expect(device.kernel.catalog.all()).toHaveLength(1);

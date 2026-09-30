@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { imagePackId, languagePackId } from '@lib/domain/pack';
-import { installFromCatalog } from '../install';
+import { installFromCatalog, withFormation } from '../install';
 import { scenario } from '../scenario';
 
 const movements = ['observation', 'translation', 'discourse', 'theological', 'journal'];
@@ -11,7 +11,7 @@ export default scenario(
   async (world) => {
     const device = world.device('phone');
     await device.start();
-    await installFromCatalog(device, [languagePackId('qaa'), imagePackId]);
+    await installFromCatalog(device, [languagePackId('qaa'), imagePackId], withFormation);
     const formation = device.kernel.formation;
 
     const first = await formation.session('foundations', 1, 'qaa');

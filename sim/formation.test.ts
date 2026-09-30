@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { languagePackId, type PackId } from '@lib/domain/pack';
-import { installFromCatalog } from './install';
+import { installFromCatalog, withFormation } from './install';
 import { createWorld } from './world';
 import { valueOf } from './written';
 
 async function phone(packs: readonly PackId[]) {
   const device = createWorld().device('phone');
   await device.start();
-  await installFromCatalog(device, packs);
+  await installFromCatalog(device, packs, withFormation);
   return device;
 }
 

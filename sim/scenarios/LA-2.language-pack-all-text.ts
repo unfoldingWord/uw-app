@@ -2,11 +2,11 @@ import assert from 'node:assert/strict';
 import { languagePackId } from '@lib/domain/pack';
 import { burritoRootOf } from '../install';
 import { scenario } from '../scenario';
+import { servicesOf } from '../services';
 
 const textRows = [
   'articles',
   'articles',
-  'formation',
   'notes',
   'questions',
   'stories',
@@ -28,11 +28,32 @@ export default scenario(
 
     const publishers = phone.kernel.catalog
       .releases('qaa')
-      .filter((release) => release.resource === 'qaa_obs')
+      .filter((release) => release.resource === 'qaa_obs' && release.row === 'stories')
       .map((release) => release.publisher);
     assert.deepEqual(publishers, ['unfoldingWord', 'Door43-Catalog'], 'unfoldingWord is listed first');
 
     const pack = languagePackId('qaa');
+    const texts = (await phone.kernel.packs.defaults(pack))
+      .filter((release) => release.row === 'text')
+      .map((release) => `${release.publisher}/${release.resource}`);
+    assert.deepEqual(
+      texts,
+      ['unfoldingWord/qaa_ult', 'unfoldingWord/qaa_ust'],
+      "the default pack holds the publisher's own literal and simplified pair only",
+    );
+    const services = servicesOf(phone);
+    await services.languages.select('qaa');
+    const more = services.languages.more();
+    assert.deepEqual(
+      more.map((item) => `${item.release.publisher}/${item.release.resource}`),
+      ['unfoldingWord/qaa_obs-tf', 'unfoldingWord/qaa_t4t', 'Door43-Catalog/qaa_obs', 'Worldview/qaa_bsb'],
+      'other texts, other publishers and formation are optional downloads',
+    );
+    assert.ok(
+      more.every((item) => item.detail.includes(item.release.publisher)),
+      'each optional download shows its publisher',
+    );
+
     const outcome = await phone.kernel.packs.installFromCatalog(pack);
     assert.ok(outcome.ok, outcome.ok ? '' : outcome.code);
 
@@ -66,5 +87,21 @@ export default scenario(
     const status = await phone.kernel.packs.status('qaa');
     assert.equal(status.complete, true);
     assert.equal(status.missing.length, 0);
+
+    const bsb = more.find((item) => item.release.resource === 'qaa_bsb');
+    assert.ok(bsb !== undefined);
+    const optional = await services.languages.installMore(bsb);
+    assert.ok(optional.ok, optional.ok ? '' : optional.code);
+    assert.ok(
+      phone.kernel.packs
+        .installed()[0]
+        ?.burritos.some((burrito) => burrito.provenance.publisher === 'Worldview'),
+      'an optional download joins the language pack when the leader chooses it',
+    );
+    assert.equal(
+      services.languages.more().find((item) => item.release.resource === 'qaa_bsb')?.installed,
+      true,
+    );
+    assert.equal((await phone.kernel.packs.status('qaa')).complete, true);
   },
 );

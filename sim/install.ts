@@ -1,10 +1,12 @@
 import type { PackId } from '@lib/domain/pack';
+import type { CatalogInstallOptions } from '@lib/packs/packs';
 import type { InstalledPack } from '@lib/packs/types';
 import type { SimDevice } from './device';
 
 export async function installFromCatalog(
   device: SimDevice,
   packs: readonly PackId[],
+  options: CatalogInstallOptions = {},
 ): Promise<InstalledPack[]> {
   const refreshed = await device.kernel.catalog.refresh();
   if (!refreshed.ok) {
@@ -12,7 +14,7 @@ export async function installFromCatalog(
   }
   const installed: InstalledPack[] = [];
   for (const pack of packs) {
-    const outcome = await device.kernel.packs.installFromCatalog(pack);
+    const outcome = await device.kernel.packs.installFromCatalog(pack, options);
     if (!outcome.ok) {
       throw new Error(`${pack} did not install from the fixture catalog: ${outcome.code}`);
     }
@@ -20,6 +22,8 @@ export async function installFromCatalog(
   }
   return installed;
 }
+
+export const withFormation: CatalogInstallOptions = { withRows: ['formation'] };
 
 export function catalogPacks(device: SimDevice): PackId[] {
   return [...new Set(device.kernel.catalog.all().flatMap((release) => release.pack ?? []))];

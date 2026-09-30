@@ -189,7 +189,7 @@ describe('kernel composition', () => {
       .flatMap((migration) => migration.statements)
       .flatMap((statement) => /^CREATE TABLE (\w+)/.exec(statement)?.[1] ?? []);
     expect(created.filter((table) => !tables.includes(table))).toEqual([]);
-    expect(kernelModules.catalog.owns.tables).toEqual(['catalog_releases']);
+    expect(kernelModules.catalog.owns.tables).toEqual(['catalog_releases', 'catalog_languages']);
     expect(kernelModules.packs.owns).toEqual({
       tables: ['packs', 'pack_burritos'],
       directories: ['packs'],

@@ -291,6 +291,12 @@ export const nl: LocaleTable = {
   'languages.update': 'Bijwerken',
   'languages.updateDetail': '{version} staat klaar, {size}.',
   'languages.installing': 'Controleren en installeren',
+  'languages.more.title': 'Meer om te downloaden',
+  'languages.more.about':
+    'Andere uitgevers en extra bronnen voor {language}, alleen gedownload als je ze kiest.',
+  'languages.release': '{publisher} · {version}',
+  'languages.missing.title': 'Nog niet op deze telefoon',
+  'languages.missing.about': 'Een deel van {language} is niet gedownload, en je kunt het opnieuw proberen.',
   'storage.title': 'Opslag',
   'storage.summary': '{used} op deze telefoon · {free} vrij',
   'storage.language': '{language} · {size}',

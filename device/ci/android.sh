@@ -26,13 +26,14 @@ status=0
 ) || status=$?
 
 echo "::group::screenshots (base64 jpeg)"
-bash "$GITHUB_WORKSPACE/device/ci/print-shots.sh" "$out"
+bash "$GITHUB_WORKSPACE/device/ci/print-shots.sh" "$out" "$HOME/.maestro/tests"
 echo "::endgroup::"
 
 adb logcat -d > "$out/logcat.txt" || true
+adb logcat -d -s ReactNativeJS:V ReactNative:V AndroidRuntime:E Expo:V unfoldingWord:V > "$out/app-log.txt" || true
 if [ "$status" -ne 0 ]; then
-  echo "::group::adb logcat (tail)"
-  tail -n 400 "$out/logcat.txt"
+  echo "::group::app log (tail)"
+  tail -n 200 "$out/app-log.txt"
   echo "::endgroup::"
 fi
 exit "$status"
