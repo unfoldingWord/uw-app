@@ -1,0 +1,24 @@
+appId: org.unfoldingword.app
+name: Download English from the catalog and read it in Study
+tags:
+  - optional
+  - network
+---
+- runFlow: common/start.yaml
+- takeScreenshot: download-1-home
+- runFlow:
+    when:
+      visible: 'Download English'
+    commands:
+      - tapOn: 'Download English'
+- extendedWaitUntil:
+    visible: '[0-9]+ resources? ready offline in .*'
+    timeout: 900000
+- takeScreenshot: download-2-ready
+- tapOn: 'Study'
+- extendedWaitUntil:
+    visible: 'Next chapter'
+    timeout: 60000
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: download-3-study

@@ -1,0 +1,37 @@
+appId: org.unfoldingword.app
+name: Settings switches the theme to dark and back
+---
+- runFlow: common/start.yaml
+- tapOn: 'Settings'
+- extendedWaitUntil:
+    visible: 'Theme'
+    timeout: 15000
+- takeScreenshot: theme-1-settings
+- scrollUntilVisible:
+    element: 'Dark'
+    direction: DOWN
+    timeout: 10000
+- tapOn: 'Dark'
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: theme-2-dark
+- tapOn: 'Light'
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: theme-3-light
+- tapOn: 'Follow the phone'
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: theme-4-follow-the-phone
+- tapOn: 'Back'
+- extendedWaitUntil:
+    visible: 'Switch theme'
+    timeout: 15000
+- tapOn: 'Switch theme'
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: theme-5-home-toggled
+- tapOn: 'Switch theme'
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: theme-6-home-toggled-back

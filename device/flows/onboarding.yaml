@@ -1,0 +1,30 @@
+appId: org.unfoldingword.app
+name: First launch and onboarding through to Home
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    text: 'Allow'
+    optional: true
+- extendedWaitUntil:
+    visible: 'Continue in English'
+    timeout: 90000
+- assertVisible: 'Choose your language'
+- takeScreenshot: onboarding-1-welcome
+- tapOn: 'Choose your language'
+- extendedWaitUntil:
+    visible: 'Search languages'
+    timeout: 15000
+- takeScreenshot: onboarding-2-choose-language
+- tapOn: 'Back'
+- extendedWaitUntil:
+    visible: 'Continue in English'
+    timeout: 15000
+- tapOn: 'Continue in English'
+- extendedWaitUntil:
+    visible: 'Switch theme'
+    timeout: 30000
+- assertVisible: 'Good (morning|afternoon|evening)'
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: onboarding-3-home

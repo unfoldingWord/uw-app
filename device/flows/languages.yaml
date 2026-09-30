@@ -1,0 +1,17 @@
+appId: org.unfoldingword.app
+name: Open Languages from Home and close it
+---
+- runFlow: common/start.yaml
+- tapOn: 'Change language, now .*'
+- extendedWaitUntil:
+    visible: 'Search languages'
+    timeout: 15000
+- assertVisible: 'Languages'
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: languages-1-open
+- tapOn: 'Close'
+- extendedWaitUntil:
+    visible: 'Switch theme'
+    timeout: 15000
+- takeScreenshot: languages-2-home

@@ -3,6 +3,30 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-30 Device CI: Android emulator and iOS simulator workflow
+
+Node v22.22.2 in the sandbox. Nothing ran on a phone, an emulator or a simulator, and nothing has run in
+GitHub Actions yet: the sandbox has no `/dev/kvm`, no Xcode, and no route to dl.google.com, github.com
+releases or get.maestro.mobile.dev.
+
+- Wrote `.github/workflows/device.yml` (pull_request, workflow_dispatch) with jobs `android` (ubuntu-latest,
+  KVM, Java 17, `expo prebuild`, `:app:assembleRelease` for x86_64 signed with the prebuild debug keystore,
+  API 30 x86_64 google_apis emulator with 2048 MB RAM) and `ios` (macos-15, newest non-beta Xcode, `expo
+  prebuild` with pods, Release simulator build with signing off). Both run the Maestro flows, then the optional
+  download flow with `continue-on-error`, and upload `android-maestro`, `android-apk` and `ios-maestro`.
+- The Android job prints the APK size and the merged manifest permissions (`aapt2 dump permissions`) to the
+  log and the job summary, for the merged-manifest observation issue #26 asks for. Not yet observed.
+- Flows in `device/flows/`: `onboarding`, `tabs`, `theme`, `languages`, and `download-language` (tagged
+  `optional`), sharing `common/start.yaml`. They target controls by the English accessible names in
+  `src/lib/strings/en/`; no `testID` was added and no app code changed.
+- Observed here: `npx expo prebuild --platform android --no-install --clean` and `--platform ios
+  --no-install` succeed in a scratch copy (Linux, no SDK): package `org.unfoldingword.app`, Gradle 9.3.1,
+  release build type signed with `signingConfigs.debug`, Xcode scheme and workspace `unfoldingWord`, iOS
+  deployment target 16.4; `ExpoModulesCore` declares Swift 6.0, so Xcode 16 or later. The workflow and every
+  flow parse with the `yaml` package; the shell scripts pass `bash -n`; Prettier is clean.
+- Not verified: Gradle, xcodebuild, CocoaPods, the emulator, the simulator, Maestro `2.0.3` and every flow
+  step. Expect the first CI run to need fixes.
+
 ## 2026-09-29 P1 readable names and small visual fixes
 
 Node v22.22.2; Chromium 141 through playwright-core 1.56.1 for the shots. Nothing ran on a phone.
