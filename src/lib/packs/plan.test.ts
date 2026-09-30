@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import type { CatalogRelease } from '../catalog/types';
 import { packIdOf, packKindOf, type ResourceRow } from '../domain/pack';
 import { archiveUrlOf } from '../domain/release';
-import { defaultReleases, optionalReleases } from './plan';
+import { defaultReleases, missingReleases, optionalReleases } from './plan';
+import type { InstalledPack } from './types';
 
 function release(publisher: string, resource: string, row: ResourceRow, language: string): CatalogRelease {
   const kind = packKindOf(row, language);
@@ -71,6 +72,72 @@ describe('the default pack (LA-2, ST-3)', () => {
     ];
     expect(keys(defaultReleases(arabic, 'language:ar'))).toEqual(['ar_gl/ar_obs']);
     expect(keys(optionalReleases(arabic, 'language:ar'))).toEqual(['Arabic-Bible/ar_avd']);
+  });
+});
+
+describe('the literal and simplified pair (ST-3, #12)', () => {
+  it('passes over a publisher with only half a pair for one with the whole pair', () => {
+    const catalog = [
+      release('unfoldingWord', 'en_ult', 'text', 'en'),
+      release('en_gl', 'en_glt', 'text', 'en'),
+      release('en_gl', 'en_gst', 'text', 'en'),
+    ];
+    expect(keys(defaultReleases(catalog, 'language:en'))).toEqual(['en_gl/en_glt', 'en_gl/en_gst']);
+  });
+
+  it('never joins a literal from one pair family to a simplified from the other', () => {
+    const mixed = [
+      release('unfoldingWord', 'en_ult', 'text', 'en'),
+      release('unfoldingWord', 'en_gst', 'text', 'en'),
+      release('en_gl', 'en_glt', 'text', 'en'),
+      release('en_gl', 'en_gst', 'text', 'en'),
+    ];
+    expect(keys(defaultReleases(mixed, 'language:en'))).toEqual(['en_gl/en_glt', 'en_gl/en_gst']);
+  });
+
+  it('keeps the preferred publisher’s one pair-coded text when no publisher has a whole pair', () => {
+    const half = [
+      release('unfoldingWord', 'en_ult', 'text', 'en'),
+      release('unfoldingWord', 'en_gst', 'text', 'en'),
+      release('en_gl', 'en_glt', 'text', 'en'),
+    ];
+    expect(keys(defaultReleases(half, 'language:en'))).toEqual(['unfoldingWord/en_ult']);
+  });
+});
+
+describe('what the default pack still needs (#12)', () => {
+  it('still asks for the preferred publisher’s text when another publisher’s text of the same name is installed', () => {
+    const catalog = [
+      release('unfoldingWord', 'en_ult', 'text', 'en'),
+      release('unfoldingWord', 'en_ust', 'text', 'en'),
+    ];
+    const installed: InstalledPack = {
+      pack: 'language:en',
+      kind: 'language',
+      language: 'en',
+      source: 'file',
+      bytes: 1,
+      burritos: [
+        {
+          root: 'packs/language/en/x/Other/en_ult',
+          row: 'text',
+          bytes: 1,
+          provenance: {
+            publisher: 'Other',
+            resource: 'en_ult',
+            language: 'en',
+            tag: 'v1',
+            commit: 'c0ffee',
+            licence: 'CC BY-SA 4.0',
+            title: 'en_ult',
+          },
+        },
+      ],
+    };
+    expect(keys(missingReleases(catalog, 'language:en', installed))).toEqual([
+      'unfoldingWord/en_ult',
+      'unfoldingWord/en_ust',
+    ]);
   });
 });
 
