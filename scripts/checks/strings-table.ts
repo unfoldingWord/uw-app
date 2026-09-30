@@ -123,9 +123,9 @@ const emoji = /\p{Extended_Pictographic}/u;
 const brand = /unfoldingword(?!\.org)/giu;
 const internalNames = /\b(ULT|UST|GLT|GST|RC|Resource Container)\b/u;
 
-export const fixedByRequirement: ReadonlySet<string> = new Set(['onboarding.tagline', 'onboarding.footer']);
+const fixedByRequirement: ReadonlySet<string> = new Set(['onboarding.tagline', 'onboarding.footer']);
 
-export function sentencesIn(locale: string, text: string): number {
+function sentencesIn(locale: string, text: string): number {
   const segmenter = new Intl.Segmenter(locale, { granularity: 'sentence' });
   const spoken = text
     .replace(/\{[^}]*\}/gu, 'Name')

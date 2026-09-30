@@ -532,6 +532,8 @@ Decisions taken in the requirements interview of 2026-09-29 with Jesse Griffin. 
 | 84 | One screen scaffold, header and text component live in `src/shared/ui` (`Screen`, `ScreenScaffold`, `Header`, `ThemedText`); a feature keeps only parts that are its own. A screen title is the prototype's: 28 px with no back control, 24 px with one, 17 px semibold when centred. (2026-09-30, issue #37) |
 | 85 | A tappable glass surface recoils (`--recoil-squash`, `--dur-recoil`, then the `gg-recoil` rebound on `--ease-settle` over `--dur-morph`); buttons keep `--press-scale`. The DotRing is the loading state, and dense screens sit on the aurora at 0.5. (2026-09-30, issue #41) |
 | 86 | A link inline in a sentence keeps its text size as its touch target: React Native's `Text` takes no hit slop, and WCAG 2.5.8 exempts inline targets. Every other target reaches 44 px counting hit slop. (2026-09-30, issue #62) |
+| 87 | A preference is written before it is journaled: only a key-value write that succeeds emits `PreferenceChanged` and changes the value; a refused write is a `Failure` (`kv.io`) and keeps the old value. Every screen that saves shows a refused write or a failed read in place, on the control or section it belongs to. (2026-09-30, issue #61) |
+| 88 | Support copy is one sentence in every locale, checked by the `strings` check with the platform sentence segmenter; the ON-1 tagline and footer are exempt because the PRD fixes their wording. (2026-09-30, issue #42) |
 
 ---
 

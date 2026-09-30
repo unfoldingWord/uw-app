@@ -3,6 +3,25 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-30 C2 refused writes in place, preference write order, one-sentence copy (#61, #42)
+
+Node v22.22.2; Chromium through playwright-core for the shots. Nothing ran on a phone, and nothing here
+reached git.door43.org.
+
+- Red first:
+  - #61: `DX-1.b-refused-preference-write` failed on "a refused write reports that it did not save"
+    (`true !== false`), its journal showing `PreferenceChanged home.theme light` before the `Failure kv.io`.
+    Green once Preferences wrote first. Its added assertion that Home's theme toggle returns
+    `{ ok: false, code: 'kv.io' }` failed before `toggleTheme` returned `Written<Scheme>`.
+  - #42: the voice-rules test for two sentences failed, then `npm run checks` failed listing 56 English
+    strings in 55 keys and every locale's drafts of them; after the rewrite it passes with none.
+- `npm run sim -- all`: 59 scenarios, 59 passed. `npm run shots -- --only
+  home,study-passage,study-article,languages,share,transfer --modes light,dark,reduced-blur`: 18 screenshots,
+  0 text boxes escaping their parent; the small-target notes are the ones already there.
+- Not verified: no shot shows a failure notice, because the web harness has no way to refuse a write or a
+  read; the notices were checked by type and lint only. The fifteen locale drafts are an AI agent's and
+  unreviewed. Nothing ran on a phone.
+
 ## 2026-09-30 C1 shared UI structure and design fidelity for v1.1.0 (#37, #41, #62)
 
 Node v22.22.2; Chromium through playwright-core 1.56.1 for the shots. Nothing ran on a phone.
