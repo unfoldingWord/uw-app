@@ -482,6 +482,8 @@ export const bn: LocaleTable = {
   'study.frame.picture': 'দৃশ্য {number}-এর ছবি',
   'transfer.app.ready': 'অ্যাপটি এই ফোনে এসেছে ({size}) এবং ইনস্টলের জন্য প্রস্তুত।',
   'transfer.network': 'আগে দুটি ফোনই একই ওয়াই-ফাই বা হটস্পটে যুক্ত করুন।',
+  'transfer.localNetwork.prompt':
+    'আপনি পাঠানো বা গ্রহণ করার সময়েই শুধু অ্যাপটি আপনার ওয়াই-ফাই বা হটস্পটে অন্য ফোনটি খোঁজে।',
   'transfer.address': 'অন্য ফোন যদি এটিকে খুঁজে না পায়, সেখানে {address} লিখুন।',
   'transfer.address.qr': '{address}-এর জন্য ছবি কোড। অন্য ফোনের ক্যামেরা দিয়ে এটি স্ক্যান করুন।',
   'transfer.typed': 'ঠিকানা লিখুন',

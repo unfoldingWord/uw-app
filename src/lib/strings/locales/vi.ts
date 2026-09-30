@@ -461,6 +461,8 @@ export const vi: LocaleTable = {
   'study.frame.picture': 'Hình cho khung {number}',
   'transfer.app.ready': 'Ứng dụng đã đến điện thoại này ({size}) và sẵn sàng để cài đặt.',
   'transfer.network': 'Trước tiên hãy kết nối cả hai điện thoại vào cùng một Wi-Fi hoặc điểm phát sóng.',
+  'transfer.localNetwork.prompt':
+    'Ứng dụng chỉ tìm điện thoại kia trên Wi-Fi hoặc điểm phát sóng của bạn khi bạn đang gửi hoặc nhận.',
   'transfer.address': 'Nếu điện thoại kia không tìm thấy máy này, hãy nhập {address} ở đó.',
   'transfer.address.qr': 'Mã hình cho {address}. Hãy quét bằng máy ảnh của điện thoại kia.',
   'transfer.typed': 'Nhập địa chỉ',

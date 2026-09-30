@@ -489,6 +489,8 @@ export const sw: LocaleTable = {
   'study.frame.picture': 'Mchoro wa picha ya {number}',
   'transfer.app.ready': 'Programu imefika kwenye simu hii ({size}) na iko tayari kusakinishwa.',
   'transfer.network': 'Kwanza unganisha simu zote mbili kwenye Wi-Fi au hotspot moja.',
+  'transfer.localNetwork.prompt':
+    'Programu hutafuta simu nyingine kwenye Wi-Fi au hotspot yako wakati tu unatuma au kupokea.',
   'transfer.address': 'Ikiwa simu nyingine haipati hii, andika {address} huko.',
   'transfer.address.qr': 'Msimbo wa picha wa {address}. Uchanganue kwa kamera ya simu nyingine.',
   'transfer.typed': 'Andika anwani',

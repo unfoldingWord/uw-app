@@ -550,6 +550,8 @@ export const ar: LocaleTable = {
   'study.frame.picture': 'صورة المشهد {number}',
   'transfer.app.ready': 'وصل التطبيق إلى هذا الهاتف ({size}) وهو جاهز للتثبيت.',
   'transfer.network': 'صِل الهاتفين أولًا بشبكة Wi-Fi نفسها أو نقطة الاتصال نفسها.',
+  'transfer.localNetwork.prompt':
+    'يبحث التطبيق عن الهاتف الآخر على شبكة Wi-Fi أو نقطة الاتصال لديك فقط أثناء الإرسال أو الاستلام.',
   'transfer.address': 'إن لم يجد الهاتف الآخر هذا الهاتف، فاكتب {address} هناك.',
   'transfer.address.qr': 'رمز مصوّر للعنوان {address}. امسحه بكاميرا الهاتف الآخر.',
   'transfer.typed': 'اكتب عنوانًا',

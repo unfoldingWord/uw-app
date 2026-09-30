@@ -210,3 +210,14 @@ Dates are formatted by the screen layer with the platform's date formatting, and
   hand-off on Android. "Installer" is the system screen that installs an app; it must not read as a separate
   program the leader has to find.
 - Drafted by an AI agent in fifteen locales; none reviewed.
+
+## Added with the v1.1.0 transport follow-ups (issue #64)
+
+- `transfer.localNetwork.prompt`: the sentence iOS shows in its own local network prompt the first time a
+  transfer starts. It is not shown by any screen: `app.config.ts` puts the English value in Info.plist, and
+  `plugins/system-prompts/index.ts` writes it into `InfoPlist.strings` for English and each signed-off locale
+  through Expo's `locales` config, so a drafted locale reaches the prompt only once it is signed off. iOS shows
+  it in a system dialog beside the app's name; keep it one plain sentence that says when the app looks and
+  that it looks only on the local network.
+- `transfer.typed.invalid` now says six-digit: the pairing code grew from four digits to six.
+- Drafted by an AI agent in fifteen locales; none reviewed.

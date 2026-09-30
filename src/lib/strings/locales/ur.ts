@@ -484,6 +484,8 @@ export const ur: LocaleTable = {
   'study.frame.picture': 'منظر {number} کی تصویر',
   'transfer.app.ready': 'ایپ اس فون پر آ گئی ہے ({size}) اور انسٹال کے لیے تیار ہے۔',
   'transfer.network': 'پہلے دونوں فون ایک ہی وائی فائی یا ہاٹ اسپاٹ سے جوڑیں۔',
+  'transfer.localNetwork.prompt':
+    'ایپ دوسرے فون کو آپ کے وائی فائی یا ہاٹ اسپاٹ پر صرف اسی وقت ڈھونڈتی ہے جب آپ بھیج یا وصول کر رہے ہوں۔',
   'transfer.address': 'اگر دوسرا فون اسے نہ ڈھونڈ سکے تو وہاں {address} لکھیں۔',
   'transfer.address.qr': '{address} کے لیے تصویری کوڈ۔ اسے دوسرے فون کے کیمرے سے اسکین کریں۔',
   'transfer.typed': 'پتہ لکھیں',

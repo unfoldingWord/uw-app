@@ -446,6 +446,7 @@ export const zhHans: LocaleTable = {
   'study.frame.picture': '第 {number} 幅的插图',
   'transfer.app.ready': '应用已到达这部手机（{size}），可以安装了。',
   'transfer.network': '请先把两部手机连到同一个 Wi-Fi 或热点。',
+  'transfer.localNetwork.prompt': '只有在你发送或接收时，应用才会在你的 Wi-Fi 或热点上寻找另一部手机。',
   'transfer.address': '如果另一部手机找不到这部手机，请在那里输入 {address}。',
   'transfer.address.qr': '{address} 的图形码。请用另一部手机的相机扫描。',
   'transfer.typed': '输入地址',

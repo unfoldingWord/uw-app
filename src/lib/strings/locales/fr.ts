@@ -521,6 +521,8 @@ export const fr: LocaleTable = {
   'transfer.app.ready':
     'L’application est arrivée sur ce téléphone ({size}) et elle est prête à être installée.',
   'transfer.network': 'Connectez d’abord les deux téléphones au même Wi-Fi ou partage de connexion.',
+  'transfer.localNetwork.prompt':
+    'L’application cherche l’autre téléphone sur votre Wi-Fi ou partage de connexion seulement pendant que vous envoyez ou recevez.',
   'transfer.address': 'Si l’autre téléphone ne trouve pas celui-ci, saisissez-y {address}.',
   'transfer.address.qr': 'Code image pour {address}. Scannez-le avec l’appareil photo de l’autre téléphone.',
   'transfer.typed': 'Saisir une adresse',

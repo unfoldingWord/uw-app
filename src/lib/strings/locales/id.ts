@@ -470,6 +470,8 @@ export const id: LocaleTable = {
   'study.frame.picture': 'Gambar untuk bingkai {number}',
   'transfer.app.ready': 'Aplikasi sudah sampai di ponsel ini ({size}) dan siap dipasang.',
   'transfer.network': 'Hubungkan kedua ponsel ke Wi-Fi atau hotspot yang sama terlebih dahulu.',
+  'transfer.localNetwork.prompt':
+    'Aplikasi mencari ponsel lain di Wi-Fi atau hotspot Anda hanya saat Anda mengirim atau menerima.',
   'transfer.address': 'Jika ponsel lain tidak menemukan ponsel ini, ketik {address} di sana.',
   'transfer.address.qr': 'Kode gambar untuk {address}. Pindai dengan kamera di ponsel lain.',
   'transfer.typed': 'Ketik alamat',

@@ -497,6 +497,8 @@ export const nl: LocaleTable = {
   'study.frame.picture': 'Afbeelding bij beeld {number}',
   'transfer.app.ready': 'De app staat nu op deze telefoon ({size}) en is klaar om te installeren.',
   'transfer.network': 'Zet beide telefoons eerst op hetzelfde wifi-netwerk of dezelfde hotspot.',
+  'transfer.localNetwork.prompt':
+    'De app zoekt de andere telefoon op je wifi-netwerk of hotspot alleen terwijl je verstuurt of ontvangt.',
   'transfer.address': 'Vindt de andere telefoon deze niet, typ daar dan {address}.',
   'transfer.address.qr': 'Beeldcode voor {address}. Scan hem met de camera van de andere telefoon.',
   'transfer.typed': 'Een adres typen',

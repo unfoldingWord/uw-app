@@ -484,6 +484,8 @@ export const fa: LocaleTable = {
   'study.frame.picture': 'تصویر صحنهٔ {number}',
   'transfer.app.ready': 'برنامه به این گوشی رسید ({size}) و آمادهٔ نصب است.',
   'transfer.network': 'اول هر دو گوشی را به یک وای‌فای یا هات‌اسپات وصل کنید.',
+  'transfer.localNetwork.prompt':
+    'برنامه فقط هنگام ارسال یا دریافت، گوشی دیگر را در وای‌فای یا هات‌اسپات شما جستجو می‌کند.',
   'transfer.address': 'اگر گوشی دیگر این گوشی را پیدا نکرد، آنجا {address} را وارد کنید.',
   'transfer.address.qr': 'کد تصویری برای {address}. آن را با دوربین گوشی دیگر اسکن کنید.',
   'transfer.typed': 'وارد کردن نشانی',

@@ -535,6 +535,8 @@ export const ru: LocaleTable = {
   'study.frame.picture': 'Иллюстрация к кадру {number}',
   'transfer.app.ready': 'Приложение пришло на этот телефон ({size}) и готово к установке.',
   'transfer.network': 'Сначала подключите оба телефона к одной сети Wi-Fi или точке доступа.',
+  'transfer.localNetwork.prompt':
+    'Приложение ищет другой телефон в вашей сети Wi-Fi или точке доступа только во время отправки или получения.',
   'transfer.address': 'Если другой телефон не находит этот, введите на нём {address}.',
   'transfer.address.qr': 'Код-картинка для {address}. Отсканируйте его камерой другого телефона.',
   'transfer.typed': 'Ввести адрес',

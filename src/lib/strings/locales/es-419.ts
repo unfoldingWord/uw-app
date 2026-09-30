@@ -505,6 +505,8 @@ export const es419: LocaleTable = {
   'study.frame.picture': 'Imagen del cuadro {number}',
   'transfer.app.ready': 'La aplicación llegó a este teléfono ({size}) y está lista para instalar.',
   'transfer.network': 'Primero conecta los dos teléfonos a la misma red Wi-Fi o zona de conexión.',
+  'transfer.localNetwork.prompt':
+    'La app busca el otro teléfono en tu red Wi-Fi o zona de conexión solo mientras envías o recibes.',
   'transfer.address': 'Si el otro teléfono no encuentra este, escribe {address} allí.',
   'transfer.address.qr': 'Código en imagen para {address}. Escanéalo con la cámara del otro teléfono.',
   'transfer.typed': 'Escribir una dirección',

@@ -504,6 +504,8 @@ export const ptBR: LocaleTable = {
   'study.frame.picture': 'Imagem do quadro {number}',
   'transfer.app.ready': 'O aplicativo chegou a este celular ({size}) e está pronto para instalar.',
   'transfer.network': 'Primeiro conecte os dois celulares ao mesmo Wi-Fi ou roteador do celular.',
+  'transfer.localNetwork.prompt':
+    'O aplicativo procura o outro celular no seu Wi-Fi ou roteador do celular só enquanto você envia ou recebe.',
   'transfer.address': 'Se o outro celular não encontrar este, digite {address} nele.',
   'transfer.address.qr': 'Código em imagem para {address}. Leia com a câmera do outro celular.',
   'transfer.typed': 'Digitar um endereço',

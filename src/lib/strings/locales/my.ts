@@ -477,6 +477,8 @@ export const my: LocaleTable = {
   'study.frame.picture': 'ပုံ {number} ၏ ရုပ်ပုံ',
   'transfer.app.ready': 'အက်ပ်သည် ဤဖုန်းသို့ ရောက်ရှိပြီး ({size}) ထည့်သွင်းရန် အသင့်ဖြစ်ပါသည်။',
   'transfer.network': 'ဖုန်းနှစ်လုံးလုံးကို Wi-Fi သို့မဟုတ် hotspot တစ်ခုတည်းသို့ အရင်ချိတ်ဆက်ပါ။',
+  'transfer.localNetwork.prompt':
+    'သင် ပို့နေစဉ် သို့မဟုတ် လက်ခံနေစဉ်သာ အက်ပ်သည် သင့် Wi-Fi သို့မဟုတ် hotspot တွင် အခြားဖုန်းကို ရှာပါသည်။',
   'transfer.address': 'အခြားဖုန်းက ဤဖုန်းကို ရှာမတွေ့ပါက ထိုဖုန်းတွင် {address} ကို ရိုက်ထည့်ပါ။',
   'transfer.address.qr': '{address} အတွက် ပုံကုဒ်။ အခြားဖုန်း၏ ကင်မရာဖြင့် စကင်ဖတ်ပါ။',
   'transfer.typed': 'လိပ်စာ ရိုက်ထည့်ရန်',
