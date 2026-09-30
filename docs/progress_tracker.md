@@ -3,6 +3,42 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-30 D2 v1.1.0 checks, lint layers and device CI (#23, #31, #32, #33, #65)
+
+Node v22.22.2. Nothing ran on a phone, an emulator or a simulator: the sandbox has no KVM and no Xcode, and the
+device workflow was not run in GitHub Actions (not pushed).
+
+- Red first, each observed before its fix:
+  - #23: with the `ws` entry removed from `scripts/checks/sockets-admitted.ts`, `npm run checks` failed with
+    "ws can open a connection itself (WebSocket, node socket) and is not admitted". Green: 529 production
+    packages scanned (22918 files), 56 can open a connection, each admitted with a reason.
+  - #31: ten new boundary cases in `scripts/eslint/boundaries.test.ts` (`@lib/ports`, `@lib/transfer/protocol`,
+    `@lib/packs/packs`, `@lib/packs/store` as value and type, `@lib/strings/strings`, `@lib/network`, `written`
+    and `defineModule` as values, `@lib/kernel/extra`) failed; with the layer in place, 48 imports in feature
+    files failed lint until they moved to `@lib/<module>/types`.
+  - #32: the two new `owns.test.ts` cases failed (`nonLiteralTargetsIn is not a function`); with the check wired,
+    removing the `corpus/fulltext.ts` entry failed with "writes a table named by table, not a literal".
+  - #33: the two new `strings.test.ts` cases failed; with the scan widened, `export const strayCopy = 'Your
+    language is ready'` appended to `about/service.ts` failed the check. The first widened run found 27 false
+    hits (URLs, preference keys, a route and an SVG path), removed by treating addresses and preference keys as
+    names and requiring a two-letter word.
+  - #65: the architecture check with the event count set to 42 and `PackRemoved` dropped failed with both
+    findings; `scripts/apk-permissions.ts` on a sample dump with `ACCESS_WIFI_STATE` added exited 1; `npm run
+    bundle` with the gate forced to `drafts` and `UW_LOCALE_GATE` in the `apk` profile failed with both findings.
+- #65 device CI: AVD, Maestro and CocoaPods caches, a push-to-main trigger to seed them, `reduced-blur.yaml` and
+  `rtl.yaml` (optional) and `large-text.yaml` (its own pass), passes as arguments to `android.sh` and `ios.sh`,
+  the APK permissions diff as the Android job's last step, the drafts gate for the CI build
+  (`docs/proposals/2026-09-30-ci-drafts-gate.md`). Checked here: `bash -n` on every script, a YAML parse of the
+  workflow and every flow, and `android.sh optional large-text` against a stubbed `adb` and `maestro` (both
+  passes ran, `font_scale` set and reset, the failing pass retried once and reported).
+- `npm run verify` green: 786 tests in 81 files, 9 checks, 58 scenarios, trace 51 Must (50 by scenario, SE-2 by
+  test), 21 fixture burritos, bundle locale gate pass, both native bundles free of `sim/`, `scripts/`, sql.js
+  and react-native-web; the live contract step skipped offline.
+- Not verified: any device flow, cache or step of `device.yml` in GitHub Actions; the APK permissions diff on a
+  real APK (the first run may fail on a permission a Maven dependency merges, which is its purpose); that
+  `expo-constants` reads `extra.localeGate` in a release build (INFERRED from how Expo embeds the config);
+  the RTL flow's reload landing on Home, and the Maestro selectors of the three new flows.
+
 ## 2026-09-30 A content for v1.1.0 (#19, #22, #24, #28, #63)
 
 Node v22.22.2. Nothing ran on a phone, and nothing here reached git.door43.org or cdn.door43.org (HTTP 403
