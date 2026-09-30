@@ -2,8 +2,8 @@ import type { FailureCode } from '../../domain/failures';
 
 export const failures = {
   'failure.http.offline': 'You are offline. Try again when you are connected.',
-  'failure.http.timeout': 'The library took too long to answer. Try again in a moment.',
-  'failure.http.status': 'The library did not answer as expected. Try again later.',
+  'failure.http.timeout': 'The catalog took too long to answer. Try again in a moment.',
+  'failure.http.status': 'The catalog did not answer as expected. Try again later.',
   'failure.http.host-refused': 'The app only connects to the places it knows.',
   'failure.http.cancelled': 'This stopped before it finished. You can try again.',
   'failure.files.not-found': 'That file is no longer on this phone.',
@@ -11,8 +11,8 @@ export const failures = {
   'failure.files.io': 'The phone could not save this. Try again.',
   'failure.db.migration-failed':
     'The app could not bring its records up to date. Share diagnostics so someone can help.',
-  'failure.db.io': 'The app could not read its records. Try again.',
-  'failure.kv.io': 'This setting could not be saved. Try again.',
+  'failure.db.io': 'The app could not read or save its records. Try again.',
+  'failure.kv.io': 'This preference could not be saved. Try again.',
   'failure.journal.persist-failed': 'The diagnostics record could not be kept. Everything else still works.',
   'failure.journal.event-rejected': 'One diagnostics entry was left out. Everything else still works.',
   'failure.journal.import-invalid': 'This is not a diagnostics file the app can read.',
@@ -20,11 +20,10 @@ export const failures = {
     'The app held back a change it is not meant to make. Share diagnostics so someone can help.',
   'failure.kernel.observer-failed':
     'Part of the app did not finish updating. Share diagnostics so someone can help.',
-  'failure.catalog.invalid-response':
-    'The library list came back in a form the app cannot read. Try again later.',
+  'failure.catalog.invalid-response': 'The catalog came back in a form the app cannot read. Try again later.',
   'failure.pack.not-found': 'This resource is no longer published. Check for updates later.',
   'failure.pack.no-space': 'There is not enough space for this pack. Remove another pack, then try again.',
-  'failure.pack.checksum-mismatch': 'The download did not arrive whole. Try again.',
+  'failure.pack.checksum-mismatch': 'The pack did not arrive whole. Try again.',
   'failure.pack.invalid-burrito': 'This file is not a resource the app can read.',
   'failure.pack.unknown-flavor': 'This resource is a kind the app cannot open yet.',
   'failure.pack.no-provenance': 'This resource does not say who published it, so the app keeps it out.',

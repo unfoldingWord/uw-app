@@ -1,5 +1,7 @@
 # Media addresses for pictures on the device
 
+Status: accepted in issue #6 (2026-09-30), as built; recorded in ADR 0009. architecture.md lists `Files.uriOf` and the `media` module.
+
 ## Problem
 
 Story frames carry `Frame.image.path` and cached impact stories carry `ImpactStory.image.path`: paths under

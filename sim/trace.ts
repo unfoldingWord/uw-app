@@ -33,7 +33,7 @@ export function unproven(rows: Coverage[]): string[] {
 
 export const testProvenRequirements: Readonly<Record<string, string>> = Object.freeze({
   'SE-2':
-    'proven by the type-level test src/shared/glass/names.test.ts, which refuses an interactive glass primitive without an accessible name; dynamic type and contrast on glass are verified on a phone, not in the sim (docs/exceptions.md)',
+    'proven by the type-level test src/shared/glass/names.test.ts, which refuses an interactive glass primitive without an accessible name; dynamic type and contrast on glass are verified on a phone, not in the sim (PRD DX-4)',
 });
 
 export function withoutScenario(

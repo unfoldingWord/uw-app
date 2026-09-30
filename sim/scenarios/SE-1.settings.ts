@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { languagePackId } from '@lib/domain/pack';
-import { emptyTelemetry } from '@lib/telemetry/folds';
+import { emptyTelemetry, leavingFolds } from '@lib/telemetry/folds';
 import { scenario } from '../scenario';
 import { servicesOf } from '../services';
 
@@ -123,9 +123,10 @@ export default scenario(
       ],
       'what would leave is the PRD section 9 fold list and nothing else',
     );
-    assert.ok(
-      'transfersByPlatformPair' in emptyTelemetry,
-      'the platform pair split stays a count on the phone',
+    assert.deepEqual(
+      Object.keys(emptyTelemetry).sort(),
+      [...leavingFolds].sort(),
+      'every count on the phone is one the PRD section 9 list names',
     );
     assert.equal(
       phone.kernel.strings.words('en').t('privacy.counts'),

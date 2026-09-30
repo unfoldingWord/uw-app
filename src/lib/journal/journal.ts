@@ -129,23 +129,23 @@ export function createJournal(options: JournalOptions): Journal {
       return;
     }
     try {
-      await db.transaction(async (session) => {
+      await db.transaction(async (transaction) => {
         for (const entry of batch) {
-          await session.run('INSERT INTO journal (seq, type, at, payload) VALUES (?, ?, ?, ?)', [
+          await transaction.run('INSERT INTO journal (seq, type, at, payload) VALUES (?, ?, ?, ?)', [
             entry.seq,
             entry.type,
             entry.at,
             JSON.stringify(entry.payload),
           ]);
         }
-        await session.run('DELETE FROM journal WHERE seq <= ?', [lastSeq - limit]);
-        await session.run(
+        await transaction.run('DELETE FROM journal WHERE seq <= ?', [lastSeq - limit]);
+        await transaction.run(
           "INSERT INTO journal_state (key, value) VALUES ('dropped', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
           [dropped],
         );
         if (writesBaseline) {
           for (const [module, state] of Object.entries(baseline)) {
-            await session.run(
+            await transaction.run(
               'INSERT INTO journal_baseline (module, state) VALUES (?, ?) ON CONFLICT(module) DO UPDATE SET state = excluded.state',
               [module, JSON.stringify(state)],
             );

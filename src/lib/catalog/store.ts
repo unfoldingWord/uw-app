@@ -102,14 +102,14 @@ export async function readCatalogReleases(db: DbTransaction): Promise<CatalogRel
 }
 
 export async function replaceCatalogReleases(
-  session: DbTransaction,
+  transaction: DbTransaction,
   releases: readonly CatalogRelease[],
 ): Promise<void> {
-  await session.run('DELETE FROM catalog_releases');
+  await transaction.run('DELETE FROM catalog_releases');
   const placeholders = [...columns, 'position'].map(() => '?').join(', ');
   const stored = releases.filter((release) => release.built === undefined);
   for (const [position, release] of stored.entries()) {
-    await session.run(
+    await transaction.run(
       `INSERT INTO catalog_releases (${columns.join(', ')}, position) VALUES (${placeholders})`,
       [...valuesOf(release), position],
     );
@@ -131,12 +131,12 @@ export async function readLanguageNames(db: DbTransaction): Promise<Map<string, 
 }
 
 export async function replaceLanguageNames(
-  session: DbTransaction,
+  transaction: DbTransaction,
   names: ReadonlyMap<string, LanguageName>,
 ): Promise<void> {
-  await session.run('DELETE FROM catalog_languages');
+  await transaction.run('DELETE FROM catalog_languages');
   for (const [language, name] of names) {
-    await session.run(
+    await transaction.run(
       'INSERT INTO catalog_languages (language, english_name, autonym, direction) VALUES (?, ?, ?, ?)',
       [language, name.englishName, name.autonym, name.direction],
     );

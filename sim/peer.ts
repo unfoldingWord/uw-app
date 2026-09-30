@@ -4,10 +4,10 @@ import { readProvenance } from '@lib/burrito/metadata';
 import { validate } from '@lib/burrito/validate';
 import { refOf, type ReleaseRef } from '@lib/domain/release';
 import { resourceRows } from '@lib/domain/pack';
-import type { PeerBurrito, PeerSession } from '@lib/packs/source';
+import type { PeerBurrito, PeerDelivery } from '@lib/packs/source';
 import type { World } from './world';
 
-export type FixturePeer = PeerSession & { received(): readonly string[] };
+export type FixturePeer = PeerDelivery & { received(): readonly string[] };
 
 export function fixturePeer(world: World, releases: readonly ReleaseRef[]): FixturePeer {
   const received: string[] = [];

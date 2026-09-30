@@ -30,7 +30,7 @@ export const home = {
   'home.download.progress': 'Downloading {language}',
   'home.download.percent': '{percent}%',
   'home.download.detail': 'Language pack, {size}. It is ready to read offline when it finishes.',
-  'home.download.waiting': 'The download continues when you are online.',
+  'home.download.waiting': 'Downloading continues when you are online.',
   'home.download.none': 'Nothing for {language} is on this phone yet.',
   'home.download.missing': 'Some resources for {language} are not on this phone yet.',
   'home.download.complete': 'Download the rest',

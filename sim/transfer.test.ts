@@ -69,22 +69,22 @@ describe('Transfer at its interface', () => {
     expect((await taker.kernel.transfer.connect(peer)).ok).toBe(true);
     const accepted = await taker.kernel.transfer.accept({});
     await sending;
-    const session = accepted.ok ? accepted.session : undefined;
-    expect(session).toBeDefined();
-    if (session === undefined) {
+    const delivery = accepted.ok ? accepted.delivery : undefined;
+    expect(delivery).toBeDefined();
+    if (delivery === undefined) {
       return;
     }
-    const [first] = session.offered();
+    const [first] = delivery.offered();
     expect(first).toBeDefined();
     if (first === undefined) {
       return;
     }
     const progress: number[] = [];
-    const receipt = await session.receive(first, (bytes) => progress.push(bytes));
+    const receipt = await delivery.receive(first, (bytes) => progress.push(bytes));
     expect(receipt.ok && 'path' in receipt && (await taker.adapters.files.exists(receipt.path))).toBe(true);
     expect(receipt.ok && 'archive' in receipt).toBe(false);
     expect(progress).toEqual([first.bytes]);
-    expect((await taker.kernel.packs.install(fromPeer(session))).ok).toBe(true);
+    expect((await taker.kernel.packs.install(fromPeer(delivery))).ok).toBe(true);
   });
 
   it('refuses a plan it cannot offer, and a second transfer while one is open', async () => {

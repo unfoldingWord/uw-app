@@ -1,5 +1,5 @@
 import type { FailureCode } from '../domain/failures';
-import type { PeerSession } from '../packs/source';
+import type { PeerDelivery } from '../packs/source';
 import type { DevicePlatform } from '../ports';
 import type { WireChoice, WireOffer } from './protocol';
 
@@ -45,7 +45,7 @@ export type AcceptOutcome =
       ok: true;
       transfer: string;
       bytes: number;
-      session: PeerSession | undefined;
+      delivery: PeerDelivery | undefined;
       app: ReceivedApp | undefined;
     }
   | { ok: false; transfer: string | undefined; code: FailureCode };

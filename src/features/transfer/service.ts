@@ -465,10 +465,10 @@ export function createTransferService(kernel: Kernel): TransferService {
         return failed(accepted.code);
       }
       const app = accepted.app === undefined ? undefined : appView(accepted.app);
-      if (accepted.session === undefined) {
+      if (accepted.delivery === undefined) {
         return app === undefined ? failed('transfer.declined') : { ok: true, state: 'app-received', app };
       }
-      const installed = await kernel.packs.install(fromPeer(accepted.session));
+      const installed = await kernel.packs.install(fromPeer(accepted.delivery));
       if (!installed.ok) {
         return failed(installed.code);
       }

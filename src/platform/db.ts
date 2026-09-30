@@ -24,7 +24,7 @@ export function createPlatformDb(name: string = deviceDatabaseName): Db {
     return opened;
   }
 
-  const session: DbTransaction = {
+  const connection: DbTransaction = {
     exec: async (sql) => {
       await (await database()).execAsync(sql);
     },
@@ -45,19 +45,19 @@ export function createPlatformDb(name: string = deviceDatabaseName): Db {
   }
 
   return {
-    exec: (sql) => serialized(() => session.exec(sql)),
-    run: (sql, params) => serialized(() => session.run(sql, params)),
-    all: (sql, params) => serialized(() => session.all(sql, params)),
-    get: (sql, params) => serialized(() => session.get(sql, params)),
+    exec: (sql) => serialized(() => connection.exec(sql)),
+    run: (sql, params) => serialized(() => connection.run(sql, params)),
+    all: (sql, params) => serialized(() => connection.all(sql, params)),
+    get: (sql, params) => serialized(() => connection.get(sql, params)),
     transaction: (work) =>
       serialized(async () => {
-        await session.exec('BEGIN IMMEDIATE');
+        await connection.exec('BEGIN IMMEDIATE');
         try {
-          const result = await work(session);
-          await session.exec('COMMIT');
+          const result = await work(connection);
+          await connection.exec('COMMIT');
           return result;
         } catch (error) {
-          await session.exec('ROLLBACK');
+          await connection.exec('ROLLBACK');
           throw error;
         }
       }),

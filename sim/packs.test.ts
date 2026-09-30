@@ -5,7 +5,7 @@ import { imagePackId, languagePackId } from '@lib/domain/pack';
 import { archiveUrlOf } from '@lib/domain/release';
 import { admittedRows } from '@lib/burrito/flavors';
 import { validate } from '@lib/burrito/validate';
-import { fromCatalog, fromFile, fromPeer, type PeerSession } from '@lib/packs/source';
+import { fromCatalog, fromFile, fromPeer, type PeerDelivery } from '@lib/packs/source';
 import { readBurrito } from '@lib/packs/tree';
 import { fixturePeer } from './peer';
 import { createWorld } from './world';
@@ -149,7 +149,7 @@ describe('packs interface (LA-2, LA-6, LA-7, SH-3)', () => {
   it('fails a peer that drops out or sends a different release than it offered', async () => {
     const { world, device } = await phone();
     const offered = fixturePeer(world, [qaaObs]);
-    const lost: PeerSession = {
+    const lost: PeerDelivery = {
       offered: offered.offered,
       receive: async () => ({ ok: false, code: 'transfer.peer-lost' }),
     };
@@ -158,7 +158,7 @@ describe('packs interface (LA-2, LA-6, LA-7, SH-3)', () => {
       code: 'transfer.peer-lost',
     });
     const other = world.fixtures.archive('Door43-Catalog', 'qaa_obs', 'v2');
-    const swapped: PeerSession = {
+    const swapped: PeerDelivery = {
       offered: offered.offered,
       receive: async () =>
         other === undefined ? { ok: false, code: 'transfer.peer-lost' } : { ok: true, archive: other },

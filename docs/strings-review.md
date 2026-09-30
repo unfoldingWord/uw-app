@@ -96,6 +96,13 @@ release gate is `releaseGate` in `src/lib/strings/locales.ts` (`reviewed`).
   shared file holds: without, then with, the passages, articles and stories the leader opened or saved. The
   toggle label is first person ("Include what I read"), as the issue's decision words it; check it reads as the
   leader's own choice.
+- **Redrafted with the glossary (issue #34, 2026-09-30).** Nine values changed in English and every locale at
+  once so they use the words `CONTEXT.md` keeps: `failure.http.timeout`, `failure.http.status` and
+  `failure.catalog.invalid-response` name the catalog, not the library (Library is a screen);
+  `failure.kv.io` says preference, not setting; `failure.db.io` covers a refused save as well as a failed read;
+  `search.label` lists passages, articles and stories (a lesson is Training only); and
+  `failure.pack.checksum-mismatch`, `home.download.waiting` and `resource.audio.about` stop using "download" as a
+  noun for a pack. Check the word for catalog is plain to a leader, not a technical term.
 - **Search examples.** `search.placeholder` and `search.empty` use Ruth 2 and covenant as examples; the book
   name and the word should be the ones a reader in that language would type.
 

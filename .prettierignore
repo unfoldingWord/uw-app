@@ -12,3 +12,4 @@ expo-env.d.ts
 .claude/
 /shots/
 /device-out/
+/docs/shots/

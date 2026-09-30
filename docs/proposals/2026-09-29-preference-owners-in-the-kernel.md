@@ -1,6 +1,6 @@
 # Preference-shaped owners move into the kernel
 
-Status: proposed, awaiting human approval. It is implemented on the scaffold branch under the exception in
+Status: accepted in issue #6 (2026-09-30), as built; recorded in ADR 0007. Before that it was implemented on the scaffold branch under the exception in
 `docs/exceptions.md` (rule 1 and rule 4, `src/lib/preferences`, `src/lib/bookmarks`, `src/lib/partners`), so
 T10 to T12 can build screens against it. If it is refused, the three modules move back into feature stores
 and the decision below about what a store may reach has to be made another way.

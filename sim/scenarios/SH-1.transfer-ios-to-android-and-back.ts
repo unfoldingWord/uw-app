@@ -109,7 +109,11 @@ export default scenario(
       types(transferEvents(iphone)).filter((type) => type !== 'TransferProgressed'),
       ['TransferOffered', 'TransferAccepted', 'TransferCompleted'],
     );
-    assert.deepEqual(android.kernel.telemetry.counts().transfersByPlatformPair, { 'ios-android': 1 });
+    assert.equal(
+      JSON.stringify(android.kernel.snapshot()).includes('PlatformPair'),
+      false,
+      'the platform pair is read from the transfer events, never folded into a count that leaves in diagnostics',
+    );
     assert.equal(android.kernel.telemetry.counts().transfersCompleted, 1);
     assert.equal(iphone.kernel.telemetry.counts().transfersCompleted, 0, 'a transfer is counted once');
     assert.deepEqual(leftovers(android), [], 'nothing of the transfer is left once the pack is installed');
@@ -121,7 +125,13 @@ export default scenario(
     const back = await transferBetween(android, ipad, { language: 'qaa' });
     assert.ok(back.sent.ok && back.accepted.ok && back.installed?.ok, 'Android sends to iPhone');
     assert.deepEqual(await readsRuth(ipad), []);
-    assert.deepEqual(ipad.kernel.telemetry.counts().transfersByPlatformPair, { 'android-ios': 1 });
+    const backCompleted = transferEvents(ipad).find((entry) => entry.type === 'TransferCompleted');
+    assert.ok(backCompleted?.type === 'TransferCompleted');
+    assert.deepEqual(
+      { role: backCompleted.payload.role, from: backCompleted.payload.from, to: backCompleted.payload.to },
+      { role: 'receiver', from: 'android', to: 'ios' },
+    );
+    assert.equal(ipad.kernel.telemetry.counts().transfersCompleted, 1);
     assert.equal(
       android.adapters.http.requests().length +
         iphone.adapters.http.requests().length +

@@ -148,7 +148,7 @@ Requirement identifiers are stable and can be referenced from issues. "Must" is 
 | ST-1 | Study opens to the passage view on the last-read reference. | Must |
 | ST-2 | Passage view: book, chapter and verse navigation; the Bible text on top; the helps for that passage below it: notes, word links, questions. Notes are attached to the verse and, where alignment data allows, to the quoted words. | Must |
 | ST-3 | Bible text toggle between the literal text and the simplified text, labelled in plain words ("Close to the original" and "Everyday words"), when both exist for the language. | Must |
-| ST-4 | Audio bar on the passage view when the release carries audio; streams when online, downloadable for offline. | Must |
+| ST-4 | Audio bar on the passage view when the release carries audio. In v1.0.0 audio is download-only: it plays from an Audio Pack on the phone, and the bar offers the download when the pack is not there. Streaming is revisited when DCS carries audio (decision log, issue #53). | Must |
 | ST-5 | A library button opens the catalog for the current language: one card per resource type with counts, download state and the publishing organization. unfoldingWord resources are listed first. | Must |
 | ST-6 | Article reader for Translation Words and Translation Academy, with in-article links resolving to other articles and to passages. | Must |
 | ST-7 | Original-language texts (Hebrew Old Testament, Greek New Testament) appear in the catalog as an optional download outside any language pack, and read as plain text. | Must |
@@ -220,7 +220,7 @@ These exist so a leader can get help without a technician, and so the team can r
 | DX-1 | **Journal.** Every event in the app, including failures, is recorded in a bounded, append-only journal on the device. Nothing in it identifies the leader. | Must |
 | DX-2 | **Share the journal.** From Settings, a leader can share the journal and a snapshot of the device's state out through the share sheet, the same way a passage is shared. The screen says in one sentence what the file contains. | Must |
 | DX-3 | **Replay.** A shared journal rebuilds the device in the sim to the same snapshot, so a report from the field becomes a reproducible scenario. | Must |
-| DX-4 | **Proven in the sim.** Every Must requirement in this document has a scenario in the sim that fails without it, named for the requirement ID. | Must |
+| DX-4 | **Proven in the sim.** Every Must requirement in this document has a scenario in the sim that fails without it, named for the requirement ID. A requirement the sim cannot see, because it renders nothing (SE-2: accessible names, dynamic type, contrast), is proven instead by a test that names it, listed with its reason in `testProvenRequirements` in `sim/trace.ts`, and checked on a phone. | Must |
 
 ---
 
@@ -392,7 +392,7 @@ Proposed; to be confirmed with product before launch. All are aggregate and anon
 | Measure | Why it matters |
 |---|---|
 | Language packs downloaded, per language | The vision is measured in leaders with resources in hand |
-| Transfers completed, per platform pair | Whether the offline door is actually used |
+| Transfers completed | Whether the offline door is actually used |
 | Shares sent | Whether the app spreads by leaders' own hands |
 | Formation sessions started, per language | Whether the pathway is used, not just installed |
 | Distinct days of use per install, distribution | Whether it becomes a working tool rather than a one-time look |
@@ -442,7 +442,7 @@ In rough priority order. Each is subject to the feature test in section 1.
 
 ## 18. Decision log
 
-Decisions taken in the requirements interview of 2026-09-29 with Jesse Griffin. Each is a product decision unless marked as a fact.
+Decisions taken in the requirements interview of 2026-09-29 with Jesse Griffin. Each is a product decision unless marked as a fact. Rows 45 onward were taken on 2026-09-30 through the decisions recorded on the issues of the v1.0.0 stack; each names its issue.
 
 | # | Decision |
 |---|---|
@@ -490,6 +490,39 @@ Decisions taken in the requirements interview of 2026-09-29 with Jesse Griffin. 
 | 42 | The content contract is a document plus a validator both this project and the DCS team run; the fixture language `qaa` carries one burrito per admitted flavor. |
 | 43 | Noto families are the script fallback at the end of every font stack: Arabic, Nastaliq Urdu, Devanagari, Bengali and Myanmar shipped; Chinese named and served by the platform's CJK face because Noto Sans SC is 18 MB. |
 | 44 | Supply corrected: DCS already generates a Scripture Burrito archive for every tagged release at `/{owner}/{repo}/sb/{tag}.zip`. The external dependency shrinks to the formation repository's archive and audio. |
+| 45 | Note quotes attach as an occurrence-aware multiset within the verse when the target reorders the original words; exact contiguous order still wins where it holds. The live contract asserts that at least 95 percent of `en_tn` quoted notes attach (GEN, RUT, PSA, MAT, JHN, ROM, 3JN). (2026-09-30, issue #11) |
+| 46 | Literal and Simplified are the preferred publisher's `ult`/`glt` and `ust`/`gst`. Other publishers' texts are never the default reading and never in the default pack; they are Optional Downloads, listed with their publisher. (2026-09-30, issue #12) |
+| 47 | Publisher preference within a language: unfoldingWord, then `{language}_gl`, then Door43-Catalog, then alphabetical. Kazakh and Malayalam still wait on section 16 (leader picks). (2026-09-30, issue #17) |
+| 48 | A TSV cell is read as RFC 4180 quoted only when that yields a well-formed row and the quoting is needed; lines that are not rows are reported by the contract. (2026-09-30, issue #18) |
+| 49 | Book and chapter introductions ride on the passage that opens the book or chapter and show first among the notes; note links resolve against a book-scoped path. (2026-09-30, issue #13) |
+| 50 | The text row of a Language Pack is required; every other resource is optional, and a failed optional burrito leaves a partial pack naming the failed release, journaled as a `PackResourceFailed` event as it fails; `PackFailed` stays the event for an install that did not happen. Formation leaves the default pack until DCS generates its archive, and installs only on request. (2026-09-30, issue #10) |
+| 51 | English language names come from the DCS languages list (`ang`), with the ISO 639 table as the offline fallback. (2026-09-30, issue #14) |
+| 52 | The app writes Image and Audio Pack burritos around CDN pictures and release assets, validated like a DCS burrito (ADR 0006). (2026-09-30, issue #8) |
+| 53 | Word Links keep no second copy of the Words articles on the phone, and restore it when a burrito leaves the phone. (2026-09-30, issue #15) |
+| 54 | Release builds run in GitHub Actions on an API 30 x86_64 Android emulator with 2 GB and on an iOS simulator (macos-26 runner, its newest Xcode), driven by the Maestro flows in `device/flows`, with no secrets. (2026-09-30, device CI) |
+| 55 | iOS keeps the existing App Store record's bundle identifier `com.unfoldingword.iosapp`; the Android package waits on the DRI. (2026-09-30, issue #45) |
+| 56 | Android excludes every domain from cloud backup and device-to-device transfer through data extraction rules; Transfer is the only sanctioned way to move content. (2026-09-30, issue #5) |
+| 57 | The permissions check fails closed: every dangerous permission not admitted is blocked, and every library-manifest permission is admitted or blocked. `ACCESS_WIFI_STATE` and `CHANGE_NETWORK_STATE` are blocked, because the transport never selects an interface. (2026-09-30, issue #26) |
+| 58 | The iCloud backup exclusion is a local Expo module called at start, failing closed at boot; the privacy screen keeps a backup line until a phone run is recorded. Encryption at rest by the app is out of scope for v1.0.0. (2026-09-30, issue #4) |
+| 59 | Preview builds increment the remote `versionCode` like production. (2026-09-30, issue #48) |
+| 60 | The receiver proves the pairing code in its hello and the sender declines a wrong code and keeps advertising. The QR fallback is an `unfoldingword://transfer` link the system camera opens; no camera permission. The Transport port gains `Advertisement.address`, `AppPackage.source` and `install(path)`; the radio is TCP with mDNS on a shared local network (ADR 0013). (2026-09-30, issue #2) |
+| 61 | `REQUEST_INSTALL_PACKAGES` only on the EAS `apk` profile, through `UW_ANDROID_PACKAGE_INSTALLER`; blocked on every other build. (2026-09-30, issue #3) |
+| 62 | Chrome picks its Noto script face from the characters shown, Nastaliq when the app locale is Urdu; Latin stays in Inter. The Nastaliq line height is twice the font size and script faces carry no letter spacing, pending tokens from Claude Design. (2026-09-30, issue #35) |
+| 63 | Reduce Motion follows the phone, with a Settings override, `settings.reducedMotion`. (2026-09-30, issue #36) |
+| 64 | Glass nested inside a glass surface renders no blur; the reduced-blur default stays on below Android API 31 until measured on a device. (2026-09-30, issue #38) |
+| 65 | The tab bar and tiles grow with dynamic type; tab labels shrink to fit on one line. (2026-09-30, issue #39) |
+| 66 | Every chip and pill reaches 44 px through hit slop derived from its extent. (2026-09-30, issue #40) |
+| 67 | A tap on the partner invitation ends its cycle as a dismissal does. (2026-09-30, issue #56) |
+| 68 | The invitation's links say they open in the browser; no confirm dialog. (2026-09-30, issue #25) |
+| 69 | A local database write happens before its event; a refused write is a Failure with a code and an outcome shown in place, never a success event. (2026-09-30, issue #27) |
+| 70 | The diagnostics file leaves out what the leader read by default (fields stripped, events kept); "Include what I read" is off each time and never stored; a left-out file replays except bookmarks and the last passage. (2026-09-30, issue #20) |
+| 71 | A locale ships only after a native speaker signs it off in `docs/strings-review.md`, mirrored in `localeSignOffs`; an unreviewed locale is not offered and resolves to English. The sim and the web render harness use the drafts gate. (2026-09-30, issue #51) |
+| 72 | v1.0.0 ships counting only: the telemetry folds run on the phone and nothing is sent. Sending is v1.1, with its host, the iOS privacy manifest and the privacy copy together (ADR 0012). (2026-09-30, issue #52) |
+| 73 | Audio is download-only in v1.0.0: it plays from an Audio Pack on the phone (ST-4). Streaming is revisited when DCS carries audio. (2026-09-30, issue #53) |
+| 74 | The transfers-by-platform-pair fold is removed; section 14's measure is "transfers completed" only, and SH-1 proves the platform pair from the transfer events. (2026-09-30, issue #30) |
+| 75 | A title or book name is a label, not content, and needs no provenance because it never leaves the device alone (CONTEXT.md, Label); the provenance check exempts `words`, `academy` and `stories` by name. (2026-09-30, issue #29) |
+| 76 | Accepted as built: preference-shaped owners (preferences, bookmarks, partners) are kernel modules with `owns` exports (ADR 0007); the Picker port with document types and `+native-intent`, and media addresses through `Files.uriOf` and the `media` module (ADR 0009); the `player` kernel module over the Audio port (ADR 0010); the kernel's `resume()` control and the layout-direction reload; the AGENTS.md strings path. Standing exceptions are folded into AGENTS.md rule 2, section 7 and DX-4. (2026-09-30, issue #6) |
+| 77 | The web render harness stays: `npm run shots` over decorators of the memory adapters, not a third adapter set, kept out of phone bundles by `npm run bundle` (ADR 0008); the memory Db adapter takes its SQL engine (ADR 0011). Contact sheets are committed under `docs/shots/` on each release. (2026-09-30, issue #7) |
 
 ---
 

@@ -110,8 +110,8 @@ describe('Db memory adapter', () => {
       lastInsertRowId: 1,
     });
     await expect(
-      db.transaction(async (session) => {
-        await session.run('INSERT INTO t (name) VALUES (?)', ['b']);
+      db.transaction(async (transaction) => {
+        await transaction.run('INSERT INTO t (name) VALUES (?)', ['b']);
         throw new Error('abort');
       }),
     ).rejects.toThrow('abort');
@@ -127,9 +127,9 @@ describe('Db memory adapter', () => {
     const db = createMemoryDb();
     await db.exec('CREATE TABLE t (n INTEGER)');
     await Promise.all([
-      db.transaction(async (session) => {
-        await session.run('INSERT INTO t VALUES (1)');
-        await session.run('INSERT INTO t VALUES (2)');
+      db.transaction(async (transaction) => {
+        await transaction.run('INSERT INTO t VALUES (1)');
+        await transaction.run('INSERT INTO t VALUES (2)');
       }),
       db.run('INSERT INTO t VALUES (3)'),
     ]);

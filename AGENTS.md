@@ -58,8 +58,8 @@ the contract for what it must provide.
 ```
 npm run sim -- <scenario>         run one scenario; print the snapshot and journal
 npm run sim -- all                every scenario
-npm run replay -- <journal.json>  rebuild a device from an exported journal
-npm run trace                     Must requirement IDs with no scenario and no test
+npm run replay -- <journal.json>  rebuild a device from a shared diagnostics file
+npm run trace                     fail on any Must requirement ID with no scenario and no test
 npm run contract                  validate fixture burritos, and a live release when online
 npm run check                     lint and format
 npm run verify                    the whole chain, the same one CI runs
@@ -81,9 +81,10 @@ adapter; versions live in `package.json`.
 | Db | expo-sqlite | Migrations in `migrations/`; schema changes go through a migration file only |
 | Kv | expo-sqlite key-value or MMKV | One writer per key (rule 3) |
 | Http | fetch behind `src/platform/http.ts` | Timeout, host allowlist and offline signal in one place |
-| Transport | **open: proposal required** | Constraint: iOS to Android both ways, no network. The memory adapter exists first; the spike picks the radio |
-| Audio | expo-audio | Streams online, plays a downloaded file offline |
+| Transport | react-native-tcp-socket and the local module `modules/uw-radio/` (mDNS, local address, installer hand-off) | TCP on a shared local network, peers found by mDNS or a typed or scanned address (ADR 0013). Built, not yet run on a phone: the two-phone spike is the gate |
+| Audio | expo-audio | Plays a downloaded file from an Audio Pack; no streaming in v1.0.0 (ST-4) |
 | ShareSheet | expo-sharing and the RN `Share` API | Provenance attached to every payload |
+| Picker | expo-document-picker | Asks the system for a burrito `.zip`; `app.config.ts` registers the document types and `app/+native-intent.ts` routes a file another app opens (ADR 0009) |
 | Locale | expo-localization | Region for the invitation comes from here, never from location |
 | Clock, Ids | `Date.now`, `crypto.randomUUID` | Injected so the sim can pin them |
 | Screens and navigation | Expo Router | Tabs: Home, Study, Formation. Languages is a modal route |
@@ -120,7 +121,10 @@ Every kind of work has one template. Copy the template, fill the blanks, stop.
 - New feature: copy `src/features/_template/` to `src/features/<name>/`.
 - New screen: add `src/features/<name>/screens/<Name>Screen.tsx` and a one-line
   route file under `app/`.
-- New durable value: add it to `src/features/<name>/store.ts` and its `owns` export.
+- New durable value: the kernel module that owns its kind, in its `owns` export: a
+  preference key in the `preferences` module's schema, a table, directory or key in the
+  module that writes it (ADR 0007). A feature's `store.ts` is only for a value that one
+  feature alone reads and writes, once a store can reach a port; none exists today.
 - New kernel behaviour: a function on the owning module's interface, a test at that
   interface, a scenario named for the requirement.
 - New port: `ports.ts`, then both adapters in the same PR, never one.
@@ -145,6 +149,33 @@ The build enforces these. A violation is a red build, not a review comment.
   `src/platform/*` and `sim/adapters/*` implements one.
 - Screens never call the kernel or a port directly; they call a feature's `service.ts`.
 - `sim/*` imports `src/lib/*` and `src/features/*/service.ts` and nothing else.
+
+Standing amendments, each narrow and each held by a named lint layer or check
+(folded from `docs/exceptions.md` by `docs/proposals/2026-09-30-fold-standing-exceptions.md`):
+
+- `src/platform/**` may import `@lib/ports` and `@lib/domain/*` as types only
+  (`import type`), which erase at build; every value import stays refused (`platform`).
+- Migrations are data found by reserved location: `src/platform/migrations.ts` loads them
+  with Metro's `require.context`, and `sim/migrations.ts` reads them from disk. A
+  migration file imports only `import type { Migration } from '@lib/ports'` (`migrations`).
+- Rendering inputs have no port, because the sim never renders and a memory adapter for
+  them would do nothing: `expo-blur`, `expo-haptics`, the status bar and safe area in
+  `src/shared/glass`, `expo-font` in `src/shared/fonts`, and in `app/_layout.tsx` the
+  colour scheme, the reduced-blur default (`src/platform/display.ts`), Reduce Motion, the
+  layout direction and its reload, the launch screen and the foreground signal that calls
+  `kernel.resume()`. `docs/architecture.md` ("The root layout") lists them; nothing read
+  there identifies the leader or the device.
+- When the kernel fails to start there is no feature service, so
+  `src/shared/ui/BootFailure.tsx` builds its words with `createStrings` from `@lib/strings`.
+- `design-system/` is imported by path alias, never copied, in two places only: the fonts
+  through `@design-system/assets/fonts/*` in `src/shared/fonts/assets.ts`, and the two
+  horizontal lockups through `@design-system/assets/logo/*` in `src/shared/ui/Logo.tsx`
+  (`shared logo`).
+- The web render harness (ADR 0008): on web, `src/platform/ports.web.ts` is a one-line
+  re-export of `@sim/web/ports` (`platform web harness`), which decorates the memory
+  adapters; it is not a third adapter set. `backgroundImage` in `src/shared/theme` returns
+  the CSS form on web. `npm run bundle` fails if any module from `sim/`, `scripts/`,
+  sql.js or react-native-web reaches an iOS or Android bundle.
 
 Enforced by ESLint `no-restricted-imports` (aliases and relative paths),
 `no-restricted-globals` in `src/lib/**`, and a `tsconfig.lib.json` with no DOM or
@@ -217,7 +248,15 @@ bottom-weighted, nothing sharp.
   two agree. A value that is not in the tokens is a design change, not a code change.
 - The React Native primitives keep the names and props of
   `design-system/components/glass/*.d.ts`. Reading the `.prompt.md` beside each one
-  is part of building it.
+  is part of building it. A prop with no React Native meaning is mapped to React
+  Native's (`style`, a numeric `radius`, `Pressable` and `TextInput` props), and every
+  interactive primitive adds `busy` and requires an accessible name.
+- Literals the prototype and the reference components carry that are not tokens are
+  copied verbatim into one named record each, `src/shared/ui/prototypeValues.ts` and
+  `src/shared/glass/referenceValues.ts`, so each is traceable and none is invented.
+  Script metrics (the Urdu line height in `scriptLineHeights` and no letter spacing in a
+  script face) live in `src/shared/theme/createTheme.ts`. Promoting any of them to a
+  token is a Claude Design change.
 - Every screen renders correctly in light, dark and reduced-blur mode. Test all
   three before done.
 - Use the glass primitives (surface, button, icon button, input, chip, ring, aurora

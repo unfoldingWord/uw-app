@@ -140,25 +140,29 @@ export async function loadWanted(db: Db): Promise<string[]> {
   return rows.map((row) => text(row, 'language'));
 }
 
-export async function setWanted(session: DbTransaction, language: string, wanted: boolean): Promise<void> {
-  await session.run('DELETE FROM corpus_index_wanted WHERE language = ?', [language]);
+export async function setWanted(
+  transaction: DbTransaction,
+  language: string,
+  wanted: boolean,
+): Promise<void> {
+  await transaction.run('DELETE FROM corpus_index_wanted WHERE language = ?', [language]);
   if (wanted) {
-    await session.run('INSERT INTO corpus_index_wanted (language) VALUES (?)', [language]);
+    await transaction.run('INSERT INTO corpus_index_wanted (language) VALUES (?)', [language]);
   }
 }
 
-export async function removeRoot(session: DbTransaction, root: string): Promise<void> {
-  await session.run('DELETE FROM corpus_burritos WHERE root = ?', [root]);
-  await session.run('DELETE FROM corpus_titles WHERE root = ?', [root]);
+export async function removeRoot(transaction: DbTransaction, root: string): Promise<void> {
+  await transaction.run('DELETE FROM corpus_burritos WHERE root = ?', [root]);
+  await transaction.run('DELETE FROM corpus_titles WHERE root = ?', [root]);
 }
 
 export async function saveEntry(
-  session: DbTransaction,
+  transaction: DbTransaction,
   entry: Entry,
   titles: readonly TitleRow[],
 ): Promise<void> {
-  await removeRoot(session, entry.root);
-  await session.run(
+  await removeRoot(transaction, entry.root);
+  await transaction.run(
     'INSERT INTO corpus_burritos (root, pack, row, kind, language, direction, provenance, books, book_names, items, bytes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
     [
       entry.root,
@@ -175,16 +179,16 @@ export async function saveEntry(
     ],
   );
   for (const title of titles) {
-    await session.run(
+    await transaction.run(
       'INSERT INTO corpus_titles (root, language, kind, target, title) VALUES (?, ?, ?, ?, ?)',
       [title.root, title.language, title.kind, title.target, title.title],
     );
   }
 }
 
-export async function clearIndex(session: DbTransaction, language: string): Promise<void> {
+export async function clearIndex(transaction: DbTransaction, language: string): Promise<void> {
   for (const table of Object.values(fullTextTables)) {
-    await session.run(`DELETE FROM ${table} WHERE language = ?`, [language]);
+    await transaction.run(`DELETE FROM ${table} WHERE language = ?`, [language]);
   }
-  await session.run('DELETE FROM corpus_indexes WHERE language = ?', [language]);
+  await transaction.run('DELETE FROM corpus_indexes WHERE language = ?', [language]);
 }

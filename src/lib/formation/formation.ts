@@ -100,10 +100,10 @@ export const formationModule = defineModule<FormationApi>({
       [...groups.values()].sort((left, right) => left.ordinal - right.ordinal);
 
     const persist = (row: GroupRow, activate: boolean): Promise<void> =>
-      db.transaction(async (session: DbTransaction) => {
-        await saveGroup(session, row);
+      db.transaction(async (transaction: DbTransaction) => {
+        await saveGroup(transaction, row);
         if (activate && active !== row.id) {
-          await saveActive(session, row.id);
+          await saveActive(transaction, row.id);
         }
       });
 
@@ -150,10 +150,10 @@ export const formationModule = defineModule<FormationApi>({
       }
       const successor = active === id ? ordered().find((row) => row.id !== id)?.id : active;
       const failed = await write('GroupDeleted', () =>
-        db.transaction(async (session) => {
-          await deleteGroup(session, id);
+        db.transaction(async (transaction) => {
+          await deleteGroup(transaction, id);
           if (successor !== active) {
-            await saveActive(session, successor);
+            await saveActive(transaction, successor);
           }
         }),
       );
@@ -178,7 +178,7 @@ export const formationModule = defineModule<FormationApi>({
         return written(publicGroup(row));
       }
       const failed = await write('GroupActivated', () =>
-        db.transaction((session) => saveActive(session, id)),
+        db.transaction((transaction) => saveActive(transaction, id)),
       );
       if (failed !== undefined) {
         return refused(failed);

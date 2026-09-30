@@ -133,10 +133,10 @@ export const catalogModule = defineModule<CatalogApi>({
       const next = [...fetched.releases].sort(compareReleases);
       const listed = await fetchLanguageNames(ports);
       try {
-        await ports.db.transaction(async (session) => {
-          await replaceCatalogReleases(session, next);
+        await ports.db.transaction(async (transaction) => {
+          await replaceCatalogReleases(transaction, next);
           if (listed !== undefined) {
-            await replaceLanguageNames(session, listed);
+            await replaceLanguageNames(transaction, listed);
           }
         });
       } catch {

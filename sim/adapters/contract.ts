@@ -196,8 +196,8 @@ const dbCases: ContractCase[] = [
       same(await db.get('SELECT n FROM contract_t WHERE n = 9'), undefined, 'no row');
       same(
         await codeOf(
-          db.transaction(async (session) => {
-            await session.run('INSERT INTO contract_t (n) VALUES (2)');
+          db.transaction(async (transaction) => {
+            await transaction.run('INSERT INTO contract_t (n) VALUES (2)');
             throw new ContractFailure('abort');
           }),
         ),
@@ -205,9 +205,9 @@ const dbCases: ContractCase[] = [
         'transaction rejects',
       );
       await Promise.all([
-        db.transaction(async (session) => {
-          await session.run('INSERT INTO contract_t (n) VALUES (3)');
-          await session.run('INSERT INTO contract_t (n) VALUES (4)');
+        db.transaction(async (transaction) => {
+          await transaction.run('INSERT INTO contract_t (n) VALUES (3)');
+          await transaction.run('INSERT INTO contract_t (n) VALUES (4)');
         }),
         db.run('INSERT INTO contract_t (n) VALUES (5)'),
       ]);

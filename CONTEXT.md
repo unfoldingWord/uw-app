@@ -50,6 +50,10 @@ _Avoid_: origin, provider
 The release tag, commit, publisher and licence carried on every piece of content, from download to screen to whatever leaves the device.
 _Avoid_: metadata, attribution (attribution is what provenance is rendered as)
 
+**Label**:
+A title or a name that points at content without being content: an article, story or Word title in the contents lists (`Contents.words`, `Contents.academy`, `Contents.stories`), a book name, a reference's name (`corpus.title`, `bookName`, `referenceName`). A label carries no provenance because it never leaves the device alone: whatever is shared or sent is the content it names, with that content's provenance. The provenance check lists `words`, `academy` and `stories` by name and exempts them as labels, and fails on a label that holds anything but its id or number and its title.
+_Avoid_: heading, caption, metadata
+
 **Text**:
 A Bible text resource. Two readings may exist for a language: **Literal** (close to the original) and **Simplified** (everyday words).
 _Avoid_: ULT, UST, GLT, GST in anything a user sees; Bible (ambiguous)
@@ -139,7 +143,7 @@ The Android app file one phone sends another so it can be installed without a st
 _Avoid_: APK (in copy), binary, installer
 
 **Link**:
-An open connection between two peers over the Transport port, carrying the bytes of one transfer. In code, `TransportLink`.
+An open connection between two peers over the Transport port, carrying the bytes of one transfer. In code, `TransportLink`. What an accepted transfer hands Packs, each archive as the file it was received into, is a `PeerDelivery`.
 _Avoid_: socket, channel, session (that is formation)
 
 **Offer**:
@@ -181,7 +185,7 @@ The address a screen renders a picture from: a story frame image in a pack or a 
 _Avoid_: image URL, picture link, remote image
 
 **Player**:
-The kernel's one audio player. It plays one audio clip at a time, a chapter of an Audio Pack or a story's audio, from its file on the device or from an allowlisted stream, and reports idle, loading, playing, paused, ended or failed with a code. Only a failure enters the journal; the position never does.
+The kernel's one audio player. It plays one audio clip at a time, a chapter of an Audio Pack or a story's audio, from its file on the device (audio is download-only in v1.0.0), and reports idle, loading, playing, paused, ended or failed with a code. Only a failure enters the journal; the position never does.
 _Avoid_: media player, audio engine, track
 
 **Event**:
@@ -191,6 +195,10 @@ _Avoid_: log line, message, action
 **Journal**:
 The bounded, append-only record of events on a device, including failures. It leaves the device only through Share.
 _Avoid_: log, history, telemetry (telemetry is derived from it)
+
+**Diagnostics file**:
+The one file a leader shares from Settings so someone can help: the journal written out as a document, and the snapshot beside it. `npm run replay` rebuilds a device from it. In code the journal half is `JournalExport`, written by `journal.export()` and read by `parseJournalExport`; "export" names only that code, never a word a leader sees, and the file leaves the device only through Share. By default it leaves out what the leader read (the passages, articles and stories opened, and bookmarks), keeping every event; "Include what I read" puts them in for that one share.
+_Avoid_: log file, dump, backup
 
 **Snapshot**:
 The whole state of a device folded into one document: packs, corpus summary, groups, preferences, journal tail.
@@ -237,3 +245,7 @@ _Avoid_: setting (that is the screen), option, config
 **Locale**:
 The language of the app's own words: buttons, labels, settings. One of sixteen.
 _Avoid_: UI language, interface language, translation
+
+**Locale sign-off**:
+A native speaker's review of one drafted locale, recorded with a reviewer and a date in `docs/strings-review.md` and by date in `localeSignOffs`. Only English and the signed-off locales are offered; an unreviewed locale resolves to English. The sim and the web render harness run the **drafts** gate, which offers all sixteen; the app runs the **reviewed** gate.
+_Avoid_: approval, certification, translation review (in code)

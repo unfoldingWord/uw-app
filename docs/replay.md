@@ -51,8 +51,8 @@ with no `AppOpened` yet; a restart in replay journals the same event at the same
 ## The rules a module follows
 
 1. **Register in one place.** A module is `defineModule({ events, owns, create })` in its own folder under
-   `src/lib/<module>/`, and one line in `kernelModules` in `src/lib/kernel.ts` (an exception to rule 4 while
-   the scaffold PR is open, see `docs/exceptions.md`). `events` lists every type it
+   `src/lib/<module>/`, and one line in `kernelModules` in `src/lib/kernel.ts` (a new module is an
+   architecture change with a proposal). `events` lists every type it
    emits; no two modules list the same type, and the kernel refuses an emit of a type the module does not own.
    `Failure` may be emitted by any module. `owns` lists its tables, directories and preference keys.
 2. **A `redo` command emits its root event first**, before anything that can fail, and then only `follows`
@@ -109,7 +109,7 @@ with no `AppOpened` yet; a restart in replay journals the same event at the same
   except for at most ten `PackInstallProgressed` events per install; byte counts live in
   `packs.installing()` and the snapshot.
 - **The other phone.** A receiving Transfer takes every archive into `transfer/incoming/` and verifies it
-  before it hands Packs a peer session, so a receiver's journal reads `TransferAccepted`, at most ten
+  before it hands Packs a peer delivery, so a receiver's journal reads `TransferAccepted`, at most ten
   `TransferProgressed`, `TransferCompleted`, and only then `PackInstallStarted` with source `peer`. Replay
   appends the Transfer events as recorded and redoes the install from the fixtures, in the same order. A
   transfer id is minted on the phone and appears only in `verbatim` events, so replay plays back only the ids

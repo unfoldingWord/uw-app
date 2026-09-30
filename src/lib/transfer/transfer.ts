@@ -20,7 +20,7 @@ import {
   type Run,
 } from './active';
 import { chunkBodyBytes, frameHeaderReserve } from './protocol';
-import { chooseFrom, receiveAccepted, receivedSession } from './receiver';
+import { chooseFrom, receiveAccepted, receivedDelivery } from './receiver';
 import { appPackageOf, prepareOffer, sendAccepted, type Outgoing } from './sender';
 import type {
   AcceptOutcome,
@@ -404,10 +404,10 @@ export const transferModule = defineModule<TransferApi>({
             app: chosen.app ? 'included' : 'none',
           },
         });
-        const session = awaitingInstall
-          ? receivedSession(ports, chosen.resources, received.archives)
+        const delivery = awaitingInstall
+          ? receivedDelivery(ports, chosen.resources, received.archives)
           : undefined;
-        return { ok: true, transfer, bytes: current.total, session, app: received.app };
+        return { ok: true, transfer, bytes: current.total, delivery, app: received.app };
       } catch (error) {
         const code = await settle(current, error);
         await clearIncoming();

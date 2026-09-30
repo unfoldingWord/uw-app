@@ -97,7 +97,7 @@ function scopedTransaction(scope: Scope, db: DbTransaction): DbTransaction {
 export function scopedDb(scope: Scope, db: Db): Db {
   return {
     ...scopedTransaction(scope, db),
-    transaction: (work) => db.transaction((session) => work(scopedTransaction(scope, session))),
+    transaction: (work) => db.transaction((transaction) => work(scopedTransaction(scope, transaction))),
   };
 }
 

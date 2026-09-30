@@ -61,9 +61,9 @@ export async function readInstalledPacks(db: DbTransaction): Promise<InstalledPa
   });
 }
 
-export async function writeInstalledPack(session: DbTransaction, pack: InstalledPack): Promise<void> {
-  await deleteInstalledPack(session, pack.pack);
-  await session.run('INSERT INTO packs (pack, kind, language, source, bytes) VALUES (?, ?, ?, ?, ?)', [
+export async function writeInstalledPack(transaction: DbTransaction, pack: InstalledPack): Promise<void> {
+  await deleteInstalledPack(transaction, pack.pack);
+  await transaction.run('INSERT INTO packs (pack, kind, language, source, bytes) VALUES (?, ?, ?, ?, ?)', [
     pack.pack,
     pack.kind,
     pack.language ?? null,
@@ -72,7 +72,7 @@ export async function writeInstalledPack(session: DbTransaction, pack: Installed
   ]);
   for (const burrito of pack.burritos) {
     const { provenance } = burrito;
-    await session.run(
+    await transaction.run(
       'INSERT INTO pack_burritos (pack, publisher, resource, language, tag, commit_sha, released, resource_row, root, title, licence, bytes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [
         pack.pack,
@@ -92,7 +92,7 @@ export async function writeInstalledPack(session: DbTransaction, pack: Installed
   }
 }
 
-export async function deleteInstalledPack(session: DbTransaction, pack: PackId): Promise<void> {
-  await session.run('DELETE FROM pack_burritos WHERE pack = ?', [pack]);
-  await session.run('DELETE FROM packs WHERE pack = ?', [pack]);
+export async function deleteInstalledPack(transaction: DbTransaction, pack: PackId): Promise<void> {
+  await transaction.run('DELETE FROM pack_burritos WHERE pack = ?', [pack]);
+  await transaction.run('DELETE FROM packs WHERE pack = ?', [pack]);
 }

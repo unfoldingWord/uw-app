@@ -3,6 +3,40 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-30 D documentation and consistency for v1.0.0 (#6, #7, #29, #30, #34, #43, #53, #55)
+
+Node v22.22.2; Chromium through playwright-core 1.56.1 for the shots. Nothing ran on a phone, and nothing here
+reached git.door43.org (HTTP 403 from this sandbox).
+
+- Red first:
+  - #30: SH-1 asserting the platform pair from the `TransferCompleted` events both ways and that the snapshot
+    carries no `PlatformPair` failed with the fold in place ("the platform pair is read from the transfer
+    events, never folded into a count that leaves in diagnostics"); green once `transfersByPlatformPair` was
+    removed from `src/lib/telemetry/folds.ts`. Grepped `src`, `sim`, `scripts` and `app`: no reference left.
+  - #29: the `provenance` check with the stories label narrowed to its number failed with
+    "en contents.stories[0].title: a label holds only number; content needs provenance"; restored, it passes
+    with "18 titles in words, academy and stories exempt as labels".
+- #34: nine English values and their fifteen drafts reworded to the glossary; `sync` in the corpus view is
+  `catchUp`, the Db transaction parameter `session` is `transaction`, the receiver's peer session is
+  `PeerDelivery`; `journal.export()` keeps its name under a new Diagnostics file entry in CONTEXT.md.
+- #43: `npm run shots` printed "182 screenshots and the contact sheet in shots/; 173 targets under 44 px
+  counting hit slop, 0 text boxes escaping their parent". `npm run shots:publish` wrote the seven contact sheets
+  to `docs/shots/` at 760 px wide (814 KB to 1.24 MB each) and `report.json` with repository-relative paths.
+- #7: shots.yml ran green in CI on PR #57 (run 36659247711). Observed by the lead from the CI page, not here.
+- #55: the live contract ran in the CI verify run 36659247745 of PR #57: 322 production entries over 7 pages, 17
+  live releases valid, and `en_obs-tf` v4 the one known gap (HTTP 500). Observed by the lead from the CI log,
+  not here; the contract now cites it. Run 36632521030, which PR #1 cited as the green real-data ingest, is
+  recorded nowhere in this tracker and is no longer cited. PR #1's commit-message and PR-footer items are moot:
+  it was squash-merged as e4a9592 on main.
+- #6: architecture.md recounted from the tree (13 kernel modules in `kernelModules`, 11 ports, 42 events in
+  `eventSchemas`; the issue said 43, the tree says 42). ADRs 0007 to 0013 written; 14 standing exception rows
+  folded into AGENTS.md rule 2, section 7 and PRD DX-4, 12 closed, 5 kept.
+- `npm run verify` green: 747 tests in 77 files, 8 checks, 58 scenarios, trace 51 Must (50 by scenario, SE-2 by
+  test), 21 fixture burritos, both native bundles free of `sim/`, `scripts/`, sql.js and react-native-web; the
+  live contract step skipped offline (HTTP 403).
+- Not verified: anything on a phone; the shots workflow and the device workflow on this branch (not pushed); the
+  translations of the nine reworded strings (AI-drafted, `docs/strings-review.md`).
+
 ## 2026-09-30 M10 merge of U1 and U2 onto N2, and the shots harness through the drafts gate
 
 Node v22.22.2; Chromium through playwright-core for the shots. Nothing ran on a phone.

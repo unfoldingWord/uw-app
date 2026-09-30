@@ -1,6 +1,6 @@
 # Audio playback in the kernel
 
-Status: built under exception, awaiting approval. The `player` module, the study and formation controls and
+Status: accepted in issue #6 (2026-09-30), as built; recorded in ADR 0010. It was built under exception first. The `player` module, the study and formation controls and
 the audio bar landed on the scaffold branch under the entry in `docs/exceptions.md` (rule 4,
 `src/lib/player`). What was built differs from the change below in three places: there are no `AudioPlayed`
 or `AudioPaused` events, since no telemetry fold in PRD section 9 counts listens and the journal stays lean
