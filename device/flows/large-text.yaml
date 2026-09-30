@@ -1,0 +1,68 @@
+appId: ${APP_ID}
+name: With the largest system text the welcome, Home, Study, Formation and Settings still reach their controls
+tags:
+  - large-text
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    text: 'Allow'
+    optional: true
+- extendedWaitUntil:
+    visible: 'Choose your language'
+    timeout: 90000
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: large-text-1-welcome
+- scrollUntilVisible:
+    element: 'Continue in English'
+    direction: DOWN
+    timeout: 15000
+- tapOn:
+    text: 'Continue in English'
+    retryTapIfNoChange: true
+- extendedWaitUntil:
+    visible: 'Switch theme'
+    timeout: 30000
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: large-text-2-home
+- tapOn:
+    text: 'Study'
+    rightOf: 'Home'
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: large-text-3-study
+- tapOn: 'Formation'
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: large-text-4-formation
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn:
+          text: 'Home'
+          above: 'Back'
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn: 'Home'
+- extendedWaitUntil:
+    visible: 'Settings'
+    timeout: 15000
+- tapOn:
+    text: 'Settings'
+    retryTapIfNoChange: true
+- extendedWaitUntil:
+    visible: 'Theme'
+    timeout: 15000
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: large-text-5-settings
+- scrollUntilVisible:
+    element: 'Plainer glass.*'
+    direction: DOWN
+    timeout: 15000
+- takeScreenshot: large-text-6-settings-scrolled

@@ -21,6 +21,25 @@ succeeds, is still running, or fails with no connection.
 | `theme.yaml` | Settings opens, the theme switches to dark, to light and back to following the phone; the Home theme button toggles and toggles back |
 | `languages.yaml` | The language chip on Home opens the Languages modal and Close returns to Home |
 | `download-language.yaml` | Tagged `optional`: downloads English from the catalog and opens it in Study. It needs the network and is allowed to fail |
+| `reduced-blur.yaml` | Tagged `optional`: Settings turns reduced blur on, and Home, Study and Formation render with the plainer glass |
+| `rtl.yaml` | Tagged `optional`: Settings switches the app language to Arabic, the app reloads right to left, and Home, Study and Formation render mirrored |
+| `large-text.yaml` | Tagged `large-text`: with the largest system text (Android `font_scale` 2.0, iOS `accessibility-extra-extra-extra-large`) the welcome, Home, Study, Formation and Settings still reach their controls |
+
+The three new flows are outside the required pass until each has run green twice in CI; move a flow into the
+main set by removing its `optional` tag once it has. The CI build is made with `UW_LOCALE_GATE=drafts`, so the
+drafted locales are offered and `rtl.yaml` can choose Arabic; a release build never is (`npm run bundle` fails if
+the app config built without that variable does not embed the `reviewed` gate, or if any `eas.json` profile sets
+it; `docs/proposals/2026-09-30-ci-drafts-gate.md`).
+
+## Passes
+
+`device/ci/android.sh` and `device/ci/ios.sh` take the passes to run, in order (`device/ci/passes.sh`):
+
+| Pass | Flows | In CI |
+|---|---|---|
+| `main` | every flow tagged neither `optional` nor `large-text` | required: a failure fails the job |
+| `optional` | the flows tagged `optional` | allowed to fail (`continue-on-error`) |
+| `large-text` | the flows tagged `large-text`, with the system text set to its largest first and reset after | allowed to fail |
 
 `common/start.yaml` is the shared start: clear the app, continue in English, wait for Home. Maestro runs only
 the top-level files in `flows/`, so the shared start never runs on its own.
@@ -29,7 +48,23 @@ Each flow calls `takeScreenshot` at every screen. In CI the screenshots, the JUn
 output and the device log (`logcat.txt` on Android, `simulator.log` on iOS) land in
 `device-out/<platform>-<main|optional>/` and are uploaded as the `android-maestro` and `ios-maestro`
 artifacts. The Android job also uploads the APK as `android-apk` and writes the APK size and the merged
-manifest permissions (`aapt2 dump permissions`) to the job log and the job summary.
+manifest permissions (`aapt2 dump permissions`) to the job log and the job summary. Its last step diffs those
+permissions against `scripts/checks/android-permissions.ts` with `scripts/apk-permissions.ts` and fails the job
+on any permission that is neither admitted nor the app's own receiver permission, so a permission a Maven
+dependency merges is caught (issue #26). Run it locally on a dump with
+`npx tsx scripts/apk-permissions.ts device-out/apk-permissions.txt`.
+
+Screenshots are also printed into the job log as base64 JPEG between `BEGIN-SHOT` and `END-SHOT` lines, for a
+reviewer who cannot reach the artifact store.
+
+## Caches
+
+The workflow also runs on every push to `main`, which writes the caches pull requests read: Gradle (through
+`gradle/actions/setup-gradle`, which writes only on `main`), the emulator's AVD and its boot snapshot
+(`~/.android/avd`, created once per key by a boot with snapshot saving on), Maestro (`~/.maestro` without its
+test output, keyed by `MAESTRO_VERSION`) and the CocoaPods download cache (`~/Library/Caches/CocoaPods` and
+`~/.cocoapods/repos`). `ios/` and `android/` are never cached: `expo prebuild --clean` writes them fresh on
+every run, and pods install into `ios/Pods` from the download cache.
 
 ## Run the flows locally
 
