@@ -25,6 +25,10 @@ status=0
       "$GITHUB_WORKSPACE/device/flows"
 ) || status=$?
 
+echo "::group::failed steps"
+bash "$GITHUB_WORKSPACE/device/ci/failed-steps.sh" "$out" "$HOME/.maestro/tests"
+echo "::endgroup::"
+
 echo "::group::screenshots (base64 jpeg)"
 bash "$GITHUB_WORKSPACE/device/ci/print-shots.sh" "$out" "$HOME/.maestro/tests"
 echo "::endgroup::"
