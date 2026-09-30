@@ -62,6 +62,17 @@ function useAppearance(kernel: Kernel | undefined): Appearance {
   return kernel === undefined ? {} : serviceOf(kernel, createSettingsService).appearance();
 }
 
+function useLocale(kernel: Kernel | undefined): string | undefined {
+  const [, setVersion] = useState(0);
+  useEffect(() => {
+    if (kernel === undefined) {
+      return undefined;
+    }
+    return serviceOf(kernel, createSettingsService).onLocale(() => setVersion((current) => current + 1));
+  }, [kernel]);
+  return kernel === undefined ? undefined : serviceOf(kernel, createSettingsService).locale();
+}
+
 function useResume(kernel: Kernel | undefined): void {
   useEffect(() => {
     if (kernel === undefined) {
@@ -124,13 +135,15 @@ function Routes({ needed }: { needed: boolean }) {
   );
 }
 
-function AppShell({ appearance, children }: { appearance: Appearance; children?: ReactNode }) {
+type AppShellProps = { appearance: Appearance; locale: string | undefined; children?: ReactNode };
+
+function AppShell({ appearance, locale, children }: AppShellProps) {
   const system = useColorScheme();
   const scheme: Scheme = appearance.scheme ?? (system === 'dark' ? 'dark' : 'light');
   const reducedBlur = appearance.reducedBlur ?? reducedBlurByDefault();
   return (
     <SafeAreaProvider>
-      <ThemeProvider scheme={scheme} reducedBlur={reducedBlur}>
+      <ThemeProvider scheme={scheme} reducedBlur={reducedBlur} {...(locale === undefined ? {} : { locale })}>
         {children}
       </ThemeProvider>
     </SafeAreaProvider>
@@ -141,6 +154,7 @@ export default function RootLayout() {
   const state = useBoot();
   const kernel = state.status === 'ready' ? state.booted : undefined;
   const appearance = useAppearance(kernel);
+  const locale = useLocale(kernel);
   const needed = useOnboardingNeeded(kernel);
   useResume(kernel);
   useLayoutDirection(kernel);
@@ -157,14 +171,14 @@ export default function RootLayout() {
   }
   if (kernel === undefined) {
     return (
-      <AppShell appearance={appearance}>
+      <AppShell appearance={appearance} locale={deviceLocaleTags()[0]}>
         <BootFailure localeTags={deviceLocaleTags()} onRetry={retryBoot} />
       </AppShell>
     );
   }
   return (
     <KernelProvider kernel={kernel}>
-      <AppShell appearance={appearance}>
+      <AppShell appearance={appearance} locale={locale}>
         <Routes needed={needed} />
       </AppShell>
     </KernelProvider>

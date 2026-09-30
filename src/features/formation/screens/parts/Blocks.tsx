@@ -1,11 +1,26 @@
 import { Fragment } from 'react';
 import { Text, View } from 'react-native';
-import { fontFor } from '@shared/fonts';
-import { useTheme, type TextRole } from '@shared/theme';
+import { fontFor, type Script } from '@shared/fonts';
+import {
+  contentText,
+  scriptOf,
+  useTheme,
+  type TextRole,
+  type TextStyleTokens,
+  type Theme,
+} from '@shared/theme';
 import type { Block, Inline } from '../../service';
 import { Line, type Tone } from './Line';
 
-function Inlines({ items }: { items: readonly Inline[] }) {
+function inlineText(items: readonly Inline[]): string {
+  return items.map((item) => (item.kind === 'text' ? item.text : inlineText(item.children))).join('');
+}
+
+function inlineFont(theme: Theme, weight: number, script: Script | undefined, italic = false) {
+  return fontFor(theme.fontStack.fontCore, weight, { ...(script === undefined ? {} : { script }), italic });
+}
+
+function Inlines({ items, script }: { items: readonly Inline[]; script: Script | undefined }) {
   const theme = useTheme();
   return (
     <>
@@ -15,23 +30,20 @@ function Inlines({ items }: { items: readonly Inline[] }) {
             return <Fragment key={index}>{item.text}</Fragment>;
           case 'emphasis':
             return (
-              <Text
-                key={index}
-                style={fontFor(theme.fontStack.fontCore, theme.fontWeight.fwRegular, { italic: true })}
-              >
-                <Inlines items={item.children} />
+              <Text key={index} style={inlineFont(theme, theme.fontWeight.fwRegular, script, true)}>
+                <Inlines items={item.children} script={script} />
               </Text>
             );
           case 'strong':
             return (
-              <Text key={index} style={fontFor(theme.fontStack.fontCore, theme.fontWeight.fwSemibold)}>
-                <Inlines items={item.children} />
+              <Text key={index} style={inlineFont(theme, theme.fontWeight.fwSemibold, script)}>
+                <Inlines items={item.children} script={script} />
               </Text>
             );
           case 'link':
             return (
               <Text key={index} style={{ color: theme.color.link }}>
-                <Inlines items={item.children} />
+                <Inlines items={item.children} script={script} />
               </Text>
             );
         }
@@ -40,32 +52,42 @@ function Inlines({ items }: { items: readonly Inline[] }) {
   );
 }
 
-export type BlocksProps = { blocks: readonly Block[]; role?: TextRole; tone?: Tone };
+export type BlocksProps = { blocks: readonly Block[]; role?: TextRole; tone?: Tone; language?: string };
 
-export function Blocks({ blocks, role = 'body', tone = 'body' }: BlocksProps) {
+export function Blocks({ blocks, role = 'body', tone = 'body', language }: BlocksProps) {
   const theme = useTheme();
+  const tag = language ?? theme.locale;
+  const voice = (items: readonly Inline[], base: TextStyleTokens) => {
+    const sample = inlineText(items);
+    return {
+      style: contentText(theme, base, { language: tag, sample }),
+      script: scriptOf(tag, sample),
+    };
+  };
+  const headingBase: TextStyleTokens = {
+    ...theme.text.label,
+    ...inlineFont(theme, theme.fontWeight.fwSemibold, undefined),
+  };
   return (
     <View style={{ gap: theme.space.sp4 }}>
       {blocks.map((block, index) => {
         switch (block.kind) {
-          case 'heading':
+          case 'heading': {
+            const heading = voice(block.children, headingBase);
             return (
-              <Line
-                key={index}
-                role="label"
-                tone="title"
-                weight={theme.fontWeight.fwSemibold}
-                accessibilityRole="header"
-              >
-                <Inlines items={block.children} />
+              <Line key={index} role="label" tone="title" accessibilityRole="header" style={heading.style}>
+                <Inlines items={block.children} script={heading.script} />
               </Line>
             );
-          case 'paragraph':
+          }
+          case 'paragraph': {
+            const paragraph = voice(block.children, theme.text[role]);
             return (
-              <Line key={index} role={role} tone={tone}>
-                <Inlines items={block.children} />
+              <Line key={index} role={role} tone={tone} style={paragraph.style}>
+                <Inlines items={block.children} script={paragraph.script} />
               </Line>
             );
+          }
           case 'list':
             return (
               <View key={index} style={{ gap: theme.space.sp3 }}>
@@ -75,7 +97,7 @@ export function Blocks({ blocks, role = 'body', tone = 'body' }: BlocksProps) {
                       {block.ordered ? `${position + 1}.` : '•'}
                     </Line>
                     <View style={{ flex: 1, minWidth: 0 }}>
-                      <Blocks blocks={item} role={role} tone={tone} />
+                      <Blocks blocks={item} role={role} tone={tone} language={tag} />
                     </View>
                   </View>
                 ))}
@@ -91,7 +113,7 @@ export function Blocks({ blocks, role = 'body', tone = 'body' }: BlocksProps) {
                   paddingStart: theme.space.sp6,
                 }}
               >
-                <Blocks blocks={block.children} role={role} tone={tone} />
+                <Blocks blocks={block.children} role={role} tone={tone} language={tag} />
               </View>
             );
         }

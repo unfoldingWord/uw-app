@@ -9,7 +9,7 @@ import {
   type TextInputProps,
   type ViewStyle,
 } from 'react-native';
-import { useTheme } from '@shared/theme';
+import { uiText, useTheme } from '@shared/theme';
 import { ContentColor } from './context';
 import { GlassBlur } from './GlassBlur';
 import { referenceValues } from './referenceValues';
@@ -37,6 +37,8 @@ export function GlassInput({
   const theme = useTheme();
   const [focused, setFocused] = useState(false);
   const pill = theme.radius.rPill;
+  const typed = input.value === undefined || input.value === '' ? input.placeholder : input.value;
+  const font = uiText(theme, theme.text.body, typed);
   const boxShadow = shadowCss([
     theme.shadow.shadowRest,
     theme.shadow.innerTop,
@@ -84,8 +86,9 @@ export function GlassInput({
           style={[
             styles.field,
             {
-              fontFamily: theme.text.body.fontFamily,
-              fontSize: theme.text.body.fontSize,
+              fontFamily: font.fontFamily,
+              fontWeight: font.fontWeight,
+              fontSize: font.fontSize,
               color: theme.color.textTitle,
               textAlign: 'auto',
             },

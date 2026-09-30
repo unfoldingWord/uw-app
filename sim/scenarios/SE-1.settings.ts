@@ -29,6 +29,8 @@ export default scenario(
     assert.equal(services.settings.layoutDirection(), 'ltr');
     const directions: string[] = [];
     const stop = services.settings.onLayoutDirection((next) => directions.push(next));
+    const faces: string[] = [];
+    const stopFaces = services.settings.onLocale((next) => faces.push(next));
     assert.equal(await services.settings.setLocale('ar'), true);
     assert.equal(
       services.settings.layoutDirection(),
@@ -38,7 +40,9 @@ export default scenario(
     assert.equal(await services.settings.setLocale('fa'), true);
     assert.equal(await services.settings.setLocale('sw'), true);
     stop();
+    stopFaces();
     assert.deepEqual(directions, ['rtl', 'rtl', 'ltr'], 'the root layout hears each app language change');
+    assert.deepEqual(faces, ['ar', 'fa', 'sw'], 'the theme hears the app language to pick its script face');
     assert.equal(services.settings.layoutDirection(), 'ltr');
     assert.equal(
       phone.kernel.strings.words('en').t('settings.appLanguage.direction'),

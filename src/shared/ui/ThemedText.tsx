@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { Text, type StyleProp, type TextProps, type TextStyle } from 'react-native';
-import { fontFor } from '@shared/fonts/families';
-import { useTheme, type TextRole, type Theme } from '@shared/theme';
+import { textSample, uiFont, uiText, useTheme, type TextRole, type Theme } from '@shared/theme';
 
 export type TextTone = 'title' | 'body' | 'muted' | 'dim' | 'faint' | 'inverse' | 'onImage' | 'warm' | 'link';
 
@@ -32,15 +31,22 @@ export function toneColor(theme: Theme, tone: TextTone): string {
   return colors[tone];
 }
 
-function familyFor(theme: Theme, family: TextFamily, weight: number | undefined, role: TextRole) {
+function familyFor(
+  theme: Theme,
+  family: TextFamily,
+  weight: number | undefined,
+  role: TextRole,
+  sample: string | undefined,
+) {
   const base = theme.text[role];
   if (family === 'brand') {
-    return fontFor(theme.fontStack.fontBrand, weight ?? Number(base.fontWeight ?? 400)) ?? {};
+    return uiFont(theme, theme.fontStack.fontBrand, weight ?? Number(base.fontWeight ?? 400), sample);
   }
   if (weight === undefined) {
-    return { fontFamily: base.fontFamily, fontWeight: base.fontWeight };
+    const font = uiText(theme, base, sample);
+    return { fontFamily: font.fontFamily, fontWeight: font.fontWeight };
   }
-  return fontFor(theme.fontStack.fontCore, weight) ?? {};
+  return uiFont(theme, theme.fontStack.fontCore, weight, sample);
 }
 
 export function ThemedText({
@@ -68,7 +74,7 @@ export function ThemedText({
           textAlign: align,
           writingDirection: 'auto',
         },
-        familyFor(theme, family, weight, variant),
+        familyFor(theme, family, weight, variant, textSample(children)),
         style,
       ]}
     >

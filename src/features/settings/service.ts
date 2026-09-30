@@ -80,6 +80,7 @@ export type SettingsService = {
   locales(): readonly LocaleChoice[];
   locale(): Locale;
   setLocale(locale: Locale): Promise<boolean>;
+  onLocale(listener: (locale: Locale) => void): () => void;
   layoutDirection(): Direction;
   directionChangeNeeded(currentIsRTL: boolean): boolean;
   onLayoutDirection(listener: (direction: Direction) => void): () => void;
@@ -202,6 +203,12 @@ export function createSettingsService(kernel: Kernel): SettingsService {
     locale: () => preferences.locale(),
     setLocale: (locale) =>
       kernel.strings.isLocale(locale) ? preferences.set('settings.locale', locale) : Promise.resolve(false),
+    onLocale: (listener) =>
+      preferences.onChange((key) => {
+        if (key === 'settings.locale') {
+          listener(preferences.locale());
+        }
+      }),
     layoutDirection: () => direction(preferences.locale()),
     directionChangeNeeded: (currentIsRTL) => needsDirectionChange(preferences.locale(), currentIsRTL),
     onLayoutDirection: (listener) =>

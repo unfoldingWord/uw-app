@@ -426,7 +426,11 @@ function Foundations({
               <Line role="overline" tone="dim" accessibilityRole="header">
                 {sectionTitle(words, section.id)}
               </Line>
-              <Blocks blocks={section.blocks} tone={section.id === 'key-idea' ? 'title' : 'body'} />
+              <Blocks
+                blocks={section.blocks}
+                tone={section.id === 'key-idea' ? 'title' : 'body'}
+                language={formation?.language ?? service.language()}
+              />
             </View>
           ))}
         </Card>
@@ -456,6 +460,7 @@ function Foundations({
         <MovementsCard
           words={words}
           source={service.languageName(formation.language)}
+          language={formation.language}
           movements={formation.movements}
           selected={selected}
           done={done}
@@ -468,7 +473,7 @@ function Foundations({
           <Line role="overline" tone="dim" accessibilityRole="header">
             {sectionTitle(words, section.id)}
           </Line>
-          <Blocks blocks={section.blocks} />
+          <Blocks blocks={section.blocks} language={formation?.language ?? service.language()} />
         </Card>
       ))}
       {failure === undefined ? null : (
@@ -574,7 +579,7 @@ function Training({
             {session.article.subtitle}
           </Line>
         )}
-        <Blocks blocks={session.article.blocks} />
+        <Blocks blocks={session.article.blocks} language={service.language()} />
       </Card>
       {group === undefined ? null : finished ? (
         <Card level={1}>

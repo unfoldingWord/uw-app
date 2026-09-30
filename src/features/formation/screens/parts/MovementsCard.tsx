@@ -11,6 +11,7 @@ import { movementTitle } from './wording';
 export type MovementsCardProps = {
   words: FormationWords;
   source: string;
+  language?: string;
   movements: readonly SessionMovement[];
   selected: SessionMovementId;
   done: ReadonlySet<SessionMovementId>;
@@ -21,6 +22,7 @@ export type MovementsCardProps = {
 export function MovementsCard({
   words,
   source,
+  language,
   movements,
   selected,
   done,
@@ -65,7 +67,7 @@ export function MovementsCard({
           ))}
         </View>
       ) : (
-        <Blocks blocks={movement.blocks} />
+        <Blocks blocks={movement.blocks} language={language} />
       )}
       {onComplete === undefined ? null : finished ? (
         <View style={[styles.done, { gap: theme.space.sp3 }]}>

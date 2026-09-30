@@ -175,7 +175,7 @@ export function GlassButton({
             ) : (
               <Text
                 style={{
-                  ...coreFont(theme, theme.fontWeight.fwSemibold),
+                  ...coreFont(theme, theme.fontWeight.fwSemibold, label),
                   color: look.color,
                   fontSize,
                   lineHeight: fontSize * referenceValues.glassButton.lineHeight,

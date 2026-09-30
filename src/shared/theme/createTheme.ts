@@ -1,3 +1,4 @@
+import { fontFaces } from '@shared/fonts/faces';
 import { fontFor, type ResolvedFont, type Script } from '@shared/fonts/families';
 import {
   categoryOf,
@@ -46,7 +47,9 @@ import { darkTokens, keyframes, reducedMotionTokens, rootTokens, type TokenName 
 
 export type Scheme = 'light' | 'dark';
 
-export type ThemeOptions = { scheme: Scheme; reducedBlur: boolean; reducedMotion?: boolean };
+export type ThemeOptions = { scheme: Scheme; reducedBlur: boolean; reducedMotion?: boolean; locale?: string };
+
+export const defaultLocale = 'en';
 
 export type Shadow = { css: string; layers: ShadowLayer[]; legacy: LegacyShadow };
 
@@ -67,6 +70,7 @@ export type Theme = {
   scheme: Scheme;
   reducedBlur: boolean;
   reducedMotion: boolean;
+  locale: string;
   tokens: Readonly<Record<TokenName, string>>;
   color: Keyed<ColorName, string>;
   gradient: Keyed<GradientName, string>;
@@ -171,7 +175,8 @@ export function withScript(
   stack: readonly string[],
   script: Script,
 ): TextStyleTokens {
-  const weight = style.fontWeight === undefined ? 400 : Number(style.fontWeight);
+  const face = fontFaces.find((item) => item.name === style.fontFamily);
+  const weight = Number(style.fontWeight ?? face?.weight.split(' ')[0] ?? 400);
   const family = fontFor(stack, weight, { script });
   return family === undefined ? style : { ...style, fontWeight: undefined, ...family };
 }
@@ -191,6 +196,7 @@ function buildTheme(options: ThemeOptions): Theme {
     scheme: options.scheme,
     reducedBlur: options.reducedBlur,
     reducedMotion: options.reducedMotion === true,
+    locale: options.locale ?? defaultLocale,
     tokens: resolved,
     color: group<ColorName, string>(resolved, 'color', (value) => value),
     gradient: group<GradientName, string>(resolved, 'gradient', (value) => value),
@@ -234,7 +240,12 @@ function buildTheme(options: ThemeOptions): Theme {
 const themes = new Map<string, Theme>();
 
 export function createTheme(options: ThemeOptions): Theme {
-  const key = `${options.scheme}:${String(options.reducedBlur)}:${String(options.reducedMotion === true)}`;
+  const key = [
+    options.scheme,
+    String(options.reducedBlur),
+    String(options.reducedMotion === true),
+    options.locale ?? defaultLocale,
+  ].join(':');
   const cached = themes.get(key);
   if (cached !== undefined) {
     return cached;
