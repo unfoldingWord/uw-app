@@ -38,7 +38,7 @@ export default scenario(
     );
 
     const opened = await servicesOf(newcomer).transfer.installApp();
-    assert.deepEqual(opened, { ok: true, message: 'The installer is open. Follow its steps to finish.' });
+    assert.deepEqual(opened, { ok: true, message: 'The installer is open, so follow its steps to finish.' });
     assert.deepEqual(newcomer.adapters.transport.installs(), ['transfer/app/unfoldingword.apk']);
     assert.equal(
       newcomer.kernel.journal.read().at(-1)?.type,
@@ -55,7 +55,7 @@ export default scenario(
     assert.equal(store.code, 'transfer.unsupported');
     assert.equal(
       store.message,
-      'This copy of the app cannot open the installer. Get the app from its store instead.',
+      'This copy of the app cannot open the installer, so get the app from its store instead.',
     );
     assert.equal(lastFailure(newcomer.kernel.journal.read()), 'transfer.unsupported');
     assert.equal(

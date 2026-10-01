@@ -1,17 +1,18 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { FailureCode } from '@lib/domain/failures';
 import { GlassButton, GlassIconButton, GlassSurface, Icon } from '@shared/glass';
 import { useService } from '@shared/kernel';
-import { useTheme } from '@shared/theme';
+import { directionOf, useTheme } from '@shared/theme';
+import { Notice } from '@shared/ui';
 import { createStudyService } from '../service';
 import { Attribution } from './parts/Attribution';
 import { Blocks } from './parts/Blocks';
 import { ScreenFrame, TopBar } from './parts/Frame';
 import { articleHref, studyRoutes, useOpenTarget } from './parts/routes';
 import { Say } from './parts/Say';
-import { directionOf } from './parts/script';
 import { StatePanel } from './parts/StatePanel';
 import { useLoaded } from './parts/useLoaded';
 
@@ -32,9 +33,10 @@ export default function ArticleScreen() {
   const load = useCallback(() => service.article(id), [service, id]);
   const { value, reload } = useLoaded(load);
   const language = service.language() ?? '';
+  const [failure, setFailure] = useState<FailureCode | undefined>(undefined);
 
   if (value === undefined) {
-    return <ScreenFrame />;
+    return <ScreenFrame loading={words.t('common.busy')} />;
   }
 
   if (value.state !== 'article') {
@@ -72,11 +74,11 @@ export default function ArticleScreen() {
             label={words.t(saved === undefined ? 'article.save' : 'common.bookmark.remove')}
             size={theme.space.sp14}
             onPress={async () => {
-              if (saved === undefined) {
-                await service.save({ target: 'article', article: article.id, language });
-              } else {
-                await service.unsave(saved.id);
-              }
+              const outcome =
+                saved === undefined
+                  ? await service.save({ target: 'article', article: article.id, language })
+                  : await service.unsave(saved.id);
+              setFailure(outcome === undefined || outcome.ok ? undefined : outcome.code);
               await reload();
             }}
           >
@@ -91,6 +93,11 @@ export default function ArticleScreen() {
           {words.t('article.meta', { kind, language: service.languageName() ?? language })}
         </Say>
       </TopBar>
+      {failure === undefined ? null : (
+        <View style={{ paddingHorizontal: theme.space.gutterScreen, paddingTop: theme.space.sp4 }}>
+          <Notice text={words.t(`failure.${failure}`)} />
+        </View>
+      )}
       <ScrollView
         contentContainerStyle={{
           paddingHorizontal: theme.space.gutterScreen,

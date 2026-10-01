@@ -27,9 +27,10 @@ import Settings from 'lucide-react-native/icons/settings';
 import Sparkle from 'lucide-react-native/icons/sparkle';
 import Sun from 'lucide-react-native/icons/sun';
 import Users from 'lucide-react-native/icons/users';
-import { I18nManager, type StyleProp, type ViewStyle } from 'react-native';
+import { View, type StyleProp, type ViewStyle } from 'react-native';
 import { useTheme } from '@shared/theme';
 import { useContentColor } from './context';
+import { rightToLeftLayout } from './layoutDirection';
 import { referenceValues } from './referenceValues';
 
 const glyphs = {
@@ -93,8 +94,8 @@ export function Icon({
   const theme = useTheme();
   const contentColor = useContentColor();
   const Glyph = glyphs[name];
-  const mirrored = I18nManager.isRTL && directional.includes(name);
-  return (
+  const mirrored = rightToLeftLayout() && directional.includes(name);
+  const glyph = (
     <Glyph
       size={size}
       color={color ?? contentColor ?? theme.color.textBody}
@@ -104,7 +105,19 @@ export function Icon({
       fill="none"
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
-      style={[{ flexShrink: 0 }, mirrored ? { transform: [{ scaleX: -1 }] } : undefined, style]}
+      style={mirrored ? undefined : [{ flexShrink: 0 }, style]}
     />
+  );
+  if (!mirrored) {
+    return glyph;
+  }
+  return (
+    <View
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+      style={[{ flexShrink: 0, transform: [{ scaleX: -1 }] }, style]}
+    >
+      {glyph}
+    </View>
   );
 }

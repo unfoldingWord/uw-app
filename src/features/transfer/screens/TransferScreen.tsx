@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import { GlassButton, Icon } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
-import { Card, EmptyState, Header, ScreenScaffold, ThemedText, useAsyncValue } from '@shared/ui';
+import { Card, EmptyState, Header, Notice, ScreenScaffold, ThemedText, useAsyncValue } from '@shared/ui';
 import { createTransferService } from '../service';
 import { ReceiveFlow, type TypedStart } from './parts/ReceiveFlow';
 import { SendFlow } from './parts/SendFlow';
@@ -50,7 +50,13 @@ export default function TransferScreen() {
   );
 
   if (facts === undefined) {
-    return <ScreenScaffold header={header} />;
+    return (
+      <ScreenScaffold header={header}>
+        {capabilities.failure === undefined ? null : (
+          <Notice text={words.t(`failure.${capabilities.failure}`)} />
+        )}
+      </ScreenScaffold>
+    );
   }
 
   if (!facts.available) {

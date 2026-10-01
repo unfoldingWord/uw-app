@@ -105,7 +105,7 @@ export function GlassIconButton({
             borderWidth: treatment.borderWidth,
             boxShadow: treatment.boxShadow,
             opacity: disabled ? referenceValues.disabledOpacity : 1,
-            transform: [{ scale: press.scale }, { translateY: lift }],
+            transform: [...press.transform, { translateY: lift }],
           },
         ]}
       >

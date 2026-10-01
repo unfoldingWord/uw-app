@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { GlassButton, GlassSurface, Icon } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
+import { Card, ListRow, Screen, SectionTitle, ThemedText } from '@shared/ui';
 import {
   createFormationService,
   type FormationService,
@@ -12,12 +13,8 @@ import {
   type Progress as GroupProgress,
   type TrackSummary,
 } from '../service';
-import { Card, SectionTitle } from './parts/Card';
-import { Line } from './parts/Line';
 import { PictureWell } from './parts/PictureWell';
 import { Progress } from './parts/Progress';
-import { Row } from './parts/Row';
-import { Screen } from './parts/Screen';
 import { useLoad } from './parts/useLoad';
 import { groupLine, sessionHref } from './parts/wording';
 
@@ -102,15 +99,15 @@ export default function FormationScreen() {
       trailing={addGroup}
     >
       {overview.failure === undefined ? null : (
-        <Line role="caption" tone="body">
+        <ThemedText variant="caption" tone="body">
           {words.t(`failure.${overview.failure}`)}
-        </Line>
+        </ThemedText>
       )}
       {nothing ? (
         <Card level={1}>
-          <Line role="body" tone="title">
+          <ThemedText variant="body" tone="title">
             {words.t('state.notDownloaded', { language: languageName })}
-          </Line>
+          </ThemedText>
           <GlassButton variant="dark" onPress={() => router.push('/languages')}>
             {words.t('state.notDownloaded.action', { language: languageName })}
           </GlassButton>
@@ -119,16 +116,16 @@ export default function FormationScreen() {
       <SectionTitle>{words.t('formation.groups.title')}</SectionTitle>
       {value !== undefined && value.groups.length === 0 ? (
         <Card level={1}>
-          <Line role="body" tone="body">
+          <ThemedText variant="body" tone="body">
             {words.t('formation.groups.empty')}
-          </Line>
+          </ThemedText>
           <GlassButton onPress={() => router.push('/formation/groups')}>
             {words.t('formation.groups.addLabel')}
           </GlassButton>
         </Card>
       ) : null}
       {(value?.groups ?? []).map(({ group, progress }) => (
-        <Row
+        <ListRow
           key={group.id}
           title={group.name}
           detail={groupLine(words, group, progress)}
@@ -154,7 +151,7 @@ export default function FormationScreen() {
         </>
       )}
       {training === undefined || training.sessions === 0 ? null : (
-        <Row
+        <ListRow
           title={words.t('formation.training')}
           detail={words.t('formation.training.about')}
           leading={<Icon name="compass" />}
@@ -162,7 +159,7 @@ export default function FormationScreen() {
         />
       )}
       {topics === undefined || topics.sessions === 0 ? null : (
-        <Row
+        <ListRow
           title={words.t('formation.topics')}
           detail={words.t('formation.topics.about')}
           leading={<Icon name="layers" />}
@@ -186,12 +183,12 @@ function FoundationsCard({ words, sessions, progress, onOpen }: FoundationsCardP
   return (
     <GlassSurface level={2} blur="strong" shadow="card" style={{ padding: theme.space.sp5 }}>
       <PictureWell>
-        <Line role="overline" tone="onImage">
+        <ThemedText variant="overline" tone="onImage">
           {count}
-        </Line>
-        <Line role="cardTitle" tone="onImage">
+        </ThemedText>
+        <ThemedText variant="cardTitle" tone="onImage">
           {title}
-        </Line>
+        </ThemedText>
       </PictureWell>
       <View
         style={{
@@ -205,13 +202,13 @@ function FoundationsCard({ words, sessions, progress, onOpen }: FoundationsCardP
           paddingBottom: theme.space.sp3,
         }}
       >
-        <Line role="label" tone="body" style={{ flexShrink: 1 }}>
+        <ThemedText variant="label" tone="body" style={{ flexShrink: 1 }}>
           {words.t('formation.foundations.tagline')}
-        </Line>
+        </ThemedText>
         {progress === undefined ? null : (
-          <Line role="caption" tone="dim">
+          <ThemedText variant="caption" tone="dim">
             {words.t('formation.foundations.done', { done: progress.done, total: progress.sessions })}
-          </Line>
+          </ThemedText>
         )}
       </View>
       <GlassButton full variant="dark" accessibilityLabel={`${count}, ${title}`} onPress={onOpen}>

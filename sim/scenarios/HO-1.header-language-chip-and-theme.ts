@@ -20,9 +20,13 @@ export default scenario(
       label: 'Change language, now Fixture B',
     });
 
-    assert.equal(await services.home.toggleTheme('dark'), 'light', 'from a dark phone the toggle goes light');
+    assert.deepEqual(
+      await services.home.toggleTheme('dark'),
+      { ok: true, value: 'light' },
+      'from a dark phone the toggle goes light',
+    );
     assert.deepEqual(services.settings.appearance(), { scheme: 'light' });
-    assert.equal(await services.home.toggleTheme('dark'), 'dark');
+    assert.deepEqual(await services.home.toggleTheme('dark'), { ok: true, value: 'dark' });
     assert.deepEqual(services.settings.appearance(), { scheme: 'dark' });
 
     let changes = 0;

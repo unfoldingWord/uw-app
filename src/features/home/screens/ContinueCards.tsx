@@ -1,4 +1,5 @@
-import { StyleSheet, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { StyleSheet, useWindowDimensions, View, type LayoutChangeEvent } from 'react-native';
 import { GlassButton, Icon } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { backgroundImage, useTheme } from '@shared/theme';
@@ -48,10 +49,15 @@ export function ContinueReading({ card, autonym, onOpen }: ContinueReadingProps)
 
 export type ContinueFormationProps = { card: FormationCard | undefined; onOpen: (href: string) => void };
 
+const stackAbove = 2 * prototypeValues.card.tile;
+
 export function ContinueFormation({ card, onOpen }: ContinueFormationProps) {
   const home = useService(createHomeService);
   const theme = useTheme();
   const words = home.words();
+  const { fontScale, width } = useWindowDimensions();
+  const [stacked, setStacked] = useState(false);
+  useEffect(() => setStacked(false), [fontScale, width]);
   if (card === undefined) {
     return (
       <EmptyState
@@ -67,6 +73,63 @@ export function ContinueFormation({ card, onOpen }: ContinueFormationProps) {
     );
   }
   const action = words.t('home.formation.action', { group: card.groupName });
+  const measure = (event: LayoutChangeEvent) => {
+    if (!stacked && event.nativeEvent.layout.height > stackAbove) {
+      setStacked(true);
+    }
+  };
+  const tile = (
+    <View
+      style={[
+        styles.tile,
+        {
+          width: prototypeValues.card.tile,
+          minHeight: prototypeValues.card.tile,
+          padding: theme.space.sp3,
+          borderRadius: theme.radius.rLg,
+          overflow: 'hidden',
+        },
+        backgroundImage(prototypeValues.sessionTile),
+      ]}
+    >
+      <ThemedText variant="overline" tone="onImage" align="center">
+        {card.position.track === 'foundations'
+          ? words.t('home.formation.story', { number: card.position.session })
+          : String(card.position.session)}
+      </ThemedText>
+    </View>
+  );
+  const text = (
+    <View style={stacked ? undefined : styles.grow} onLayout={measure}>
+      <ThemedText variant="overline" tone="dim">
+        {words.t('home.formation.title', { group: card.groupName })}
+      </ThemedText>
+      <ThemedText variant="time" tone="title">
+        {card.title}
+      </ThemedText>
+      {card.next === undefined ? null : (
+        <ThemedText variant="label" tone="body" weight={theme.fontWeight.fwRegular}>
+          {card.next}
+        </ThemedText>
+      )}
+    </View>
+  );
+  const chevron = (
+    <View
+      style={[
+        styles.tile,
+        {
+          width: prototypeValues.control,
+          height: prototypeValues.control,
+          borderRadius: theme.radius.rPill,
+          backgroundColor: theme.color.surfaceInverse,
+          marginEnd: theme.space.sp4,
+        },
+      ]}
+    >
+      <Icon name="chevronRight" color={theme.color.textOnInverse} />
+    </View>
+  );
   return (
     <Card
       padding="tight"
@@ -75,54 +138,21 @@ export function ContinueFormation({ card, onOpen }: ContinueFormationProps) {
         onPress: () => onOpen(card.href),
       }}
     >
-      <View style={[styles.line, { gap: theme.space.sp7 }]}>
-        <View
-          style={[
-            styles.tile,
-            {
-              width: prototypeValues.card.tile,
-              minHeight: prototypeValues.card.tile,
-              padding: theme.space.sp3,
-              borderRadius: theme.radius.rLg,
-              overflow: 'hidden',
-            },
-            backgroundImage(prototypeValues.sessionTile),
-          ]}
-        >
-          <ThemedText variant="overline" tone="onImage" align="center">
-            {card.position.track === 'foundations'
-              ? words.t('home.formation.story', { number: card.position.session })
-              : String(card.position.session)}
-          </ThemedText>
+      {stacked ? (
+        <View style={{ gap: theme.space.sp6 }}>
+          <View style={[styles.line, styles.apart]}>
+            {tile}
+            {chevron}
+          </View>
+          {text}
         </View>
-        <View style={styles.grow}>
-          <ThemedText variant="overline" tone="dim">
-            {words.t('home.formation.title', { group: card.groupName })}
-          </ThemedText>
-          <ThemedText variant="time" tone="title">
-            {card.title}
-          </ThemedText>
-          {card.next === undefined ? null : (
-            <ThemedText variant="label" tone="body" weight={theme.fontWeight.fwRegular}>
-              {card.next}
-            </ThemedText>
-          )}
+      ) : (
+        <View style={[styles.line, { gap: theme.space.sp7 }]}>
+          {tile}
+          {text}
+          {chevron}
         </View>
-        <View
-          style={[
-            styles.tile,
-            {
-              width: prototypeValues.control,
-              height: prototypeValues.control,
-              borderRadius: theme.radius.rPill,
-              backgroundColor: theme.color.surfaceInverse,
-              marginEnd: theme.space.sp4,
-            },
-          ]}
-        >
-          <Icon name="chevronRight" color={theme.color.textOnInverse} />
-        </View>
-      </View>
+      )}
     </Card>
   );
 }
@@ -131,4 +161,5 @@ const styles = StyleSheet.create({
   line: { flexDirection: 'row', alignItems: 'center' },
   grow: { flex: 1, minWidth: 0 },
   tile: { alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  apart: { justifyContent: 'space-between' },
 });

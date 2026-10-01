@@ -6,6 +6,7 @@ import { failureCodeOf, type FailureCode } from '@lib/domain/failures';
 import { GlassButton, GlassIconButton, Icon } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
+import { Card, Loading, Screen, ThemedText } from '@shared/ui';
 import {
   createFormationService,
   type FormationContent,
@@ -20,14 +21,11 @@ import {
   type Written,
 } from '../service';
 import { Blocks } from './parts/Blocks';
-import { Card } from './parts/Card';
 import { FallbackCard } from './parts/FallbackCard';
 import { FrameCard } from './parts/FrameCard';
-import { Line } from './parts/Line';
 import { MovementsCard } from './parts/MovementsCard';
 import { NotesCard } from './parts/NotesCard';
 import { settle, type WriteResult } from './parts/outcome';
-import { Screen } from './parts/Screen';
 import { useLoad } from './parts/useLoad';
 import { sectionTitle, sessionHref, storyShareHref } from './parts/wording';
 
@@ -112,23 +110,21 @@ export default function SessionScreen() {
     return (
       <Screen title={words.t('formation.title')} back={back}>
         {loaded.loading ? (
-          <Line role="body" tone="dim" live>
-            {words.t('common.busy')}
-          </Line>
+          <Loading label={words.t('common.busy')} />
         ) : (
           <Card level={1}>
-            <Line role="body" tone="title">
+            <ThemedText variant="body" tone="title">
               {words.t('state.notDownloaded', { language: languageName })}
-            </Line>
+            </ThemedText>
             <GlassButton variant="dark" onPress={() => router.push('/languages')}>
               {words.t('state.notDownloaded.action', { language: languageName })}
             </GlassButton>
           </Card>
         )}
         {loaded.failure === undefined ? null : (
-          <Line role="caption" tone="body">
+          <ThemedText variant="caption" tone="body">
             {words.t(`failure.${loaded.failure}`)}
-          </Line>
+          </ThemedText>
         )}
       </Screen>
     );
@@ -373,8 +369,8 @@ function Foundations({
         <Icon name="chevronRight" />
       </GlassIconButton>
       {storyAudio === undefined || audioStatus.state === 'idle' ? null : (
-        <Line
-          role="caption"
+        <ThemedText
+          variant="caption"
           tone={audioStatus.state === 'failed' ? 'body' : 'dim'}
           live={audioStatus.state === 'failed'}
           style={styles.footerLine}
@@ -382,13 +378,14 @@ function Foundations({
           {audioStatus.state === 'failed'
             ? words.t(`failure.${audioStatus.code}`)
             : service.audioTime(audioStatus)}
-        </Line>
+        </ThemedText>
       )}
     </View>
   );
 
   return (
     <Screen
+      dense
       title={words.t('session.overline', { number: session.number, total })}
       subtitle={
         group === undefined
@@ -420,9 +417,9 @@ function Foundations({
         <Card level={1}>
           {openingSections.map((section) => (
             <View key={section.id} style={{ gap: theme.space.sp4 }}>
-              <Line role="overline" tone="dim" accessibilityRole="header">
+              <ThemedText variant="overline" tone="dim" accessibilityRole="header">
                 {sectionTitle(words, section.id)}
-              </Line>
+              </ThemedText>
               <Blocks
                 blocks={section.blocks}
                 tone={section.id === 'key-idea' ? 'title' : 'body'}
@@ -443,13 +440,13 @@ function Foundations({
       )}
       {session.outline.includes('study-questions') && session.story.questions.length > 0 ? (
         <Card level={2}>
-          <Line role="overline" tone="dim" accessibilityRole="header">
+          <ThemedText variant="overline" tone="dim" accessibilityRole="header">
             {words.t('session.talk.studyQuestions')}
-          </Line>
+          </ThemedText>
           {session.story.questions.map((question) => (
-            <Line key={question.id} role="body" tone="body">
+            <ThemedText key={question.id} variant="body" tone="body">
               {question.question}
-            </Line>
+            </ThemedText>
           ))}
         </Card>
       ) : null}
@@ -467,22 +464,22 @@ function Foundations({
       )}
       {(formation?.closing ?? []).map((section) => (
         <Card key={section.id} level={1}>
-          <Line role="overline" tone="dim" accessibilityRole="header">
+          <ThemedText variant="overline" tone="dim" accessibilityRole="header">
             {sectionTitle(words, section.id)}
-          </Line>
+          </ThemedText>
           <Blocks blocks={section.blocks} language={formation?.language ?? service.language()} />
         </Card>
       ))}
       {failure === undefined ? null : (
-        <Line role="caption" tone="body" live>
+        <ThemedText variant="caption" tone="body" live>
           {words.t(`failure.${failure}`)}
-        </Line>
+        </ThemedText>
       )}
       {finished ? (
         <Card level={1}>
-          <Line role="label" tone="title" weight={theme.fontWeight.fwSemibold} live>
+          <ThemedText variant="label" tone="title" weight={theme.fontWeight.fwSemibold} live>
             {words.t('session.completed')}
-          </Line>
+          </ThemedText>
           {session.number < total ? (
             <GlassButton variant="dark" onPress={onNext}>
               {words.t('session.nextSession')}
@@ -518,9 +515,9 @@ function GroupNotes({
   if (group === undefined) {
     return (
       <Card level={1}>
-        <Line role="body" tone="body">
+        <ThemedText variant="body" tone="body">
           {words.t('session.chooseGroup')}
-        </Line>
+        </ThemedText>
         <GlassButton onPress={onGroups}>{words.t('formation.groups.title')}</GlassButton>
       </Card>
     );
@@ -558,6 +555,7 @@ function Training({
 
   return (
     <Screen
+      dense
       title={words.t('formation.training.lesson', { number: session.number, total })}
       subtitle={
         group === undefined
@@ -568,21 +566,21 @@ function Training({
       centred
     >
       <Card level={2}>
-        <Line role="cardTitle" tone="title" accessibilityRole="header">
+        <ThemedText variant="cardTitle" tone="title" accessibilityRole="header">
           {session.article.title}
-        </Line>
+        </ThemedText>
         {session.article.subtitle === undefined ? null : (
-          <Line role="label" tone="dim">
+          <ThemedText variant="label" tone="dim">
             {session.article.subtitle}
-          </Line>
+          </ThemedText>
         )}
         <Blocks blocks={session.article.blocks} language={service.language()} />
       </Card>
       {group === undefined ? null : finished ? (
         <Card level={1}>
-          <Line role="label" tone="title" weight={theme.fontWeight.fwSemibold} live>
+          <ThemedText variant="label" tone="title" weight={theme.fontWeight.fwSemibold} live>
             {words.t('session.completed')}
-          </Line>
+          </ThemedText>
           {session.number < total ? (
             <GlassButton variant="dark" onPress={onNext}>
               {words.t('session.nextSession')}
@@ -600,9 +598,9 @@ function Training({
         </GlassButton>
       )}
       {failure === undefined ? null : (
-        <Line role="caption" tone="body" live>
+        <ThemedText variant="caption" tone="body" live>
           {words.t(`failure.${failure}`)}
-        </Line>
+        </ThemedText>
       )}
       <GroupNotes
         service={service}

@@ -5,6 +5,7 @@ import { failureCodeOf, type FailureCode } from '@lib/domain/failures';
 import { GlassButton, GlassInput, Icon } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
+import { Card, ListRow, Notice, Screen, ThemedText, Toggle } from '@shared/ui';
 import {
   createSettingsService,
   type FullTextState,
@@ -14,13 +15,8 @@ import {
   type StorageView,
   type ThemeChoice,
 } from '../service';
-import { Card } from './parts/Card';
 import { Choice } from './parts/Choice';
-import { Line } from './parts/Line';
-import { Row } from './parts/Row';
-import { Screen } from './parts/Screen';
 import { StorageSection } from './parts/StorageSection';
-import { Toggle } from './parts/Toggle';
 import { useLoad } from './parts/useLoad';
 
 type Overview = {
@@ -56,22 +52,32 @@ export default function SettingsScreen() {
   const [themeChoice, setThemeChoice] = useState<ThemeChoice>(() => service.theme());
   const [name, setName] = useState(() => service.name() ?? '');
   const [nameState, setNameState] = useState<'idle' | 'saved' | FailureCode>('idle');
-  const [failure, setFailure] = useState<FailureCode | undefined>(undefined);
+  const [refusals, setRefusals] = useState<
+    Readonly<Partial<Record<SettingsEntryId, FailureCode | undefined>>>
+  >({});
   const [, setRevision] = useState(0);
   const locales = service.locales();
   const current = locales.find((choice) => choice.selected);
 
-  const attempt = async (work: () => Promise<boolean>) => {
+  const attempt = async (control: SettingsEntryId, work: () => Promise<unknown>): Promise<boolean> => {
+    let code: FailureCode | undefined;
     try {
-      setFailure((await work()) ? undefined : 'unexpected');
+      code = (await work()) === false ? 'kv.io' : undefined;
     } catch (error) {
-      setFailure(failureCodeOf(error));
+      code = failureCodeOf(error);
     }
+    setRefusals((current) => ({ ...current, [control]: code }));
+    return code === undefined;
+  };
+
+  const refusal = (control: SettingsEntryId) => {
+    const code = refusals[control];
+    return code === undefined ? null : <Notice text={words.t(`failure.${code}`)} />;
   };
 
   const saveName = async () => {
     try {
-      setNameState((await service.setName(name.trim())) ? 'saved' : 'unexpected');
+      setNameState((await service.setName(name.trim())) ? 'saved' : 'kv.io');
     } catch (error) {
       setNameState(failureCodeOf(error));
     }
@@ -99,23 +105,19 @@ export default function SettingsScreen() {
 
   return (
     <Screen
+      dense
       title={words.t('settings.title')}
       back={{ label: words.t('common.back'), onPress: () => router.back() }}
     >
-      {failure === undefined ? null : (
-        <Line role="caption" tone="body" live>
-          {words.t(`failure.${failure}`)}
-        </Line>
-      )}
-      <Row
+      <ListRow
         title={words.t('settings.appLanguage')}
         detail={appLanguage?.about ?? words.t('settings.appLanguage.about')}
         selected={languagesOpen}
         trailing={
           <View style={[styles.value, { gap: theme.space.sp3 }]}>
-            <Line role="label" tone="dim">
+            <ThemedText variant="label" tone="dim">
               {current?.name ?? ''}
-            </Line>
+            </ThemedText>
             <Icon name="chevronDown" size={theme.space.sp8} />
           </View>
         }
@@ -131,24 +133,25 @@ export default function SettingsScreen() {
               {...(choice.complete ? {} : { detail: words.t('settings.appLanguage.partial') })}
               selected={choice.selected}
               onPress={async () => {
-                await attempt(() => service.setLocale(choice.locale));
+                await attempt('appLanguage', () => service.setLocale(choice.locale));
                 setRevision((revision) => revision + 1);
                 await overview.reload();
               }}
             />
           ))}
-          <Line role="caption" tone="dim">
+          <ThemedText variant="caption" tone="dim">
             {words.t('settings.appLanguage.direction')}
-          </Line>
+          </ThemedText>
+          {refusal('appLanguage')}
         </Card>
       ) : null}
       <Card level={1}>
-        <Line role="body" tone="title" weight={theme.fontWeight.fwSemibold}>
+        <ThemedText variant="body" tone="title" weight={theme.fontWeight.fwSemibold}>
           {words.t('settings.theme')}
-        </Line>
-        <Line role="caption" tone="body">
+        </ThemedText>
+        <ThemedText variant="caption" tone="body">
           {themeEntry?.about ?? words.t('settings.theme.about')}
-        </Line>
+        </ThemedText>
         <View accessibilityRole="radiogroup" style={[styles.wrap, { gap: theme.space.gapInline }]}>
           {themeChoices.map((choice) => (
             <Choice
@@ -156,52 +159,56 @@ export default function SettingsScreen() {
               label={themeLabel(choice)}
               selected={themeChoice === choice}
               onPress={async () => {
-                setThemeChoice(choice);
-                await attempt(() => service.setTheme(choice));
+                if (await attempt('theme', () => service.setTheme(choice))) {
+                  setThemeChoice(choice);
+                }
               }}
             />
           ))}
         </View>
+        {refusal('theme')}
       </Card>
       <Card level={1}>
         <View style={[styles.value, { gap: theme.space.sp6 }]}>
           <View style={styles.grow}>
-            <Line role="body" tone="title" weight={theme.fontWeight.fwSemibold}>
+            <ThemedText variant="body" tone="title" weight={theme.fontWeight.fwSemibold}>
               {words.t('settings.reducedBlur')}
-            </Line>
-            <Line role="caption" tone="body">
+            </ThemedText>
+            <ThemedText variant="caption" tone="body">
               {blur?.about ?? words.t('settings.reducedBlur.about')}
-            </Line>
+            </ThemedText>
           </View>
           <Toggle
             label={words.t('settings.reducedBlur')}
             on={theme.reducedBlur}
-            onChange={(on) => attempt(() => service.setReducedBlur(on))}
+            onChange={(on) => attempt('reducedBlur', () => service.setReducedBlur(on))}
           />
         </View>
+        {refusal('reducedBlur')}
         <View style={[styles.value, { gap: theme.space.sp6 }]}>
           <View style={styles.grow}>
-            <Line role="body" tone="title" weight={theme.fontWeight.fwSemibold}>
+            <ThemedText variant="body" tone="title" weight={theme.fontWeight.fwSemibold}>
               {words.t('settings.reducedMotion')}
-            </Line>
-            <Line role="caption" tone="body">
+            </ThemedText>
+            <ThemedText variant="caption" tone="body">
               {motion?.about ?? words.t('settings.reducedMotion.about')}
-            </Line>
+            </ThemedText>
           </View>
           <Toggle
             label={words.t('settings.reducedMotion')}
             on={theme.reducedMotion}
-            onChange={(on) => attempt(() => service.setReducedMotion(on))}
+            onChange={(on) => attempt('reducedMotion', () => service.setReducedMotion(on))}
           />
         </View>
+        {refusal('reducedMotion')}
       </Card>
       <Card level={1}>
-        <Line role="body" tone="title" weight={theme.fontWeight.fwSemibold}>
+        <ThemedText variant="body" tone="title" weight={theme.fontWeight.fwSemibold}>
           {words.t('settings.firstName')}
-        </Line>
-        <Line role="caption" tone="body">
+        </ThemedText>
+        <ThemedText variant="caption" tone="body">
           {firstName?.about ?? words.t('settings.firstName.about')}
-        </Line>
+        </ThemedText>
         <GlassInput
           accessibilityLabel={words.t('settings.firstName')}
           value={name}
@@ -219,22 +226,25 @@ export default function SettingsScreen() {
           <GlassButton size="sm" variant="dark" onPress={saveName}>
             {words.t('common.save')}
           </GlassButton>
-          {nameState === 'idle' ? null : (
-            <Line role="caption" tone="dim" live style={styles.grow}>
-              {nameState === 'saved' ? words.t('common.done') : words.t(`failure.${nameState}`)}
-            </Line>
-          )}
+          {nameState === 'saved' ? (
+            <ThemedText variant="caption" tone="dim" live style={styles.grow}>
+              {words.t('common.done')}
+            </ThemedText>
+          ) : null}
         </View>
+        {nameState === 'idle' || nameState === 'saved' ? null : (
+          <Notice text={words.t(`failure.${nameState}`)} />
+        )}
       </Card>
       <Card level={1}>
         <View style={[styles.value, { gap: theme.space.sp6 }]}>
           <View style={styles.grow}>
-            <Line role="body" tone="title" weight={theme.fontWeight.fwSemibold}>
+            <ThemedText variant="body" tone="title" weight={theme.fontWeight.fwSemibold}>
               {words.t('settings.fullText')}
-            </Line>
-            <Line role="caption" tone="body">
+            </ThemedText>
+            <ThemedText variant="caption" tone="body">
               {fullText?.about ?? fullTextEntry?.about ?? words.t('common.busy')}
-            </Line>
+            </ThemedText>
           </View>
           <Toggle
             label={words.t('settings.fullText')}
@@ -242,22 +252,18 @@ export default function SettingsScreen() {
             on={fullText?.on ?? false}
             disabled={fullText === undefined}
             onChange={async (on) => {
-              try {
-                await service.setFullText(on);
-                setFailure(undefined);
-              } catch (error) {
-                setFailure(failureCodeOf(error));
-              }
+              await attempt('fullText', () => service.setFullText(on));
               await overview.reload();
             }}
           />
         </View>
+        {refusal('fullText')}
       </Card>
       <StorageSection service={service} storage={overview.value?.storage} onChanged={overview.reload} />
       {links.map((link) => {
         const entry = entryOf(entries, link.id);
         return entry === undefined ? null : (
-          <Row
+          <ListRow
             key={link.id}
             title={entry.title}
             detail={entry.about}
@@ -265,18 +271,18 @@ export default function SettingsScreen() {
           />
         );
       })}
-      <Row
+      <ListRow
         title={words.t('settings.diagnostics')}
         detail={words.t('settings.diagnostics.about')}
         onPress={() => router.push('/diagnostics')}
       />
-      <Line
-        role="caption"
+      <ThemedText
+        variant="caption"
         tone="faint"
         style={{ paddingHorizontal: theme.space.sp2, paddingTop: theme.space.sp6 }}
       >
         {service.footer()}
-      </Line>
+      </ThemedText>
     </Screen>
   );
 }

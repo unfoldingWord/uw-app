@@ -123,6 +123,17 @@ const emoji = /\p{Extended_Pictographic}/u;
 const brand = /unfoldingword(?!\.org)/giu;
 const internalNames = /\b(ULT|UST|GLT|GST|RC|Resource Container)\b/u;
 
+const fixedByRequirement: ReadonlySet<string> = new Set(['onboarding.tagline', 'onboarding.footer']);
+
+function sentencesIn(locale: string, text: string): number {
+  const segmenter = new Intl.Segmenter(locale, { granularity: 'sentence' });
+  const spoken = text
+    .replace(/\{[^}]*\}/gu, 'Name')
+    .replace(/\bunfoldingWord\b/gu, 'UnfoldingWord')
+    .replace(/\u104a/gu, ',');
+  return [...segmenter.segment(spoken)].filter((part) => part.segment.trim() !== '').length;
+}
+
 export function copyFindings(locale: string, key: string, text: string): string[] {
   const where = `${locale}: ${key}`;
   const findings: string[] = [];
@@ -145,6 +156,10 @@ export function copyFindings(locale: string, key: string, text: string): string[
   }
   if (text !== text.trim() || text.includes('  ')) {
     findings.push(`${where} has stray spaces`);
+  }
+  const sentences = sentencesIn(locale, text);
+  if (sentences > 1 && !fixedByRequirement.has(key.replace(/ \(.*\)$/u, ''))) {
+    findings.push(`${where} has ${String(sentences)} sentences; support copy is one sentence`);
   }
   if (locale === 'en' && text.includes('&')) {
     findings.push(`${where} uses &; spell out and`);

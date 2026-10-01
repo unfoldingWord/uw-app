@@ -4,12 +4,9 @@ import { StyleSheet, View } from 'react-native';
 import { GlassButton, GlassSurface } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
-import { useAsyncValue } from '@shared/ui';
+import { Card, Screen, SectionTitle, ThemedText, useAsyncValue } from '@shared/ui';
 import { createAboutService, type ImpactStoryView } from '../service';
-import { Card, SectionTitle } from './parts/Card';
-import { Line } from './parts/Line';
 import { LinkRow } from './parts/LinkRow';
-import { Screen } from './parts/Screen';
 import { StoryWell } from './parts/StoryWell';
 
 export default function AboutScreen() {
@@ -43,24 +40,24 @@ export default function AboutScreen() {
             accessibilityLabel={`${stat.value} ${stat.label}`}
             style={[styles.stat, { padding: theme.space.sp7, gap: theme.space.sp3 }]}
           >
-            <Line role="hero" tone="title" brand>
+            <ThemedText variant="hero" tone="title" family="brand">
               {String(stat.value)}
-            </Line>
-            <Line role="caption" tone="body" brand>
+            </ThemedText>
+            <ThemedText variant="caption" tone="body" family="brand">
               {stat.label}
-            </Line>
+            </ThemedText>
           </GlassSurface>
         ))}
       </View>
       <Card level={1}>
         <SectionTitle brand>{words.t('about.publishedBy')}</SectionTitle>
-        <Line role="body" tone="body" brand>
+        <ThemedText variant="body" tone="body" family="brand">
           {summary.publishedBy}
-        </Line>
+        </ThemedText>
         {summary.publishers.map((publisher) => (
-          <Line key={publisher} role="label" tone="title" brand>
+          <ThemedText key={publisher} variant="label" tone="title" family="brand">
             {publisher}
-          </Line>
+          </ThemedText>
         ))}
       </Card>
       {summary.byType.length === 0 ? null : (
@@ -68,15 +65,15 @@ export default function AboutScreen() {
           <SectionTitle brand>{words.t('about.byType')}</SectionTitle>
           {summary.byType.map((row) => (
             <View key={row.type} style={[styles.typeRow, { gap: theme.space.sp4 }]}>
-              <Line role="label" tone="title" brand style={styles.grow}>
+              <ThemedText variant="label" tone="title" family="brand" style={styles.grow}>
                 {row.title}
-              </Line>
-              <Line role="caption" tone="dim" brand>
+              </ThemedText>
+              <ThemedText variant="caption" tone="dim" family="brand">
                 {words.t('common.joined', {
                   first: `${row.releases} ${words.plural('about.stats.releases', row.releases)}`,
                   second: `${row.languages} ${words.plural('about.stats.languages', row.languages)}`,
                 })}
-              </Line>
+              </ThemedText>
             </View>
           ))}
         </Card>
@@ -92,9 +89,9 @@ export default function AboutScreen() {
       ))}
       <Card level={2}>
         <SectionTitle brand>{summary.partner.title}</SectionTitle>
-        <Line role="body" tone="title" brand>
+        <ThemedText variant="body" tone="title" family="brand">
           {summary.partner.body}
-        </Line>
+        </ThemedText>
         <GlassButton
           full
           variant="dark"
@@ -102,9 +99,9 @@ export default function AboutScreen() {
           accessibilityHint={opensBrowser}
           onPress={() => router.push(summary.partner.url)}
         >
-          <Line role="label" tone="onInverse" brand weight={theme.fontWeight.fwSemibold}>
+          <ThemedText variant="label" tone="inverse" family="brand" weight={theme.fontWeight.fwSemibold}>
             {summary.partner.link}
-          </Line>
+          </ThemedText>
         </GlassButton>
       </Card>
       <SectionTitle brand>{words.t('about.next')}</SectionTitle>
@@ -132,27 +129,27 @@ function StoryCard({ story, open, onOpen }: { story: ImpactStoryView; open: stri
       style={{ padding: theme.space.sp5, gap: theme.space.sp4 }}
     >
       <StoryWell {...(story.image === undefined ? {} : { image: story.image, label: story.title })}>
-        <Line role="overline" tone="onImage" brand>
+        <ThemedText variant="overline" tone="onImage" family="brand">
           {story.overline}
-        </Line>
-        <Line role="cardTitle" tone="onImage" brand>
+        </ThemedText>
+        <ThemedText variant="cardTitle" tone="onImage" family="brand">
           {story.title}
-        </Line>
+        </ThemedText>
       </StoryWell>
       <View style={{ gap: theme.space.sp3, paddingHorizontal: theme.space.sp4 }}>
         {story.body[0] === undefined ? null : (
-          <Line role="label" tone="body" brand>
+          <ThemedText variant="label" tone="body" family="brand">
             {story.body[0]}
-          </Line>
+          </ThemedText>
         )}
-        <Line role="caption" tone="dim" brand>
+        <ThemedText variant="caption" tone="dim" family="brand">
           {story.securityNote}
-        </Line>
+        </ThemedText>
       </View>
       <GlassButton full accessibilityLabel={`${open}, ${story.title}`} onPress={onOpen}>
-        <Line role="label" tone="title" brand weight={theme.fontWeight.fwSemibold}>
+        <ThemedText variant="label" tone="title" family="brand" weight={theme.fontWeight.fwSemibold}>
           {open}
-        </Line>
+        </ThemedText>
       </GlassButton>
     </GlassSurface>
   );

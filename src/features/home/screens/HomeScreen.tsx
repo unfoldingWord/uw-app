@@ -1,5 +1,6 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
+import type { FailureCode } from '@lib/domain/failures';
 import { View } from 'react-native';
 import { GlassButton, GlassIconButton, Icon } from '@shared/glass';
 import { useService } from '@shared/kernel';
@@ -7,6 +8,7 @@ import { useTheme } from '@shared/theme';
 import {
   Header,
   IconAction,
+  Notice,
   prototypeValues,
   ScreenScaffold,
   ThemedText,
@@ -39,6 +41,9 @@ export default function HomeScreen() {
   const now = localNow();
   const greeting = home.greeting(now);
   const [completing, setCompleting] = useState(false);
+  const [themeFailure, setThemeFailure] = useState<FailureCode | undefined>(undefined);
+  const failed = (code: FailureCode | undefined) =>
+    code === undefined ? null : <Notice text={words.t(`failure.${code}`)} />;
   const download = useAsyncValue(() => home.download(), [changes, focus], {
     pollMs: (view) => (view.state === 'installing' || completing ? pollMs : undefined),
   });
@@ -84,7 +89,10 @@ export default function HomeScreen() {
               <GlassIconButton
                 size={prototypeValues.control}
                 label={words.t('common.theme.toggle')}
-                onPress={() => home.toggleTheme(theme.scheme)}
+                onPress={async () => {
+                  const outcome = await home.toggleTheme(theme.scheme);
+                  setThemeFailure(outcome.ok ? undefined : outcome.code);
+                }}
               >
                 <Icon name={theme.scheme === 'dark' ? 'sun' : 'moon'} />
               </GlassIconButton>
@@ -93,6 +101,7 @@ export default function HomeScreen() {
         />
       }
     >
+      {failed(themeFailure)}
       <View style={{ paddingTop: prototypeValues.greetingTop, paddingBottom: theme.space.sp9 }}>
         <ThemedText variant="caption" tone="dim">
           {greeting.date}
@@ -101,6 +110,7 @@ export default function HomeScreen() {
           {greeting.text}
         </ThemedText>
       </View>
+      {failed(download.failure)}
       {download.value === undefined ? null : (
         <DownloadCard
           view={download.value}
@@ -121,10 +131,12 @@ export default function HomeScreen() {
         autonym={header.language?.autonym ?? ''}
         onOpen={() => router.push('/study')}
       />
+      {failed(formation.failure)}
       {formation.value === undefined ? null : (
         <ContinueFormation card={formation.value.card} onOpen={(href) => router.push(href)} />
       )}
       <InvitationCard />
+      {failed(updates.failure ?? checked.failure)}
       {updates.value === undefined ? null : <WhatsNew items={updates.value} onUpdated={download.reload} />}
       <SavedList items={home.saved()} onOpen={(item) => router.push(item.href)} />
     </ScreenScaffold>

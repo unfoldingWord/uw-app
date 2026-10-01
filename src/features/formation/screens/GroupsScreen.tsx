@@ -5,6 +5,7 @@ import type { FailureCode } from '@lib/domain/failures';
 import { GlassButton, GlassInput, Icon } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
+import { Card, Screen, SectionTitle, ThemedText } from '@shared/ui';
 import {
   createFormationService,
   type FormationService,
@@ -12,11 +13,8 @@ import {
   type Group,
   type Progress as GroupProgress,
 } from '../service';
-import { Card, SectionTitle } from './parts/Card';
-import { Line } from './parts/Line';
 import { settle, type WriteResult } from './parts/outcome';
 import { Progress } from './parts/Progress';
-import { Screen } from './parts/Screen';
 import { useLoad } from './parts/useLoad';
 import { groupLine, sessionHref } from './parts/wording';
 
@@ -60,9 +58,9 @@ export default function GroupsScreen() {
       back={{ label: words.t('common.back'), onPress: () => router.back() }}
     >
       <Card level={2}>
-        <Line role="label" tone="title" weight={theme.fontWeight.fwSemibold}>
+        <ThemedText variant="label" tone="title" weight={theme.fontWeight.fwSemibold}>
           {words.t('formation.groups.addLabel')}
-        </Line>
+        </ThemedText>
         <GlassInput
           accessibilityLabel={words.t('formation.group.name')}
           placeholder={words.t('formation.group.namePlaceholder')}
@@ -80,15 +78,15 @@ export default function GroupsScreen() {
           {words.t('formation.groups.addLabel')}
         </GlassButton>
         {failure === undefined ? null : (
-          <Line role="caption" tone="body">
+          <ThemedText variant="caption" tone="body">
             {words.t(`failure.${failure}`)}
-          </Line>
+          </ThemedText>
         )}
       </Card>
       {groups.length === 0 && !listing.loading ? (
-        <Line role="body" tone="body">
+        <ThemedText variant="body" tone="body">
           {words.t('formation.groups.empty')}
-        </Line>
+        </ThemedText>
       ) : null}
       {groups.length === 0 ? null : <SectionTitle>{words.t('formation.groups.title')}</SectionTitle>}
       {groups.map(({ group, progress }) => (
@@ -148,12 +146,12 @@ function GroupCard({ service, words, group, progress, active, onChanged, onOpen 
       <View style={[styles.head, { gap: theme.space.sp6 }]}>
         <Icon name={active ? 'check' : 'users'} />
         <View style={styles.grow}>
-          <Line role="body" tone="title" weight={theme.fontWeight.fwSemibold}>
+          <ThemedText variant="body" tone="title" weight={theme.fontWeight.fwSemibold}>
             {group.name}
-          </Line>
-          <Line role="caption" tone="body">
+          </ThemedText>
+          <ThemedText variant="caption" tone="body">
             {line}
-          </Line>
+          </ThemedText>
         </View>
       </View>
       {progress === undefined ? null : <Progress fraction={progress.fraction} label={line} />}
@@ -187,9 +185,9 @@ function GroupCard({ service, words, group, progress, active, onChanged, onOpen 
                 backgroundColor: theme.color.accentWarm,
               }}
             />
-            <Line role="label" tone="title" style={styles.grow}>
+            <ThemedText variant="label" tone="title" style={styles.grow}>
               {words.t('formation.group.deleteConfirm', { group: group.name })}
-            </Line>
+            </ThemedText>
           </View>
           <View style={[styles.actions, { gap: theme.space.gapInline }]}>
             <GlassButton size="sm" variant="dark" onPress={() => setMode('view')}>
@@ -241,9 +239,9 @@ function GroupCard({ service, words, group, progress, active, onChanged, onOpen 
         </View>
       ) : null}
       {failure === undefined ? null : (
-        <Line role="caption" tone="body">
+        <ThemedText variant="caption" tone="body">
           {words.t(`failure.${failure}`)}
-        </Line>
+        </ThemedText>
       )}
     </Card>
   );

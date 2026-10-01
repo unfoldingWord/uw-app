@@ -30,7 +30,7 @@ export function Tappable({
   children,
 }: TappableProps) {
   const theme = useTheme();
-  const press = usePress(onPress, disabled);
+  const press = usePress(onPress, disabled, 'recoil');
   const inert = disabled || press.pending;
   return (
     <Pressable
@@ -47,7 +47,7 @@ export function Tappable({
           style,
           {
             borderRadius: radius,
-            transform: [{ scale: press.scale }],
+            transform: press.transform,
             boxShadow: press.focused ? theme.shadow.glowFocus.css : undefined,
           },
         ]}

@@ -12,6 +12,7 @@ import {
 import { uiText, useTheme } from '@shared/theme';
 import { ContentColor } from './context';
 import { GlassBlur } from './GlassBlur';
+import { minimumTouchTarget } from './pressGate';
 import { referenceValues } from './referenceValues';
 import { shadowCss } from './shadows';
 
@@ -85,6 +86,7 @@ export function GlassInput({
           }}
           style={[
             styles.field,
+            input.multiline === true ? { minHeight: minimumTouchTarget } : undefined,
             {
               fontFamily: font.fontFamily,
               fontWeight: font.fontWeight,

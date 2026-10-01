@@ -1,8 +1,8 @@
 import { StyleSheet, View } from 'react-native';
 import { GlassSurface } from '@shared/glass';
 import { useTheme } from '@shared/theme';
+import { ThemedText } from '@shared/ui';
 import type { Frame, FormationWords } from '../../service';
-import { Line } from './Line';
 import { PictureWell } from './PictureWell';
 
 export type FrameCardProps = {
@@ -31,22 +31,22 @@ export function FrameCard({ words, title, frames, index, pictureOf }: FrameCardP
         label={words.t('session.frame.picture', { number })}
         {...(picture === undefined ? {} : { uri: picture })}
       >
-        <Line role="overline" tone="onImage">
+        <ThemedText variant="overline" tone="onImage">
           {position}
-        </Line>
-        <Line role="cardTitle" tone="onImage">
+        </ThemedText>
+        <ThemedText variant="cardTitle" tone="onImage">
           {title}
-        </Line>
+        </ThemedText>
       </PictureWell>
       <View accessibilityLiveRegion="polite" style={{ paddingHorizontal: theme.space.sp4 }}>
-        <Line role="body" tone="title">
+        <ThemedText variant="body" tone="title">
           {frame?.text ?? ''}
-        </Line>
+        </ThemedText>
       </View>
       {frame !== undefined && frame.image === undefined ? (
-        <Line role="caption" tone="dim" style={{ paddingHorizontal: theme.space.sp4 }}>
+        <ThemedText variant="caption" tone="dim" style={{ paddingHorizontal: theme.space.sp4 }}>
           {words.t('session.picturesMissing')}
-        </Line>
+        </ThemedText>
       ) : null}
       <View
         accessibilityElementsHidden

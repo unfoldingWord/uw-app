@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import { Text, View } from 'react-native';
 import { fontFor, type Script } from '@shared/fonts';
+import { type TextTone, ThemedText } from '@shared/ui';
 import {
   contentText,
   scriptOf,
@@ -10,7 +11,6 @@ import {
   type Theme,
 } from '@shared/theme';
 import type { Block, Inline } from '../../service';
-import { Line, type Tone } from './Line';
 
 function inlineText(items: readonly Inline[]): string {
   return items.map((item) => (item.kind === 'text' ? item.text : inlineText(item.children))).join('');
@@ -52,7 +52,7 @@ function Inlines({ items, script }: { items: readonly Inline[]; script: Script |
   );
 }
 
-export type BlocksProps = { blocks: readonly Block[]; role?: TextRole; tone?: Tone; language?: string };
+export type BlocksProps = { blocks: readonly Block[]; role?: TextRole; tone?: TextTone; language?: string };
 
 export function Blocks({ blocks, role = 'body', tone = 'body', language }: BlocksProps) {
   const theme = useTheme();
@@ -75,17 +75,23 @@ export function Blocks({ blocks, role = 'body', tone = 'body', language }: Block
           case 'heading': {
             const heading = voice(block.children, headingBase);
             return (
-              <Line key={index} role="label" tone="title" accessibilityRole="header" style={heading.style}>
+              <ThemedText
+                key={index}
+                variant="label"
+                tone="title"
+                accessibilityRole="header"
+                style={heading.style}
+              >
                 <Inlines items={block.children} script={heading.script} />
-              </Line>
+              </ThemedText>
             );
           }
           case 'paragraph': {
             const paragraph = voice(block.children, theme.text[role]);
             return (
-              <Line key={index} role={role} tone={tone} style={paragraph.style}>
+              <ThemedText key={index} variant={role} tone={tone} style={paragraph.style}>
                 <Inlines items={block.children} script={paragraph.script} />
-              </Line>
+              </ThemedText>
             );
           }
           case 'list':
@@ -93,9 +99,9 @@ export function Blocks({ blocks, role = 'body', tone = 'body', language }: Block
               <View key={index} style={{ gap: theme.space.sp3 }}>
                 {block.items.map((item, position) => (
                   <View key={position} style={{ flexDirection: 'row', gap: theme.space.sp4 }}>
-                    <Line role={role} tone="dim">
+                    <ThemedText variant={role} tone="dim">
                       {block.ordered ? `${position + 1}.` : '•'}
-                    </Line>
+                    </ThemedText>
                     <View style={{ flex: 1, minWidth: 0 }}>
                       <Blocks blocks={item} role={role} tone={tone} language={tag} />
                     </View>

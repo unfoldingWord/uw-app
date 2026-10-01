@@ -76,7 +76,7 @@ export default function LanguagesScreen() {
   const refreshFailure =
     refreshed.value !== undefined && !refreshed.value.ok && refreshed.value.code !== 'http.offline'
       ? refreshed.value.code
-      : undefined;
+      : (refreshed.failure ?? online.failure);
 
   return (
     <ScreenScaffold

@@ -61,7 +61,20 @@ describe('string table audit', () => {
       'en: k has an exclamation mark',
       'en: k has an em dash',
       'en: k writes Unfoldingword; the name is unfoldingWord',
+      'en: k has 2 sentences; support copy is one sentence',
       'en: k uses &; spell out and',
+    ]);
+    expect(copyFindings('en', 'k', 'Language pack, 12 MB. It is ready to read offline.')).toEqual([
+      'en: k has 2 sentences; support copy is one sentence',
+    ]);
+    expect(copyFindings('en', 'k', 'Sent. {language} is ready on the other phone.')).toEqual([
+      'en: k has 2 sentences; support copy is one sentence',
+    ]);
+    expect(copyFindings('en', 'k', 'Licensed CC BY-SA 4.0 at unfoldingword.org, version 1.2.')).toEqual([]);
+    expect(copyFindings('my', 'k', 'ဘာသာစကား ပြောင်းရန်၊ ယခု {language}')).toEqual([]);
+    expect(copyFindings('en', 'onboarding.footer', 'Free. Openly licensed. No account needed.')).toEqual([]);
+    expect(copyFindings('zh-Hans', 'k (other)', '已下载。可以离线阅读。')).toEqual([
+      'zh-Hans: k (other) has 2 sentences; support copy is one sentence',
     ]);
     expect(copyFindings('es-419', 'k', '¡Listo con la ULT ✨')).toEqual([
       'es-419: k has an exclamation mark',

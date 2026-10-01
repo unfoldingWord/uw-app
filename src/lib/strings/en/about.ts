@@ -6,15 +6,15 @@ export const about = {
   'about.stats.types': { one: 'resource type', other: 'resource types' },
   'about.publishedBy': 'Published by',
   'about.publishedBy.body': {
-    one: 'unfoldingWord and the church organizations it serves with, in {count} language. Every resource carries the name of the organization that made it, under CC BY-SA 4.0.',
+    one: 'unfoldingWord and the church organizations it serves with, in {count} language, each resource under CC BY-SA 4.0 with the name of the organization that made it.',
     other:
-      'unfoldingWord and the church organizations it serves with, in {count} languages. Every resource carries the name of the organization that made it, under CC BY-SA 4.0.',
+      'unfoldingWord and the church organizations it serves with, in {count} languages, each resource under CC BY-SA 4.0 with the name of the organization that made it.',
   },
   'about.byType': 'Resources by type',
   'about.stories': 'Impact stories',
   'about.partner': 'Partner',
   'about.partner.body':
-    'These resources are free because partners make them so. You can help extend the reach into the unreached.',
+    'These resources are free because partners make them so, and you can help extend the reach into the unreached.',
   'about.partner.link': 'Give at unfoldingword.org',
   'about.next': 'What you may want next',
   'about.link.translationCore': 'translationCore',
@@ -68,11 +68,11 @@ export const about = {
   'settings.firstName': 'First name',
   'settings.firstName.about': 'Used only in the greeting, only on this phone.',
   'settings.fullText': 'Search inside every text',
-  'settings.fullText.about': 'Builds an index on this phone. About {size} per language.',
+  'settings.fullText.about': 'Builds an index on this phone of about {size} per language.',
   'settings.storage': 'Storage',
-  'settings.storage.about': '{size} used. See and remove language packs.',
+  'settings.storage.about': 'See and remove language packs, {size} in use.',
   'settings.licence': 'Licence and attribution',
-  'settings.licence.about': 'CC BY-SA 4.0 content, MIT app. Free because partners make it so.',
+  'settings.licence.about': 'CC BY-SA 4.0 content and an MIT app, free because partners make it so.',
   'settings.about': 'About this library',
   'settings.about.about': 'What the church has built, and how to partner.',
   'settings.privacy': 'Privacy',
@@ -80,7 +80,7 @@ export const about = {
   'settings.diagnostics': 'Share diagnostics',
   'settings.diagnostics.about': 'Send a record of what happened on this phone to someone helping you.',
   'settings.footer':
-    'Nothing leaves this phone that you did not choose to send. The app counts opens, downloads, transfers and shares in aggregate, with no identifiers.',
+    'Nothing leaves this phone that you did not choose to send, and the app counts opens, downloads, transfers and shares only in aggregate, with no identifiers.',
   'diagnostics.title': 'Share diagnostics',
   'diagnostics.body':
     'The file holds a record of what the app did on this phone and a summary of what is on it, without the passages, articles and stories you opened or saved, and with no names, notes or identifiers.',

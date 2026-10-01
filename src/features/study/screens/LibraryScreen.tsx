@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GlassIconButton, Icon } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
+import { Loading } from '@shared/ui';
 import { createStudyService, type LibraryCard } from '../service';
 import { failureText } from './parts/failure';
 import { ScreenFrame, TopBar } from './parts/Frame';
@@ -39,7 +40,7 @@ export default function LibraryScreen() {
   };
 
   return (
-    <ScreenFrame>
+    <ScreenFrame dense>
       <TopBar
         backLabel={words.t('common.back')}
         overline={value?.overline}
@@ -54,7 +55,9 @@ export default function LibraryScreen() {
           </GlassIconButton>
         }
       />
-      {value === undefined ? null : value.language === undefined ? (
+      {value === undefined ? (
+        <Loading label={words.t('common.busy')} />
+      ) : value.language === undefined ? (
         <StatePanel
           message={words.t('study.noLanguage')}
           action={{

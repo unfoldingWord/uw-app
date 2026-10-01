@@ -17,7 +17,7 @@ export function MissingSection({ version, language, autonym, failures, onRetry }
   const words = languages.words();
   const missing = useAsyncValue(() => languages.missing(), [version, language]);
   const list = missing.value ?? [];
-  if (language === undefined || list.length === 0) {
+  if (language === undefined || (list.length === 0 && missing.failure === undefined)) {
     return null;
   }
   const retryFailure = failures[language];
@@ -46,6 +46,7 @@ export function MissingSection({ version, language, autonym, failures, onRetry }
           below={item.code === undefined ? undefined : <Notice text={words.t(`failure.${item.code}`)} />}
         />
       ))}
+      {missing.failure === undefined ? null : <Notice text={words.t(`failure.${missing.failure}`)} />}
       {retryFailure === undefined ? null : <Notice text={words.t(`failure.${retryFailure}`)} />}
     </>
   );

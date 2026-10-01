@@ -2,9 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import type { FailureCode } from '@lib/domain/failures';
 import { GlassInput } from '@shared/glass';
 import { useTheme } from '@shared/theme';
+import { Card, ThemedText } from '@shared/ui';
 import type { FormationService, FormationWords, Track } from '../../service';
-import { Card } from './Card';
-import { Line } from './Line';
 import { settle } from './outcome';
 
 const noteSettleMs = 900;
@@ -77,9 +76,9 @@ export function NotesCard({ service, words, group, track, session }: NotesCardPr
 
   return (
     <Card level={1}>
-      <Line role="overline" tone="dim" accessibilityRole="header">
+      <ThemedText variant="overline" tone="dim" accessibilityRole="header">
         {words.t('session.notes.title', { group: group.name })}
-      </Line>
+      </ThemedText>
       <GlassInput
         multiline
         accessibilityLabel={words.t('session.notes.title', { group: group.name })}
@@ -93,9 +92,9 @@ export function NotesCard({ service, words, group, track, session }: NotesCardPr
         }}
         style={{ paddingVertical: theme.space.sp4 }}
       />
-      <Line role="caption" tone="faint" live>
+      <ThemedText variant="caption" tone="faint" live>
         {status}
-      </Line>
+      </ThemedText>
     </Card>
   );
 }

@@ -3,9 +3,8 @@ import { StyleSheet, View } from 'react-native';
 import { failureCodeOf, type FailureCode } from '@lib/domain/failures';
 import { GlassButton } from '@shared/glass';
 import { useTheme } from '@shared/theme';
+import { Card, ThemedText } from '@shared/ui';
 import type { SettingsService, StoragePack, StorageView } from '../../service';
-import { Card } from './Card';
-import { Line } from './Line';
 
 export type StorageSectionProps = {
   service: SettingsService;
@@ -18,18 +17,18 @@ export function StorageSection({ service, storage, onChanged }: StorageSectionPr
   const words = service.words();
   return (
     <Card level={1}>
-      <Line role="overline" tone="dim" accessibilityRole="header">
+      <ThemedText variant="overline" tone="dim" accessibilityRole="header">
         {words.t('storage.title')}
-      </Line>
+      </ThemedText>
       {storage === undefined ? (
-        <Line role="caption" tone="dim" live>
+        <ThemedText variant="caption" tone="dim" live>
           {words.t('common.busy')}
-        </Line>
+        </ThemedText>
       ) : (
         <>
-          <Line role="label" tone="title">
+          <ThemedText variant="label" tone="title">
             {storage.summary}
-          </Line>
+          </ThemedText>
           {storage.low ? (
             <View style={[styles.row, { gap: theme.space.sp4 }]}>
               <View
@@ -40,15 +39,15 @@ export function StorageSection({ service, storage, onChanged }: StorageSectionPr
                   backgroundColor: theme.color.accentWarm,
                 }}
               />
-              <Line role="caption" tone="body" style={styles.grow}>
+              <ThemedText variant="caption" tone="body" style={styles.grow}>
                 {words.t('storage.low')}
-              </Line>
+              </ThemedText>
             </View>
           ) : null}
           {storage.packs.length === 0 ? (
-            <Line role="caption" tone="dim">
+            <ThemedText variant="caption" tone="dim">
               {words.t('storage.empty')}
-            </Line>
+            </ThemedText>
           ) : (
             storage.packs.map((pack) => (
               <PackRow key={pack.pack} service={service} pack={pack} onChanged={onChanged} />
@@ -87,9 +86,9 @@ function PackRow({
   return (
     <View style={{ gap: theme.space.sp3 }}>
       <View style={[styles.row, { gap: theme.space.sp4 }]}>
-        <Line role="label" tone="body" style={styles.grow}>
+        <ThemedText variant="label" tone="body" style={styles.grow}>
           {pack.label}
-        </Line>
+        </ThemedText>
         {confirming ? null : (
           <GlassButton
             size="sm"
@@ -112,9 +111,9 @@ function PackRow({
         </View>
       ) : null}
       {failure === undefined ? null : (
-        <Line role="caption" tone="body" live>
+        <ThemedText variant="caption" tone="body" live>
           {words.t(`failure.${failure}`)}
-        </Line>
+        </ThemedText>
       )}
     </View>
   );

@@ -90,13 +90,13 @@ export default scenario(
       iphoneView.app,
       {
         state: 'ios-not-permitted',
-        reason: 'iPhone does not allow sending the app itself. Resources can still go.',
+        reason: 'iPhone does not allow sending the app itself, but resources can still go.',
       },
       'an iPhone says why it cannot',
     );
     const refusedHere = await servicesOf(iphone).transfer.offer({ language: 'qab', app: true });
     assert.ok(!refusedHere.ok);
-    assert.equal(refusedHere.message, 'This phone cannot send the app itself. Resources can still go.');
+    assert.equal(refusedHere.message, 'This phone cannot send the app itself, but resources can still go.');
 
     const newcomer = world.device('newcomer', { platform: 'android' });
     await newcomer.start();
@@ -110,7 +110,7 @@ export default scenario(
     assert.equal(withApp.received.app?.path, 'transfer/app/unfoldingword.apk');
     assert.ok(withApp.sent.ok);
     assert.deepEqual(withApp.sent.messages.slice(1), [
-      'The app is on the other phone. Install it there, then send resources.',
+      'The app is on the other phone, so install it there and then send resources.',
     ]);
     const bare = world.device('bare', { platform: 'android' });
     await bare.start();

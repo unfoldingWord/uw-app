@@ -1,6 +1,7 @@
 export const prototypeValues = {
   control: 44,
   headerTop: 12,
+  header: { subScreenTitle: 24, detailTitleLineHeight: 1.2 },
   greetingTop: 28,
   tabBar: { item: 52, clearance: 120 },
   row: { iconTile: 40, iconSize: 18, chevron: 16 },

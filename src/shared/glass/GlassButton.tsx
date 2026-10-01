@@ -152,7 +152,7 @@ export function GlassButton({
             borderWidth: look.borderWidth,
             boxShadow: [look.boxShadow, focusGlow].filter(Boolean).join(', ') || undefined,
             opacity: disabled ? referenceValues.disabledOpacity : 1,
-            transform: [{ scale: press.scale }, { translateY: lift }],
+            transform: [...press.transform, { translateY: lift }],
           },
         ]}
       >

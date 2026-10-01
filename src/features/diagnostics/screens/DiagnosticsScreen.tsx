@@ -4,9 +4,8 @@ import { StyleSheet, View } from 'react-native';
 import { GlassButton } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
-import { Card, Header, Notice, ScreenScaffold, ThemedText } from '@shared/ui';
+import { Card, Header, Notice, ScreenScaffold, ThemedText, Toggle } from '@shared/ui';
 import { createDiagnosticsService } from '../service';
-import { Toggle } from './parts/Toggle';
 
 export default function DiagnosticsScreen() {
   const service = useService(createDiagnosticsService);

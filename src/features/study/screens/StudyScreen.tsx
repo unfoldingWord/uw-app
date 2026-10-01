@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import type { PackId } from '@lib/domain/pack';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
-import { useTabBarClearance } from '@shared/ui';
+import { Notice, useTabBarClearance } from '@shared/ui';
 import { createStudyService, type StudyView } from '../service';
 import { Attribution } from './parts/Attribution';
 import { AudioBar } from './parts/AudioBar';
@@ -56,6 +56,7 @@ export default function StudyScreen() {
   const [focused, setFocused] = useState<string | undefined>(undefined);
   const [failure, setFailure] = useState<string | undefined>(undefined);
   const [audioFailure, setAudioFailure] = useState<string | undefined>(undefined);
+  const [saveFailure, setSaveFailure] = useState<string | undefined>(undefined);
   const [seen, setSeen] = useState(requested);
   if (seen !== requested) {
     setSeen(requested);
@@ -111,7 +112,7 @@ export default function StudyScreen() {
   };
 
   if (value === undefined) {
-    return <ScreenFrame />;
+    return <ScreenFrame loading={words.t('common.busy')} />;
   }
 
   const { view, books } = value;
@@ -254,6 +255,11 @@ export default function StudyScreen() {
           footer={<Attribution words={words} provenance={shown.text.provenance} />}
         />
       </View>
+      {saveFailure === undefined ? null : (
+        <View style={{ paddingHorizontal: theme.space.gutterScreen, paddingVertical: theme.space.sp4 }}>
+          <Notice text={saveFailure} />
+        </View>
+      )}
       <HelpsPanel
         words={words}
         passage={passage}
@@ -266,15 +272,15 @@ export default function StudyScreen() {
         labelOf={service.label}
         saved={saved !== undefined}
         onToggleSave={async () => {
-          if (saved === undefined) {
-            await service.save({
-              target: 'passage',
-              reference: passageView.reference,
-              language: passageView.language,
-            });
-          } else {
-            await service.unsave(saved.id);
-          }
+          const outcome =
+            saved === undefined
+              ? await service.save({
+                  target: 'passage',
+                  reference: passageView.reference,
+                  language: passageView.language,
+                })
+              : await service.unsave(saved.id);
+          setSaveFailure(outcome === undefined || outcome.ok ? undefined : failureText(words, outcome.code));
           await reload();
         }}
         onShare={() => router.push(shareHref('passage', passageView.reference, passageView.language))}

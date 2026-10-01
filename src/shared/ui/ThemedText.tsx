@@ -1,8 +1,10 @@
 import type { ReactNode } from 'react';
 import { Text, type StyleProp, type TextProps, type TextStyle } from 'react-native';
 import { textSample, uiFont, uiText, useTheme, type TextRole, type Theme } from '@shared/theme';
+import { prototypeValues } from './prototypeValues';
 
-export type TextTone = 'title' | 'body' | 'muted' | 'dim' | 'faint' | 'inverse' | 'onImage' | 'warm' | 'link';
+export type TextTone =
+  'title' | 'body' | 'muted' | 'dim' | 'faint' | 'inverse' | 'onImage' | 'warm' | 'link' | 'accent';
 
 export type TextFamily = 'core' | 'brand';
 
@@ -12,6 +14,7 @@ export type ThemedTextProps = Omit<TextProps, 'style' | 'children' | 'role'> & {
   family?: TextFamily;
   weight?: number;
   align?: 'auto' | 'center';
+  live?: boolean;
   style?: StyleProp<TextStyle>;
   children?: ReactNode;
 };
@@ -27,8 +30,22 @@ export function toneColor(theme: Theme, tone: TextTone): string {
     onImage: theme.color.textOnImage,
     warm: theme.color.accentWarmText,
     link: theme.color.link,
+    accent: theme.color.accentBlue,
   };
   return colors[tone];
+}
+
+function brandWeight(theme: Theme, role: TextRole): number {
+  switch (role) {
+    case 'hero':
+    case 'cardTitle':
+    case 'time':
+      return prototypeValues.brandHeadingWeight;
+    case 'overline':
+      return theme.fontWeight.fwMedium;
+    default:
+      return theme.fontWeight.fwRegular;
+  }
 }
 
 function familyFor(
@@ -40,7 +57,7 @@ function familyFor(
 ) {
   const base = theme.text[role];
   if (family === 'brand') {
-    return uiFont(theme, theme.fontStack.fontBrand, weight ?? Number(base.fontWeight ?? 400), sample);
+    return uiFont(theme, theme.fontStack.fontBrand, weight ?? brandWeight(theme, role), sample);
   }
   if (weight === undefined) {
     const font = uiText(theme, base, sample);
@@ -55,6 +72,7 @@ export function ThemedText({
   family = 'core',
   weight,
   align = 'auto',
+  live = false,
   style,
   children,
   ...rest
@@ -64,6 +82,7 @@ export function ThemedText({
   const base = uiText(theme, theme.text[variant], sample);
   return (
     <Text
+      accessibilityLiveRegion={live ? 'polite' : undefined}
       {...rest}
       style={[
         {

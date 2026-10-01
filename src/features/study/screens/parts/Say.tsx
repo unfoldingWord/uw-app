@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { Text, type StyleProp, type TextStyle } from 'react-native';
-import { fontFor } from '@shared/fonts';
-import { useTheme, type TextRole, type Theme } from '@shared/theme';
+import { textSample, uiFont, uiText, useTheme, type TextRole, type Theme } from '@shared/theme';
 
 export type Tone = 'title' | 'body' | 'muted' | 'dim' | 'faint' | 'link' | 'warm';
 
@@ -40,10 +39,21 @@ function weightOf(theme: Theme, weight: Weight): number {
   return weights[weight];
 }
 
-export function roleStyle(theme: Theme, role: TextRole, weight?: Weight): TextStyle {
-  const base = theme.text[role];
-  const font = weight === undefined ? undefined : fontFor(theme.fontStack.fontCore, weightOf(theme, weight));
-  return font === undefined ? base : { ...base, fontWeight: undefined, ...font };
+export function roleStyle(
+  theme: Theme,
+  role: TextRole,
+  weight: Weight | undefined,
+  sample: string | undefined,
+): TextStyle {
+  const base = uiText(theme, theme.text[role], sample);
+  if (weight === undefined) {
+    return base;
+  }
+  return {
+    ...base,
+    fontWeight: undefined,
+    ...uiFont(theme, theme.fontStack.fontCore, weightOf(theme, weight), sample),
+  };
 }
 
 export function Say({
@@ -62,7 +72,7 @@ export function Say({
       selectable={selectable}
       numberOfLines={lines}
       accessibilityLiveRegion={live ? 'polite' : undefined}
-      style={[roleStyle(theme, role, weight), { color: toneColor(theme, tone) }, style]}
+      style={[roleStyle(theme, role, weight, textSample(children)), { color: toneColor(theme, tone) }, style]}
     >
       {children}
     </Text>
