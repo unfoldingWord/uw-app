@@ -376,6 +376,12 @@ export const id: LocaleTable = {
   'privacy.count.impactStoryOpens': 'Berapa kisah dampak yang dibuka',
   'privacy.dropped':
     'Jika hitungan tidak bisa dikirim, hitungan itu dibuang dan tidak ada yang berubah bagi Anda.',
+  'privacy.summary.sending':
+    'Hanya hitungan di bawah ini yang keluar dari ponsel ini tanpa Anda memilih untuk mengirimnya.',
+  'privacy.counts.sending':
+    'Aplikasi hanya menghitung angka-angka ini, di ponsel ini, dan hanya mengirim angka ini, satu kelompok sehari saat Anda sedang online.',
+  'privacy.sending.later':
+    'Jika satu kelompok tidak dapat dikirim, kelompok itu menunggu hari berikutnya, dan tidak ada yang berubah bagi Anda.',
   'privacy.never':
     'Aplikasi tidak pernah meminta lokasi, kontak, atau akun Anda, dan tidak memakai analitik pihak ketiga.',
   'privacy.local':
@@ -470,13 +476,15 @@ export const id: LocaleTable = {
   'study.frame.picture': 'Gambar untuk bingkai {number}',
   'transfer.app.ready': 'Aplikasi sudah sampai di ponsel ini ({size}) dan siap dipasang.',
   'transfer.network': 'Hubungkan kedua ponsel ke Wi-Fi atau hotspot yang sama terlebih dahulu.',
+  'transfer.localNetwork.prompt':
+    'Aplikasi mencari ponsel lain di Wi-Fi atau hotspot Anda hanya saat Anda mengirim atau menerima.',
   'transfer.address': 'Jika ponsel lain tidak menemukan ponsel ini, ketik {address} di sana.',
   'transfer.address.qr': 'Kode gambar untuk {address}. Pindai dengan kamera di ponsel lain.',
   'transfer.typed': 'Ketik alamat',
   'transfer.typed.address': 'Alamat dari ponsel lain',
   'transfer.typed.code': 'Kode dari ponsel lain',
   'transfer.typed.connect': 'Hubungkan',
-  'transfer.typed.invalid': 'Ketik alamat dan kode empat angka persis seperti yang ditampilkan ponsel lain.',
+  'transfer.typed.invalid': 'Ketik alamat dan kode enam angka persis seperti yang ditampilkan ponsel lain.',
   'transfer.app.install': 'Pasang aplikasi',
   'transfer.app.install.opened': 'Penginstal sudah terbuka. Ikuti langkahnya sampai selesai.',
   'transfer.app.install.unsupported':

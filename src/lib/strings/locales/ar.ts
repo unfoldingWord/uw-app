@@ -465,6 +465,10 @@ export const ar: LocaleTable = {
   'privacy.count.invitationTaps': 'عدد مرات لمس دعوة الشراكة',
   'privacy.count.impactStoryOpens': 'عدد قصص الأثر التي فُتحت',
   'privacy.dropped': 'إذا تعذر إرسال الأعداد فإنها تُهمل، ولا يتغير شيء بالنسبة لك.',
+  'privacy.summary.sending': 'الأعداد أدناه فقط تغادر هذا الهاتف دون أن تختار إرسالها.',
+  'privacy.counts.sending':
+    'يعدّ التطبيق هذه الأرقام فقط، على هذا الهاتف، ويرسلها وحدها، دفعةً واحدة في اليوم عندما تكون متصلًا.',
+  'privacy.sending.later': 'إن تعذّر إرسال دفعة، فإنها تنتظر اليوم التالي، ولا يتغير شيء بالنسبة إليك.',
   'privacy.never': 'لا يطلب التطبيق أبدًا موقعك أو جهات اتصالك أو حسابًا، ولا يستخدم أدوات تحليل خارجية.',
   'privacy.local': 'تبقى الأسماء والمجموعات والملاحظات والتقدم على هذا الهاتف، ما لم ترسلها أو تشاركها.',
   'privacy.backup':
@@ -550,13 +554,15 @@ export const ar: LocaleTable = {
   'study.frame.picture': 'صورة المشهد {number}',
   'transfer.app.ready': 'وصل التطبيق إلى هذا الهاتف ({size}) وهو جاهز للتثبيت.',
   'transfer.network': 'صِل الهاتفين أولًا بشبكة Wi-Fi نفسها أو نقطة الاتصال نفسها.',
+  'transfer.localNetwork.prompt':
+    'يبحث التطبيق عن الهاتف الآخر على شبكة Wi-Fi أو نقطة الاتصال لديك فقط أثناء الإرسال أو الاستلام.',
   'transfer.address': 'إن لم يجد الهاتف الآخر هذا الهاتف، فاكتب {address} هناك.',
   'transfer.address.qr': 'رمز مصوّر للعنوان {address}. امسحه بكاميرا الهاتف الآخر.',
   'transfer.typed': 'اكتب عنوانًا',
   'transfer.typed.address': 'العنوان من الهاتف الآخر',
   'transfer.typed.code': 'الرمز من الهاتف الآخر',
   'transfer.typed.connect': 'اتصل',
-  'transfer.typed.invalid': 'اكتب العنوان والرمز المكوّن من أربعة أرقام كما يعرضهما الهاتف الآخر.',
+  'transfer.typed.invalid': 'اكتب العنوان والرمز المكوّن من ستة أرقام كما يعرضهما الهاتف الآخر.',
   'transfer.app.install': 'ثبّت التطبيق',
   'transfer.app.install.opened': 'المثبّت مفتوح. اتبع خطواته حتى النهاية.',
   'transfer.app.install.unsupported':

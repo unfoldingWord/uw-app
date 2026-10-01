@@ -40,6 +40,7 @@ export type FailureCode = (typeof failureCodes)[number];
 
 export const failureSteps = [
   'start',
+  'backup',
   'catalog',
   'install',
   'peer',
@@ -53,6 +54,7 @@ export const failureSteps = [
   'share',
   'audio',
   'impact-stories',
+  'telemetry',
 ] as const;
 
 export type FailureStep = (typeof failureSteps)[number];

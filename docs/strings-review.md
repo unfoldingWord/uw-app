@@ -74,7 +74,7 @@ release gate is `releaseGate` in `src/lib/strings/locales.ts` (`reviewed`).
   placeholder until comms supplies the website's security note (`docs/impact-stories.md`); a story that carries
   its own note shows that note instead.
 - **Drafted with the Transfer, Share and diagnostics services.** `transfer.code`, `transfer.code.hint` and
-  `transfer.nothing`. The code is the four digits both phones show while they pair; the word for it should be
+  `transfer.nothing`. The code is the six digits both phones show while they pair (four until v1.1.0, issue #64); the word for it should be
   the one people use for a short number read aloud, not a password or a PIN.
 - **Drafted in T11.** Seven keys were added with the Study screens and drafted in every locale at once:
   `study.helps.showResponse`, `study.helps.hideResponse`, `study.noLanguage`, `study.noLanguage.action`,
@@ -210,3 +210,18 @@ Dates are formatted by the screen layer with the platform's date formatting, and
   hand-off on Android. "Installer" is the system screen that installs an app; it must not read as a separate
   program the leader has to find.
 - Drafted by an AI agent in fifteen locales; none reviewed.
+
+## Added with the v1.1.0 transport follow-ups (issue #64)
+
+- `transfer.localNetwork.prompt`: the sentence iOS shows in its own local network prompt the first time a
+  transfer starts. It is not shown by any screen: `app.config.ts` puts the English value in Info.plist, and
+  `plugins/system-prompts/index.ts` writes it into `InfoPlist.strings` for English and each signed-off locale
+  through Expo's `locales` config, so a drafted locale reaches the prompt only once it is signed off. iOS shows
+  it in a system dialog beside the app's name; keep it one plain sentence that says when the app looks and
+  that it looks only on the local network.
+- `transfer.typed.invalid` now says six-digit: the pairing code grew from four digits to six.
+- Drafted by an AI agent in fifteen locales; none reviewed.
+- `privacy.summary.sending`, `privacy.counts.sending` and `privacy.sending.later` (issue #52): the privacy
+  screen's summary, intro and note once a telemetry endpoint is set and the app sends its counts. Until then the
+  screen keeps `privacy.summary`, `privacy.counts` and `privacy.dropped`, which say nothing is sent yet. "Batch"
+  is one small bundle of numbers sent once a day; it must not read as a file or a report about the leader.

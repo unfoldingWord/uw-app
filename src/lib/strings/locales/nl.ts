@@ -401,6 +401,12 @@ export const nl: LocaleTable = {
   'privacy.count.impactStoryOpens': 'Hoeveel verhalen van impact zijn geopend',
   'privacy.dropped':
     'Als de tellingen niet verstuurd kunnen worden, vervallen ze en verandert er voor jou niets.',
+  'privacy.summary.sending':
+    'Alleen de aantallen hieronder verlaten deze telefoon zonder dat je ervoor kiest ze te versturen.',
+  'privacy.counts.sending':
+    'De app telt alleen deze aantallen, op deze telefoon, en verstuurt alleen die, in één bundel per dag als je online bent.',
+  'privacy.sending.later':
+    'Als een bundel niet verstuurd kan worden, wacht hij tot de volgende dag, en voor jou verandert er niets.',
   'privacy.never':
     'De app vraagt nooit om je locatie, je contacten of een account, en gebruikt geen analyse van derden.',
   'privacy.local':
@@ -497,13 +503,15 @@ export const nl: LocaleTable = {
   'study.frame.picture': 'Afbeelding bij beeld {number}',
   'transfer.app.ready': 'De app staat nu op deze telefoon ({size}) en is klaar om te installeren.',
   'transfer.network': 'Zet beide telefoons eerst op hetzelfde wifi-netwerk of dezelfde hotspot.',
+  'transfer.localNetwork.prompt':
+    'De app zoekt de andere telefoon op je wifi-netwerk of hotspot alleen terwijl je verstuurt of ontvangt.',
   'transfer.address': 'Vindt de andere telefoon deze niet, typ daar dan {address}.',
   'transfer.address.qr': 'Beeldcode voor {address}. Scan hem met de camera van de andere telefoon.',
   'transfer.typed': 'Een adres typen',
   'transfer.typed.address': 'Adres van de andere telefoon',
   'transfer.typed.code': 'Code van de andere telefoon',
   'transfer.typed.connect': 'Verbinden',
-  'transfer.typed.invalid': 'Typ het adres en de viercijferige code zoals de andere telefoon ze toont.',
+  'transfer.typed.invalid': 'Typ het adres en de zescijferige code zoals de andere telefoon ze toont.',
   'transfer.app.install': 'De app installeren',
   'transfer.app.install.opened': 'Het installatieprogramma is open. Volg de stappen om af te ronden.',
   'transfer.app.install.unsupported':

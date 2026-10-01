@@ -40,6 +40,11 @@ export default scenario(
     const opened = await servicesOf(newcomer).transfer.installApp();
     assert.deepEqual(opened, { ok: true, message: 'The installer is open. Follow its steps to finish.' });
     assert.deepEqual(newcomer.adapters.transport.installs(), ['transfer/app/unfoldingword.apk']);
+    assert.equal(
+      newcomer.kernel.journal.read().at(-1)?.type,
+      'AppInstallerOpened',
+      'the journal records that the installer opened',
+    );
     assert.equal(servicesOf(newcomer).transfer.installLabel(), 'Install the app');
     await newcomer.restart();
     assert.ok((await newcomer.kernel.transfer.installApp()).ok, 'the package is still there after a restart');
@@ -53,6 +58,11 @@ export default scenario(
       'This copy of the app cannot open the installer. Get the app from its store instead.',
     );
     assert.equal(lastFailure(newcomer.kernel.journal.read()), 'transfer.unsupported');
+    assert.equal(
+      newcomer.kernel.journal.read().filter((entry) => entry.type === 'AppInstallerOpened').length,
+      2,
+      'a refused hand-off journals no opening',
+    );
 
     const iphone = world.device('iphone', { platform: 'ios' });
     await iphone.start();

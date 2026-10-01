@@ -395,6 +395,12 @@ export const ur: LocaleTable = {
   'privacy.count.invitationTaps': 'شراکت کی دعوت کو کتنی بار چھوا گیا',
   'privacy.count.impactStoryOpens': 'اثر کی کتنی کہانیاں کھولی گئیں',
   'privacy.dropped': 'اگر گنتیاں بھیجی نہ جا سکیں تو انہیں چھوڑ دیا جاتا ہے اور آپ کے لیے کچھ نہیں بدلتا۔',
+  'privacy.summary.sending':
+    'صرف نیچے دی گئی گنتیاں آپ کے بھیجنے کا انتخاب کیے بغیر اس فون سے باہر جاتی ہیں۔',
+  'privacy.counts.sending':
+    'ایپ صرف یہ اعداد اسی فون پر گنتی ہے، اور صرف یہی بھیجتی ہے، جب آپ آن لائن ہوں تو دن میں ایک بار ایک کھیپ میں۔',
+  'privacy.sending.later':
+    'اگر کوئی کھیپ نہ بھیجی جا سکے تو وہ اگلے دن کا انتظار کرتی ہے، اور آپ کے لیے کچھ نہیں بدلتا۔',
   'privacy.never':
     'ایپ کبھی آپ کا مقام، رابطے یا اکاؤنٹ نہیں مانگتی، اور کوئی بیرونی تجزیاتی نظام استعمال نہیں کرتی۔',
   'privacy.local': 'نام، گروپ، نوٹس اور پیش رفت اسی فون پر رہتے ہیں، جب تک آپ انہیں بھیجیں یا شیئر نہ کریں۔',
@@ -484,13 +490,15 @@ export const ur: LocaleTable = {
   'study.frame.picture': 'منظر {number} کی تصویر',
   'transfer.app.ready': 'ایپ اس فون پر آ گئی ہے ({size}) اور انسٹال کے لیے تیار ہے۔',
   'transfer.network': 'پہلے دونوں فون ایک ہی وائی فائی یا ہاٹ اسپاٹ سے جوڑیں۔',
+  'transfer.localNetwork.prompt':
+    'ایپ دوسرے فون کو آپ کے وائی فائی یا ہاٹ اسپاٹ پر صرف اسی وقت ڈھونڈتی ہے جب آپ بھیج یا وصول کر رہے ہوں۔',
   'transfer.address': 'اگر دوسرا فون اسے نہ ڈھونڈ سکے تو وہاں {address} لکھیں۔',
   'transfer.address.qr': '{address} کے لیے تصویری کوڈ۔ اسے دوسرے فون کے کیمرے سے اسکین کریں۔',
   'transfer.typed': 'پتہ لکھیں',
   'transfer.typed.address': 'دوسرے فون کا پتہ',
   'transfer.typed.code': 'دوسرے فون کا کوڈ',
   'transfer.typed.connect': 'جوڑیں',
-  'transfer.typed.invalid': 'پتہ اور چار ہندسوں کا کوڈ ویسے ہی لکھیں جیسے دوسرا فون دکھاتا ہے۔',
+  'transfer.typed.invalid': 'پتہ اور چھ ہندسوں کا کوڈ ویسے ہی لکھیں جیسے دوسرا فون دکھاتا ہے۔',
   'transfer.app.install': 'ایپ انسٹال کریں',
   'transfer.app.install.opened': 'انسٹالر کھلا ہے۔ مکمل کرنے کے لیے اس کے مراحل پر عمل کریں۔',
   'transfer.app.install.unsupported':

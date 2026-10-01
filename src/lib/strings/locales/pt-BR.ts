@@ -408,6 +408,11 @@ export const ptBR: LocaleTable = {
   'privacy.count.invitationTaps': 'Quantas vezes o convite de parceria foi tocado',
   'privacy.count.impactStoryOpens': 'Quantas histórias de impacto foram abertas',
   'privacy.dropped': 'Se as contagens não puderem ser enviadas, elas são descartadas e nada muda para você.',
+  'privacy.summary.sending': 'Só as contagens abaixo saem deste celular sem que você escolha enviá-las.',
+  'privacy.counts.sending':
+    'O aplicativo conta só estes números, neste celular, e envia só eles, em um lote por dia quando você está conectado.',
+  'privacy.sending.later':
+    'Se um lote não puder ser enviado, ele espera o dia seguinte, e nada muda para você.',
   'privacy.never':
     'O aplicativo nunca pede sua localização, seus contatos ou uma conta, e não usa análises de terceiros.',
   'privacy.local':
@@ -504,13 +509,15 @@ export const ptBR: LocaleTable = {
   'study.frame.picture': 'Imagem do quadro {number}',
   'transfer.app.ready': 'O aplicativo chegou a este celular ({size}) e está pronto para instalar.',
   'transfer.network': 'Primeiro conecte os dois celulares ao mesmo Wi-Fi ou roteador do celular.',
+  'transfer.localNetwork.prompt':
+    'O aplicativo procura o outro celular no seu Wi-Fi ou roteador do celular só enquanto você envia ou recebe.',
   'transfer.address': 'Se o outro celular não encontrar este, digite {address} nele.',
   'transfer.address.qr': 'Código em imagem para {address}. Leia com a câmera do outro celular.',
   'transfer.typed': 'Digitar um endereço',
   'transfer.typed.address': 'Endereço do outro celular',
   'transfer.typed.code': 'Código do outro celular',
   'transfer.typed.connect': 'Conectar',
-  'transfer.typed.invalid': 'Digite o endereço e o código de quatro dígitos como o outro celular mostra.',
+  'transfer.typed.invalid': 'Digite o endereço e o código de seis dígitos como o outro celular mostra.',
   'transfer.app.install': 'Instalar o aplicativo',
   'transfer.app.install.opened': 'O instalador está aberto. Siga as etapas para concluir.',
   'transfer.app.install.unsupported':

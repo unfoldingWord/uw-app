@@ -7,7 +7,14 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { createHomeService } from '@features/home/service';
 import { createOnboardingService } from '@features/onboarding/service';
 import { createSettingsService, type Appearance } from '@features/settings/service';
-import { createKernel, hostOf, isAllowedUrl, type Kernel } from '@lib/kernel';
+import {
+  createKernel,
+  createStartFaults,
+  hostOf,
+  isAllowedUrl,
+  telemetryEndpoint,
+  type Kernel,
+} from '@lib/kernel';
 import { reducedBlurByDefault } from '@platform/display';
 import { createPlatformLocale } from '@platform/locale';
 import { discoverMigrations } from '@platform/migrations';
@@ -19,10 +26,21 @@ import { BootFailure } from '@shared/ui';
 
 void preventAutoHideAsync().catch(() => false);
 
+const startFaults = createStartFaults();
+
 async function openKernel(): Promise<Kernel> {
-  const ports = createPlatformPorts({ permits: (url) => isAllowedUrl(url), hostOf });
-  const kernel = createKernel(ports, { migrations: discoverMigrations(), localeGate });
+  const ports = startFaults.capture(() =>
+    createPlatformPorts({ permits: (url) => isAllowedUrl(url), hostOf }),
+  );
+  const kernel = createKernel(ports, {
+    migrations: discoverMigrations(),
+    localeGate,
+    faults: startFaults.pending(),
+    ...(telemetryEndpoint === undefined ? {} : { telemetryEndpoint }),
+  });
   await kernel.start();
+  startFaults.clear();
+  void kernel.telemetry.send().catch(() => undefined);
   return kernel;
 }
 
@@ -80,7 +98,11 @@ function useResume(kernel: Kernel | undefined): void {
     }
     const subscription = AppState.addEventListener('change', (state) => {
       if (state === 'active') {
-        void kernel.resume().catch(() => false);
+        void kernel
+          .resume()
+          .catch(() => false)
+          .then(() => kernel.telemetry.send())
+          .catch(() => undefined);
       }
     });
     return () => subscription.remove();

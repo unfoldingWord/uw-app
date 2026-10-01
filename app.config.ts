@@ -1,5 +1,8 @@
 import type { ExpoConfig } from 'expo/config';
 import { withDataExtractionRules } from './plugins/data-extraction-rules/index.ts';
+import { collectedDataTypes } from './plugins/privacy-manifest/index.ts';
+import { localNetworkUsage, systemPromptLocales } from './plugins/system-prompts/index.ts';
+import { telemetryEndpoint } from './src/lib/network.ts';
 import { locales } from './src/lib/strings/locales.ts';
 
 const iosBundleIdentifier = 'com.unfoldingword.iosapp';
@@ -14,9 +17,6 @@ const brand = {
 const archiveTypes = ['application/zip', 'application/x-zip-compressed', 'application/octet-stream'];
 
 const transferService = '_uwapp._tcp';
-
-const localNetworkUsage =
-  'The app looks for the other phone on your Wi-Fi or hotspot only while you send or receive.';
 
 const installerBuild = process.env.UW_ANDROID_PACKAGE_INSTALLER === '1';
 
@@ -85,6 +85,7 @@ const config: ExpoConfig = {
   icon: './assets/icon.png',
   platforms: ['ios', 'android'],
   updates: { enabled: false },
+  locales: systemPromptLocales(),
   ios: {
     bundleIdentifier: iosBundleIdentifier,
     supportsTablet: false,
@@ -101,13 +102,13 @@ const config: ExpoConfig = {
         },
       ],
       NSAppTransportSecurity: { NSAllowsArbitraryLoads: false, NSAllowsLocalNetworking: true },
-      NSLocalNetworkUsageDescription: localNetworkUsage,
+      NSLocalNetworkUsageDescription: localNetworkUsage('en'),
       NSBonjourServices: [transferService],
     },
     privacyManifests: {
       NSPrivacyTracking: false,
       NSPrivacyTrackingDomains: [],
-      NSPrivacyCollectedDataTypes: [],
+      NSPrivacyCollectedDataTypes: collectedDataTypes(telemetryEndpoint),
       NSPrivacyAccessedAPITypes: [
         {
           NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults',

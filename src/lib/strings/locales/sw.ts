@@ -396,6 +396,12 @@ export const sw: LocaleTable = {
   'privacy.count.invitationTaps': 'Mara ngapi mwaliko wa ushirika umeguswa',
   'privacy.count.impactStoryOpens': 'Hadithi ngapi za matokeo zimefunguliwa',
   'privacy.dropped': 'Hesabu zisipoweza kutumwa, zinaachwa na hakuna kinachobadilika kwako.',
+  'privacy.summary.sending':
+    'Hesabu zilizo hapa chini pekee ndizo hutoka kwenye simu hii bila wewe kuchagua kuzituma.',
+  'privacy.counts.sending':
+    'Programu huhesabu namba hizi pekee, kwenye simu hii, na hutuma hizi pekee, kwa kundi moja kwa siku ukiwa mtandaoni.',
+  'privacy.sending.later':
+    'Kundi likishindwa kutumwa, husubiri siku inayofuata, na hakuna kinachobadilika kwako.',
   'privacy.never':
     'Programu haiombi kamwe mahali ulipo, anwani zako au akaunti, na haitumii uchambuzi wa watu wengine.',
   'privacy.local':
@@ -489,13 +495,15 @@ export const sw: LocaleTable = {
   'study.frame.picture': 'Mchoro wa picha ya {number}',
   'transfer.app.ready': 'Programu imefika kwenye simu hii ({size}) na iko tayari kusakinishwa.',
   'transfer.network': 'Kwanza unganisha simu zote mbili kwenye Wi-Fi au hotspot moja.',
+  'transfer.localNetwork.prompt':
+    'Programu hutafuta simu nyingine kwenye Wi-Fi au hotspot yako wakati tu unatuma au kupokea.',
   'transfer.address': 'Ikiwa simu nyingine haipati hii, andika {address} huko.',
   'transfer.address.qr': 'Msimbo wa picha wa {address}. Uchanganue kwa kamera ya simu nyingine.',
   'transfer.typed': 'Andika anwani',
   'transfer.typed.address': 'Anwani kutoka simu nyingine',
   'transfer.typed.code': 'Msimbo kutoka simu nyingine',
   'transfer.typed.connect': 'Unganisha',
-  'transfer.typed.invalid': 'Andika anwani na msimbo wa tarakimu nne kama simu nyingine inavyoonyesha.',
+  'transfer.typed.invalid': 'Andika anwani na msimbo wa tarakimu sita kama simu nyingine inavyoonyesha.',
   'transfer.app.install': 'Sakinisha programu',
   'transfer.app.install.opened': 'Kisakinishi kimefunguliwa. Fuata hatua zake ili kumaliza.',
   'transfer.app.install.unsupported':

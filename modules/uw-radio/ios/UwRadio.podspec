@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name           = 'UwRadio'
   s.version        = '1.0.0'
-  s.summary        = 'Bonjour discovery for phone-to-phone transfer in the unfoldingWord app'
+  s.summary        = 'Bonjour discovery through dns_sd for phone-to-phone transfer in the unfoldingWord app'
   s.description    = 'Publishes and browses the _uwapp._tcp service and reports the local IPv4 address'
   s.license        = 'MIT'
   s.author         = 'unfoldingWord'

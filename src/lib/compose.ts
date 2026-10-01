@@ -7,7 +7,8 @@ import {
   type EventType,
 } from './domain/events';
 import { failureCodeOf } from './domain/failures';
-import { allowlistedHttp } from './guard';
+import type { StartFault } from './faults';
+import { allowlistedHttp, sendPolicyFor, type SendPolicy } from './guard';
 import type { JournalEntry, JournalStats } from './journal/entry';
 import type { JournalBaseline, JournalExport } from './journal/export';
 import {
@@ -28,6 +29,8 @@ export type KernelOptions = {
   journalLimit?: number;
   tailSize?: number;
   resume?: JournalResume;
+  faults?: readonly StartFault[];
+  send?: SendPolicy;
 };
 
 export type JournalView = {
@@ -136,14 +139,14 @@ function mintLedger(module: string, ids: Ids): MintLedger {
   };
 }
 
-function modulePorts(ports: Ports, scope: Scope, ids: Ids): ModulePorts {
+function modulePorts(ports: Ports, scope: Scope, ids: Ids, send: SendPolicy): ModulePorts {
   return {
     clock: { dayOf: (at) => ports.clock.dayOf(at) },
     ids,
     files: scopedFiles(scope, ports.files),
     db: scopedDb(scope, ports.db),
     kv: scopedKv(scope, ports.kv),
-    http: scopedHttp(scope, allowlistedHttp(ports.http)),
+    http: scopedHttp(scope, allowlistedHttp(ports.http, send)),
     transport: ports.transport,
     audio: allowlistedAudio(ports.audio),
     shareSheet: ports.shareSheet,
@@ -162,6 +165,7 @@ export function composeKernel<M extends ModuleSet>(
   options: KernelOptions,
 ): ComposedKernel<M> {
   const owners = eventOwners(modules);
+  const send = options.send ?? sendPolicyFor(undefined);
   const instances = new Map<string, ModuleInstance<unknown>>();
   const checkpoints = new Map(Object.entries(modules).map(([name, module]) => [name, module.checkpoint]));
 
@@ -223,7 +227,7 @@ export function composeKernel<M extends ModuleSet>(
     instances.set(
       name,
       module.create({
-        ports: modulePorts(ports, scope, ledger.ids),
+        ports: modulePorts(ports, scope, ledger.ids, send),
         emit,
         events: (since) => journal.read(since),
         baseline,
@@ -285,6 +289,12 @@ export function composeKernel<M extends ModuleSet>(
             code: 'db.migration-failed',
             context: migrated.failed === undefined ? {} : { migration: migrated.failed },
           },
+        });
+      }
+      for (const fault of options.faults ?? []) {
+        await journal.append({
+          type: 'Failure',
+          payload: { code: fault.code, context: { step: fault.step } },
         });
       }
       for (const instance of instances.values()) {

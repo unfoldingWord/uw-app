@@ -33,12 +33,12 @@ export default scenario(
     }
 
     const offered = await startOffer(leader, { language: 'qaa' });
-    assert.match(offered.code, /^\d{4}$/);
+    assert.match(offered.code, /^\d{6}$/, 'the pairing code has six digits');
     assert.equal(typeof offered.address, 'string', 'the sender has an address to type or scan');
     const sending = leader.kernel.transfer.run(offered.transfer);
     const [peer] = await stranger.kernel.transfer.discover();
     assert.ok(peer);
-    const wrong = peer.code === '0000' ? '0001' : '0000';
+    const wrong = peer.code === '000000' ? '000001' : '000000';
     const refused = await stranger.kernel.transfer.connect({ ...peer, code: wrong });
     assert.equal(!refused.ok && refused.code, 'transfer.declined', 'a wrong code is declined');
     assert.equal(stranger.kernel.transfer.current(), undefined);
@@ -64,6 +64,11 @@ export default scenario(
     assert.ok(second.fallback.qr.length > 20);
     const mistyped = await servicesOf(stranger).transfer.connectTyped('nowhere', '12');
     assert.ok(!mistyped.ok && mistyped.message.startsWith('Type the address'), 'a mistyped entry says how');
+    const short = await servicesOf(stranger).transfer.connectTyped(
+      second.fallback.address,
+      second.code.slice(0, 4),
+    );
+    assert.ok(!short.ok && short.message.includes('six-digit'), 'a four-digit code is not enough');
     const pending = servicesOf(leader).transfer.send(second);
     const shown = await servicesOf(stranger).transfer.connectTyped(second.fallback.address, second.code);
     assert.ok(shown.ok, 'the typed fallback connects through the service');

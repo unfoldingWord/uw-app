@@ -150,6 +150,7 @@ describe('events (DX-1 nothing identifies the leader)', () => {
       'TransferProgressed',
       'TransferCompleted',
       'TransferFailed',
+      'AppInstallerOpened',
       'ShareSent',
       'ImportReceived',
       'InvitationShown',

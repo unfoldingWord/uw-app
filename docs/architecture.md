@@ -22,7 +22,7 @@ Each layer is legible without the one below it. A screen reads a feature service
 ## The kernel
 
 ```ts
-createKernel(ports: Ports, options: { migrations, journalLimit?, tailSize?, resume?, localeGate? }): Kernel
+createKernel(ports: Ports, options: { migrations, journalLimit?, tailSize?, resume?, localeGate?, faults?, telemetryEndpoint? }): Kernel
 
 Kernel = {
   telemetry, catalog, packs, corpus, formation, strings, preferences, bookmarks,
@@ -34,7 +34,7 @@ Kernel = {
 
 One composition root. The phone calls it once with platform adapters, from `app/_layout.tsx`. The sim calls it many times with memory adapters. Nothing else constructs a module. This is the single fact an agent needs to hold: everything the app can do is a call on the kernel, and everything the app has done is in its journal.
 
-The controls: `start()` runs the migrations, reads the journal and journals `AppOpened`; `resume()` journals `AppOpened` for a new day when the app returns to the foreground on a day that has none yet (PA-2 counts days of use), and does nothing otherwise; `snapshot()` folds every module; `redo(event)` replays one journaled event (DX-3). The options: `migrations` (discovered by reserved location, never listed), the journal's bound and tail size, a journal to resume, and `localeGate`, which is the release gate `reviewed` unless a caller passes `drafts` (the sim and the web render harness do, so the drafted locales run before a native speaker signs them off; issue #51).
+The controls: `start()` runs the migrations, reads the journal and journals `AppOpened`; `resume()` journals `AppOpened` for a new day when the app returns to the foreground on a day that has none yet (PA-2 counts days of use), and does nothing otherwise; `snapshot()` folds every module; `redo(event)` replays one journaled event (DX-3). The options: `migrations` (discovered by reserved location, never listed), the journal's bound and tail size, a journal to resume, and `localeGate`, which is the release gate `reviewed` unless a caller passes `drafts` (the sim and the web render harness do, so the drafted locales run before a native speaker signs them off; issue #51); and `faults`, the platform faults of boot attempts that failed before a kernel existed, which `start()` journals as `Failure` events with a code and a step, before `AppOpened` (`createStartFaults` in `src/lib/faults.ts`; the iCloud backup exclusion's fault carries the step `backup`; issue #64); and `telemetryEndpoint`, the one address the counts may be sent to, which the root layout passes from `telemetryEndpoint` in `src/lib/network.ts` (unset today, so nothing is sent; issue #52).
 
 ## Ports
 
@@ -47,7 +47,7 @@ Every port has exactly two adapters, platform and memory, so every seam is real.
 | Files | read, write, append, list, rename, remove, adopt an external file, free space, and `uriOf(path)`, the media address of a file | in-memory tree |
 | Db | SQL over the device database, with transactions | SQLite through an injected engine (ADR 0011) |
 | Kv | preferences: get, set, delete, keys | map |
-| Http | request and download with timeout, host allowlist, progress, cancel, offline signal | fixture responses, scripted outages |
+| Http | request and download with timeout, host allowlist, progress, cancel, offline signal; `POST` with a body only to the telemetry endpoint | fixture responses, scripted outages, the requests sent |
 | Transport | availability, advertise under a pairing code (with an address), discover, connect, a link of byte chunks, the Android app package and `install(path)` | a shared in-memory bus between sim devices |
 | Audio | `load(source)`, `play`, `pause`, `seek`, `status`, `unload` | scripted clock |
 | ShareSheet | hand a payload with provenance to the system | records payloads |
@@ -72,13 +72,13 @@ Each is a deep module: small interface, tests at the interface, internals free t
 
 **Formation.** `tracks(language)`, `session(track, n)`, `groups()`, `create(group)`, `rename`, `remove`, `activate`, `advance(group, step)`, `start`, `complete`, `note`, `saveNote`. A state machine over positions. Language fallback (plain stories when movements are absent, English movements alongside when asked) is decided here, once.
 
-**Transfer.** Sender: `offer(plan)` advertises under a short code, `run(transfer)` sends what the receiver accepts. Receiver: `discover()`, `connect(peer)` (or `connectAt(address, code)` for a typed or scanned address) sends the pairing code and shows the offer, `accept(selection)` receives and verifies every archive and returns a peer delivery (`PeerDelivery`) that hands Packs each archive as the file it was received into (`{ ok: true, path }`), never its bytes; then it is just `packs.install(fromPeer(delivery))`. Either side: `cancel()`, `current()`, `decline()`. On Android the receiver hands a received app package to the system installer with `installApp()`. A state machine over the Transport port, speaking a small versioned protocol (`src/lib/transfer/protocol.ts`). Carries burritos, and on Android the app package.
+**Transfer.** Sender: `offer(plan)` advertises under a short code, `run(transfer)` sends what the receiver accepts. Receiver: `discover()`, `connect(peer)` (or `connectAt(address, code)` for a typed or scanned address) sends the pairing code and shows the offer, `accept(selection)` receives and verifies every archive and returns a peer delivery (`PeerDelivery`) that hands Packs each archive as the file it was received into (`{ ok: true, path }`), never its bytes; then it is just `packs.install(fromPeer(delivery))`. Either side: `cancel()`, `current()`, `decline()`. On Android the receiver hands a received app package to the system installer with `installApp()`, and journals `AppInstallerOpened` once the installer is open. A state machine over the Transport port, speaking a small versioned protocol (`src/lib/transfer/protocol.ts`). Carries burritos, and on Android the app package.
 
 **Share.** `passage(passage)`, `story(story)`, `audio(clip)`, `journal(report)`, each with the locale for its words. Builds payloads with provenance and the link from content the corpus already returned, hands them to ShareSheet. `journal(report)` shares the diagnostics file; by default it leaves out what the leader read (the `reference`, `article` and `story` fields of the opening events, and bookmarks), keeping every event, unless the leader turns on "Include what I read" for that one share (issue #20, `replay.md`).
 
 **Strings.** `t(key, locale, params)`, `plural(key, n, locale)`, `direction(locale)`, `resolveLocale(tags)`, `words(locale)`, `completeness()`. The one string table. A sentence a module produces is a code; a screen words it. Only the locales the locale gate admits are offered.
 
-**Telemetry.** `counts()`, `leaving()`, `daysOfUse()`. Folds over events; `leaving()` is exactly the PRD 9 list. v1.0.0 counts on the phone and sends nothing (ADR 0012).
+**Telemetry.** `counts()`, `leaving()`, `daysOfUse()`, `sending()`, `send()`. Folds over events; `leaving()` is exactly the PRD 9 list. `send()` posts one batch a day when online, the counts no earlier batch carried, to the telemetry endpoint and nowhere else, and journals `TelemetrySent` or a `Failure`; with no endpoint set it makes no request (issue #52, `docs/proposals/2026-09-30-telemetry-sender.md`). v1.0.0 sent nothing (ADR 0012).
 
 **Preferences, Bookmarks, Partners.** The preference-shaped owners (ADR 0007). `preferences` owns the closed list of preference keys and the last passage per language (`get`, `set`, `locale`, `contentLanguage`, `lastPassage`, `onChange`); `bookmarks` owns the `bookmarks` table (`list`, `find`, `add`, `remove`, `onChange`); `partners` owns the invitation schedule, the cached impact stories and their images (`invitation`, `shown`, `tap`, `dismiss`, `stories`, `open`, `refresh`, `give`). Each has an `owns` export, one writer, `redo` handlers and a snapshot that identifies no one.
 
@@ -103,7 +103,7 @@ Nothing it reads identifies the leader or the device. The glass primitives in `s
 
 ## Events are the spine
 
-Every module returns events; the kernel appends them to the journal. Modules never call each other's internals; where one needs to react to another, it reacts to an event. There are 43 (`eventSchemas` in `src/lib/domain/events.ts`), each with a replay class (`redo`, `follows` or `verbatim`, `replay.md`):
+Every module returns events; the kernel appends them to the journal. Modules never call each other's internals; where one needs to react to another, it reacts to an event. There are 45 (`eventSchemas` in `src/lib/domain/events.ts`), each with a replay class (`redo`, `follows` or `verbatim`, `replay.md`):
 
 ```
 AppOpened   Failure(code, context)
@@ -112,15 +112,15 @@ PackInstallStarted   PackInstallProgressed   PackInstalled   PackResourceFailed 
 PassageOpened   ArticleOpened   StoryOpened   SearchRun   IndexStarted   IndexBuilt   IndexDropped
 GroupCreated   GroupRenamed   GroupDeleted   GroupActivated   PositionChanged
 SessionStarted   MovementCompleted   SessionCompleted   SessionNoteSaved   LessonCompleted
-TransferOffered   TransferAccepted   TransferProgressed   TransferCompleted   TransferFailed
-ImportReceived   ShareSent   BookmarkAdded   BookmarkRemoved   PreferenceChanged
+TransferOffered   TransferAccepted   TransferProgressed   TransferCompleted   TransferFailed   AppInstallerOpened
+ImportReceived   ShareSent   BookmarkAdded   BookmarkRemoved   PreferenceChanged   TelemetrySent
 InvitationShown   InvitationTapped   InvitationDismissed
 ImpactStoryOpened   ImpactStoriesRefreshStarted   ImpactStoriesRefreshed
 ```
 
 Three things derive from the journal by pure folds, so none needs its own bookkeeping:
 
-- **Telemetry** is a count over events, computed on the device. Adding a count is adding a fold, and PRD section 9 lists which folds exist. v1.0.0 sends nothing (ADR 0012).
+- **Telemetry** is a count over events, computed on the device. Adding a count is adding a fold, and PRD section 9 lists which folds exist. What has been sent is a fold too, over `TelemetrySent`, so a batch is the difference. v1.0.0 sent nothing (ADR 0012); v1.1.0 sends only once an endpoint is set.
 - **Snapshot** is the fold of the modules plus the journal tail.
 - **Replay** is the journal fed back through the kernel on memory adapters. A diagnostics file that leaves out what the leader read still replays, except bookmarks and the last passage (the three opening events' fields are optional for that reason).
 
@@ -159,7 +159,7 @@ A rule that lives only in prose drifts. Each of these has a check in `verify` an
 | No code comments | lint rule over `src/`, `app/`, `sim/`, `tests/` |
 | One writer per durable value | the `owns` check walks every kernel module's and feature `store.ts`'s `owns` export and fails on any table, directory or key claimed twice, unowned, or written elsewhere |
 | Provenance on every content value | the Corpus types make it a required field; the `provenance` check renders every fixture value, finds the licence, and exempts titles in `words`, `academy` and `stories` as labels by name (`CONTEXT.md`, Label) |
-| No network except allowlisted hosts | the Http port refuses other hosts; a dependency scan fails on any package that opens a socket itself |
+| No network except allowlisted hosts | the Http port refuses other hosts and any `POST` but the one to the telemetry endpoint; a dependency scan fails on any package that opens a socket itself |
 | Tokens agree | `src/shared/theme` is compared to `design-system/tokens/*.css` by name and value |
 | Strings live in one table | the `strings` check: every locale lists every key, the copy follows the voice rules, and no literal copy in `app/`, `src/features/` or `src/shared/` bypasses the table; `locale-signoff`: the sign-off table and `localeSignOffs` agree |
 | Nothing unused | knip over files, dependencies, exports and types |

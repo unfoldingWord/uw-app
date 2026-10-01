@@ -66,7 +66,7 @@ describe('excludeFromBackup', () => {
       }),
     );
     expect(isPortError(error)).toBe(true);
-    expect(error).toMatchObject({ code: 'files.io' });
+    expect(error).toMatchObject({ code: 'files.io', step: 'backup' });
     expect(String(error)).toContain(`${databaseDirectory} could not be kept out of backups`);
   });
 
@@ -78,7 +78,7 @@ describe('excludeFromBackup', () => {
         directories: [deviceRoot, databaseDirectory],
       }),
     );
-    expect(error).toMatchObject({ code: 'files.io' });
+    expect(error).toMatchObject({ code: 'files.io', step: 'backup' });
     expect(String(error)).toContain(`${deviceRoot} still reads as included in backups`);
   });
 
@@ -92,7 +92,7 @@ describe('excludeFromBackup', () => {
         directories: [deviceRoot],
       }),
     );
-    expect(error).toMatchObject({ code: 'files.io' });
+    expect(error).toMatchObject({ code: 'files.io', step: 'backup' });
     expect(String(error)).toContain('BackupExclusion');
   });
 });

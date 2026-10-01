@@ -3,6 +3,42 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-30 B v1.1.0 transport and telemetry (#21, #64, #52)
+
+Node v22.22.2. Nothing ran on a phone, no Swift or Kotlin was compiled (no toolchain in this sandbox), and
+nothing reached git.door43.org (HTTP 403 from this sandbox).
+
+- Red first:
+  - #21: `SH-1.receiver-checks-space-before-chunks` failed with `'files.no-space'` where `'pack.no-space'` was
+    expected, after six `TransferProgressed` events had written chunks; green once the receiver compares free
+    space with the plan's total before the loop.
+  - #64 pairing code: `SH-1.receiver-proves-the-code` and `SH-1.transfer-ios-to-android-and-back` each failed
+    once they asserted six digits (the run printed only the failure count, not the assertion); green at six digits.
+  - #64 installer hand-off: `SH-2.receiver-opens-the-installer` failed with `'TransferCompleted'` where
+    `'AppInstallerOpened'` was expected as the last event; green once `installApp()` journals it.
+  - #64 start faults: `DX-1.b-start-fault-is-a-failure` failed to load (`@lib/faults` missing), and
+    `src/platform/backup.test.ts` failed three cases asserting `step: 'backup'`; both green after the change.
+  - #52: `SE-1.privacy-counts-leave-as-leaving` failed to load (`contentHosts` not exported), then on the
+    privacy summary (`'Nothing leaves this phone that you did not choose to send.'` where the sending copy was
+    expected); green once the service reads `telemetry.sending()`.
+  - Not observed red separately: `plugins/system-prompts/index.test.ts` was written with its module in one step.
+    `plugins/privacy-manifest/index.test.ts` failed to load before its module existed.
+- #64 local network prompt: `npx expo config --type prebuild` first failed with ERR_MODULE_NOT_FOUND for
+  `src/lib/strings/table` (the config loader is native ESM and the string tables import without extensions);
+  the plugin now loads them through `tsx/cjs/api`. `expo prebuild --platform ios --no-install` then wrote
+  `ios/unfoldingWord/Supporting/en.lproj/InfoPlist.strings` with the English sentence and added it to the Xcode
+  project; with no locale signed off, only English is written. The generated `ios/` was removed afterwards.
+- #52: `expo config` prints `NSPrivacyCollectedDataTypes: []` while `telemetryEndpoint` is unset.
+- `npm run verify` green: 768 tests in 81 files, 8 checks (strings: 463 keys in 16 locales), 61 scenarios, trace
+  51 Must (50 by scenario, SE-2 by test), 21 fixture burritos, both native bundles free of `sim/`, `scripts/`,
+  sql.js and react-native-web; the live contract step skipped offline (HTTP 403).
+- Not verified: the `dns_sd` discovery in `modules/uw-radio/ios/UwRadioModule.swift` (not compiled; the device CI
+  builds it after push), any transfer between phones, the installer hand-off on Android, the iOS local network
+  prompt in any language on an iPhone, the platform Http adapter's `POST` (no test in Node reaches `expo/fetch`),
+  and anything sent to a real endpoint (none is chosen). The prototype in `design-system/` still shows a
+  four-digit code and needs the matching change in Claude Design (AGENTS.md rule 4). The new strings are
+  AI-drafted (`docs/strings-review.md`).
+
 ## 2026-09-30 D documentation and consistency for v1.0.0 (#6, #7, #29, #30, #34, #43, #53, #55)
 
 Node v22.22.2; Chromium through playwright-core 1.56.1 for the shots. Nothing ran on a phone, and nothing here

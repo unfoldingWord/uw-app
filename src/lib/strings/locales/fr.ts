@@ -422,6 +422,12 @@ export const fr: LocaleTable = {
   'privacy.count.impactStoryOpens': 'Combien d’histoires d’impact ont été ouvertes',
   'privacy.dropped':
     'Si les comptes ne peuvent pas être envoyés, ils sont abandonnés et rien ne change pour vous.',
+  'privacy.summary.sending':
+    'Seuls les chiffres ci-dessous quittent ce téléphone sans que vous choisissiez de les envoyer.',
+  'privacy.counts.sending':
+    'L’application compte seulement ces chiffres, sur ce téléphone, et n’envoie qu’eux, en un lot par jour quand vous êtes connecté.',
+  'privacy.sending.later':
+    'Si un lot ne peut pas être envoyé, il attend le jour suivant, et rien ne change pour vous.',
   'privacy.never':
     'L’application ne demande jamais votre position, vos contacts ni un compte, et n’utilise aucune mesure d’audience externe.',
   'privacy.local':
@@ -521,6 +527,8 @@ export const fr: LocaleTable = {
   'transfer.app.ready':
     'L’application est arrivée sur ce téléphone ({size}) et elle est prête à être installée.',
   'transfer.network': 'Connectez d’abord les deux téléphones au même Wi-Fi ou partage de connexion.',
+  'transfer.localNetwork.prompt':
+    'L’application cherche l’autre téléphone sur votre Wi-Fi ou partage de connexion seulement pendant que vous envoyez ou recevez.',
   'transfer.address': 'Si l’autre téléphone ne trouve pas celui-ci, saisissez-y {address}.',
   'transfer.address.qr': 'Code image pour {address}. Scannez-le avec l’appareil photo de l’autre téléphone.',
   'transfer.typed': 'Saisir une adresse',
@@ -528,7 +536,7 @@ export const fr: LocaleTable = {
   'transfer.typed.code': 'Code de l’autre téléphone',
   'transfer.typed.connect': 'Se connecter',
   'transfer.typed.invalid':
-    'Saisissez l’adresse et le code à quatre chiffres tels que l’autre téléphone les affiche.',
+    'Saisissez l’adresse et le code à six chiffres tels que l’autre téléphone les affiche.',
   'transfer.app.install': 'Installer l’application',
   'transfer.app.install.opened': 'Le programme d’installation est ouvert. Suivez ses étapes pour terminer.',
   'transfer.app.install.unsupported':

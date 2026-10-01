@@ -393,6 +393,12 @@ export const fa: LocaleTable = {
   'privacy.count.invitationTaps': 'چند بار روی دعوت به شراکت زده شد',
   'privacy.count.impactStoryOpens': 'چند داستان اثرگذاری باز شد',
   'privacy.dropped': 'اگر شمارش‌ها فرستاده نشوند، کنار گذاشته می‌شوند و چیزی برای شما تغییر نمی‌کند.',
+  'privacy.summary.sending':
+    'فقط شمارش‌های زیر بدون اینکه شما ارسالشان را انتخاب کنید از این گوشی خارج می‌شوند.',
+  'privacy.counts.sending':
+    'برنامه فقط همین اعداد را روی همین گوشی می‌شمارد و فقط همین‌ها را می‌فرستد، روزی یک دسته وقتی آنلاین هستید.',
+  'privacy.sending.later':
+    'اگر دسته‌ای فرستاده نشود، تا روز بعد منتظر می‌ماند و برای شما چیزی تغییر نمی‌کند.',
   'privacy.never':
     'برنامه هرگز موقعیت، مخاطبان یا حساب کاربری شما را نمی‌خواهد و از تحلیل‌گر بیرونی استفاده نمی‌کند.',
   'privacy.local':
@@ -484,13 +490,15 @@ export const fa: LocaleTable = {
   'study.frame.picture': 'تصویر صحنهٔ {number}',
   'transfer.app.ready': 'برنامه به این گوشی رسید ({size}) و آمادهٔ نصب است.',
   'transfer.network': 'اول هر دو گوشی را به یک وای‌فای یا هات‌اسپات وصل کنید.',
+  'transfer.localNetwork.prompt':
+    'برنامه فقط هنگام ارسال یا دریافت، گوشی دیگر را در وای‌فای یا هات‌اسپات شما جستجو می‌کند.',
   'transfer.address': 'اگر گوشی دیگر این گوشی را پیدا نکرد، آنجا {address} را وارد کنید.',
   'transfer.address.qr': 'کد تصویری برای {address}. آن را با دوربین گوشی دیگر اسکن کنید.',
   'transfer.typed': 'وارد کردن نشانی',
   'transfer.typed.address': 'نشانی گوشی دیگر',
   'transfer.typed.code': 'کد گوشی دیگر',
   'transfer.typed.connect': 'اتصال',
-  'transfer.typed.invalid': 'نشانی و کد چهاررقمی را همان‌طور که گوشی دیگر نشان می‌دهد وارد کنید.',
+  'transfer.typed.invalid': 'نشانی و کد شش‌رقمی را همان‌طور که گوشی دیگر نشان می‌دهد وارد کنید.',
   'transfer.app.install': 'نصب برنامه',
   'transfer.app.install.opened': 'نصب‌کننده باز است. برای پایان، مراحل آن را دنبال کنید.',
   'transfer.app.install.unsupported':

@@ -117,7 +117,14 @@ with no `AppOpened` yet; a restart in replay journals the same event at the same
   install would take the transfer's id. The Transfer snapshot shows the last result, folded from the
   Transfer events it observes, so it replays too. The app package an Android phone received is not in the
   journal: its `receivedApp` fact comes from the file in `transfer/app/`, which a replay does not have, and
-  the replay names that divergence in the snapshot.
+  the replay names that divergence in the snapshot. `AppInstallerOpened`, journaled when the system installer
+  opens on that package, is `verbatim` and replays as recorded.
+- **A batch of counts.** `TelemetrySent` is `verbatim`: replay appends it as recorded, so what was sent folds
+  the same way, and a replay device has no telemetry endpoint, so it never sends.
+- **A platform fault at boot.** A fault the platform raised before any kernel existed, such as the iCloud backup
+  exclusion failing closed, is journaled by the next kernel that starts as a `Failure` before `AppOpened`
+  (`KernelOptions.faults`). Replay restarts the device on memory adapters, which raise no such fault, so the
+  replay names that `Failure` as its first divergence, as it does a failed migration.
 - **A share.** `ShareSent` is `verbatim` and names the kind and the language, never the text. The journal
   file a leader shares (`diagnostics/journal.json`, DX-2) is a journal export with the device snapshot beside
   it under `snapshot` and a `reading` field, so `npm run replay` reads it as it is.

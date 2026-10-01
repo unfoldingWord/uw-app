@@ -373,6 +373,11 @@ export const vi: LocaleTable = {
   'privacy.count.invitationTaps': 'Số lần lời mời đồng hành được chạm',
   'privacy.count.impactStoryOpens': 'Số câu chuyện tác động đã được mở',
   'privacy.dropped': 'Nếu không gửi được, các con số sẽ bị bỏ qua và không có gì thay đổi với bạn.',
+  'privacy.summary.sending': 'Chỉ các số đếm dưới đây rời khỏi điện thoại này mà bạn không cần chọn gửi.',
+  'privacy.counts.sending':
+    'Ứng dụng chỉ đếm những con số này, trên điện thoại này, và chỉ gửi chúng, mỗi ngày một đợt khi bạn có mạng.',
+  'privacy.sending.later':
+    'Nếu một đợt không gửi được, nó sẽ chờ đến ngày hôm sau, và không có gì thay đổi với bạn.',
   'privacy.never':
     'Ứng dụng không bao giờ hỏi vị trí, danh bạ hay tài khoản của bạn, và không dùng công cụ phân tích của bên thứ ba.',
   'privacy.local':
@@ -461,13 +466,15 @@ export const vi: LocaleTable = {
   'study.frame.picture': 'Hình cho khung {number}',
   'transfer.app.ready': 'Ứng dụng đã đến điện thoại này ({size}) và sẵn sàng để cài đặt.',
   'transfer.network': 'Trước tiên hãy kết nối cả hai điện thoại vào cùng một Wi-Fi hoặc điểm phát sóng.',
+  'transfer.localNetwork.prompt':
+    'Ứng dụng chỉ tìm điện thoại kia trên Wi-Fi hoặc điểm phát sóng của bạn khi bạn đang gửi hoặc nhận.',
   'transfer.address': 'Nếu điện thoại kia không tìm thấy máy này, hãy nhập {address} ở đó.',
   'transfer.address.qr': 'Mã hình cho {address}. Hãy quét bằng máy ảnh của điện thoại kia.',
   'transfer.typed': 'Nhập địa chỉ',
   'transfer.typed.address': 'Địa chỉ từ điện thoại kia',
   'transfer.typed.code': 'Mã từ điện thoại kia',
   'transfer.typed.connect': 'Kết nối',
-  'transfer.typed.invalid': 'Hãy nhập địa chỉ và mã bốn chữ số đúng như điện thoại kia hiển thị.',
+  'transfer.typed.invalid': 'Hãy nhập địa chỉ và mã sáu chữ số đúng như điện thoại kia hiển thị.',
   'transfer.app.install': 'Cài đặt ứng dụng',
   'transfer.app.install.opened': 'Trình cài đặt đang mở. Hãy làm theo các bước để hoàn tất.',
   'transfer.app.install.unsupported':

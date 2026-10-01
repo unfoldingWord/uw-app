@@ -89,6 +89,13 @@ const installedBurritoSpec = {
   max: maximumPackBurritos,
 } as const;
 
+export const maximumBatchLanguages = 64;
+
+const batchLanguagesSpec = {
+  list: { language: 'language', count: 'count' },
+  max: maximumBatchLanguages,
+} as const;
+
 export const eventSchemas = {
   AppOpened: { replay: 'redo', payload: { day: 'day' } },
   CatalogRefreshStarted: { replay: 'redo', payload: {} },
@@ -209,6 +216,20 @@ export const eventSchemas = {
     },
   },
   TransferFailed: { replay: 'verbatim', payload: { transfer: 'id', role: transferRoles, code: 'code' } },
+  AppInstallerOpened: { replay: 'verbatim', payload: {} },
+  TelemetrySent: {
+    replay: 'verbatim',
+    payload: {
+      day: 'day',
+      appOpens: 'count',
+      languagePackDownloads: batchLanguagesSpec,
+      transfersCompleted: 'count',
+      sharesSent: 'count',
+      formationSessionsStarted: batchLanguagesSpec,
+      invitationTaps: 'count',
+      impactStoryOpens: 'count',
+    },
+  },
   ImportReceived: { replay: 'verbatim', payload: { install: 'id' } },
   ShareSent: { replay: 'verbatim', payload: { kind: shareKinds, language: 'language?' } },
   BookmarkAdded: {

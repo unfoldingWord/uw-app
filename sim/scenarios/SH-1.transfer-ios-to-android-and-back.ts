@@ -72,7 +72,7 @@ export default scenario(
       assert.equal(item.bytes, sizes.get(item.resource), `the offer carries the size of ${item.resource}`);
     }
     assert.equal(first.offered.offer.app, undefined, 'an iPhone offers no app package');
-    assert.match(first.offered.code, /^\d{4}$/);
+    assert.match(first.offered.code, /^\d{6}$/);
     assert.ok(first.incoming.ok);
     assert.equal(first.incoming.ok && first.incoming.platform, 'ios');
     assert.ok(first.accepted.ok, first.accepted.ok ? '' : first.accepted.code);

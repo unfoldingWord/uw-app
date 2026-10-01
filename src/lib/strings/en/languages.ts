@@ -78,13 +78,15 @@ export const languages = {
   'share.payload.link': 'Get the app: {link}',
   'transfer.app.ready': 'The app arrived on this phone ({size}) and is ready to install.',
   'transfer.network': 'Put both phones on the same Wi-Fi or hotspot first.',
+  'transfer.localNetwork.prompt':
+    'The app looks for the other phone on your Wi-Fi or hotspot only while you send or receive.',
   'transfer.address': 'If the other phone does not find this one, type {address} there.',
   'transfer.address.qr': 'Picture code for {address}. Scan it with the camera on the other phone.',
   'transfer.typed': 'Type an address',
   'transfer.typed.address': 'Address from the other phone',
   'transfer.typed.code': 'Code from the other phone',
   'transfer.typed.connect': 'Connect',
-  'transfer.typed.invalid': 'Type the address and the four-digit code as the other phone shows them.',
+  'transfer.typed.invalid': 'Type the address and the six-digit code as the other phone shows them.',
   'transfer.app.install': 'Install the app',
   'transfer.app.install.opened': 'The installer is open. Follow its steps to finish.',
   'transfer.app.install.unsupported':

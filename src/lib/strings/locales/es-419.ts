@@ -409,6 +409,10 @@ export const es419: LocaleTable = {
   'privacy.count.invitationTaps': 'Cuántas veces se tocó la invitación a colaborar',
   'privacy.count.impactStoryOpens': 'Cuántas historias de impacto se abrieron',
   'privacy.dropped': 'Si los conteos no se pueden enviar, se descartan y nada cambia para ti.',
+  'privacy.summary.sending': 'Solo los conteos de abajo salen de este teléfono sin que tú elijas enviarlos.',
+  'privacy.counts.sending':
+    'La app cuenta solo estos números, en este teléfono, y envía solo estos, en un lote al día cuando tienes conexión.',
+  'privacy.sending.later': 'Si un lote no se puede enviar, espera al día siguiente, y nada cambia para ti.',
   'privacy.never':
     'La aplicación nunca pide tu ubicación, tus contactos ni una cuenta, y no usa análisis de terceros.',
   'privacy.local':
@@ -505,6 +509,8 @@ export const es419: LocaleTable = {
   'study.frame.picture': 'Imagen del cuadro {number}',
   'transfer.app.ready': 'La aplicación llegó a este teléfono ({size}) y está lista para instalar.',
   'transfer.network': 'Primero conecta los dos teléfonos a la misma red Wi-Fi o zona de conexión.',
+  'transfer.localNetwork.prompt':
+    'La app busca el otro teléfono en tu red Wi-Fi o zona de conexión solo mientras envías o recibes.',
   'transfer.address': 'Si el otro teléfono no encuentra este, escribe {address} allí.',
   'transfer.address.qr': 'Código en imagen para {address}. Escanéalo con la cámara del otro teléfono.',
   'transfer.typed': 'Escribir una dirección',
@@ -512,7 +518,7 @@ export const es419: LocaleTable = {
   'transfer.typed.code': 'Código del otro teléfono',
   'transfer.typed.connect': 'Conectar',
   'transfer.typed.invalid':
-    'Escribe la dirección y el código de cuatro dígitos tal como los muestra el otro teléfono.',
+    'Escribe la dirección y el código de seis dígitos tal como los muestra el otro teléfono.',
   'transfer.app.install': 'Instalar la aplicación',
   'transfer.app.install.opened': 'El instalador está abierto. Sigue sus pasos para terminar.',
   'transfer.app.install.unsupported':
