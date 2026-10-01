@@ -144,7 +144,7 @@ export type Transport = {
   install(path: string): Promise<void>;
 };
 
-export type AudioSource = { kind: 'file'; path: string } | { kind: 'url'; url: string };
+export type AudioSource = { kind: 'file'; path: string };
 
 export type AudioState = 'idle' | 'loading' | 'ready' | 'playing' | 'paused' | 'ended';
 

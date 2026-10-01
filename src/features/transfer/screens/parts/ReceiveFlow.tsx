@@ -4,7 +4,14 @@ import { failureCodeOf } from '@lib/domain/failures';
 import { GlassButton, GlassInput } from '@shared/glass';
 import { useTheme } from '@shared/theme';
 import { Card, Notice, Row, ScreenScaffold, ThemedText } from '@shared/ui';
-import type { IncomingView, PeerView, ReceiveResult, ResourceChoice, TransferService } from '../../service';
+import type {
+  IncomingView,
+  PeerView,
+  ReceiveResult,
+  ReplaceQuestion,
+  ResourceChoice,
+  TransferService,
+} from '../../service';
 import { PickRow } from './PickRow';
 import { ProgressCard } from './Progress';
 import { useStatus } from './useStatus';
@@ -19,7 +26,7 @@ type Stage =
   | { readonly kind: 'incoming'; readonly offer: Incoming }
   | { readonly kind: 'receiving'; readonly offer: Incoming }
   | { readonly kind: 'received'; readonly result: Received }
-  | { readonly kind: 'failed'; readonly message: string };
+  | { readonly kind: 'failed'; readonly message: string; readonly confirm?: ReplaceQuestion };
 
 function failureStage(service: TransferService, error: unknown): Stage {
   return { kind: 'failed', message: service.words().t(`failure.${failureCodeOf(error)}`) };
@@ -245,6 +252,15 @@ export function ReceiveFlow({ service, header, typed, onOpen, onDone }: ReceiveF
         resources: resources.map(({ publisher, resource }) => ({ publisher, resource })),
         app,
       });
+      setStage(result.ok ? { kind: 'received', result } : { kind: 'failed', ...result });
+    } catch (error) {
+      setStage(failureStage(service, error));
+    }
+  };
+
+  const replace = async () => {
+    try {
+      const result = await service.confirmReplace();
       setStage(result.ok ? { kind: 'received', result } : { kind: 'failed', message: result.message });
     } catch (error) {
       setStage(failureStage(service, error));
@@ -367,10 +383,31 @@ export function ReceiveFlow({ service, header, typed, onOpen, onDone }: ReceiveF
       return (
         <ScreenScaffold header={header}>
           <Card>
-            <Notice text={stage.message} />
-            <GlassButton variant="dark" full onPress={find}>
-              {words.t('common.retry')}
-            </GlassButton>
+            {stage.confirm === undefined ? (
+              <>
+                <Notice text={stage.message} />
+                <GlassButton variant="dark" full onPress={find}>
+                  {words.t('common.retry')}
+                </GlassButton>
+              </>
+            ) : (
+              <>
+                <Notice text={stage.confirm.question} />
+                <GlassButton variant="dark" full onPress={replace}>
+                  {stage.confirm.replace}
+                </GlassButton>
+                <GlassButton
+                  variant="quiet"
+                  full
+                  onPress={async () => {
+                    await service.keepInstalled();
+                    onDone();
+                  }}
+                >
+                  {stage.confirm.keep}
+                </GlassButton>
+              </>
+            )}
           </Card>
         </ScreenScaffold>
       );

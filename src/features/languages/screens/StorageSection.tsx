@@ -46,6 +46,7 @@ export function StorageSection({ version, rows, failures, onRemove }: StorageSec
           <Row
             key={pack.pack}
             title={label}
+            detail={languages.sourceOf(pack)}
             trailing={
               <GlassButton
                 size="sm"

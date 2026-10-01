@@ -59,12 +59,38 @@ describe('parseUsfm', () => {
     });
   });
 
-  it('drops footnotes, milestones and character markers, and keeps a verse bridge', () => {
+  it('keeps footnotes out of the text, drops milestones and character markers, and keeps a verse bridge', () => {
     const verses = parseUsfm(aligned).chapters.get(1) ?? [];
     expect(verses.map((verse) => [verse.verse, verse.through, verse.text])).toEqual([
       [1, undefined, 'Paul, a servant of God.'],
       [2, 3, 'In the hope of eternal life. A poetic line'],
     ]);
+  });
+
+  it('keeps each footnote on its verse as plain text, without its caller, origin reference or cross references', () => {
+    const matthew = parseUsfm(
+      String.raw`\id MAT
+\c 5
+\p
+\v 11 Blessed are you when people insult you and say all kinds of evil things against you \w lying|x-occurrence="1" x-occurrences="1"\w* because of me.\f + \fr 5:11 \ft A few manuscripts do not include \fqa lying\fqa*.\f*
+\v 12 Rejoice\x - \xo 5:12 \xt Luke 6:23\x* and be glad.\f + \ft Or: \fq be very glad\fq*.\f* \fe * \ft An endnote.\fe*
+\v 13 You are the salt of the earth.`,
+    );
+    const verses = matthew.chapters.get(5) ?? [];
+    expect(verses.map((verse) => [verse.verse, verse.text, verse.footnotes])).toEqual([
+      [
+        11,
+        'Blessed are you when people insult you and say all kinds of evil things against you lying because of me.',
+        ['A few manuscripts do not include lying.'],
+      ],
+      [12, 'Rejoice and be glad.', ['Or: be very glad.', 'An endnote.']],
+      [13, 'You are the salt of the earth.', undefined],
+    ]);
+  });
+
+  it('keeps the footnote of the aligned fixture verse and none on the next', () => {
+    const verses = parseUsfm(aligned).chapters.get(1) ?? [];
+    expect(verses.map((verse) => verse.footnotes)).toEqual([['A footnote that is not text.'], undefined]);
   });
 
   it('splits plain text into words with no alignment and starts each chapter afresh', () => {

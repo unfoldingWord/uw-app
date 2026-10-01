@@ -284,9 +284,6 @@ describe('what a module is handed (docs/replay.md rules 4 and 5, AGENTS.md rule 
     expect(await rejection(ports.kv.get('home.name'))).toBe('kernel.not-owned');
     await bench.adapters.kv.set('home.name', 'x');
     expect(await ports.kv.keys()).toEqual(['tenant.theme']);
-    expect(await rejection(ports.audio.load({ kind: 'url', url: 'https://tracker.example/a.mp3' }))).toBe(
-      'http.host-refused',
-    );
   });
 
   it('reads the table a statement writes', () => {

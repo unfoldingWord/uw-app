@@ -1,6 +1,5 @@
 import type { FailureCode } from './domain/failures';
-import { hostOf, isAllowedUrl } from './network';
-import type { Audio, Db, DbTransaction, Files, Http, Kv, PortError } from './ports';
+import type { Db, DbTransaction, Files, Http, Kv, PortError } from './ports';
 
 export type Scope = {
   module: string;
@@ -187,24 +186,5 @@ export function scopedHttp(scope: Scope, http: Http): Http {
       return http.download(request);
     },
     online: () => http.online(),
-  };
-}
-
-export function allowlistedAudio(audio: Audio): Audio {
-  return {
-    load: async (source) => {
-      if (source.kind === 'url' && !isAllowedUrl(source.url)) {
-        throw scopeError(
-          'http.host-refused',
-          `audio from ${hostOf(source.url) ?? 'an unknown host'} is refused`,
-        );
-      }
-      return audio.load(source);
-    },
-    play: () => audio.play(),
-    pause: () => audio.pause(),
-    seek: (positionMs) => audio.seek(positionMs),
-    status: () => audio.status(),
-    unload: () => audio.unload(),
   };
 }

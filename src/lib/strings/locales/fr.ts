@@ -29,6 +29,15 @@ export const fr: LocaleTable = {
   'common.bookmark.add': 'Garder pour plus tard',
   'common.bookmark.remove': 'Retirer des éléments gardés',
   'common.joined': '{first} · {second}',
+  'common.source.catalog': 'Depuis le catalogue',
+  'common.source.peer': 'Depuis un autre téléphone',
+  'common.source.file': 'Depuis un fichier',
+  'common.replace.file':
+    'Remplacer {resources}, téléchargé depuis le catalogue, par la copie de ce fichier ?',
+  'common.replace.peer':
+    'Remplacer {resources}, téléchargé depuis le catalogue, par la copie de l’autre téléphone ?',
+  'common.replace.confirm': 'Remplacer',
+  'common.replace.keep': 'Garder la copie du catalogue',
   'common.attribution': '{resource} · {publisher} · {version} · {licence}',
   'common.language.chip': 'Changer de langue, actuellement {language}',
   'common.theme.toggle': 'Changer de thème',
@@ -123,6 +132,7 @@ export const fr: LocaleTable = {
   'study.helps.noNotes': 'Pas de notes pour ce verset.',
   'study.helps.bookIntro': 'À propos de ce livre',
   'study.helps.chapterIntro': 'À propos du chapitre {chapter}',
+  'study.helps.footnote': 'Note de bas de page de {publisher}',
   'study.helps.noWordLinks': 'Pas de liens de mots pour ce verset.',
   'study.helps.noQuestions': 'Pas de questions pour ce verset.',
   'study.helps.notDownloaded': 'Les aides pour ce passage ne sont pas encore sur ce téléphone.',
@@ -504,6 +514,8 @@ export const fr: LocaleTable = {
     'Ces ressources appartiennent à des packs différents, alors envoyez un pack à la fois.',
   'failure.corpus.unreadable':
     'Ce pack n’a pas pu être ouvert, alors retirez-le, puis téléchargez-le à nouveau.',
+  'failure.pack.replace-unconfirmed':
+    'Cela remplacerait une ressource téléchargée depuis le catalogue, donc rien n’a été installé.',
   'failure.transfer.unavailable':
     'Le transfert à proximité n’est pas disponible sur ce téléphone pour le moment.',
   'failure.transfer.unsupported':

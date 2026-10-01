@@ -12,7 +12,7 @@ import { BookPicker } from './parts/BookPicker';
 import { Choices, type Choice } from './parts/Choices';
 import { failureText } from './parts/failure';
 import { ScreenFrame } from './parts/Frame';
-import { HelpsPanel, type HelpsTab } from './parts/HelpsPanel';
+import { HelpsPanel, helpsShare, type HelpsTab } from './parts/HelpsPanel';
 import {
   chapterOf,
   helpsAt,
@@ -312,5 +312,5 @@ export default function StudyScreen() {
 }
 
 const styles = StyleSheet.create({
-  fill: { flex: 1 },
+  fill: { flexGrow: 1, flexShrink: 1, flexBasis: helpsShare },
 });

@@ -37,7 +37,7 @@ type Step = { readonly failed?: FailureCode };
 const idle: PlayerStatus = Object.freeze({ state: 'idle' });
 
 export function clipOf(source: AudioSource): string {
-  return source.kind === 'file' ? source.path : source.url;
+  return source.path;
 }
 
 function segments(path: string): string[] {

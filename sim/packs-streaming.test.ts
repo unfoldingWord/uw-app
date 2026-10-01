@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { archiveReadBytes } from '@lib/burrito/unpack';
-import { languagePackId, originalPackId } from '@lib/domain/pack';
+import { imagePackId, languagePackId, originalPackId } from '@lib/domain/pack';
 import { archiveUrlOf } from '@lib/domain/release';
 import { readBurrito } from '@lib/packs/tree';
 import { validate } from '@lib/burrito/validate';
@@ -37,6 +37,43 @@ function watch(device: Awaited<ReturnType<typeof phone>>['device']): { traffic: 
 }
 
 describe('packs install by streaming (LA-2, LA-7)', () => {
+  it('builds the Image Pack reading the stories archive in bounded reads, and reports each picture (LA-3)', async () => {
+    const { device } = await phone();
+    await device.kernel.catalog.refresh();
+    const watched = watch(device);
+    const seen: string[] = [];
+    const whole: string[] = [];
+    const stopWhole = device.adapters.files.onRead((operation, path) => {
+      if (operation !== 'range') {
+        whole.push(path);
+      }
+    });
+    const stopProgress = device.adapters.files.onWrite((_operation, path) => {
+      if (path.endsWith('.jpg')) {
+        const [progress] = device.kernel.packs.installing();
+        seen.push(progress?.items === undefined ? 'none' : `${progress.items.done}/${progress.items.total}`);
+      }
+    });
+    const outcome = await device.kernel.packs.installFromCatalog(imagePackId);
+    stopProgress();
+    stopWhole();
+    watched.stop();
+    expect(outcome.ok, outcome.ok ? '' : outcome.code).toBe(true);
+    expect(watched.traffic.largestRead).toBeLessThanOrEqual(archiveReadBytes * 4);
+    expect(
+      whole.filter((path) => path.endsWith('.zip')),
+      'the stories archive is never read whole into memory',
+    ).toEqual([]);
+    expect(seen.length).toBeGreaterThan(1);
+    expect(
+      seen.every((item) => /^\d+\/\d+$/.test(item)),
+      seen.join(' '),
+    ).toBe(true);
+    const total = Number(seen[0]?.split('/')[1]);
+    expect(total).toBe(seen.length);
+    expect(device.kernel.packs.installing()).toEqual([]);
+  });
+
   it('unpacks a large burrito to disk in bounded reads and writes, and what lands validates', async () => {
     const { device } = await phone();
     const text = largeText('qaz_ult', 'qaz', ['PSA', 'ISA'], 24, 18);

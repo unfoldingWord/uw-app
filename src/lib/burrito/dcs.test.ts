@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { md5Hex, utf8 } from './files';
-import { admittedRows, pinnedRows, provisionalFlavors, type RowId } from './flavors';
+import { admittedRows, pinnedRows, unpinnedFlavors, type RowId } from './flavors';
 import { displayedLicence } from './licence';
 import { readProvenance, unrecordedTag } from './metadata';
 import { validate } from './validate';
@@ -251,7 +251,7 @@ describe('the release shapes observed from go-rc2sb v0.5.0 (CI run 36618141715)'
   });
 
   it('names the formation row by the catalog flavor, still provisional', () => {
-    expect(provisionalFlavors.formation).toEqual({
+    expect(unpinnedFlavors.formation).toEqual({
       flavorType: 'peripheral',
       flavor: 'x-OBSTheologicalFormation',
     });

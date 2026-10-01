@@ -12,15 +12,22 @@ const readingFields: Partial<Record<EventType, readonly string[]>> = {
   BookmarkAdded: ['reference', 'article', 'story'],
 };
 
+const dayMs = 24 * 60 * 60 * 1000;
+
+function utcDayOf(at: number): number {
+  return at - (((at % dayMs) + dayMs) % dayMs);
+}
+
 function withoutFields(entry: JournalEntry): JournalEntry {
   const fields = readingFields[entry.type];
+  const at = utcDayOf(entry.at);
   if (fields === undefined) {
-    return entry;
+    return { ...entry, at };
   }
   const payload = Object.fromEntries(
     Object.entries(entry.payload).filter(([field]) => !fields.includes(field)),
   );
-  return { ...entry, payload } as JournalEntry;
+  return { ...entry, at, payload } as JournalEntry;
 }
 
 type JsonRecord = { readonly [key: string]: JsonValue | undefined };

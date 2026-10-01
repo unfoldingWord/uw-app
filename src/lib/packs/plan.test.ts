@@ -122,6 +122,7 @@ describe('what the default pack still needs (#12)', () => {
           root: 'packs/language/en/x/Other/en_ult',
           row: 'text',
           bytes: 1,
+          source: 'file',
           provenance: {
             publisher: 'Other',
             resource: 'en_ult',

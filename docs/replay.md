@@ -13,6 +13,19 @@ never goes backwards when old events leave it. Today only Telemetry declares one
 set of days of use. `parseJournalExport` in `src/lib/journal/export.ts` is the
 only reader, and it validates every event against its schema.
 
+**Time and the time zone.** No event carries the time zone, the locale or the region (DX-2 asserts their strings
+are absent), but two facts together narrow the zone: `AppOpened.day` is the local calendar day and every `at` is
+UTC milliseconds. An open at 23:30 local whose `at` falls on the next UTC day, or a `resume()` open (journaled only
+on a new local day) a few minutes after the previous event, places local midnight within minutes and so the UTC
+offset within an hour, a band of longitude. Rounding `at` to the minute or the hour does not help, because offsets
+are whole or half hours and local midnight falls on an hour boundary; dropping `day` does not help either,
+because the resume opens and the days of use in the snapshot still mark each new local day. So the default
+diagnostics file, the one that leaves reading out, keeps every `at` only to the start of its UTC day (00:00 UTC),
+in the events and in the snapshot's journal tail, and keeps `AppOpened.day` so replay counts the same days of use
+(issue #24). What remains: an open whose local day differs from its UTC day says whether the phone is east or west
+of UTC, and how often that happens hints how far; nothing in the file gives the hour. A file shared with "Include
+what I read" on is the whole journal, with exact times.
+
 `npm run replay -- <journal.json>` (in `sim/replay.ts`) builds a fresh sim device with the same journal limit,
 starts its journal at the recorded first `seq` with the recorded `dropped` count and `baseline`, walks the
 recorded events in order, and asks the kernel to redo each one. It prints the rebuilt snapshot and
@@ -90,7 +103,7 @@ with no `AppOpened` yet; a restart in replay journals the same event at the same
 7. **A module writes only what it owns.** The `db`, `files`, `kv` and `http.download` a module is handed
    refuse, with code `kernel.not-owned`, a statement that writes a table, a path outside a directory, or a
    preference key that is not in its `owns`. Reads are not scoped: a module reads another's values through
-   the owner's exported functions. Audio from a URL off the host allowlist is refused.
+   the owner's exported functions. Audio plays only from a file under `packs/` (download-only, issue #53).
 8. **Snapshots are pure and identify no one.** `snapshot()` returns JSON built from module state only. It leaves
    the device with the journal (DX-2), so it carries no names, notes, typed text, locale, region or time zone.
 
@@ -129,12 +142,14 @@ with no `AppOpened` yet; a restart in replay journals the same event at the same
   file a leader shares (`diagnostics/journal.json`, DX-2) is a journal export with the device snapshot beside
   it under `snapshot` and a `reading` field, so `npm run replay` reads it as it is.
 - **What a leader read, unless they include it.** By default the shared file leaves reading out
-  (`reading: "left-out"`, `leaveOutReading` in `src/lib/share/reading.ts`): every event stays, with its time,
-  but `PassageOpened`, `ArticleOpened`, `StoryOpened` and `BookmarkAdded` lose their `reference`, `article`
+  (`reading: "left-out"`, `leaveOutReading` in `src/lib/share/reading.ts`): every event stays, with its time
+  kept only to its UTC day (above), but `PassageOpened`, `ArticleOpened`, `StoryOpened` and `BookmarkAdded` lose their `reference`, `article`
   and `story` fields, the snapshot counts the bookmarks instead of listing them, and the last passage per
   language is gone. Those three fields are optional in the event table so the file still parses. Such a file
   replays without error and rebuilds everything else: packs, corpus, groups and their positions, preferences
-  other than the last passage, telemetry folds, transfers and failures. It cannot rebuild a bookmark or the
+  other than the last passage, telemetry folds and days of use (each `AppOpened` plays back its recorded day,
+  matched by its place in the journal, since several may share one day-rounded `at`), transfers and failures.
+  The rebuilt journal carries the file's day-rounded times, not the phone's. It cannot rebuild a bookmark or the
   last passage read, so the replayed device has no bookmarks, a replay names each left-out `BookmarkAdded` as
   a divergence, and its id is never played back (`readingLeftOut`, used by `mintedIds`), so the ids of later
   commands still line up. A report that needs a bookmark or the reading position to reproduce asks the

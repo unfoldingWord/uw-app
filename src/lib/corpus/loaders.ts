@@ -14,6 +14,7 @@ import {
   type AudioEntry,
 } from './layout';
 import type { Library } from './library';
+import type { BurritoReader } from './source';
 import { academyArticleId } from './links';
 import { parseStory, type ParsedStory } from './stories';
 import type { Entry } from './tables';
@@ -38,17 +39,35 @@ export type RawArticle = {
 
 export type RawMovements = ReadonlyMap<MovementSectionId, string>;
 
+async function readTextBook(reader: BurritoReader, book: string): Promise<UsfmBook | undefined> {
+  const key = bookKeys(reader, isUsfm).get(book);
+  return key === undefined ? undefined : parseUsfm(await reader.read(key));
+}
+
 export function textBook(library: Library, entry: Entry, book: string): Promise<UsfmBook | undefined> {
-  return library.cached(entry, `usfm:${book}`, async (reader) => {
-    const key = bookKeys(reader, isUsfm).get(book);
-    return key === undefined ? undefined : parseUsfm(await reader.read(key));
-  });
+  return library.cached(entry, `usfm:${book}`, (reader) => readTextBook(reader, book));
+}
+
+export async function textBookOnce(
+  library: Library,
+  entry: Entry,
+  book: string,
+): Promise<UsfmBook | undefined> {
+  return readTextBook(await library.reader(entry), book);
 }
 
 async function helpsText(library: Library, entry: Entry, book: string): Promise<string | undefined> {
   const reader = await library.reader(entry);
   const key = bookKeys(reader, isTsv).get(book);
   return key === undefined ? undefined : reader.read(key);
+}
+
+export async function bookNotesOnce(
+  library: Library,
+  entry: Entry,
+  book: string,
+): Promise<readonly NoteRow[]> {
+  return noteRows((await helpsText(library, entry, book)) ?? '');
 }
 
 export function bookNotes(library: Library, entry: Entry, book: string): Promise<readonly NoteRow[]> {

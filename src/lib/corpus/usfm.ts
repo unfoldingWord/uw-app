@@ -101,9 +101,13 @@ const characterMarkers = new Set([
   'wj',
 ]);
 
+const footnoteSpans: ReadonlySet<string> = new Set(['f', 'fe']);
+
+const footnoteOrigins: ReadonlySet<string> = new Set(['fr', 'fv']);
+
+const footnoteCaller = /^\s*\S+\s/;
+
 const skippedSpans: Readonly<Record<string, string>> = {
-  f: 'f',
-  fe: 'fe',
   x: 'x',
   ef: 'ef',
   ex: 'ex',
@@ -224,6 +228,8 @@ export function parseUsfm(source: string): UsfmBook {
   let title: RawToken[] | undefined;
   let word: string | undefined;
   let skipping: string | undefined;
+  let footnote: { readonly span: string; text: string } | undefined;
+  let footnotes: string[] = [];
 
   const sink = (): RawToken[] | undefined => (current !== undefined ? raw : title);
 
@@ -244,10 +250,21 @@ export function parseUsfm(source: string): UsfmBook {
     }
     const { text, tokens } = finishTokens(raw);
     const verses = chapters.get(current.chapter) ?? [];
-    verses.push({ ...current, text, tokens });
+    verses.push(
+      footnotes.length === 0 ? { ...current, text, tokens } : { ...current, text, tokens, footnotes },
+    );
     chapters.set(current.chapter, verses);
     current = undefined;
     raw = [];
+    footnotes = [];
+  };
+
+  const closeFootnote = (): void => {
+    const text = (footnote?.text ?? '').replace(/\s+/g, ' ').trim();
+    if (current !== undefined && text !== '') {
+      footnotes.push(text);
+    }
+    footnote = undefined;
   };
 
   const addText = (text: string): void => {
@@ -266,6 +283,17 @@ export function parseUsfm(source: string): UsfmBook {
     const marker = piece.marker;
     if (marker === undefined) {
       addText(piece.text);
+      continue;
+    }
+    if (footnote !== undefined) {
+      if (marker.closing && marker.name === footnote.span) {
+        closeFootnote();
+        addText(piece.text);
+      } else if (marker.name === 'w' && !marker.closing) {
+        footnote.text += piece.text.split('|')[0] ?? '';
+      } else if (!footnoteOrigins.has(marker.name) || marker.closing) {
+        footnote.text += piece.text;
+      }
       continue;
     }
     if (skipping !== undefined) {
@@ -312,6 +340,10 @@ export function parseUsfm(source: string): UsfmBook {
       const verse = whole(match[1]);
       current = match[2] === undefined ? { chapter, verse } : { chapter, verse, through: whole(match[2]) };
       addText(piece.text.slice(match[0].length));
+      continue;
+    }
+    if (footnoteSpans.has(name) && !marker.closing) {
+      footnote = { span: name, text: ` ${piece.text}`.replace(footnoteCaller, '') };
       continue;
     }
     if (skippedSpans[name] !== undefined && !marker.closing) {

@@ -3,11 +3,11 @@ import { writeArchive } from '@lib/burrito/archive';
 import { buildBurrito, type BurritoInput } from '@lib/burrito/build';
 import { metadataPath, utf8, type BurritoFiles } from '@lib/burrito/files';
 import { mimeTypes } from '@lib/burrito/flavors';
-import type { CorpusSource } from '@lib/corpus/types';
 import { imagePackId, languagePackId, originalPackId, type PackId } from '@lib/domain/pack';
 import { parseReference, type Reference } from '@lib/domain/reference';
 import { archiveUrlOf } from '@lib/domain/release';
 import { fromCatalog, fromFile } from '@lib/packs/source';
+import { writeInstalledPack } from '@lib/packs/store';
 import type { InstallOutcome, InstalledPack } from '@lib/packs/types';
 import type { SimDevice } from './device';
 import { installFromCatalog, withFormation } from './install';
@@ -35,20 +35,9 @@ async function importBurrito(device: SimDevice, root: string, files: BurritoFile
   return device.kernel.packs.install(fromFile(path));
 }
 
-function sourceOf(pack: InstalledPack): CorpusSource {
-  return {
-    pack: pack.pack,
-    burritos: pack.burritos.map((burrito) => ({
-      root: burrito.root,
-      row: burrito.row,
-      publisher: burrito.provenance.publisher,
-      resource: burrito.provenance.resource,
-      language: burrito.provenance.language,
-      tag: burrito.provenance.tag,
-      commit: burrito.provenance.commit,
-      bytes: burrito.bytes,
-    })),
-  };
+async function forgetCorpus(device: SimDevice): Promise<void> {
+  await device.adapters.db.run('DELETE FROM corpus_titles');
+  await device.adapters.db.run('DELETE FROM corpus_burritos');
 }
 
 function installedPack(device: SimDevice, pack: PackId): InstalledPack {
@@ -81,7 +70,7 @@ const twoChapters = String.raw`\id RUT qac_ult
 \h Ruth
 \c 1
 \v 21 I went out full.
-\v 22 So Naomi returned.
+\v 22 So Naomi returned.\f + \fr 1:22 \ft Some copies add with Ruth.\f*
 \c 2
 \v 1 Naomi had a relative.
 \v 2 Ruth said to Naomi.
@@ -297,6 +286,14 @@ describe('corpus passages beyond the fixture language', () => {
       '2:1',
       '2:2',
     ]);
+    expect(
+      passage?.text.verses.map((verse) => [verse.text, verse.footnotes]),
+      'a footnote stays on its verse as the publisher wrote it, outside the text',
+    ).toEqual([
+      ['So Naomi returned.', ['Some copies add with Ruth.']],
+      ['Naomi had a relative.', undefined],
+      ['Ruth said to Naomi.', undefined],
+    ]);
     expect(passage?.notes).toEqual([]);
     expect(passage?.wordLinks).toEqual([]);
     expect(passage?.questions).toEqual([]);
@@ -357,7 +354,8 @@ describe('corpus passages beyond the fixture language', () => {
 \v 1 Outside.`,
     );
 
-    await device.kernel.corpus.ingest(sourceOf(pack));
+    await forgetCorpus(device);
+    await device.restart();
     expect(device.kernel.corpus.summary('qac')).toEqual({
       literal: { burritos: 1, items: 1, publishers: ['unfoldingWord'] },
     });
@@ -371,15 +369,22 @@ describe('corpus passages beyond the fixture language', () => {
       'packs/language/qad/unfoldingWord/qad_ult/metadata.json',
       'not json',
     );
-    const [good] = sourceOf(installedPack(device, qaa)).burritos;
+    const [good] = installedPack(device, qaa).burritos;
     expect(good).toBeDefined();
     if (good === undefined) {
       return;
     }
-    await device.kernel.corpus.ingest({
-      pack: languagePackId('qad'),
-      burritos: [{ ...good, root: 'packs/language/qad/unfoldingWord/qad_ult' }],
-    });
+    await device.adapters.db.transaction((transaction) =>
+      writeInstalledPack(transaction, {
+        pack: languagePackId('qad'),
+        kind: 'language',
+        language: 'qad',
+        source: 'file',
+        bytes: 0,
+        burritos: [{ ...good, root: 'packs/language/qad/unfoldingWord/qad_ult' }],
+      }),
+    );
+    await device.restart();
     const failure = device.kernel.journal.read().find((entry) => entry.type === 'Failure');
     expect(failure?.payload).toEqual({ code: 'corpus.unreadable', context: { pack: 'language:qad' } });
     expect(device.kernel.corpus.summary('qaa').literal?.burritos).toBe(1);
@@ -388,24 +393,33 @@ describe('corpus passages beyond the fixture language', () => {
 });
 
 describe('corpus packs and replay', () => {
-  it('forgets a dropped pack in queries, titles and the snapshot, and ingests again idempotently', async () => {
+  it('offers reads and index controls only, never ingest or drop, so Packs events alone change what it holds', async () => {
+    const device = await phone([]);
+    const surface = Object.keys(device.kernel.corpus);
+    expect(surface).not.toContain('ingest');
+    expect(surface).not.toContain('drop');
+  });
+
+  it('reads an installed pack again on start when its own tables lost it, and forgets a removed pack everywhere', async () => {
     const device = await phone([qaa]);
-    await device.kernel.corpus.ingest(sourceOf(installedPack(device, qaa)));
     expect(device.kernel.corpus.summary('qaa').words).toEqual({
       burritos: 1,
       items: 6,
       publishers: ['unfoldingWord'],
     });
-    await device.kernel.corpus.drop(qaa);
-    expect(device.kernel.corpus.languages()).toEqual([]);
-    expect((await device.kernel.corpus.search('love', 'qaa')).titles).toEqual([]);
-    expect(await device.kernel.corpus.article('tw/bible/kt/love', 'qaa')).toBeUndefined();
-    expect(device.kernel.snapshot().modules.corpus).toEqual({ indexes: {}, languages: {} });
+    await forgetCorpus(device);
     await device.restart();
     expect(
       device.kernel.corpus.languages(),
       'on start the corpus follows what Packs holds, so a pack still installed is read again',
     ).toEqual(['qaa']);
+    expect(device.kernel.corpus.summary('qaa').words?.items).toBe(6);
+
+    expect((await device.kernel.packs.remove(qaa)).ok).toBe(true);
+    expect(device.kernel.corpus.languages()).toEqual([]);
+    expect((await device.kernel.corpus.search('love', 'qaa')).titles).toEqual([]);
+    expect(await device.kernel.corpus.article('tw/bible/kt/love', 'qaa')).toBeUndefined();
+    expect(device.kernel.snapshot().modules.corpus).toEqual({ indexes: {}, languages: {} });
   });
 
   it('redoes a recorded index build from its IndexStarted event', async () => {
@@ -519,5 +533,20 @@ describe('corpus note attachment', () => {
     const letter = await device.kernel.corpus.attachment('qaa', ['3JN']);
     expect(letter[0]?.books).toEqual({ '3JN': { quoted: 3, attached: 3 } });
     expect(await device.kernel.corpus.attachment('qab')).toEqual([]);
+  });
+
+  it('counts one book at a time without evicting the books a reader has open', async () => {
+    const device = await phone([qaa]);
+    const ruth = reference('RUT 1:16');
+    expect(await device.kernel.corpus.passage(ruth, { language: 'qaa' })).toBeDefined();
+    await device.kernel.corpus.attachment('qaa');
+    const reads: string[] = [];
+    const stop = device.adapters.files.onRead((_, path) => reads.push(path));
+    expect(await device.kernel.corpus.passage(ruth, { language: 'qaa' })).toBeDefined();
+    stop();
+    expect(
+      reads.filter((path) => /\.(usfm|tsv)$/.test(path)),
+      'the passage is still read from the cache after a count over every book',
+    ).toEqual([]);
   });
 });

@@ -159,6 +159,8 @@ export function movementKeys(
   return new Map([...found.entries()].sort(([left], [right]) => left - right));
 }
 
+export const storiesBook = 'OBS';
+
 export function audioEntries(reader: BurritoReader): readonly AudioEntry[] {
   return reader.ingredients.flatMap((ingredient) => {
     if (!ingredient.entry.mimeType.startsWith('audio/')) {
@@ -166,7 +168,7 @@ export function audioEntries(reader: BurritoReader): readonly AudioEntry[] {
     }
     const scope = ingredient.entry.scope ?? {};
     const [book] = Object.keys(scope);
-    if (book === undefined || bookByCode(book) === undefined) {
+    if (book === undefined || (book !== storiesBook && bookByCode(book) === undefined)) {
       return [];
     }
     const chapters = (scope[book] ?? [])

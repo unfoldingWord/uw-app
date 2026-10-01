@@ -1,5 +1,6 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
+import { View } from 'react-native';
 import { GlassButton } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
@@ -44,14 +45,19 @@ export default function LicenceScreen() {
       ) : (
         <Card level={1} style={{ gap: theme.space.sp6 }}>
           {licence.onPhone.map((row) => (
-            <ThemedText key={`${row.publisher}/${row.resource}/${row.version}`} variant="label" tone="title">
-              {words.t('common.attribution', {
-                resource: row.title,
-                publisher: row.publisher,
-                version: row.version,
-                licence: row.licence,
-              })}
-            </ThemedText>
+            <View key={`${row.publisher}/${row.resource}/${row.version}`} style={{ gap: theme.space.sp2 }}>
+              <ThemedText variant="label" tone="title">
+                {words.t('common.attribution', {
+                  resource: row.title,
+                  publisher: row.publisher,
+                  version: row.version,
+                  licence: row.licence,
+                })}
+              </ThemedText>
+              <ThemedText variant="caption" tone="dim">
+                {row.sourceLabel}
+              </ThemedText>
+            </View>
           ))}
         </Card>
       )}

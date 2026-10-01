@@ -33,9 +33,26 @@ export default scenario(
     const linksBurrito = pack.burritos.find((burrito) => burrito.provenance.resource === 'qaa_twl');
     assert.equal(linksBurrito?.bytes, await files.size(links));
 
+    const emptyUnder = (root: string): string[] => {
+      const tree = files.tree().filter((path) => path.startsWith(`${root}/`));
+      return tree.filter(
+        (path) => path.endsWith('/') && !tree.some((other) => !other.endsWith('/') && other.startsWith(path)),
+      );
+    };
+    assert.deepEqual(emptyUnder(links), [], 'no empty payload directory is left in Word Links');
+
     const whole = await readBurrito(files, links);
     const report = validate(whole, { rows: admittedRows });
     assert.ok(report.ok, report.ok ? '' : report.message);
     assert.ok(whole.has(article), 'what leaves the phone is the burrito as it arrived');
+
+    world.fixtures.publish('unfoldingWord', 'qaa_tw', 'v2');
+    await phone.kernel.catalog.refresh();
+    assert.ok((await phone.kernel.packs.update(languagePackId('qaa'))).ok);
+    const kept = burritoRootOf(phone, 'qaa_twl');
+    assert.equal(await files.exists(`${kept}/${article}`), false, 'shared again with the new Words');
+    assert.deepEqual(emptyUnder(kept), [], 'and still no empty directory');
+    const again = validate(await readBurrito(files, kept), { rows: admittedRows });
+    assert.ok(again.ok, again.ok ? '' : again.message);
   },
 );

@@ -96,6 +96,16 @@ release gate is `releaseGate` in `src/lib/strings/locales.ts` (`reviewed`).
   shared file holds: without, then with, the passages, articles and stories the leader opened or saved. The
   toggle label is first person ("Include what I read"), as the issue's decision words it; check it reads as the
   leader's own choice.
+- **Drafted with footnotes (issue #19, 2026-09-30).** `study.helps.footnote` labels a footnote from the text
+  under its verse as the publisher's (`Footnote from {publisher}`); the word should be the one a printed Bible
+  in that language uses for a footnote, never the word used for Notes.
+- **Drafted with sources (issue #22, 2026-09-30).** `common.source.catalog`, `common.source.peer` and
+  `common.source.file` say where a resource came from in Storage and on the Licence page;
+  `common.replace.file` and `common.replace.peer` ask in one sentence before a file or another phone replaces a
+  resource downloaded from the catalog, answered by `common.replace.confirm` and `common.replace.keep`;
+  `failure.pack.replace-unconfirmed` says nothing was installed. "Catalog" must be the same word the
+  `failure.catalog.*` keys use (fa فهرست منابع, zh-Hans 资源目录). Check the question reads as a calm choice,
+  not a warning.
 - **Redrafted with the glossary (issue #34, 2026-09-30).** Nine values changed in English and every locale at
   once so they use the words `CONTEXT.md` keeps: `failure.http.timeout`, `failure.http.status` and
   `failure.catalog.invalid-response` name the catalog, not the library (Library is a screen);

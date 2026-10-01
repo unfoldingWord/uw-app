@@ -2,11 +2,25 @@ import { compareText } from '../order';
 import { readCatalogReleases } from '../catalog/store';
 import type { CatalogRelease } from '../catalog/types';
 import { failureCodeOf } from '../domain/failures';
-import { languagePackId, packDirectory, packsDirectory, type PackId, type ResourceRow } from '../domain/pack';
+import {
+  languagePackId,
+  packDirectory,
+  packSources,
+  packsDirectory,
+  type PackId,
+  type ResourceRow,
+} from '../domain/pack';
 import { refOf, resourceKey, type ReleaseRef } from '../domain/release';
 import { defineModule } from '../module';
 import type { PickedFile } from '../ports';
-import { catalogOffer, createInstaller, resolveSource, type FailedRelease, type Resolved } from './install';
+import {
+  catalogOffer,
+  catalogReplacements,
+  createInstaller,
+  resolveSource,
+  type FailedRelease,
+  type Resolved,
+} from './install';
 import { defaultReleases, missingReleases, optionalReleases, updatesOf } from './plan';
 import { fromCatalog, fromFile, type PackPlan, type PackSource } from './source';
 import { deleteInstalledPack, packTables, readInstalledPacks } from './store';
@@ -35,10 +49,16 @@ export type LanguageStatus = {
 
 export type CatalogInstallOptions = { withRows?: readonly ResourceRow[] };
 
+type ReplaceChoice = 'ask' | 'confirmed';
+
+type PendingReplace = { source: PackSource; plan: PackPlan };
+
 export type PacksApi = {
   install(source: PackSource, plan?: PackPlan): Promise<InstallOutcome>;
   importFile(external: string): Promise<InstallOutcome>;
   importPicked(): Promise<InstallOutcome | undefined>;
+  confirmReplace(): Promise<InstallOutcome>;
+  declineReplace(): Promise<void>;
   installFromCatalog(pack: PackId, options?: CatalogInstallOptions): Promise<InstallOutcome>;
   update(pack: PackId): Promise<InstallOutcome>;
   remove(pack: PackId): Promise<RemoveOutcome>;
@@ -89,6 +109,7 @@ export const packsModule = defineModule<PacksApi>({
     const progress = new Map<string, InstallProgress>();
     const failures = new Map<PackId, readonly FailedRelease[]>();
     let queue: Promise<unknown> = Promise.resolve();
+    let pending: PendingReplace | undefined;
 
     function serial<T>(work: () => Promise<T>): Promise<T> {
       const next = queue.then(work, work);
@@ -127,7 +148,11 @@ export const packsModule = defineModule<PacksApi>({
 
     const catalogReleases = (): Promise<CatalogRelease[]> => readCatalogReleases(ports.db);
 
-    async function installNow(source: PackSource, plan: PackPlan): Promise<InstallOutcome> {
+    async function installNow(
+      source: PackSource,
+      plan: PackPlan,
+      replace: ReplaceChoice = 'ask',
+    ): Promise<InstallOutcome> {
       const resolution = await resolveSource(ports, source, catalogReleases);
       if (!resolution.ok) {
         await context.emit({
@@ -136,16 +161,58 @@ export const packsModule = defineModule<PacksApi>({
         });
         return { ok: false, install: undefined, pack: plan.pack, code: resolution.code };
       }
+      const asked = replace === 'ask' ? catalogReplacements(resolution.resolved, plan, installed) : undefined;
+      if (asked !== undefined) {
+        const code = 'pack.replace-unconfirmed';
+        pending = { source, plan };
+        await context.emit({
+          type: 'Failure',
+          payload: { code, context: { pack: asked.pack, step: source.kind } },
+        });
+        return { ok: false, install: undefined, pack: asked.pack, code, replaces: asked.replaces };
+      }
       return installer.prepare(resolution.resolved, plan);
     }
 
+    async function discardPending(): Promise<void> {
+      const kept = pending;
+      pending = undefined;
+      if (kept?.source.kind === 'file' && kept.source.path.startsWith(`${inboxDirectory}/`)) {
+        await removeIfPresent(ports.files, inboxDirectory);
+      }
+    }
+
     function install(source: PackSource, plan: PackPlan = {}): Promise<InstallOutcome> {
-      return serial(() => installNow(source, plan));
+      return serial(async () => {
+        await discardPending();
+        return installNow(source, plan);
+      });
+    }
+
+    function confirmReplace(): Promise<InstallOutcome> {
+      return serial(async () => {
+        const chosen = pending;
+        pending = undefined;
+        if (chosen === undefined) {
+          return { ok: false, install: undefined, pack: undefined, code: 'pack.empty-plan' };
+        }
+        try {
+          return await installNow(chosen.source, chosen.plan, 'confirmed');
+        } finally {
+          pending = chosen;
+          await discardPending();
+        }
+      });
+    }
+
+    function declineReplace(): Promise<void> {
+      return serial(discardPending);
     }
 
     function importFile(external: string): Promise<InstallOutcome> {
       const path = `${inboxDirectory}/import.zip`;
       return serial(async () => {
+        pending = undefined;
         try {
           await removeIfPresent(ports.files, inboxDirectory);
           await ports.files.mkdir(inboxDirectory);
@@ -155,11 +222,14 @@ export const packsModule = defineModule<PacksApi>({
           await context.emit({ type: 'Failure', payload: { code, context: { step: 'file' } } });
           return { ok: false, install: undefined, pack: undefined, code };
         }
-        try {
-          return await installNow(fromFile(path), {});
-        } finally {
+        const outcome = await installNow(fromFile(path), {}).catch(async (error: unknown) => {
+          await removeIfPresent(ports.files, inboxDirectory);
+          throw error;
+        });
+        if (pending === undefined) {
           await removeIfPresent(ports.files, inboxDirectory);
         }
+        return outcome;
       });
     }
 
@@ -257,6 +327,7 @@ export const packsModule = defineModule<PacksApi>({
         kind: pack.kind,
         language: pack.language,
         bytes: pack.bytes,
+        sources: packSources.filter((source) => pack.burritos.some((burrito) => burrito.source === source)),
       }));
       return {
         packs,
@@ -270,6 +341,8 @@ export const packsModule = defineModule<PacksApi>({
         install,
         importFile,
         importPicked,
+        confirmReplace,
+        declineReplace,
         installFromCatalog,
         update,
         remove,
@@ -316,6 +389,7 @@ export const packsModule = defineModule<PacksApi>({
             resource: burrito.provenance.resource,
             tag: burrito.provenance.tag,
             row: burrito.row,
+            source: burrito.source,
             bytes: burrito.bytes,
           })),
         })),

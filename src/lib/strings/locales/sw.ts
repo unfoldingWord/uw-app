@@ -29,6 +29,15 @@ export const sw: LocaleTable = {
   'common.bookmark.add': 'Hifadhi kwa baadaye',
   'common.bookmark.remove': 'Ondoa kwenye vilivyohifadhiwa',
   'common.joined': '{first} · {second}',
+  'common.source.catalog': 'Kutoka katalogi',
+  'common.source.peer': 'Kutoka simu nyingine',
+  'common.source.file': 'Kutoka faili',
+  'common.replace.file':
+    'Ungependa kubadilisha {resources} uliyopakua kutoka katalogi kwa nakala iliyo katika faili hii?',
+  'common.replace.peer':
+    'Ungependa kubadilisha {resources} uliyopakua kutoka katalogi kwa nakala kutoka simu nyingine?',
+  'common.replace.confirm': 'Badilisha',
+  'common.replace.keep': 'Baki na nakala ya katalogi',
   'common.attribution': '{resource} · {publisher} · {version} · {licence}',
   'common.language.chip': 'Badilisha lugha, sasa ni {language}',
   'common.theme.toggle': 'Badilisha mwonekano',
@@ -121,6 +130,7 @@ export const sw: LocaleTable = {
   'study.helps.noNotes': 'Hakuna maelezo kwa mstari huu.',
   'study.helps.bookIntro': 'Kuhusu kitabu hiki',
   'study.helps.chapterIntro': 'Kuhusu sura ya {chapter}',
+  'study.helps.footnote': 'Tanbihi kutoka kwa {publisher}',
   'study.helps.noWordLinks': 'Hakuna viungo vya maneno kwa mstari huu.',
   'study.helps.noQuestions': 'Hakuna maswali kwa mstari huu.',
   'study.helps.notDownloaded': 'Misaada ya kifungu hiki bado haiko kwenye simu hii.',
@@ -474,6 +484,8 @@ export const sw: LocaleTable = {
   'failure.pack.empty-plan': 'Chagua angalau nyenzo moja kwanza.',
   'failure.pack.mixed-packs':
     'Nyenzo hizi ni za vifurushi tofauti, kwa hiyo tuma kifurushi kimoja kwa wakati.',
+  'failure.pack.replace-unconfirmed':
+    'Hii ingebadilisha nyenzo uliyopakua kutoka katalogi, kwa hiyo hakuna kilichosakinishwa.',
   'failure.corpus.unreadable':
     'Kifurushi hiki hakikuweza kufunguliwa, kwa hiyo kiondoe, kisha ukipakue tena.',
   'failure.transfer.unavailable': 'Kutuma kwa simu iliyo karibu hakupatikani kwenye simu hii kwa sasa.',

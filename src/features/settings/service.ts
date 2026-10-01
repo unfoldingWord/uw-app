@@ -9,7 +9,7 @@ import {
   type Direction,
   type Locale,
 } from '@lib/strings/locales';
-import { leavingFolds, type LeavingFold } from '@lib/telemetry/folds';
+import { telemetryFolds, type TelemetryFold } from '@lib/telemetry/folds';
 import { settingsWords, type SettingsWords } from './strings';
 
 export type ThemeChoice = 'system' | 'light' | 'dark';
@@ -55,7 +55,7 @@ export type StorageView = {
   readonly low: boolean;
 };
 
-export type PrivacyCount = { readonly fold: LeavingFold; readonly label: string };
+export type PrivacyCount = { readonly fold: TelemetryFold; readonly label: string };
 
 export type PrivacyView = {
   readonly title: string;
@@ -267,7 +267,7 @@ export function createSettingsService(kernel: Kernel): SettingsService {
         title: current.t('privacy.title'),
         summary: current.t(sending ? 'privacy.summary.sending' : 'privacy.summary'),
         intro: current.t(sending ? 'privacy.counts.sending' : 'privacy.counts'),
-        counts: leavingFolds.map((fold) => ({ fold, label: current.t(`privacy.count.${fold}`) })),
+        counts: telemetryFolds.map((fold) => ({ fold, label: current.t(`privacy.count.${fold}`) })),
         notes: [
           current.t(sending ? 'privacy.sending.later' : 'privacy.dropped'),
           current.t('privacy.never'),

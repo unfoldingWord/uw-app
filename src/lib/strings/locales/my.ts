@@ -29,6 +29,15 @@ export const my: LocaleTable = {
   'common.bookmark.add': 'နောက်မှကြည့်ရန် သိမ်းရန်',
   'common.bookmark.remove': 'သိမ်းထားသည်များမှ ဖယ်ရန်',
   'common.joined': '{first} · {second}',
+  'common.source.catalog': 'ကတ်တလောက်မှ',
+  'common.source.peer': 'အခြားဖုန်းမှ',
+  'common.source.file': 'ဖိုင်မှ',
+  'common.replace.file':
+    'ကတ်တလောက်မှ ဒေါင်းလုဒ်လုပ်ထားသော {resources} ကို ဤဖိုင်ထဲက မိတ္တူဖြင့် အစားထိုးမလား။',
+  'common.replace.peer':
+    'ကတ်တလောက်မှ ဒေါင်းလုဒ်လုပ်ထားသော {resources} ကို အခြားဖုန်းမှ မိတ္တူဖြင့် အစားထိုးမလား။',
+  'common.replace.confirm': 'အစားထိုးရန်',
+  'common.replace.keep': 'ကတ်တလောက်မိတ္တူကို ထားရန်',
   'common.attribution': '{resource} · {publisher} · {version} · {licence}',
   'common.language.chip': 'ဘာသာစကား ပြောင်းရန်၊ ယခု {language}',
   'common.theme.toggle': 'အသွင် ပြောင်းရန်',
@@ -116,6 +125,7 @@ export const my: LocaleTable = {
   'study.helps.noNotes': 'ဤအခန်းငယ်အတွက် မှတ်စု မရှိပါ။',
   'study.helps.bookIntro': 'ဤကျမ်းအကြောင်း',
   'study.helps.chapterIntro': 'အခန်းကြီး {chapter} အကြောင်း',
+  'study.helps.footnote': '{publisher} ၏ အောက်ခြေမှတ်ချက်',
   'study.helps.noWordLinks': 'ဤအခန်းငယ်အတွက် စကားလုံး လင့်ခ် မရှိပါ။',
   'study.helps.noQuestions': 'ဤအခန်းငယ်အတွက် မေးခွန်း မရှိပါ။',
   'study.helps.notDownloaded': 'ဤကျမ်းပိုဒ်အတွက် အကူအညီများ ဤဖုန်းပေါ်တွင် မရှိသေးပါ။',
@@ -459,6 +469,8 @@ export const my: LocaleTable = {
   'failure.pack.mixed-packs':
     'ဤအရင်းအမြစ်များသည် မတူညီသော ပက်ကေ့ချ်များမှ ဖြစ်ပါသည်၊ တစ်ကြိမ်လျှင် ပက်ကေ့ချ်တစ်ခုသာ ပို့ပါ။',
   'failure.corpus.unreadable': 'ဤပက်ကေ့ချ်ကို ဖွင့်၍ မရပါ၊ ၎င်းကို ဖယ်ရှားပြီး ထပ်မံ ဒေါင်းလုဒ်လုပ်ပါ။',
+  'failure.pack.replace-unconfirmed':
+    'ဤအရာသည် ကတ်တလောက်မှ ဒေါင်းလုဒ်လုပ်ထားသော အရင်းအမြစ်ကို အစားထိုးမည်ဖြစ်၍ ဘာမျှ မထည့်သွင်းခဲ့ပါ။',
   'failure.transfer.unavailable': 'အနီးရှိ ဖုန်းသို့ ပို့ခြင်းကို ဤဖုန်းတွင် ယခု မရနိုင်ပါ။',
   'failure.transfer.unsupported': 'ဤဖုန်းသည် အက်ပ်ကိုယ်တိုင် ပို့၍ မရပါ၊ အရင်းအမြစ်များကိုမူ ပို့နိုင်ပါသည်။',
   'failure.transfer.declined': 'အခြားဖုန်းက လက်မခံပါ၊ ထပ်ပေးကြည့်နိုင်ပါသည်။',

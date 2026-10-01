@@ -3,6 +3,45 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-09-30 A content for v1.1.0 (#19, #22, #24, #28, #63)
+
+Node v22.22.2. Nothing ran on a phone, and nothing here reached git.door43.org or cdn.door43.org (HTTP 403
+from this sandbox), so no live release was read, built or measured.
+
+- Red first, each observed failing before its change and green after:
+  - #28: a corpus test asserting `kernel.corpus` offers neither `ingest` nor `drop` failed ("expected [ Array(21) ]
+    to not include 'ingest'"). Callers grepped in `src`, `sim`, `scripts` and `app`: only `sim/corpus.test.ts` and
+    ST-4, now on `packs.remove` and the start reconcile.
+  - #19: two `usfm.test.ts` cases (Matthew 5:11 with `\fr`, `\fqa`, a cross reference and an endnote; the aligned
+    fixture verse) failed with `footnotes` undefined.
+  - #22: `SH-3.replacing-a-catalog-pack-asks-first` failed at its first assertion (`source` undefined on the
+    installed burrito); it now proves a forged file and a forged peer offer each ask, decline, confirm through the
+    Languages and transfer services, the same commit installs without asking, and Storage and the Licence page
+    name the source.
+  - #24: DX-2 on a UTC+3 clock with opens at 23:30 and 00:10 local failed with "the left-out file keeps each time
+    only to its UTC day"; with the times rounded but the old playback clock it failed again with "the days of use
+    come back whole", because two opens then share one `at`; both green after the playback clock matched each
+    `AppOpened` by its place.
+  - #63 story audio: FO-3 installing the `qaa_obs` Audio Pack failed with the session audio `not-available`.
+  - #63 Word Links: LA-6 asserting no empty directory under the Word Links root failed listing
+    `ingredients/payload/` and `payload/kt/`.
+  - #63 attachment: a corpus test asserting a passage reads nothing from disk after a count over every book failed
+    with the Ruth tables read again.
+  - #63 Image Pack: a streaming test failed with `items` absent ("none none ...") and with the stories archive
+    read whole.
+- #63 Audio port: `AudioSource` is a file only; ST-4, `sim/player.test.ts` and `sim/kernel-reactions.test.ts` lost
+  their stream cases. Renames `unpinnedFlavors` and `telemetryFolds` are pure renames, typechecked and tested.
+- #63 helps panel: the verse list now shares the height with the helps panel (`helpsShare`). Typechecked and
+  linted only; no screenshot or phone looked at it.
+- `npm run verify` green: 757 tests in 77 files, 8 checks (strings 468 keys in 16 locales), 59 scenarios, trace 51
+  Must (50 by scenario, SE-2 by test), 21 fixture burritos, both native bundles free of `sim/`, `scripts/`, sql.js
+  and react-native-web; the live contract step skipped offline (HTTP 403).
+- Not verified: anything on a phone; the web shots of the changed screens (Study helps panel, Languages import and
+  Storage, Licence, transfer receive); the Image Pack build and note attachment on the live `en_obs` and `en_tn`;
+  the nine new keys drafted in fifteen locales (AI-drafted, `docs/strings-review.md`); migration
+  `0007-pack-burrito-source` on a phone database with packs installed (proven only on the sim's SQLite).
+- Deferred: #63 "word order from the originals" (reasons in the final report).
+
 ## 2026-09-30 M11 merge of C1 and C2 onto B, and the Settings refusal in place (#37, #41, #62, #61, #42)
 
 Node v22.22.2; Chromium through playwright-core for the shots. Nothing ran on a phone.

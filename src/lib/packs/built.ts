@@ -1,11 +1,11 @@
 import { md5 } from '@noble/hashes/legacy.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
-import { readArchive } from '../burrito/archive';
 import { burritoMetadata, licenceIngredient } from '../burrito/build';
 import { fromUtf8, ingredientsDirectory, metadataPath, utf8 } from '../burrito/files';
-import { mimeTypes, provisionalFlavors, storyImagesDirectory } from '../burrito/flavors';
+import { mimeTypes, unpinnedFlavors, storyImagesDirectory } from '../burrito/flavors';
 import { licenceKeyOf } from '../burrito/licence';
 import type { IngredientEntry, JsonValue, Scope } from '../burrito/metadata';
+import { unpackArchive } from '../burrito/unpack';
 import type { BurritoFacts, IngredientFact } from '../burrito/validate';
 import { isStoryAudio } from '../catalog/built';
 import type { ReleaseAsset } from '../catalog/types';
@@ -30,6 +30,10 @@ const storiesScope = 'OBS';
 const generator = { softwareName: 'unfoldingWord app', softwareVersion: '1' } as const;
 
 const storyCount = 50;
+
+const parallelDownloads = 4;
+
+export type OnItems = (done: number, total: number) => void;
 
 export type BuiltDirectory = {
   ok: true;
@@ -190,23 +194,31 @@ async function storiesSource(
     await removeIfPresent(ports.files, archive);
     return problem;
   }
-  const bytes = await ports.files.readBytes(archive);
-  await removeIfPresent(ports.files, archive);
-  const read = readArchive(bytes);
-  if (!read.ok) {
-    return 'pack.invalid-burrito';
+  const unpacked = `${stage}.source`;
+  try {
+    const read = await unpackArchive(ports.files, archive, { into: unpacked, hash: false });
+    await removeIfPresent(ports.files, archive);
+    if (!read.ok || read.directory === undefined) {
+      return 'pack.invalid-burrito';
+    }
+    const urls = new Set<string>();
+    for (const key of read.written.filter((path) => storyFile.test(path))) {
+      for (const url of storyImageUrls([await ports.files.readText(`${read.directory}/${key}`)])) {
+        urls.add(url);
+      }
+    }
+    const metadata = read.facts.metadata;
+    const licenceKey = licenceKeyOf(read.written);
+    const licenceText = licenceKey === undefined ? undefined : read.facts.text(licenceKey);
+    const statement = metadata === undefined ? undefined : statementOf(fromUtf8(metadata));
+    if (licenceText === undefined || statement === undefined) {
+      return 'pack.no-provenance';
+    }
+    return { urls: [...urls].sort(), licence: { statement, text: licenceText } };
+  } finally {
+    await removeIfPresent(ports.files, archive);
+    await removeIfPresent(ports.files, unpacked);
   }
-  const texts = [...read.files.entries()].flatMap(([key, value]) =>
-    storyFile.test(key) ? [fromUtf8(value)] : [],
-  );
-  const metadata = read.files.get(metadataPath);
-  const licenceKey = licenceKeyOf(read.files.keys());
-  const licenceBytes = licenceKey === undefined ? undefined : read.files.get(licenceKey);
-  const statement = metadata === undefined ? undefined : statementOf(fromUtf8(metadata));
-  if (licenceBytes === undefined || statement === undefined) {
-    return 'pack.no-provenance';
-  }
-  return { urls: storyImageUrls(texts), licence: { statement, text: fromUtf8(licenceBytes) } };
 }
 
 function statementOf(metadata: string): string | undefined {
@@ -224,33 +236,69 @@ async function writeIngredients(
   directory: string,
   planned: readonly Planned[],
   onBytes: (bytes: number) => void,
+  onItems: OnItems,
 ): Promise<Map<string, IngredientEntry> | FailureCode> {
-  const entries = new Map<string, IngredientEntry>();
+  const written: (IngredientEntry | undefined)[] = planned.map(() => undefined);
+  const inFlight = new Map<number, number>();
   let received = 0;
-  for (const item of planned) {
-    const key = `${ingredientsDirectory}${item.path}`;
-    const path = `${directory}/${key}`;
+  let done = 0;
+  let next = 0;
+  let problem: FailureCode | undefined;
+  const report = (): void => {
+    onBytes(received + [...inFlight.values()].reduce((sum, bytes) => sum + bytes, 0));
+  };
+  const fetchOne = async (index: number, item: Planned): Promise<void> => {
+    const path = `${directory}/${ingredientsDirectory}${item.path}`;
     await ports.files.mkdir(parentOf(path));
-    const before = received;
+    inFlight.set(index, 0);
     const outcome = await ports.http.download({
       url: item.url,
       to: path,
       timeoutMs: assetTimeoutMs,
-      onProgress: (bytes) => onBytes(before + bytes),
+      onProgress: (bytes) => {
+        inFlight.set(index, bytes);
+        report();
+      },
     });
-    const problem = problemOf(outcome);
+    inFlight.delete(index);
+    problem ??= problemOf(outcome);
     if (problem !== undefined) {
-      return problem;
+      return;
     }
     const fact = await factOfFile(ports, path);
     received += fact.size;
-    entries.set(key, {
+    done += 1;
+    written[index] = {
       checksum: { md5: fact.md5 },
       mimeType: item.mimeType,
       size: fact.size,
       ...(item.scope === undefined ? {} : { scope: item.scope }),
-    });
+    };
+    report();
+    onItems(done, planned.length);
+  };
+  const worker = async (): Promise<void> => {
+    while (problem === undefined && next < planned.length) {
+      const index = next;
+      next += 1;
+      const item = planned[index];
+      if (item !== undefined) {
+        await fetchOne(index, item);
+      }
+    }
+  };
+  onItems(0, planned.length);
+  await Promise.all(Array.from({ length: Math.min(parallelDownloads, planned.length) }, worker));
+  if (problem !== undefined) {
+    return problem;
   }
+  const entries = new Map<string, IngredientEntry>();
+  planned.forEach((item, index) => {
+    const entry = written[index];
+    if (entry !== undefined) {
+      entries.set(`${ingredientsDirectory}${item.path}`, entry);
+    }
+  });
   return entries;
 }
 
@@ -326,6 +374,7 @@ export async function buildImagePack(
   choice: CatalogChoice,
   directory: string,
   onBytes: (bytes: number) => void,
+  onItems: OnItems,
 ): Promise<Built> {
   const source = await storiesSource(ports, choice, directory);
   if (typeof source === 'string') {
@@ -339,7 +388,7 @@ export async function buildImagePack(
     path: `${storyImagesDirectory}${url.split('/').at(-1) ?? url}`,
     mimeType: mimeTypes.jpeg,
   }));
-  const entries = await writeIngredients(ports, directory, planned, onBytes);
+  const entries = await writeIngredients(ports, directory, planned, onBytes, onItems);
   if (typeof entries === 'string') {
     return { ok: false, code: entries };
   }
@@ -348,7 +397,7 @@ export async function buildImagePack(
     directory,
     choice,
     {
-      ...provisionalFlavors.images,
+      ...unpinnedFlavors.images,
       language: { tag: 'zxx', name: { en: 'No linguistic content' } },
       abbreviation: 'obs-images',
     },
@@ -362,6 +411,7 @@ export async function buildAudioPack(
   choice: CatalogChoice,
   directory: string,
   onBytes: (bytes: number) => void,
+  onItems: OnItems,
 ): Promise<Built> {
   const byStory = isStoryAudio({ subject: choice.subject ?? '', resource: choice.resource });
   const planned = plannedAudio(choice.assets ?? [], byStory);
@@ -372,7 +422,7 @@ export async function buildAudioPack(
   if (typeof licence === 'string') {
     return { ok: false, code: licence };
   }
-  const entries = await writeIngredients(ports, directory, planned, onBytes);
+  const entries = await writeIngredients(ports, directory, planned, onBytes, onItems);
   if (typeof entries === 'string') {
     return { ok: false, code: entries };
   }
@@ -381,7 +431,7 @@ export async function buildAudioPack(
     directory,
     choice,
     {
-      ...provisionalFlavors.audio,
+      ...unpinnedFlavors.audio,
       language: { tag: choice.language, name: { en: choice.language } },
       abbreviation: `${choice.resource}-audio`,
       flavorDetails: {

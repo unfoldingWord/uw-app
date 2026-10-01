@@ -80,6 +80,7 @@ export type Verse = {
   readonly through?: number;
   readonly text: string;
   readonly tokens: readonly Token[];
+  readonly footnotes?: readonly string[];
 };
 
 export type WordSpan = {

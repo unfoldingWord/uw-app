@@ -22,7 +22,7 @@ import { canonical, type JsonValue } from './json';
 import { migrationsTable, runMigrations } from './migrate';
 import type { KernelModule, ModuleInstance, ModulePorts, Owns } from './module';
 import type { Ids, Migration, Ports } from './ports';
-import { allowlistedAudio, scopedDb, scopedFiles, scopedHttp, scopedKv, type Scope } from './scope';
+import { scopedDb, scopedFiles, scopedHttp, scopedKv, type Scope } from './scope';
 
 export type KernelOptions = {
   migrations: readonly Migration[];
@@ -148,7 +148,7 @@ function modulePorts(ports: Ports, scope: Scope, ids: Ids, send: SendPolicy): Mo
     kv: scopedKv(scope, ports.kv),
     http: scopedHttp(scope, allowlistedHttp(ports.http, send)),
     transport: ports.transport,
-    audio: allowlistedAudio(ports.audio),
+    audio: ports.audio,
     shareSheet: ports.shareSheet,
     picker: ports.picker,
     locale: ports.locale,

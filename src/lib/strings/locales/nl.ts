@@ -29,6 +29,15 @@ export const nl: LocaleTable = {
   'common.bookmark.add': 'Bewaren voor later',
   'common.bookmark.remove': 'Uit bewaard halen',
   'common.joined': '{first} · {second}',
+  'common.source.catalog': 'Uit de catalogus',
+  'common.source.peer': 'Van een andere telefoon',
+  'common.source.file': 'Uit een bestand',
+  'common.replace.file':
+    '{resources}, die u uit de catalogus hebt gedownload, vervangen door de kopie in dit bestand?',
+  'common.replace.peer':
+    '{resources}, die u uit de catalogus hebt gedownload, vervangen door de kopie van de andere telefoon?',
+  'common.replace.confirm': 'Vervangen',
+  'common.replace.keep': 'De catalogusversie houden',
   'common.attribution': '{resource} · {publisher} · {version} · {licence}',
   'common.language.chip': 'Taal wijzigen, nu {language}',
   'common.theme.toggle': 'Thema wisselen',
@@ -121,6 +130,7 @@ export const nl: LocaleTable = {
   'study.helps.noNotes': 'Geen aantekeningen bij dit vers.',
   'study.helps.bookIntro': 'Over dit boek',
   'study.helps.chapterIntro': 'Over hoofdstuk {chapter}',
+  'study.helps.footnote': 'Voetnoot van {publisher}',
   'study.helps.noWordLinks': 'Geen woordkoppelingen bij dit vers.',
   'study.helps.noQuestions': 'Geen vragen bij dit vers.',
   'study.helps.notDownloaded': 'De hulp bij deze passage staat nog niet op deze telefoon.',
@@ -482,6 +492,8 @@ export const nl: LocaleTable = {
     'Deze hulpmiddelen horen bij verschillende pakketten, dus stuur één pakket tegelijk.',
   'failure.corpus.unreadable':
     'Dit pakket kon niet worden geopend, dus verwijder het en download het opnieuw.',
+  'failure.pack.replace-unconfirmed':
+    'Dit zou een bron vervangen die u uit de catalogus hebt gedownload, dus er is niets geïnstalleerd.',
   'failure.transfer.unavailable': 'Overzetten in de buurt is nu niet beschikbaar op deze telefoon.',
   'failure.transfer.unsupported':
     'Deze telefoon kan de app zelf niet versturen, maar hulpmiddelen kunnen wel mee.',

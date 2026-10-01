@@ -1,5 +1,6 @@
 import { resourceTypeOf, resourceTypes, type ResourceType } from '@lib/catalog/resourceTypes';
 import type { CatalogRelease } from '@lib/catalog/types';
+import type { PackSourceKind } from '@lib/domain/pack';
 import type { Kernel } from '@lib/kernel';
 import type { StoriesRefreshOutcome } from '@lib/partners/partners';
 import type { ImpactStory } from '@lib/partners/stories';
@@ -50,6 +51,8 @@ export type AboutSummary = {
 
 export type LicenceRow = {
   readonly resource: string;
+  readonly source: PackSourceKind;
+  readonly sourceLabel: string;
   readonly publisher: string;
   readonly version: string;
   readonly licence: string;
@@ -216,8 +219,10 @@ export function createAboutService(kernel: Kernel): AboutService {
       const onPhone = kernel.packs
         .installed()
         .flatMap((pack) => pack.burritos)
-        .map(({ provenance }) => ({
+        .map(({ provenance, source }) => ({
           resource: provenance.resource,
+          source,
+          sourceLabel: current.t(`common.source.${source}`),
           publisher: provenance.publisher,
           version: provenance.tag,
           licence: provenance.licence,

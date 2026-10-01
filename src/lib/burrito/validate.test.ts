@@ -5,7 +5,7 @@ import {
   admittedRows,
   mimeTypes,
   pinnedRows,
-  provisionalFlavors,
+  unpinnedFlavors,
   requiredFormationSections,
   type RowId,
 } from './flavors';
@@ -74,18 +74,18 @@ const rowInputs: Record<RowId, Partial<BurritoInput>> = {
   stories: { flavorType: 'gloss', flavor: 'textStories', ingredients: [markdown('content/01.md')] },
   storyHelps: { flavorType: 'parascriptural', flavor: 'x-bcvquestions', ingredients: [tsv('sq_OBS.tsv')] },
   formation: {
-    flavorType: provisionalFlavors.formation.flavorType,
-    flavor: provisionalFlavors.formation.flavor,
+    flavorType: unpinnedFlavors.formation.flavorType,
+    flavor: unpinnedFlavors.formation.flavor,
     ingredients: requiredFormationSections.map((section) => markdown(`01/${section}.md`)),
   },
   audio: {
-    flavorType: provisionalFlavors.audio.flavorType,
-    flavor: provisionalFlavors.audio.flavor,
+    flavorType: unpinnedFlavors.audio.flavorType,
+    flavor: unpinnedFlavors.audio.flavor,
     ingredients: [scoped('RUT/RUT_001.mp3', mimeTypes.mp3, 'RUT')],
   },
   images: {
-    flavorType: provisionalFlavors.images.flavorType,
-    flavor: provisionalFlavors.images.flavor,
+    flavorType: unpinnedFlavors.images.flavorType,
+    flavor: unpinnedFlavors.images.flavor,
     ingredients: [
       {
         path: 'images/obs-en-01-01.jpg',

@@ -29,6 +29,15 @@ export const fa: LocaleTable = {
   'common.bookmark.add': 'ذخیره برای بعد',
   'common.bookmark.remove': 'حذف از ذخیره‌شده‌ها',
   'common.joined': '{first} · {second}',
+  'common.source.catalog': 'از فهرست منابع',
+  'common.source.peer': 'از گوشی دیگر',
+  'common.source.file': 'از یک فایل',
+  'common.replace.file':
+    'آیا {resources} را که از فهرست منابع بارگیری کرده‌اید با نسخهٔ این فایل جایگزین می‌کنید؟',
+  'common.replace.peer':
+    'آیا {resources} را که از فهرست منابع بارگیری کرده‌اید با نسخهٔ گوشی دیگر جایگزین می‌کنید؟',
+  'common.replace.confirm': 'جایگزین کن',
+  'common.replace.keep': 'نسخهٔ فهرست منابع را نگه دار',
   'common.attribution': '{resource} · {publisher} · {version} · {licence}',
   'common.language.chip': 'تغییر زبان، اکنون {language}',
   'common.theme.toggle': 'تغییر پوسته',
@@ -121,6 +130,7 @@ export const fa: LocaleTable = {
   'study.helps.noNotes': 'برای این آیه یادداشتی نیست.',
   'study.helps.bookIntro': 'دربارهٔ این کتاب',
   'study.helps.chapterIntro': 'دربارهٔ باب {chapter}',
+  'study.helps.footnote': 'پانویس از {publisher}',
   'study.helps.noWordLinks': 'برای این آیه پیوند واژه‌ای نیست.',
   'study.helps.noQuestions': 'برای این آیه پرسشی نیست.',
   'study.helps.notDownloaded': 'راهنماهای این بخش هنوز روی این گوشی نیستند.',
@@ -468,6 +478,8 @@ export const fa: LocaleTable = {
   'failure.pack.no-provenance': 'این منبع نمی‌گوید چه کسی آن را منتشر کرده، پس برنامه آن را نصب نمی‌کند.',
   'failure.pack.empty-plan': 'نخست دست‌کم یک منبع را انتخاب کنید.',
   'failure.pack.mixed-packs': 'این منابع از بسته‌های مختلف‌اند، پس هر بار یک بسته بفرستید.',
+  'failure.pack.replace-unconfirmed':
+    'این کار منبعی را که از فهرست منابع بارگیری کرده‌اید جایگزین می‌کرد، پس چیزی نصب نشد.',
   'failure.corpus.unreadable': 'این بسته باز نشد، پس آن را حذف کنید و دوباره بارگیری کنید.',
   'failure.transfer.unavailable': 'فرستادن به گوشی نزدیک اکنون روی این گوشی در دسترس نیست.',
   'failure.transfer.unsupported':

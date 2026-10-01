@@ -20,7 +20,7 @@ import type { EventDraft } from '../journal/journal';
 import type { ModulePorts } from '../module';
 import type { HttpDownloaded } from '../ports';
 import { checkBurrito, type CheckedBurrito } from './burrito';
-import { buildAudioPack, buildImagePack, type BuiltDirectory } from './built';
+import { buildAudioPack, buildImagePack, type BuiltDirectory, type OnItems } from './built';
 import { isWordsBurrito, measuredBytes, restoreSharedPayload, shareWordsPayload } from './shared';
 import {
   burritoRoot,
@@ -32,7 +32,7 @@ import {
 } from './layout';
 import type { CatalogChoice, PackPlan, PackSource } from './source';
 import { parentOf, removeIfPresent } from './tree';
-import type { InstalledBurrito, InstalledPack, InstallOutcome, InstallProgress } from './types';
+import type { InstalledBurrito, InstalledPack, InstallOutcome, InstallProgress, Replacement } from './types';
 import { writeInstalledPack } from './store';
 
 const archiveTimeoutMs = 120_000;
@@ -48,7 +48,7 @@ type Offer = {
   row: ResourceRow | undefined;
   bytes: number | undefined;
   choice: CatalogChoice | undefined;
-  fetch(stage: string, index: number, onBytes: (bytes: number) => void): Promise<Fetched>;
+  fetch(stage: string, index: number, onBytes: (bytes: number) => void, onItems: OnItems): Promise<Fetched>;
 };
 
 export type Resolved = {
@@ -122,7 +122,7 @@ function builtOffer(ports: ModulePorts, choice: CatalogChoice): Offer {
     row: choice.row,
     bytes: choice.bytes,
     choice,
-    fetch: (stage, index, onBytes) => build(ports, choice, `${stage}/${index}`, onBytes),
+    fetch: (stage, index, onBytes, onItems) => build(ports, choice, `${stage}/${index}`, onBytes, onItems),
   };
 }
 
@@ -192,6 +192,7 @@ async function fileOffer(ports: ModulePorts, path: string, known: KnownReleases)
   const { burrito } = checked;
   const offer: Offer = {
     ref: refOf(burrito.provenance),
+    revision: burrito.revision,
     row: burrito.row,
     bytes: burrito.bytes,
     choice,
@@ -277,6 +278,45 @@ function selected(offers: readonly Offer[], plan: PackPlan): Offer[] {
   }
   const wanted = new Set(plan.resources.map(resourceKey));
   return offers.filter((offer) => wanted.has(resourceKey(offer.ref)));
+}
+
+export type CatalogReplacements = { pack: PackId; replaces: readonly Replacement[] };
+
+export function catalogReplacements(
+  resolved: Resolved,
+  plan: PackPlan,
+  installed: ReadonlyMap<PackId, InstalledPack>,
+): CatalogReplacements | undefined {
+  const source = resolved.kind;
+  if (source === 'catalog') {
+    return undefined;
+  }
+  const chosen = selected(resolved.offers, plan);
+  const target = chosen.length === 0 ? undefined : targetOf(chosen, plan);
+  if (target === undefined || typeof target === 'string') {
+    return undefined;
+  }
+  const burritos = installed.get(target.pack)?.burritos ?? [];
+  const replaces = chosen.flatMap((offer): Replacement[] => {
+    const present = burritos.find(
+      (burrito) => burrito.source === 'catalog' && resourceKey(burrito.provenance) === resourceKey(offer.ref),
+    );
+    if (present === undefined || present.provenance.commit === offer.revision) {
+      return [];
+    }
+    const { provenance } = present;
+    return [
+      {
+        publisher: provenance.publisher,
+        resource: provenance.resource,
+        title: provenance.title,
+        source,
+        installed: { tag: provenance.tag, commit: provenance.commit },
+        incoming: { tag: offer.ref.tag, commit: offer.revision },
+      },
+    ];
+  });
+  return replaces.length === 0 ? undefined : { pack: target.pack, replaces };
 }
 
 function crossesStep(done: number, total: number): boolean {
@@ -382,6 +422,7 @@ export function createInstaller(context: InstallerContext): Installer {
 
   async function place(
     install: string,
+    resolved: Resolved,
     offer: Offer,
     target: Target,
     fetched: { path: string; temporary: boolean } | BuiltDirectory,
@@ -399,7 +440,13 @@ export function createInstaller(context: InstallerContext): Installer {
     const root = burritoRoot(target.pack, install, provenance.publisher, provenance.resource);
     await files.mkdir(parentOf(root));
     await files.rename(unpacked.directory, root);
-    return { root, row: checked.burrito.row, bytes: checked.burrito.bytes, provenance };
+    return {
+      root,
+      row: checked.burrito.row,
+      bytes: checked.burrito.bytes,
+      source: resolved.kind,
+      provenance,
+    };
   }
 
   async function shareWords(
@@ -458,13 +505,20 @@ export function createInstaller(context: InstallerContext): Installer {
       const before = progress.bytes;
       let burrito: InstalledBurrito;
       try {
-        const fetched = await offer.fetch(stage, index, (bytes) => {
-          progress.bytes = before + bytes;
-        });
+        const fetched = await offer.fetch(
+          stage,
+          index,
+          (bytes) => {
+            progress.bytes = before + bytes;
+          },
+          (done, total) => {
+            progress.items = { done, total };
+          },
+        );
         if (!fetched.ok) {
           throw new InstallFailure(fetched.code);
         }
-        burrito = await place(install, offer, target, fetched, index, stage);
+        burrito = await place(install, resolved, offer, target, fetched, index, stage);
       } catch (error) {
         const code = installCodeOf(error);
         if (isRequired(offer, target, resolved) || installWideFailures.includes(code)) {
@@ -481,6 +535,7 @@ export function createInstaller(context: InstallerContext): Installer {
         progress.bytes = before;
         continue;
       }
+      delete progress.items;
       placed.push(burrito.root);
       added.push(burrito);
       progress.resources = index + 1;

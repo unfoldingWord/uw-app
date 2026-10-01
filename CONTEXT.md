@@ -43,7 +43,7 @@ A Language Pack installed without one or more of its optional resources because 
 _Avoid_: broken pack, incomplete download
 
 **Source**:
-Where a pack's burritos come from: the Catalog, a Peer, or a File.
+Where a pack's burritos come from: the Catalog, a Peer, or a File. Each installed burrito keeps its own, shown in Storage and on the Licence page; a peer or a file that would replace a burrito from the catalog with a different commit asks the leader first.
 _Avoid_: origin, provider
 
 **Provenance**:
@@ -65,6 +65,10 @@ _Avoid_: resource strip, annotations, translation helps
 **Introduction**:
 A **Note** on a whole book or a whole chapter rather than on a verse. A passage that opens the book carries the book's introduction, and a passage that opens a chapter carries that chapter's; they are shown first among the notes.
 _Avoid_: intro note, overview, general notes
+
+**Footnote**:
+The publisher's own note on one verse, carried inside the text's USFM (`\f` and `\fe`). Kept on the verse as a list of plain sentences (`Verse.footnotes`), outside the verse's text, and shown under the verse among the notes, marked as the publisher's footnote. It is part of the text and carries the text's provenance; it is not a Note.
+_Avoid_: annotation, margin note, note (that is Translation Notes)
 
 **Article**:
 A standalone piece of reference text: a **Word** entry (Translation Words) or an **Academy** article (Translation Academy).
@@ -197,7 +201,7 @@ The bounded, append-only record of events on a device, including failures. It le
 _Avoid_: log, history, telemetry (telemetry is derived from it)
 
 **Diagnostics file**:
-The one file a leader shares from Settings so someone can help: the journal written out as a document, and the snapshot beside it. `npm run replay` rebuilds a device from it. In code the journal half is `JournalExport`, written by `journal.export()` and read by `parseJournalExport`; "export" names only that code, never a word a leader sees, and the file leaves the device only through Share. By default it leaves out what the leader read (the passages, articles and stories opened, and bookmarks), keeping every event; "Include what I read" puts them in for that one share.
+The one file a leader shares from Settings so someone can help: the journal written out as a document, and the snapshot beside it. `npm run replay` rebuilds a device from it. In code the journal half is `JournalExport`, written by `journal.export()` and read by `parseJournalExport`; "export" names only that code, never a word a leader sees, and the file leaves the device only through Share. By default it leaves out what the leader read (the passages, articles and stories opened, and bookmarks), keeping every event with its time only to the UTC day, so the time zone cannot be read from it; "Include what I read" puts them in for that one share.
 _Avoid_: log file, dump, backup
 
 **Batch**:
