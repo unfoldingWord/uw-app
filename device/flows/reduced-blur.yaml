@@ -1,0 +1,46 @@
+appId: ${APP_ID}
+name: Settings turns reduced blur on, Home and Study render plainer glass, and it turns off again
+tags:
+  - optional
+  - reduced-blur
+---
+- runFlow: common/start.yaml
+- tapOn:
+    text: 'Settings'
+    retryTapIfNoChange: true
+- extendedWaitUntil:
+    visible: 'Theme'
+    timeout: 15000
+- scrollUntilVisible:
+    element: 'Plainer glass.*'
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    text: 'Reduce blur'
+    rightOf: 'Plainer glass.*'
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: reduced-blur-1-settings-on
+- tapOn: 'Back'
+- extendedWaitUntil:
+    visible: 'Switch theme'
+    timeout: 15000
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: reduced-blur-2-home
+- tapOn:
+    text: 'Study'
+    rightOf: 'Home'
+- extendedWaitUntil:
+    visible: 'Library'
+    timeout: 15000
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: reduced-blur-3-study
+- tapOn: 'Formation'
+- extendedWaitUntil:
+    visible: 'Formation'
+    timeout: 15000
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: reduced-blur-4-formation

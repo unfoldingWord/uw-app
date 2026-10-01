@@ -3,6 +3,8 @@ name: device
 on:
   pull_request:
   workflow_dispatch:
+  push:
+    branches: [main]
 
 permissions:
   contents: read
@@ -16,6 +18,7 @@ env:
   MAESTRO_CLI_NO_ANALYTICS: '1'
   MAESTRO_CLI_ANALYSIS_NOTIFICATION_DISABLED: 'true'
   EXPO_NO_TELEMETRY: '1'
+  UW_LOCALE_GATE: drafts
 
 jobs:
   android:
@@ -35,11 +38,36 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
       - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
+      - name: Restore the emulator snapshot
+        id: avd-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-api30-google_apis-x86_64-pixel_3a-v1
+      - name: Create the emulator snapshot for the cache
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          arch: x86_64
+          target: google_apis
+          profile: pixel_3a
+          ram-size: 2048M
+          heap-size: 256M
+          disk-size: 4096M
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
+          script: echo "Created the emulator snapshot for the cache."
       - name: Prebuild the native Android project
         run: npx expo prebuild --platform android --no-install --clean
       - name: Build the release APK
@@ -52,10 +80,21 @@ jobs:
           name: android-apk
           path: ${{ env.APK_PATH }}
           retention-days: 7
+      - name: Restore Maestro
+        id: maestro-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.maestro
+            !~/.maestro/tests
+          key: maestro-${{ env.MAESTRO_VERSION }}-${{ runner.os }}-${{ runner.arch }}
       - name: Install Maestro
+        if: steps.maestro-cache.outputs.cache-hit != 'true'
+        run: curl -fsSL "https://get.maestro.mobile.dev" | bash
+      - name: Put Maestro on the path
         run: |
-          curl -fsSL "https://get.maestro.mobile.dev" | bash
           echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+          "$HOME/.maestro/bin/maestro" --version
       - name: Run the Maestro flows on the emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -67,9 +106,10 @@ jobs:
           heap-size: 256M
           disk-size: 4096M
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
+          force-avd-creation: false
           disable-animations: true
           script: bash device/ci/android.sh main
-      - name: Try downloading a language on the emulator
+      - name: Try the optional and large-text flows on the emulator
         continue-on-error: true
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -81,8 +121,9 @@ jobs:
           heap-size: 256M
           disk-size: 4096M
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
+          force-avd-creation: false
           disable-animations: true
-          script: bash device/ci/android.sh optional
+          script: bash device/ci/android.sh optional large-text
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -91,6 +132,9 @@ jobs:
             device-out/
             ~/.maestro/tests/
           if-no-files-found: warn
+      - name: Diff the merged manifest permissions against the admitted list
+        if: ${{ !cancelled() }}
+        run: npx tsx scripts/apk-permissions.ts device-out/apk-permissions.txt
 
   ios:
     runs-on: macos-26
@@ -111,6 +155,14 @@ jobs:
           xcode="$(ls -d /Applications/Xcode_*.app | grep -vi beta | sort -V | tail -n 1)"
           sudo xcode-select -s "$xcode/Contents/Developer"
           xcodebuild -version
+      - name: Restore the CocoaPods download cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/CocoaPods
+            ~/.cocoapods/repos
+          key: pods-${{ runner.os }}-${{ hashFiles('package-lock.json', 'app.config.ts', 'modules/**/*.podspec') }}
+          restore-keys: pods-${{ runner.os }}-
       - name: Prebuild the native iOS project and install pods
         run: npx expo prebuild --platform ios --clean
       - name: Boot an iPhone simulator
@@ -140,15 +192,26 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
       - name: Install the app on the simulator
         run: xcrun simctl install "$SIMULATOR_UDID" build/Build/Products/Release-iphonesimulator/unfoldingWord.app
+      - name: Restore Maestro
+        id: maestro-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.maestro
+            !~/.maestro/tests
+          key: maestro-${{ env.MAESTRO_VERSION }}-${{ runner.os }}-${{ runner.arch }}
       - name: Install Maestro
+        if: steps.maestro-cache.outputs.cache-hit != 'true'
+        run: curl -fsSL "https://get.maestro.mobile.dev" | bash
+      - name: Put Maestro on the path
         run: |
-          curl -fsSL "https://get.maestro.mobile.dev" | bash
           echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+          "$HOME/.maestro/bin/maestro" --version
       - name: Run the Maestro flows on the simulator
         run: bash device/ci/ios.sh main
-      - name: Try downloading a language on the simulator
+      - name: Try the optional and large-text flows on the simulator
         continue-on-error: true
-        run: bash device/ci/ios.sh optional
+        run: bash device/ci/ios.sh optional large-text
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -1,9 +1,7 @@
-import { resourceTypeOf, resourceTypes, type ResourceType } from '@lib/catalog/resourceTypes';
-import type { CatalogRelease } from '@lib/catalog/types';
+import { resourceTypeOf, resourceTypes, type CatalogRelease, type ResourceType } from '@lib/catalog/types';
 import type { PackSourceKind } from '@lib/domain/pack';
 import type { Kernel } from '@lib/kernel';
-import type { StoriesRefreshOutcome } from '@lib/partners/partners';
-import type { ImpactStory } from '@lib/partners/stories';
+import type { ImpactStory, StoriesRefreshOutcome } from '@lib/partners/types';
 import { aboutWords, type AboutWords } from './strings';
 
 const translationCoreUrl = 'https://www.translationcore.com';

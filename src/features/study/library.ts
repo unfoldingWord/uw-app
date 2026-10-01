@@ -1,5 +1,4 @@
-import type { CatalogRelease } from '@lib/catalog/types';
-import { resourceTypeOf, resourceTypes, type ResourceType } from '@lib/catalog/resourceTypes';
+import { resourceTypeOf, resourceTypes, type CatalogRelease, type ResourceType } from '@lib/catalog/types';
 import type { CorpusSummary } from '@lib/corpus/types';
 import type { PackId } from '@lib/domain/pack';
 import type { InstalledPack, InstallProgress } from '@lib/packs/types';

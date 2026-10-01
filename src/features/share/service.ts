@@ -2,7 +2,7 @@ import type { AudioClip, Passage, Story, TextChoice } from '@lib/corpus/types';
 import type { FailureCode } from '@lib/domain/failures';
 import { parseReference } from '@lib/domain/reference';
 import type { Kernel } from '@lib/kernel';
-import type { ShareResult } from '@lib/share/share';
+import type { ShareResult } from '@lib/share/types';
 import { shareWords, type ShareWords } from './strings';
 
 export type ShareTarget =

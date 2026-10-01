@@ -1,5 +1,4 @@
-import type { RefreshOutcome } from '@lib/catalog/catalog';
-import type { CatalogLanguage } from '@lib/catalog/types';
+import type { CatalogLanguage, RefreshOutcome } from '@lib/catalog/types';
 import { languagePackId, type PackId } from '@lib/domain/pack';
 import type { Kernel } from '@lib/kernel';
 import type { InstallOutcome } from '@lib/packs/types';

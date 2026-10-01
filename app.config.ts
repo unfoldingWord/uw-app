@@ -75,12 +75,15 @@ const blockedPermissions = [
 
 const blockedOnThisBuild = installerBuild ? blockedPermissions : [...blockedPermissions, installerPermission];
 
+const localeGate = process.env.UW_LOCALE_GATE === 'drafts' ? 'drafts' : 'reviewed';
+
 const config: ExpoConfig = {
   name: 'unfoldingWord',
   slug: 'unfoldingword',
   scheme: 'unfoldingword',
   version: '1.0.0',
   orientation: 'portrait',
+  extra: { localeGate },
   userInterfaceStyle: 'automatic',
   icon: './assets/icon.png',
   platforms: ['ios', 'android'],

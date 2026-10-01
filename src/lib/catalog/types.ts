@@ -30,3 +30,7 @@ export type CatalogLanguage = {
 };
 
 export type LanguageName = { englishName: string; autonym: string; direction: ScriptDirection };
+
+export type { RefreshOutcome } from './catalog';
+export { isStoryAudio } from './built';
+export { resourceTypeOf, resourceTypes, type ResourceType } from './resourceTypes';

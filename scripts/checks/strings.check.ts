@@ -1,20 +1,15 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { join, relative, sep } from 'node:path';
+import { join, relative } from 'node:path';
 import { failureCodes } from '@lib/domain/failures';
+import { preferenceKeys } from '@lib/domain/preferences';
 import { locales } from '@lib/strings/locales';
 import { pluralCategoriesOf } from '@lib/strings/plural';
 import { tables } from '@lib/strings/locales/index';
 import type { Check, CheckOutcome } from './check.ts';
-import { scanSource, type ScanRules } from './strings-literals.ts';
+import { scannedRoots, scanSource } from './strings-literals.ts';
 import { auditTable, copyFindings, textsOf, type Table } from './strings-table.ts';
 
 const repositoryRoot = join(import.meta.dirname, '..', '..');
-
-const scannedRoots: readonly { directory: string; rules: (path: string) => ScanRules }[] = [
-  { directory: 'app', rules: () => ({ prose: true }) },
-  { directory: join('src', 'features'), rules: (path) => ({ prose: path.split(sep).includes('screens') }) },
-  { directory: join('src', 'shared'), rules: () => ({ prose: false }) },
-];
 
 const sourceFile = /\.tsx?$/;
 const testFile = /\.test\.tsx?$/;
@@ -56,6 +51,7 @@ const tableNames: ReadonlySet<string> = new Set([
   ...Object.keys(tables.en),
   ...failureCodes,
   ...failureCodes.map((code) => `failure.${code}`),
+  ...preferenceKeys,
 ]);
 
 function literalFindings(): { findings: string[]; files: number } {
@@ -65,7 +61,7 @@ function literalFindings(): { findings: string[]; files: number } {
     for (const path of filesUnder(root.directory)) {
       files += 1;
       const found = scanSource(path, readFileSync(join(repositoryRoot, path), 'utf8'), {
-        ...root.rules(path),
+        prose: root.prose,
         names: tableNames,
       });
       for (const finding of found) {
@@ -97,7 +93,7 @@ function run(): CheckOutcome {
   }
   return {
     status: 'pass',
-    summary: `${Object.keys(tables.en).length} keys in ${locales.length} locales (${completenessLine()}); ${literals.files} screen and shared files hold no literal copy`,
+    summary: `${Object.keys(tables.en).length} keys in ${locales.length} locales (${completenessLine()}); ${literals.files} feature, app and shared files hold no literal copy`,
   };
 }
 

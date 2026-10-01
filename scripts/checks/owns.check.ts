@@ -2,16 +2,31 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { coreOwns } from '@lib/compose';
+import { fullTextTables } from '@lib/corpus/tables';
 import { kernelModules } from '@lib/kernel';
 import type { Owns } from '@lib/module';
+import { migrationsTable } from '@lib/migrate';
 import { tablesWrittenIn } from '@lib/scope';
 import { migrations } from '@sim/migrations';
 import type { Check } from './check.ts';
-import { ownershipFindings, writerSources, type OwnsClaim, type SourceText } from './owns.ts';
+import {
+  nonLiteralTargetsIn,
+  ownershipFindings,
+  writerSources,
+  type AdmittedTarget,
+  type OwnsClaim,
+  type SourceText,
+} from './owns.ts';
 
 const repositoryRoot = join(import.meta.dirname, '..', '..');
 const featuresDirectory = join(repositoryRoot, 'src', 'features');
 const createdTable = /^\s*CREATE\s+(?:VIRTUAL\s+)?TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(\w+)/i;
+
+const admittedTargets: readonly AdmittedTarget[] = [
+  { path: 'src/lib/migrate.ts', expression: 'migrationsTable', tables: [migrationsTable] },
+  { path: 'src/lib/corpus/tables.ts', expression: 'table', tables: Object.values(fullTextTables) },
+  { path: 'src/lib/corpus/fulltext.ts', expression: 'table', tables: Object.values(fullTextTables) },
+];
 
 function isOwns(value: unknown): value is Owns {
   if (typeof value !== 'object' || value === null) {
@@ -90,13 +105,15 @@ const check: Check = {
       createdTables,
       sources: writerSources(sourcesUnder(join(repositoryRoot, 'src'))),
       tablesWrittenIn,
+      nonLiteralTargetsIn,
+      admittedTargets,
     });
     if (findings.length > 0) {
       return { status: 'fail', findings };
     }
     return {
       status: 'pass',
-      summary: `${claims.length} owners, ${claims.flatMap((claim) => claim.tables).length} tables, ${createdTables.length} created by migrations, one writer each`,
+      summary: `${claims.length} owners, ${claims.flatMap((claim) => claim.tables).length} tables, ${createdTables.length} created by migrations, one writer each; ${admittedTargets.length} table names built from a constant, each admitted with the tables it ranges over`,
     };
   },
 };

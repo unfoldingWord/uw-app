@@ -1,10 +1,15 @@
-import type { RefreshOutcome } from '@lib/catalog/catalog';
-import type { CatalogLanguage, CatalogRelease, ScriptDirection } from '@lib/catalog/types';
+import type { CatalogLanguage, CatalogRelease, RefreshOutcome, ScriptDirection } from '@lib/catalog/types';
 import type { FailureCode } from '@lib/domain/failures';
 import { imagePackId, languagePackId, originalPackId, type PackId } from '@lib/domain/pack';
 import type { Kernel } from '@lib/kernel';
-import { optionalReleases } from '@lib/packs/plan';
-import type { InstallOutcome, PackUpdate, RemoveOutcome, Replacement, Storage } from '@lib/packs/types';
+import {
+  optionalReleases,
+  type InstallOutcome,
+  type PackUpdate,
+  type RemoveOutcome,
+  type Replacement,
+  type Storage,
+} from '@lib/packs/types';
 import { languagesWords, type LanguagesWords } from './strings';
 
 export type LanguageRow = {

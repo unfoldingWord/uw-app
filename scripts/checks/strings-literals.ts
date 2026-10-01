@@ -10,6 +10,9 @@ const copyProps: ReadonlySet<string> = new Set([
   'aria-label',
   'alt',
   'caption',
+  'description',
+  'error',
+  'helperText',
   'hint',
   'label',
   'message',
@@ -20,8 +23,26 @@ const copyProps: ReadonlySet<string> = new Set([
   'title',
 ]);
 
+export const scannedRoots: readonly { directory: string; prose: boolean }[] = [
+  { directory: 'app', prose: true },
+  { directory: 'src/features', prose: true },
+  { directory: 'src/shared', prose: false },
+];
+
+export function scanRulesFor(path: string): ScanRules | undefined {
+  const normalized = path.split('\\').join('/');
+  const root = scannedRoots.find((candidate) => normalized.startsWith(`${candidate.directory}/`));
+  return root === undefined ? undefined : { prose: root.prose };
+}
+
 const letter = /\p{L}/u;
 const prose = /\p{L}[\s.,;:?!]+\p{L}/u;
+const word = /\p{L}{2}/u;
+const address = /^(?:[a-z][a-z\d+.-]*:\/\/|\/)/iu;
+
+function isProse(text: string): boolean {
+  return prose.test(text) && word.test(text) && !address.test(text);
+}
 
 function literalText(node: ts.Node): string | undefined {
   if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) {
@@ -116,7 +137,7 @@ export function scanSource(file: string, source: string, rules: ScanRules): Lite
       }
     } else if (rules.prose && !isModuleOrType(node) && !isStringKey(node)) {
       const text = literalText(node);
-      if (text !== undefined && prose.test(text)) {
+      if (text !== undefined && isProse(text)) {
         flag(node, text);
       }
     }

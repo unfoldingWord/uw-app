@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { scanSource } from './strings-literals.ts';
+import { scanRulesFor, scanSource } from './strings-literals.ts';
 import { auditTable, copyFindings, placeholdersOf } from './strings-table.ts';
 
 const english = {
@@ -161,5 +161,44 @@ describe('literal copy scan', () => {
     expect(
       scanSource('Keyed.tsx', keyed, { prose: true, names: keys }).map((finding) => finding.text),
     ).toEqual(['not.a key']);
+  });
+
+  it('scans every feature file for prose, and app and shared as their roots say', () => {
+    expect(scanRulesFor('src/features/home/service.ts')).toEqual({ prose: true });
+    expect(scanRulesFor('src/features/study/library.ts')).toEqual({ prose: true });
+    expect(scanRulesFor('src/features/home/screens/HomeScreen.tsx')).toEqual({ prose: true });
+    expect(scanRulesFor('app/index.tsx')).toEqual({ prose: true });
+    expect(scanRulesFor('src/shared/ui/Row.tsx')).toEqual({ prose: false });
+    expect(scanRulesFor('src/lib/strings/en/home.ts')).toBeUndefined();
+  });
+
+  it('finds prose in a service and copy in description, helperText and error props', () => {
+    const service = [
+      'export function status(ready: boolean) {',
+      "  return ready ? 'Your language is ready' : code;",
+      '}',
+    ].join('\n');
+    expect(scanSource('service.ts', service, { prose: true }).map((finding) => finding.text)).toEqual([
+      'Your language is ready',
+    ]);
+    const names = [
+      "const site = 'https://www.translationcore.com';",
+      'const route = `/study?reference=${reference}`;',
+      'const path = `M${x} ${y}h1v1h-1z`;',
+      "const key = 'home.theme';",
+    ].join('\n');
+    expect(
+      scanSource('service.ts', names, { prose: true, names: new Set(['home.theme']) }).map(
+        (finding) => finding.text,
+      ),
+    ).toEqual([]);
+    const shared = [
+      '<GlassInput description="Type the code" helperText="Six letters" error={failed ? "Try again" : undefined} />',
+    ].join('\n');
+    expect(scanSource('Shared.tsx', shared, { prose: false }).map((finding) => finding.text)).toEqual([
+      'Type the code',
+      'Six letters',
+      'Try again',
+    ]);
   });
 });

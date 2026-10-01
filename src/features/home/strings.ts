@@ -1,6 +1,5 @@
 import type { Kernel } from '@lib/kernel';
-import type { Words } from '@lib/strings/strings';
-import type { PluralKey, StringKey } from '@lib/strings/table';
+import type { PluralKey, StringKey, Words } from '@lib/strings/types';
 
 type Area = 'home' | 'invitation' | 'impact' | 'common' | 'state' | 'nav' | 'failure' | 'movement';
 

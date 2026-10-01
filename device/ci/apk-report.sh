@@ -5,6 +5,9 @@ tools="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -n 1)"
 bytes="$(wc -c < "$apk" | tr -d ' ')"
 megabytes="$(awk -v b="$bytes" 'BEGIN { printf "%.1f", b / 1048576 }')"
 permissions="$("$tools/aapt2" dump permissions "$apk")"
+dump="${APK_PERMISSIONS_DUMP:-device-out/apk-permissions.txt}"
+mkdir -p "$(dirname "$dump")"
+printf '%s\n' "$permissions" > "$dump"
 badging="$("$tools/aapt2" dump badging "$apk" | grep -E "^(package|sdkVersion|targetSdkVersion|native-code)" || true)"
 
 echo "APK: $apk"
@@ -12,6 +15,11 @@ echo "Size: $bytes bytes ($megabytes MB)"
 echo "$badging"
 echo "Merged manifest permissions:"
 echo "$permissions"
+merger="${MANIFEST_MERGER_REPORT:-android/app/build/outputs/logs/manifest-merger-release-report.txt}"
+if [ -f "$merger" ]; then
+  echo "Where each permission came from (manifest-merger report):"
+  grep -A 2 '^uses-permission' "$merger" || true
+fi
 
 {
   echo "## Android release APK"

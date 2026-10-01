@@ -1,12 +1,11 @@
-import type { Bookmark } from '@lib/bookmarks/bookmarks';
-import type { RefreshOutcome } from '@lib/catalog/catalog';
+import type { Bookmark } from '@lib/bookmarks/types';
+import type { RefreshOutcome } from '@lib/catalog/types';
 import { languagePackId, type PackId } from '@lib/domain/pack';
 import type { Position } from '@lib/formation/types';
 import type { Kernel } from '@lib/kernel';
 import type { InstallOutcome, InstallProgress, PackUpdate } from '@lib/packs/types';
-import type { Invitation, StoriesRefreshOutcome } from '@lib/partners/partners';
-import type { ImpactStory } from '@lib/partners/stories';
-import { refused, written, type Written } from '@lib/written';
+import type { ImpactStory, Invitation, StoriesRefreshOutcome } from '@lib/partners/types';
+import type { Written } from '@lib/written';
 import { homeWords, type HomeWords } from './strings';
 
 export type LocalTime = { readonly at: number; readonly utcOffsetMinutes: number };
@@ -268,7 +267,9 @@ export function createHomeService(kernel: Kernel): HomeService {
       const theme = preferences.get('home.theme') ?? 'system';
       const shown = theme === 'system' ? system : theme;
       const next: Scheme = shown === 'dark' ? 'light' : 'dark';
-      return (await preferences.set('home.theme', next)) ? written(next) : refused('kv.io');
+      return (await preferences.set('home.theme', next))
+        ? { ok: true, value: next }
+        : { ok: false, code: 'kv.io' };
     },
     greeting(local) {
       const shifted = new Date(local.at + local.utcOffsetMinutes * minuteMs);
