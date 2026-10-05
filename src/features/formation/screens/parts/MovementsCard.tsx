@@ -4,7 +4,7 @@ import { GlassButton, Icon } from '@shared/glass';
 import { touchSlop } from '@shared/glass/pressGate';
 import { useTheme } from '@shared/theme';
 import { Card, ThemedText } from '@shared/ui';
-import type { FormationWords, SessionMovement, SessionMovementId } from '../../service';
+import type { Block, FormationWords, SessionMovement, SessionMovementId } from '../../service';
 import { Blocks } from './Blocks';
 import { movementChipExtent } from './touchExtent';
 import { movementTitle } from './wording';
@@ -19,6 +19,19 @@ export type MovementsCardProps = {
   onSelect: (movement: SessionMovementId) => void;
   onComplete?: () => Promise<unknown>;
 };
+
+function withoutLists(blocks: readonly Block[]): Block[] {
+  return blocks.flatMap((block): Block[] => {
+    if (block.kind === 'list') {
+      return [];
+    }
+    if (block.kind === 'quote') {
+      const children = withoutLists(block.children);
+      return children.length === 0 ? [] : [{ ...block, children }];
+    }
+    return [block];
+  });
+}
 
 export function MovementsCard({
   words,
@@ -38,6 +51,8 @@ export function MovementsCard({
   }
   const title = movementTitle(words, movement.id);
   const finished = done.has(movement.id);
+  const questions = movement.questions;
+  const text = questions.source === 'list' ? withoutLists(movement.blocks) : [];
   return (
     <Card level={2}>
       <ThemedText variant="overline" tone="dim" accessibilityRole="header">
@@ -59,9 +74,15 @@ export function MovementsCard({
           />
         ))}
       </ScrollView>
-      {movement.questions.length > 0 ? (
+      {text.length === 0 ? null : <Blocks blocks={text} language={language} />}
+      {questions.items.length > 0 ? (
         <View style={{ gap: theme.space.sp6 }}>
-          {movement.questions.map((question, index) => (
+          {questions.source === 'list' ? (
+            <ThemedText variant="overline" tone="dim" accessibilityRole="header">
+              {words.t('session.talk')}
+            </ThemedText>
+          ) : null}
+          {questions.items.map((question, index) => (
             <ThemedText key={index} variant="body" tone="body">
               {question}
             </ThemedText>

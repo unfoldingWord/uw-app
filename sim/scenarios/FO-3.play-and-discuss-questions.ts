@@ -27,7 +27,7 @@ export default scenario(
 
     assert.ok(session.movements.state === 'in-language');
     const questions = Object.fromEntries(
-      session.movements.formation.movements.map((movement) => [movement.id, movement.questions]),
+      session.movements.formation.movements.map((movement) => [movement.id, movement.questions.items]),
     );
     assert.deepEqual(questions, {
       observation: ['What happens in this story?', 'What does God do?'],
@@ -39,9 +39,25 @@ export default scenario(
     const observation = session.movements.formation.movements[0];
     assert.equal(observation?.title, 'Observation');
     assert.ok(observation.blocks.length > 0, 'the movement keeps its full text beside its questions');
+    assert.deepEqual(
+      session.movements.formation.movements.map((movement) => movement.questions.source),
+      ['list', 'paragraphs', 'paragraphs', 'paragraphs', 'paragraphs'],
+      'the kernel says whether the questions came from a list or are the paragraphs themselves',
+    );
     assert.ok(session.story.questions.length > 0, 'the study questions stay with the story');
 
     const services = servicesOf(device);
+    await device.kernel.preferences.set('study.language', 'qaa');
+    const viewed = await services.formation.session('foundations', 1);
+    assert.ok(viewed?.track === 'foundations' && viewed.movements.state === 'in-language');
+    const listed = viewed.movements.formation.movements.find(
+      (movement) => movement.questions.source === 'list',
+    );
+    assert.ok(listed, 'a movement with a list reaches the screen');
+    assert.ok(
+      listed.blocks.some((block) => block.kind === 'paragraph') && listed.questions.items.length === 2,
+      'the session view exposes both the text and the questions of a movement with a list',
+    );
     assert.equal(services.formation.listen(session.play.audio), undefined, 'no story audio, no player');
 
     await installFromCatalog(device, [audioPackId('qaa', 'qaa_obs')]);

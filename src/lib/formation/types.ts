@@ -41,11 +41,18 @@ export type TrackSummary =
   | { readonly track: 'foundations'; readonly sessions: number; readonly movements: MovementCoverage }
   | { readonly track: 'training' | 'topics'; readonly sessions: number };
 
+export type QuestionSource = 'list' | 'paragraphs';
+
+export type MovementQuestions = {
+  readonly source: QuestionSource;
+  readonly items: readonly string[];
+};
+
 export type SessionMovement = {
   readonly id: SessionMovementId;
   readonly title: string;
   readonly blocks: readonly Block[];
-  readonly questions: readonly string[];
+  readonly questions: MovementQuestions;
 };
 
 export type FormationContent = Sourced & {
@@ -92,6 +99,16 @@ export type TrainingSession = {
 export type Session = FoundationsSession | TrainingSession;
 
 export type SessionOptions = { readonly englishAlongside?: boolean };
+
+export type TrainingLesson = { readonly number: number; readonly title: string; readonly id: string };
+
+export type TrainingUnit = {
+  readonly manual: string;
+  readonly title: string;
+  readonly lessons: readonly TrainingLesson[];
+};
+
+export type TrainingOutline = { readonly lessons: number; readonly units: readonly TrainingUnit[] };
 
 export type NextSession = {
   readonly group: string;

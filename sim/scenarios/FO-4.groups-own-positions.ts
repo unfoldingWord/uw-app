@@ -95,5 +95,24 @@ export default scenario(
     assert.equal(shown.groups, 2);
     assert.equal(shown.active, youth.id);
     assert.deepEqual(Object.keys(shown.positions).sort(), [tuesday.id, youth.id].sort());
+
+    const ahead = { track: 'foundations', session: 3 } as const;
+    const before = formation().group(tuesday.id)?.position;
+    assert.equal((await formation().start(tuesday.id, 'qaa', ahead))?.ok, true);
+    assert.deepEqual(
+      formation().group(tuesday.id)?.position,
+      before,
+      'starting a session ahead of the position, without confirming a move, leaves the position unchanged',
+    );
+    assert.deepEqual(
+      device.kernel.journal
+        .read()
+        .filter((entry) => entry.type === 'SessionStarted')
+        .map((entry) => entry.payload)
+        .at(-1),
+      { group: tuesday.id, track: 'foundations', session: 3, language: 'qaa' },
+      'the session still counts as started where it was played',
+    );
+    assert.equal(await formation().start(tuesday.id, 'qaa', { track: 'foundations', session: 9 }), undefined);
   },
 );

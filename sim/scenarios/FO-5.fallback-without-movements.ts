@@ -55,20 +55,25 @@ export default scenario(
       english.formation.movements.map((movement) => movement.id),
       ['observation', 'translation', 'discourse', 'theological', 'journal'],
     );
-    assert.deepEqual(alongside.outline, [
-      'key-idea',
-      'creedal-verse',
-      'summary',
-      'frames',
-      'observation',
-      'translation',
-      'discourse',
-      'theological',
-      'journal',
-      'drafting',
-      'checking',
-      'conclusion',
-    ]);
+    assert.deepEqual(
+      alongside.outline,
+      [
+        'key-idea',
+        'creedal-verse',
+        'summary',
+        'frames',
+        'study-questions',
+        'observation',
+        'translation',
+        'discourse',
+        'theological',
+        'journal',
+        'drafting',
+        'checking',
+        'conclusion',
+      ],
+      'the study questions stay alongside the English movements',
+    );
 
     const off = await formation.session('foundations', 1, 'qab', { englishAlongside: false });
     assert.ok(off && off.track === 'foundations');

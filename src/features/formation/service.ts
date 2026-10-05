@@ -8,6 +8,7 @@ import type {
   Track,
   StoryAudio,
   TrackSummary,
+  TrainingOutline,
 } from '@lib/formation/types';
 import type { FailureCode } from '@lib/domain/failures';
 import type { Kernel } from '@lib/kernel';
@@ -28,6 +29,8 @@ export type {
   SessionMovementId,
   Track,
   TrackSummary,
+  TrainingLesson,
+  TrainingOutline,
   TrainingSession,
 } from '@lib/formation/types';
 export type { FormationWords } from './strings';
@@ -42,6 +45,7 @@ export type FormationService = {
   words(): FormationWords;
   language(): string | undefined;
   tracks(): Promise<readonly TrackSummary[]>;
+  trainingOutline(): Promise<TrainingOutline>;
   session(track: Track, number: number): Promise<Session | undefined>;
   englishAlongside(): boolean;
   setEnglishAlongside(on: boolean): Promise<boolean>;
@@ -53,7 +57,7 @@ export type FormationService = {
   remove(group: string): Promise<Written<true> | undefined>;
   activate(group: string): Promise<Written<Group> | undefined>;
   advance(group: string, to: Position): Promise<Written<Group> | undefined>;
-  start(group: string): Promise<Written<Group> | undefined>;
+  start(group: string, at?: Position): Promise<Written<Group> | undefined>;
   complete(group: string): Promise<Written<Group> | undefined>;
   progress(group: string): Promise<Progress | undefined>;
   next(group: string): Promise<NextSession | undefined>;
@@ -80,6 +84,8 @@ export function createFormationService(kernel: Kernel): FormationService {
     words: () => formationWords(kernel),
     language,
     tracks: async () => (await withLanguage((current) => formation.tracks(current))) ?? [],
+    trainingOutline: async () =>
+      (await withLanguage((current) => formation.trainingOutline(current))) ?? { lessons: 0, units: [] },
     session: (track, number) =>
       withLanguage((current) =>
         formation.session(track, number, current, { englishAlongside: englishAlongside() }),
@@ -94,7 +100,7 @@ export function createFormationService(kernel: Kernel): FormationService {
     remove: (group) => formation.remove(group),
     activate: (group) => formation.activate(group),
     advance: (group, to) => formation.advance(group, to),
-    start: (group) => withLanguage((current) => formation.start(group, current)),
+    start: (group, at) => withLanguage((current) => formation.start(group, current, at)),
     complete: (group) => formation.complete(group),
     progress: (group) => withLanguage((current) => formation.progress(group, current)),
     next: (group) => withLanguage((current) => formation.next(group, current)),

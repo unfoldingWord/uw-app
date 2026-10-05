@@ -185,10 +185,19 @@ async function placeGroup(
     : service.advance(group.id, { track, session: number, ...(movement === undefined ? {} : { movement }) });
 }
 
-function useFailure(): [FailureCode | undefined, (work: () => Promise<WriteResult>) => Promise<void>] {
+type Run = (work: () => Promise<WriteResult>) => Promise<WriteResult | undefined>;
+
+function useFailure(): [FailureCode | undefined, Run] {
   const [failure, setFailure] = useState<FailureCode | undefined>(undefined);
-  const run = useCallback(async (work: () => Promise<WriteResult>) => {
-    setFailure(await settle(work));
+  const run = useCallback<Run>(async (work) => {
+    let result: WriteResult | undefined;
+    setFailure(
+      await settle(async () => {
+        result = await work();
+        return result;
+      }),
+    );
+    return result;
   }, []);
   return [failure, run];
 }
@@ -213,6 +222,7 @@ function Foundations({
   const [playing, setPlaying] = useState(false);
   const [failure, run] = useFailure();
   const [englishFailure, setEnglishFailure] = useState<FailureCode | undefined>(undefined);
+  const [moveOffered, setMoveOffered] = useState(false);
   const here = atSession(group, 'foundations', session.number);
   const [selected, setSelected] = useState<SessionMovementId>(
     here ? (group?.position.movement ?? 'observation') : 'observation',
@@ -285,12 +295,23 @@ function Foundations({
       group.position.track === 'foundations' &&
       group.position.session > session.number;
     if (group !== undefined && !passed) {
-      await run(async () => {
-        const placed = await placeGroup(service, group, 'foundations', session.number);
-        return placed?.ok === true ? service.start(group.id) : placed;
-      });
+      const started = await run(() =>
+        service.start(group.id, { track: 'foundations', session: session.number }),
+      );
+      if (!here && started?.ok === true) {
+        setMoveOffered(true);
+      }
       await onChanged();
     }
+  };
+
+  const moveGroup = async () => {
+    if (group === undefined) {
+      return;
+    }
+    await run(() => placeGroup(service, group, 'foundations', session.number));
+    setMoveOffered(false);
+    await onChanged();
   };
 
   const complete = async () => {
@@ -380,6 +401,19 @@ function Foundations({
             : service.audioTime(audioStatus)}
         </ThemedText>
       )}
+      {moveOffered && group !== undefined && !here ? (
+        <View style={[styles.footerRow, { gap: theme.space.sp4 }]}>
+          <ThemedText variant="caption" tone="title" live style={styles.grow}>
+            {words.t('session.move.ask', { group: group.name })}
+          </ThemedText>
+          <GlassButton size="sm" variant="dark" onPress={moveGroup}>
+            {words.t('session.move.confirm')}
+          </GlassButton>
+          <GlassButton size="sm" onPress={() => setMoveOffered(false)}>
+            {words.t('session.move.later')}
+          </GlassButton>
+        </View>
+      ) : null}
     </View>
   );
 
@@ -616,5 +650,6 @@ function Training({
 const styles = StyleSheet.create({
   footer: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' },
   footerLine: { width: '100%', textAlign: 'center' },
+  footerRow: { width: '100%', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' },
   grow: { flex: 1 },
 });

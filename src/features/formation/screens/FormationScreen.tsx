@@ -67,10 +67,10 @@ export default function FormationScreen() {
     router.push(sessionHref(group.position.track, group.position.session));
   };
 
-  const openTrack = (track: 'foundations' | 'training') => {
+  const openFoundations = () => {
     const position = active?.group.position;
-    const session = position !== undefined && position.track === track ? position.session : 1;
-    router.push(sessionHref(track, session));
+    const session = position !== undefined && position.track === 'foundations' ? position.session : 1;
+    router.push(sessionHref('foundations', session));
   };
 
   const addGroup = (
@@ -146,7 +146,7 @@ export default function FormationScreen() {
             words={words}
             sessions={foundations.sessions}
             progress={active?.progress?.track === 'foundations' ? active.progress : undefined}
-            onOpen={() => openTrack('foundations')}
+            onOpen={openFoundations}
           />
         </>
       )}
@@ -155,7 +155,7 @@ export default function FormationScreen() {
           title={words.t('formation.training')}
           detail={words.t('formation.training.about')}
           leading={<Icon name="compass" />}
-          onPress={() => openTrack('training')}
+          onPress={() => router.push('/formation/training')}
         />
       )}
       {topics === undefined || topics.sessions === 0 ? null : (

@@ -1,4 +1,5 @@
 import type { Block, Inline } from '../corpus/types';
+import type { MovementQuestions } from './types';
 
 function inlineText(inlines: readonly Inline[]): string {
   return inlines
@@ -27,11 +28,17 @@ function listItems(blocks: readonly Block[]): string[] {
   });
 }
 
-export function questionsOf(blocks: readonly Block[]): readonly string[] {
+function cleaned(texts: readonly string[]): string[] {
+  return texts.map((text) => text.trim()).filter((text) => text !== '');
+}
+
+export function questionsOf(blocks: readonly Block[]): MovementQuestions {
   const items = listItems(blocks);
-  const found =
-    items.length > 0
-      ? items
-      : blocks.filter((block) => block.kind === 'paragraph').map((block) => blockText(block));
-  return found.map((text) => text.trim()).filter((text) => text !== '');
+  if (items.length > 0) {
+    return { source: 'list', items: cleaned(items) };
+  }
+  return {
+    source: 'paragraphs',
+    items: cleaned(blocks.filter((block) => block.kind === 'paragraph').map((block) => blockText(block))),
+  };
 }
