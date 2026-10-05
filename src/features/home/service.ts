@@ -1,5 +1,6 @@
 import type { Bookmark } from '@lib/bookmarks/types';
 import type { RefreshOutcome } from '@lib/catalog/types';
+import type { FailureCode } from '@lib/domain/failures';
 import { languagePackId, type PackId } from '@lib/domain/pack';
 import type { Position } from '@lib/formation/types';
 import type { Kernel } from '@lib/kernel';
@@ -41,6 +42,9 @@ export type DownloadView =
       readonly pack: PackId;
       readonly missing: number;
       readonly online: boolean;
+      readonly failure: FailureCode | undefined;
+      readonly label: string;
+      readonly detail: string | undefined;
     }
   | {
       readonly state: 'installing';
@@ -48,6 +52,9 @@ export type DownloadView =
       readonly pack: PackId;
       readonly progress: InstallProgress;
       readonly percent: number;
+      readonly label: string;
+      readonly detail: string;
+      readonly size: string | undefined;
     }
   | {
       readonly state: 'missing';
@@ -56,6 +63,9 @@ export type DownloadView =
       readonly resources: number;
       readonly missing: number;
       readonly online: boolean;
+      readonly failure: FailureCode | undefined;
+      readonly label: string;
+      readonly detail: string | undefined;
     }
   | {
       readonly state: 'complete';
@@ -81,8 +91,9 @@ export type InvitationWords = {
   readonly action: string;
   readonly dismiss: string;
   readonly readMore: string;
-  readonly securityNote: string;
+  readonly securityNote?: string;
   readonly opensBrowser: string;
+  readonly linksOpenBrowser: string;
 };
 
 export type InvitationCard =
@@ -111,6 +122,7 @@ export type HomeService = {
   saved(): readonly SavedItem[];
   removeSaved(id: string): Promise<Written<true> | undefined>;
   invitation(at: number): InvitationCard;
+  openStory(slug: string): Promise<string | undefined>;
   invitationShown(at: number): Promise<void>;
   tapInvitation(): Promise<void>;
   dismissInvitation(): Promise<void>;
@@ -204,8 +216,9 @@ function invitationWords(words: HomeWords, story: ImpactStory): InvitationWords 
     action: words.t('invitation.action'),
     dismiss: words.t('invitation.dismiss'),
     readMore: words.t('invitation.readMore'),
-    securityNote: story.securityNote ?? words.t('impact.securityNote'),
+    ...(story.securityNote === undefined ? {} : { securityNote: story.securityNote }),
     opensBrowser: words.t('common.opensBrowser'),
+    linksOpenBrowser: words.t('common.linksOpenBrowser'),
   };
 }
 
@@ -213,21 +226,49 @@ export function createHomeService(kernel: Kernel): HomeService {
   const { preferences } = kernel;
   const words = (): HomeWords => homeWords(kernel);
 
+  const countLine = (current: HomeWords, onPhone: number, total: number): string =>
+    current.plural('home.download.count', total, { count: String(onPhone), total });
+
   const download = async (): Promise<DownloadView> => {
     const language = preferences.contentLanguage();
     if (language === undefined) {
       return { state: 'no-language' };
     }
+    const current = words();
+    const autonym = autonymOf(kernel, language);
     const pack = languagePackId(language);
+    const status = await kernel.packs.status(language);
+    const total = status.installed.length + status.missing.length;
     const progress = kernel.packs.installing().find((item) => item.pack === pack);
     if (progress !== undefined) {
       const percent = progress.total === 0 ? 0 : Math.round((progress.resources / progress.total) * 100);
-      return { state: 'installing', language, pack, progress, percent };
+      return {
+        state: 'installing',
+        language,
+        pack,
+        progress,
+        percent,
+        label: current.t('home.download.progress', { language: autonym }),
+        detail: countLine(current, status.installed.length, total),
+        size:
+          progress.bytes > 0
+            ? current.t('home.download.detail', { size: current.size(progress.bytes) })
+            : undefined,
+      };
     }
-    const status = await kernel.packs.status(language);
     const online = await kernel.catalog.online();
+    const failure = status.failure ?? status.failed[0]?.code;
     if (status.installed.length === 0) {
-      return { state: 'none', language, pack, missing: status.missing.length, online };
+      return {
+        state: 'none',
+        language,
+        pack,
+        missing: status.missing.length,
+        online,
+        failure,
+        label: current.t('home.download.none', { language: autonym }),
+        detail: total === 0 ? undefined : countLine(current, 0, total),
+      };
     }
     if (status.missing.length > 0) {
       return {
@@ -237,6 +278,9 @@ export function createHomeService(kernel: Kernel): HomeService {
         resources: status.installed.length,
         missing: status.missing.length,
         online,
+        failure,
+        label: current.t('home.download.missing', { language: autonym }),
+        detail: countLine(current, status.installed.length, total),
       };
     }
     return {
@@ -244,9 +288,7 @@ export function createHomeService(kernel: Kernel): HomeService {
       language,
       pack,
       resources: status.installed.length,
-      label: words().plural('home.download.ready', status.installed.length, {
-        language: autonymOf(kernel, language),
-      }),
+      label: current.plural('home.download.ready', status.installed.length, { language: autonym }),
     };
   };
 
@@ -336,6 +378,7 @@ export function createHomeService(kernel: Kernel): HomeService {
           }
         : invitation;
     },
+    openStory: async (slug) => (await kernel.partners.open(slug))?.link,
     invitationShown: (at) => kernel.partners.shown(at),
     tapInvitation: () => kernel.partners.tap(),
     dismissInvitation: () => kernel.partners.dismiss(),
@@ -378,9 +421,11 @@ export function createHomeService(kernel: Kernel): HomeService {
     onChange(listener) {
       const stopPreferences = preferences.onChange(() => listener());
       const stopBookmarks = kernel.bookmarks.onChange(listener);
+      const stopPacks = kernel.packs.onChange(listener);
       return () => {
         stopPreferences();
         stopBookmarks();
+        stopPacks();
       };
     },
   };

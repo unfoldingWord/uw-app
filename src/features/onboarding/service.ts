@@ -41,6 +41,12 @@ async function startLanguagePack(
   language: string,
 ): Promise<{ done: Promise<InstallOutcome> }> {
   const pack = languagePackId(language);
+  if (kernel.catalog.releases(language).length === 0) {
+    const refreshed = await kernel.catalog.refresh();
+    if (!refreshed.ok && kernel.catalog.releases(language).length === 0) {
+      return { done: Promise.resolve({ ok: false, install: undefined, pack, code: refreshed.code }) };
+    }
+  }
   const status = await kernel.packs.status(language);
   const installed = kernel.packs.installed().find((item) => item.pack === pack);
   if (status.complete && installed !== undefined) {

@@ -22,41 +22,49 @@ export function DownloadCard({ view, autonym, onOpenLanguages, onComplete }: Dow
   switch (view.state) {
     case 'no-language':
       return null;
-    case 'installing': {
-      const title = words.t('home.download.progress', { language: autonym });
+    case 'installing':
       return (
-        <Card compact shadow="rest" press={{ accessibilityLabel: title, onPress: onOpenLanguages }}>
+        <Card compact shadow="rest" press={{ accessibilityLabel: view.label, onPress: onOpenLanguages }}>
           <View style={styles.line}>
             <View style={styles.grow}>
               <ThemedText variant="overline" tone="dim">
-                {title}
+                {view.label}
               </ThemedText>
             </View>
             <ThemedText variant="caption" tone="title" weight={theme.fontWeight.fwMedium}>
               {words.t('home.download.percent', { percent: view.percent })}
             </ThemedText>
           </View>
-          <ProgressBar percent={view.percent} accessibilityLabel={title} />
+          <ProgressBar percent={view.percent} accessibilityLabel={view.label} />
+          <ThemedText variant="caption" tone="body">
+            {view.detail}
+          </ThemedText>
+          {view.size === undefined ? null : (
+            <ThemedText variant="caption" tone="dim">
+              {view.size}
+            </ThemedText>
+          )}
         </Card>
       );
-    }
     case 'none':
     case 'missing': {
-      const text =
-        view.state === 'none'
-          ? words.t('home.download.none', { language: autonym })
-          : words.t('home.download.missing', { language: autonym });
       const action =
         view.state === 'none'
           ? words.t('state.notDownloaded.action', { language: autonym })
           : words.t('home.download.complete');
+      const shown = view.failure ?? failure;
       return (
         <Card compact shadow="rest">
           <ThemedText variant="label" tone="title">
-            {text}
+            {view.label}
           </ThemedText>
+          {view.detail === undefined ? null : (
+            <ThemedText variant="caption" tone="body">
+              {view.detail}
+            </ThemedText>
+          )}
           {view.online ? null : <Notice text={words.t('home.download.waiting')} />}
-          {failure === undefined ? null : <Notice text={words.t(`failure.${failure}`)} />}
+          {shown === undefined ? null : <Notice text={words.t(`failure.${shown}`)} />}
           <GlassButton
             variant="dark"
             disabled={!view.online}

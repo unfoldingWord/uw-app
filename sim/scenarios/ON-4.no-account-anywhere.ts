@@ -70,6 +70,43 @@ function inputFields(file: string): Field[] {
   return found;
 }
 
+type Element = { file: string; element: string; attributes: Readonly<Record<string, string>> };
+
+function inputElements(file: string): Element[] {
+  const source = ts.createSourceFile(
+    file,
+    readFileSync(file, 'utf8'),
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TSX,
+  );
+  const found: Element[] = [];
+  const visit = (node: ts.Node): void => {
+    if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
+      const attributes: Record<string, string> = {};
+      for (const property of node.attributes.properties) {
+        if (ts.isJsxAttribute(property)) {
+          attributes[property.name.getText(source)] = attributeValue(property.initializer);
+        }
+      }
+      found.push({ file, element: node.tagName.getText(source), attributes });
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(source);
+  return found;
+}
+
+const textField = /(^|\.)(GlassInput|TextInput)$/;
+
+const firstNameLabel = /firstName|nameLabel|name\.label/;
+
+const autofillOptOut: Readonly<Record<string, string>> = {
+  autoComplete: 'off',
+  importantForAutofill: 'no',
+  textContentType: 'none',
+};
+
 const accountWords = /account|sign.?in|log.?in|password|email|e-mail|phone.?number|credential|token|auth/i;
 
 export default scenario(
@@ -136,6 +173,26 @@ export default scenario(
       ),
       [],
       'no text field asks the system for a credential, an email or a phone number',
+    );
+
+    const firstNameInputs = [...sourcesUnder('src'), ...sourcesUnder('app')]
+      .flatMap(inputElements)
+      .filter(
+        (element) =>
+          textField.test(element.element) && firstNameLabel.test(element.attributes.accessibilityLabel ?? ''),
+      );
+    assert.ok(
+      firstNameInputs.length >= 2,
+      'the check reads the first-name fields in onboarding and settings',
+    );
+    assert.deepEqual(
+      firstNameInputs.flatMap((element) =>
+        Object.entries(autofillOptOut)
+          .filter(([attribute, expected]) => element.attributes[attribute] !== expected)
+          .map(([attribute, expected]) => `${element.file}: ${attribute} must be "${expected}"`),
+      ),
+      [],
+      'every first-name field opts out of system autofill and content-type guessing',
     );
   },
 );

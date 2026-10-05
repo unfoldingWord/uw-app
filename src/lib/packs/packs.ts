@@ -1,7 +1,7 @@
 import { compareText } from '../order';
 import { readCatalogReleases } from '../catalog/store';
 import type { CatalogRelease } from '../catalog/types';
-import { failureCodeOf } from '../domain/failures';
+import { failureCodeOf, type FailureCode } from '../domain/failures';
 import {
   languagePackId,
   packDirectory,
@@ -44,6 +44,7 @@ export type LanguageStatus = {
   missing: readonly CatalogRelease[];
   updates: readonly ResourceUpdate[];
   failed: readonly FailedRelease[];
+  failure: FailureCode | undefined;
   complete: boolean;
 };
 
@@ -66,6 +67,7 @@ export type PacksApi = {
   installing(): readonly InstallProgress[];
   updates(): Promise<readonly PackUpdate[]>;
   status(language: string): Promise<LanguageStatus>;
+  onChange(listener: () => void): () => void;
   storage(): Promise<Storage>;
   defaults(pack: PackId): Promise<readonly CatalogRelease[]>;
   optional(pack: PackId): Promise<readonly CatalogRelease[]>;
@@ -108,6 +110,13 @@ export const packsModule = defineModule<PacksApi>({
     const installed = new Map<PackId, InstalledPack>();
     const progress = new Map<string, InstallProgress>();
     const failures = new Map<PackId, readonly FailedRelease[]>();
+    const lastFailure = new Map<PackId, FailureCode>();
+    const listeners = new Set<() => void>();
+    const notify = (): void => {
+      for (const listener of listeners) {
+        listener();
+      }
+    };
     let queue: Promise<unknown> = Promise.resolve();
     let pending: PendingReplace | undefined;
 
@@ -123,6 +132,7 @@ export const packsModule = defineModule<PacksApi>({
       installed: () => installed,
       commit: (pack) => {
         installed.set(pack.pack, pack);
+        notify();
       },
       failed: (pack, releases) => {
         const present = new Set(
@@ -148,6 +158,16 @@ export const packsModule = defineModule<PacksApi>({
 
     const catalogReleases = (): Promise<CatalogRelease[]> => readCatalogReleases(ports.db);
 
+    function noted(outcome: InstallOutcome): InstallOutcome {
+      if (outcome.ok) {
+        lastFailure.delete(outcome.pack.pack);
+      } else if (outcome.pack !== undefined) {
+        lastFailure.set(outcome.pack, outcome.code);
+      }
+      notify();
+      return outcome;
+    }
+
     async function installNow(
       source: PackSource,
       plan: PackPlan,
@@ -159,7 +179,7 @@ export const packsModule = defineModule<PacksApi>({
           type: 'Failure',
           payload: { code: resolution.code, context: { step: source.kind } },
         });
-        return { ok: false, install: undefined, pack: plan.pack, code: resolution.code };
+        return noted({ ok: false, install: undefined, pack: plan.pack, code: resolution.code });
       }
       const asked = replace === 'ask' ? catalogReplacements(resolution.resolved, plan, installed) : undefined;
       if (asked !== undefined) {
@@ -169,9 +189,9 @@ export const packsModule = defineModule<PacksApi>({
           type: 'Failure',
           payload: { code, context: { pack: asked.pack, step: source.kind } },
         });
-        return { ok: false, install: undefined, pack: asked.pack, code, replaces: asked.replaces };
+        return noted({ ok: false, install: undefined, pack: asked.pack, code, replaces: asked.replaces });
       }
-      return installer.prepare(resolution.resolved, plan);
+      return noted(await installer.prepare(resolution.resolved, plan));
     }
 
     async function discardPending(): Promise<void> {
@@ -290,6 +310,8 @@ export const packsModule = defineModule<PacksApi>({
         await context.emit({ type: 'PackRemoved', payload: { pack } });
         installed.delete(pack);
         failures.delete(pack);
+        lastFailure.delete(pack);
+        notify();
         try {
           await ports.db.transaction((transaction) => deleteInstalledPack(transaction, pack));
           await ports.files.remove(packDirectory(pack));
@@ -317,6 +339,7 @@ export const packsModule = defineModule<PacksApi>({
         missing,
         updates: found?.resources ?? [],
         failed: (failures.get(pack) ?? []).filter((item) => missingKeys.has(resourceKey(item))),
+        failure: lastFailure.get(pack),
         complete: burritos.length > 0 && missing.length === 0,
       };
     }
@@ -350,6 +373,12 @@ export const packsModule = defineModule<PacksApi>({
         installing: () => [...progress.values()].map((item) => ({ ...item })),
         updates,
         status,
+        onChange(listener) {
+          listeners.add(listener);
+          return () => {
+            listeners.delete(listener);
+          };
+        },
         storage,
         defaults: async (pack) => defaultReleases(await catalogReleases(), pack),
         optional: async (pack) => optionalReleases(await catalogReleases(), pack),

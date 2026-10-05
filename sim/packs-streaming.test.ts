@@ -126,6 +126,8 @@ describe('packs install by streaming (LA-2, LA-7)', () => {
     device.adapters.files.setCapacity(device.adapters.files.used() + archiveBytes + 64);
     const outcome = await device.kernel.packs.installFromCatalog(originalPackId('hbo'));
     expect(outcome).toMatchObject({ ok: false, code: 'pack.no-space' });
-    expect(device.adapters.files.tree().filter((path) => path.startsWith('packs/'))).toEqual(['packs/']);
+    expect(
+      device.adapters.files.tree().filter((path) => path.startsWith('packs/') && path !== 'packs/'),
+    ).toEqual([]);
   });
 });

@@ -73,6 +73,27 @@ describe('packs interface (LA-2, LA-6, LA-7, SH-3)', () => {
     );
   });
 
+  it('tells a listener when a pack lands, fails or leaves, so Home can redraw its download card (HO-5)', async () => {
+    const { device } = await phone();
+    let heard = 0;
+    const stop = device.kernel.packs.onChange(() => {
+      heard += 1;
+    });
+    await device.kernel.packs.installFromCatalog(languagePackId('qab'));
+    expect(heard).toBeGreaterThan(0);
+    const afterInstall = heard;
+    await device.kernel.packs.remove(languagePackId('qab'));
+    expect(heard).toBeGreaterThan(afterInstall);
+    const afterRemove = heard;
+    device.adapters.http.setOnline(false);
+    await device.kernel.packs.installFromCatalog(languagePackId('qab'));
+    expect(heard).toBeGreaterThan(afterRemove);
+    stop();
+    device.adapters.http.setOnline(true);
+    await device.kernel.packs.installFromCatalog(languagePackId('qab'));
+    expect(heard).toBe(afterRemove + 1);
+  });
+
   it('reports what is on the phone and what is missing for a language, and completes it in one tap (HO-5)', async () => {
     const { device } = await phone();
     const before = await device.kernel.packs.status('qaa');

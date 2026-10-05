@@ -218,6 +218,8 @@ export default function SettingsScreen() {
           }}
           autoComplete="off"
           autoCorrect={false}
+          importantForAutofill="no"
+          textContentType="none"
           maxLength={60}
           returnKeyType="done"
           onSubmitEditing={() => void saveName()}
