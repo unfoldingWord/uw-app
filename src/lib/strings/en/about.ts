@@ -1,4 +1,5 @@
 export const about = {
+  'about.logo': 'unfoldingWord',
   'about.overline': 'About this library',
   'about.title': 'What the church has built',
   'about.stats.languages': { one: 'language', other: 'languages' },
@@ -80,7 +81,7 @@ export const about = {
   'settings.diagnostics': 'Share diagnostics',
   'settings.diagnostics.about': 'Send a record of what happened on this phone to someone helping you.',
   'settings.footer':
-    'Nothing leaves this phone that you did not choose to send, and the app counts opens, downloads, transfers and shares only in aggregate, with no identifiers.',
+    'Nothing leaves this phone that you did not choose to send, and the app keeps only anonymous counts of how it is used, listed on the privacy screen.',
   'diagnostics.title': 'Share diagnostics',
   'diagnostics.body':
     'The file holds a record of what the app did on this phone and a summary of what is on it, without the passages, articles and stories you opened or saved, and with no names, notes or identifiers.',

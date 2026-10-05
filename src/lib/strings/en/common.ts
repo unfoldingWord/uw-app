@@ -24,6 +24,7 @@ export const common = {
   'common.previous': 'Previous',
   'common.next': 'Next',
   'common.opensBrowser': 'Opens in your browser',
+  'common.linksOpenBrowser': 'Links open in your browser.',
   'common.bookmark.add': 'Save for later',
   'common.bookmark.remove': 'Remove from saved',
   'common.joined': '{first} · {second}',

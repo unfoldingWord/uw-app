@@ -74,7 +74,7 @@ export type ImpactStoryView = {
   readonly link: string;
   readonly overline: string;
   readonly readMore: string;
-  readonly securityNote: string;
+  readonly securityNote?: string;
   readonly image: string | undefined;
 };
 
@@ -111,7 +111,7 @@ function storyView(
     link: story.link,
     overline: words.t('invitation.overline'),
     readMore: words.t('invitation.readMore'),
-    securityNote: story.securityNote ?? words.t('impact.securityNote'),
+    ...(story.securityNote === undefined ? {} : { securityNote: story.securityNote }),
     image: imageOf(kernel, story),
   };
 }

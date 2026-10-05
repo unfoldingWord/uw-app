@@ -29,7 +29,20 @@ export default scenario(
       readMore: 'Read the full story on unfoldingword.org',
       securityNote: 'Names in this story are changed for security.',
       opensBrowser: 'Opens in your browser',
+      linksOpenBrowser: 'Links open in your browser.',
     });
+
+    assert.equal(
+      await home.openStory(due.state === 'due' ? due.story.slug : ''),
+      'https://unfoldingword.org/africa/when-jeremiah-first-heard-that-his-chadian-church-planting/',
+      'reading the story from Home hands the card the link to open',
+    );
+    assert.equal(
+      phone.kernel.telemetry.counts().impactStoryOpens,
+      1,
+      'reading the story from Home counts an impact story open',
+    );
+    assert.equal(await home.openStory('no-such-story'), undefined);
 
     await home.invitationShown(world.clock.now());
     await home.invitationShown(world.clock.now());

@@ -39,6 +39,10 @@ export function isUnitedStatesZone(timeZone: string): boolean {
   );
 }
 
+function regionAllowsUnitedStates(region: string | undefined): boolean {
+  return region === undefined || region.toUpperCase() === 'US';
+}
+
 export function inUnitedStates(locale: DeviceLocale): boolean {
-  return locale.region?.toUpperCase() === 'US' || isUnitedStatesZone(locale.timeZone);
+  return isUnitedStatesZone(locale.timeZone) && regionAllowsUnitedStates(locale.region);
 }
