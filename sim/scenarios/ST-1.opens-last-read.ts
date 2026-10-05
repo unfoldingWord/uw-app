@@ -29,10 +29,24 @@ export default scenario(
     );
     assert.equal(first.state === 'passage' && first.view.reading, 'literal');
 
-    await services.study.passage('3JN 1:2');
+    const tapped = await services.study.passage('3JN 1:2');
+    assert.ok(tapped.state === 'passage');
+    assert.equal(tapped.view.passage.reference, '3JN 1', 'the screen shows the whole chapter');
+    assert.deepEqual(tapped.view.landing, { chapter: 1, verse: 2 }, 'and lands on the verse');
+    assert.equal(services.home.continueReading()?.reference, '3JN 1:2');
     await phone.restart();
     const again = await servicesOf(phone).study.open();
     assert.equal(again.state === 'passage' && again.view.reference, '3JN 1:2', 'the last-read reference');
+    assert.equal(again.state === 'passage' && again.view.passage.reference, '3JN 1');
+    assert.deepEqual(again.state === 'passage' && again.view.landing, { chapter: 1, verse: 2 });
+    assert.deepEqual(
+      phone.kernel.journal
+        .read()
+        .flatMap((entry) => (entry.type === 'PassageOpened' ? [entry.payload.reference] : [])),
+      ['RUT 1', '3JN 1:2', '3JN 1:2'],
+      'opening a verse journals the verse, never the chapter around it',
+    );
+    assert.equal(servicesOf(phone).home.continueReading()?.reference, '3JN 1:2');
 
     await servicesOf(phone).study.setReading('simplified');
     const simplified = await servicesOf(phone).study.open();

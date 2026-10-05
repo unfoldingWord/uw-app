@@ -44,6 +44,7 @@ export type CorpusApi = {
   title(target: LinkTarget, language: string): string | undefined;
   contents(language: string): Promise<Contents>;
   passage(reference: Reference, options: PassageOptions): Promise<Passage | undefined>;
+  opened(reference: Reference, language: string): Promise<void>;
   article(id: string, language: string): Promise<Article | undefined>;
   story(number: number, language: string): Promise<Story | undefined>;
   movements(story: number, language: string): Promise<Movements | undefined>;
@@ -283,6 +284,13 @@ export const corpusModule = defineModule<CorpusApi>({
       }
     };
 
+    const opened = async (reference: Reference, language: string): Promise<void> => {
+      await context.emit({
+        type: 'PassageOpened',
+        payload: { reference: formatReference(reference), language },
+      });
+    };
+
     const api: CorpusApi = {
       languages: () => contentLanguages(library),
       summary: (language) => summarize(library, language),
@@ -293,14 +301,12 @@ export const corpusModule = defineModule<CorpusApi>({
       passage: (reference, options) =>
         read(async () => {
           const passage = await assemblePassage(library, reference, options);
-          if (passage !== undefined) {
-            await context.emit({
-              type: 'PassageOpened',
-              payload: { reference: formatReference(reference), language: options.language },
-            });
+          if (passage !== undefined && options.journal !== false) {
+            await opened(reference, options.language);
           }
           return passage;
         }),
+      opened,
       article: (id, language) =>
         read(async () => {
           const article = await assembleArticle(library, id, language);

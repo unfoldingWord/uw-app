@@ -29,7 +29,10 @@ export default function LibraryScreen() {
     if (card.pack === undefined) {
       return;
     }
-    const pending = service.download(card.pack);
+    const pending = service.download(
+      card.pack,
+      card.type === 'formation' ? { withRows: ['formation'] } : undefined,
+    );
     await reload();
     const outcome = await pending;
     setFailures((current) => {

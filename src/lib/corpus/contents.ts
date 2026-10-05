@@ -2,7 +2,7 @@ import { bookByCode } from '../domain/books';
 import { compareText } from '../order';
 import type { Library } from './library';
 import { readingOfKind } from './readings';
-import { academyOrder, audioClips, movementStories, stories } from './loaders';
+import { academyManuals, academyOrder, audioClips, movementStories, stories } from './loaders';
 import type { Contents } from './types';
 
 function chaptersInScope(code: string, scoped: readonly string[]): number[] {
@@ -32,6 +32,10 @@ export async function contentsOf(library: Library, language: string): Promise<Co
     titles.filter((row) => row.kind === kind).map((row) => ({ id: row.target, title: row.title }));
   const [academy] = library.of(language, ['academy']);
   const order = academy === undefined ? [] : await academyOrder(library, academy);
+  const manuals =
+    academy === undefined
+      ? []
+      : (await academyManuals(library, academy)).map(({ manual, title }) => ({ manual, title }));
   const [storyEntry] = library.of(language, ['stories']);
   const storyList = storyEntry === undefined ? [] : [...(await stories(library, storyEntry)).values()];
   const [movementEntry] = library.of(language, ['movements']);
@@ -48,6 +52,7 @@ export async function contentsOf(library: Library, language: string): Promise<Co
     academy: articleEntries('academy').sort(
       (left, right) => order.indexOf(left.id) - order.indexOf(right.id),
     ),
+    manuals,
     stories: storyList.map((story) => ({ number: story.number, title: story.title })),
     movements: movementEntry === undefined ? [] : await movementStories(library, movementEntry),
     audio,

@@ -155,7 +155,11 @@ export type Passage = {
   readonly audio: readonly AudioClip[];
 };
 
-export type PassageOptions = { readonly language: string; readonly text?: TextChoice | 'original' };
+export type PassageOptions = {
+  readonly language: string;
+  readonly text?: TextChoice | 'original';
+  readonly journal?: boolean;
+};
 
 export type ArticleKind = 'word' | 'academy';
 
@@ -264,11 +268,14 @@ export type TextContents = Sourced & { readonly reading: Reading; readonly books
 
 export type ArticleEntry = { readonly id: string; readonly title: string };
 
+export type ManualEntry = { readonly manual: string; readonly title: string };
+
 export type Contents = {
   readonly language: string;
   readonly texts: readonly TextContents[];
   readonly words: readonly ArticleEntry[];
   readonly academy: readonly ArticleEntry[];
+  readonly manuals: readonly ManualEntry[];
   readonly stories: readonly { readonly number: number; readonly title: string }[];
   readonly movements: readonly number[];
   readonly audio: readonly { readonly book: string; readonly chapter: number }[];

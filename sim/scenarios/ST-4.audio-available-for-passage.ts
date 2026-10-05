@@ -62,6 +62,12 @@ export default scenario(
 
     const after = await services.study.passage('RUT 1:16');
     assert.ok(after.state === 'passage' && after.view.audio.state === 'on-phone');
+    const uncovered = await services.study.passage('3JN 1:1');
+    assert.deepEqual(
+      uncovered.state === 'passage' && uncovered.view.audio,
+      { state: 'no-chapter', label: '3 John 1 · audio', detail: 'This chapter has no audio.' },
+      'with the pack on the phone, a chapter it does not carry says so in place and never offers a download',
+    );
     const onPhone = after.view.audio.clip;
     listener.adapters.audio.provide({ kind: 'file', path: onPhone.path }, 90_000);
 

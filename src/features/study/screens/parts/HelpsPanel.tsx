@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { GlassButton, GlassIconButton, GlassSurface, Icon } from '@shared/glass';
 import { contentText, useTheme } from '@shared/theme';
-import type { Introduction, LinkTarget, Note, Passage, Question } from '../../service';
+import type { HelpsInstalled, Introduction, LinkTarget, Note, Passage, Question } from '../../service';
 import type { StudyWords } from '../../strings';
 import { Blocks } from './Blocks';
 import { Choices } from './Choices';
-import { hasHelps, helpsAt, type VerseKey } from './passage';
+import { helpsAt, type VerseKey } from './passage';
 import { Say } from './Say';
 
 export type HelpsTab = 'notes' | 'wordLinks' | 'questions';
@@ -16,6 +16,7 @@ export const helpsShare = '50%';
 export type HelpsPanelProps = {
   words: StudyWords;
   passage: Passage;
+  installed: HelpsInstalled;
   at: VerseKey | undefined;
   tab: HelpsTab;
   onTab: (tab: HelpsTab) => void;
@@ -91,7 +92,13 @@ function NoteItem({
           {note.quote}
         </Say>
       )}
-      <Blocks blocks={note.blocks} language={language} onLink={onLink} compact />
+      <Blocks
+        blocks={note.blocks}
+        language={language}
+        onLink={onLink}
+        linkMissing={words.t('article.linkMissing')}
+        compact
+      />
       {support === undefined ? null : (
         <GlassButton
           variant="quiet"
@@ -128,7 +135,13 @@ function IntroItem({
           ? words.t('study.helps.bookIntro')
           : words.t('study.helps.chapterIntro', { chapter: String(intro.chapter) })}
       </Say>
-      <Blocks blocks={intro.blocks} language={language} onLink={onLink} compact />
+      <Blocks
+        blocks={intro.blocks}
+        language={language}
+        onLink={onLink}
+        linkMissing={words.t('article.linkMissing')}
+        compact
+      />
     </View>
   );
 }
@@ -203,6 +216,7 @@ function QuestionItem({
 export function HelpsPanel({
   words,
   passage,
+  installed,
   at,
   tab,
   onTab,
@@ -225,7 +239,6 @@ export function HelpsPanel({
     label: words.t(tabKeys[key]),
     selected: key === tab,
   }));
-  const available = hasHelps(passage) || helps.footnotes.length > 0;
   const count =
     tab === 'notes'
       ? helps.intros.length + helps.notes.length + helps.footnotes.length
@@ -267,7 +280,7 @@ export function HelpsPanel({
         </Say>
       )}
       <ScrollView style={styles.body} contentContainerStyle={{ gap: theme.space.sp3 }}>
-        {!available ? (
+        {count === 0 && !installed[tab] ? (
           <Say role="caption" tone="body">
             {words.t('study.helps.notDownloaded')}
           </Say>
