@@ -3,6 +3,55 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-10-05 Q1 product and QA review against the PRD: twenty findings fixed, driven in the web harness
+
+Node v22.22.0. Nothing ran on a phone, an emulator or a simulator: the sandbox has no KVM and no CPU
+virtualization, and dl.google.com answers nothing, so no Android SDK or emulator could be installed. Every
+screen claim below comes from the web render harness (ADR 0008) in Chromium, and every behaviour claim from
+the sim.
+
+- **The review.** Each Must requirement in PRD sections 7 to 13 was compared with the code, its scenario and its
+  strings. Twenty misalignments were found where a scenario proved a kernel fact the screen did not show, or
+  proved a narrower proxy than the requirement: ST-1, ST-2, ST-3, ST-4, ST-5, ST-6, ST-7, ST-10, HO-5, ON-2,
+  ON-3, SE-1, FO-1, FO-2, FO-3, FO-4, FO-5, LA-1, PA-2, PA-6 and PRD 10.1, 10.2. GitHub refused issue creation
+  from this session (403), so the findings were fixed directly; the list is in the pull request.
+- **Red first.** Each extended scenario was observed red before its fix: ST-1 (`'3JN 1:2' !== '3JN 1'`), ST-3,
+  ST-4, ST-5, ST-7, HO-5 (the view lacked `label`, `detail` and `failure`), ON-2 (`undefined` instead of
+  `http.offline` on Home), ON-4 (the Settings name field lacked `importantForAutofill` and `textContentType`),
+  FO-1 (`trainingOutline is not a function`), FO-3, FO-4 (`session: 2` instead of `3`), FO-5 (`study-questions`
+  missing from the outline with English alongside), LA-1 (`emptyCause is not a function`), HO-7, PA-2, PA-6.
+- **Found by driving the app, not by the sim.** A Playwright script drove the real screens over the memory
+  adapters (onboarding, Home, Study with verse taps and bookmarks, the library, the originals, Formation
+  sessions with and without the five movements, the Training outline, the move-the-group confirm, Languages,
+  Settings, About and the impact story), in light and dark. It found four defects the extended scenarios had
+  not: choosing the Hebrew text did nothing when Study opened at its last-read place (`open()` ignored the
+  request), the library's Five movements card could not install the formation row, "Continue in English" on a
+  fresh phone failed with `pack.empty-plan` because no catalog had been fetched and Home showed nothing wrong,
+  and Home never redrew its download card when a pack landed in the background (Home listened to preferences
+  and bookmarks only). An adversarial read of the diff found seven more, all fixed: the original-text view was a
+  dead end for a language with no text, every verse tap re-assembled the chapter and journaled an event, the
+  Home count over-counted during an update, the Training outline could split a manual in two, its empty state
+  misreported the cause, the Languages count and size disagreed, and the move prompt appeared after a failed
+  start. Each fix has a scenario or test: ON-2 (cold phone, cold offline phone), ST-7 (`open({ original })`),
+  ST-5 (the card downloads the formation row through the service), `sim/packs.test.ts` (`packs.onChange`).
+- **Decisions taken, recorded in the PRD decision log row 97 and the scenarios:** the invitation needs a United
+  States time zone and a locale region that is US or unknown; last-read and bookmarks are at the verse; Play
+  never moves a group without a one-sentence confirm; the Languages count is what the language pack offers;
+  the Library header counts resource types.
+- **Strings.** 21 keys added and 9 reworded in English and drafted in the 15 locales (`docs/strings-review.md`);
+  `impact.securityNote`, `formation.coverage.questions` and `study.audio.streaming` removed everywhere.
+  `strings` check: 491 keys in 16 locales, each 491/491.
+- **Render harness.** `npm run shots`: 182 screenshots across light, dark, reduced blur, RTL, Urdu, Hindi and
+  large text; 0 text boxes escaping their parent; 39 targets under 44 px, all inline links exempt under decision
+  86; no page errors. The driven flows logged no page errors either; the only console output is React Native
+  Web's `useNativeDriver` warning.
+- **`npm run verify` green** on the final tree (822 tests, 63 scenarios, 51 Must requirements traced, 21 fixture
+  burritos, both bundles clean of sim code). The live contract step was skipped: git.door43.org answers 403
+  from this sandbox.
+- **Not verified:** any phone render (light, dark, reduced blur, RTL, dynamic type), VoiceOver and TalkBack on
+  the new Training rows, the move confirm and the no-chapter audio state; the device CI has not run on this
+  branch.
+
 ## 2026-09-30 D3 first device CI run of the v1.1.0 checks (#65)
 
 The first GitHub Actions run of the device workflow on this branch (run 36775488208, job `android`) built the

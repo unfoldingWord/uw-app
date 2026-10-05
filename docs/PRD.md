@@ -542,6 +542,7 @@ Decisions taken in the requirements interview of 2026-09-29 with Jesse Griffin. 
 | 94 | A table name in a write in `src/` is a literal, or an admitted expression recorded with the tables it ranges over; directory and key ownership stays runtime-enforced by the scoped ports. (2026-09-30, issue #32) |
 | 95 | The strings scan reads every feature file for prose, and `description`, `helperText` and `error` are copy props; addresses and preference keys are names. (2026-09-30, issue #33) |
 | 96 | The device CI builds with `UW_LOCALE_GATE=drafts` so its RTL flow can choose Arabic; release builds keep `reviewed`, proven by `npm run bundle` and by no `eas.json` profile setting the flag. New device flows stay optional until green twice; `android` and `ios` become required checks on `main` once green twice. (2026-09-30, issue #65) |
+| 97 | The invitation's region test needs both signals: a United States time zone and a locale region that is US or unknown; a locale region outside the US vetoes. (2026-10-05, product and QA review) |
 
 ---
 
