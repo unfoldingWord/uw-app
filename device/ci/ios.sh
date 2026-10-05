@@ -14,6 +14,22 @@ set_text_size() {
   echo "content size is now $(xcrun simctl ui "$udid" content_size 2>/dev/null || echo unknown)"
 }
 
+content_hosts="git.door43.org cdn.door43.org unfoldingword.org"
+hosts_marker="uw-device-ci-content-offline"
+
+content_offline() {
+  printf '127.0.0.1 %s # %s\n' "$content_hosts" "$hosts_marker" | sudo tee -a /etc/hosts > /dev/null
+  sudo dscacheutil -flushcache 2>/dev/null || true
+  sudo killall -HUP mDNSResponder 2>/dev/null || true
+  echo "the $1 pass runs with $content_hosts resolving to this machine, so no language pack downloads during it"
+}
+
+content_online() {
+  sudo sed -i '' "/$hosts_marker/d" /etc/hosts
+  sudo dscacheutil -flushcache 2>/dev/null || true
+  sudo killall -HUP mDNSResponder 2>/dev/null || true
+}
+
 run_flows() {
   local out="$1" attempt="$2" tags="$3"
   mkdir -p "$out/$attempt"
@@ -52,6 +68,7 @@ run_pass() {
   out="$GITHUB_WORKSPACE/device-out/ios-$run"
   mkdir -p "$out"
   [ "$run" = "large-text" ] && set_text_size accessibility-extra-extra-extra-large
+  [ "$run" = "main" ] && content_offline "$run"
 
   status=0
   run_flows "$out" first "$tags" || status=$?
@@ -61,6 +78,7 @@ run_pass() {
     run_flows "$out" second "$tags" || status=$?
   fi
 
+  [ "$run" = "main" ] && content_online
   [ "$run" = "large-text" ] && set_text_size large
 
   echo "::group::$run: failed steps"

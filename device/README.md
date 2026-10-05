@@ -12,7 +12,14 @@ builds for the simulator with code signing off.
 
 Every flow starts from a cleared app (`launchApp` with `clearState`) and needs no language pack. The app
 starts downloading English when the leader continues in English; the flows pass whether that download
-succeeds, is still running, or fails with no connection.
+succeeds, is still running, or fails with no connection. On the iOS simulator the required `main` pass runs
+with the content hosts (`git.door43.org`, `cdn.door43.org`, `unfoldingword.org`) pointed at the runner itself
+through `/etc/hosts`, so the download fails fast and the flows drive a quiet Home: with a real download in
+flight, the simulator's software renderer and the progress card updating every second kept XCTest from
+taking the view snapshot Maestro asserts on, and the Settings and Languages flows failed twice while the
+screens were plainly open. The `optional` pass restores the hosts, so `download-language.yaml` still
+downloads. The Android emulator keeps its own resolver and passed with the download running, so it is left
+online.
 
 | Flow | Proves |
 |---|---|

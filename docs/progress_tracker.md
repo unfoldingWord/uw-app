@@ -48,9 +48,19 @@ the sim.
 - **`npm run verify` green** on the final tree (822 tests, 63 scenarios, 51 Must requirements traced, 21 fixture
   burritos, both bundles clean of sim code). The live contract step was skipped: git.door43.org answers 403
   from this sandbox.
+- **Device CI, first run on the branch (PR #74, run 37345844271).** `verify`, `shots` and `android` passed.
+  `ios` failed twice on the Settings and Languages flows with "Theme" and "Search languages" not visible,
+  while the failure screenshots show Home intact and, for Languages, the modal open with the search field on
+  screen; Maestro's hierarchy at each failure was empty below the root. The cause is the fix above: on `main`
+  a fresh phone never downloaded English in CI (the `pack.empty-plan` path), so Home sat idle; now the real
+  English install runs during every flow, and on the software-rendered simulator the progress card updating
+  every second kept XCTest from taking the view snapshot. `device/ci/ios.sh` now points the content hosts at
+  the runner for the required `main` pass only (`device/README.md`); the Android emulator passed with the
+  download running and is left online. The "{size} so far" line was removed from the installing card: its
+  bytes mixed downloaded and unpacked sizes and read "174 MB so far" for a 41 MB download in the iOS run.
 - **Not verified:** any phone render (light, dark, reduced blur, RTL, dynamic type), VoiceOver and TalkBack on
-  the new Training rows, the move confirm and the no-chapter audio state; the device CI has not run on this
-  branch.
+  the new Training rows, the move confirm and the no-chapter audio state. Whether the UI stays responsive on
+  a real iPhone during a language pack install is the first thing to check on a phone.
 
 ## 2026-09-30 D3 first device CI run of the v1.1.0 checks (#65)
 
