@@ -579,7 +579,6 @@ export const ar: LocaleTable = {
   'session.audio.time': '{position} / {duration}',
   'settings.footer':
     'لا يغادر هذا الهاتف شيء لم تختر أن ترسله، ولا يحتفظ التطبيق إلا بأعداد مجهولة لكيفية استخدامه، مذكورة في شاشة الخصوصية.',
-  'home.download.detail': 'حزمة اللغة، {size} حتى الآن، جاهزة للقراءة دون اتصال عند انتهائها.',
   'home.download.waiting': 'اتصل بالإنترنت ثم انقر للتنزيل.',
   'languages.row': '{english} · {resources} · نحو {size}',
   'languages.offline': 'أنت دون اتصال، لذا لا يمكن تنزيل لغات جديدة حتى تعود للاتصال.',

@@ -540,8 +540,6 @@ export const es419: LocaleTable = {
   'session.audio.time': '{position} / {duration}',
   'settings.footer':
     'Nada sale de este teléfono sin que usted elija enviarlo, y la aplicación guarda solo recuentos anónimos de su uso, listados en la pantalla de privacidad.',
-  'home.download.detail':
-    'Paquete de idioma, {size} hasta ahora, listo para leer sin conexión cuando termine.',
   'home.download.waiting': 'Conéctese a internet y luego toque para descargar.',
   'languages.row': '{english} · {resources} · unos {size}',
   'languages.offline':

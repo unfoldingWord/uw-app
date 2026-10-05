@@ -494,7 +494,6 @@ export const vi: LocaleTable = {
   'session.audio.time': '{position} / {duration}',
   'settings.footer':
     'Không có gì rời khỏi điện thoại này mà bạn không chọn gửi, và ứng dụng chỉ giữ các số đếm ẩn danh về cách sử dụng, được liệt kê trên màn hình quyền riêng tư.',
-  'home.download.detail': 'Gói ngôn ngữ, {size} tính đến giờ, sẵn sàng đọc ngoại tuyến khi hoàn tất.',
   'home.download.waiting': 'Kết nối internet, rồi chạm để tải xuống.',
   'languages.row': '{english} · {resources} · khoảng {size}',
   'languages.offline': 'Bạn đang ngoại tuyến, nên không thể tải ngôn ngữ mới cho đến khi kết nối lại.',

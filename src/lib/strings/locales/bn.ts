@@ -511,7 +511,6 @@ export const bn: LocaleTable = {
   'session.audio.time': '{position} / {duration}',
   'settings.footer':
     'আপনি যা পাঠাতে চাননি তা এই ফোন থেকে বের হয় না, আর অ্যাপটি কেবল ব্যবহারের নামবিহীন গণনা রাখে, যা গোপনীয়তা পর্দায় তালিকাভুক্ত।',
-  'home.download.detail': 'ভাষা প্যাক, এখন পর্যন্ত {size}, শেষ হলে অফলাইনে পড়ার জন্য প্রস্তুত।',
   'home.download.waiting': 'ইন্টারনেটে সংযোগ করুন, তারপর ডাউনলোড করতে ট্যাপ করুন।',
   'languages.row': '{english} · {resources} · প্রায় {size}',
   'languages.offline': 'আপনি অফলাইনে আছেন, তাই পুনরায় সংযোগ না হওয়া পর্যন্ত নতুন ভাষা ডাউনলোড করা যাবে না।',

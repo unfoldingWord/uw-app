@@ -29,7 +29,6 @@ export const home = {
   'home.formation.empty': 'Create a group in Formation to walk through the stories together.',
   'home.download.progress': 'Downloading {language}',
   'home.download.percent': '{percent}%',
-  'home.download.detail': 'Language pack, {size} so far, ready to read offline when it finishes.',
   'home.download.waiting': 'Connect to the internet, then tap to download.',
   'home.download.none': 'Nothing for {language} is on this phone yet.',
   'home.download.missing': 'Some resources for {language} are not on this phone yet.',

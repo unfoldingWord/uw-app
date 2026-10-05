@@ -54,7 +54,6 @@ export type DownloadView =
       readonly percent: number;
       readonly label: string;
       readonly detail: string;
-      readonly size: string | undefined;
     }
   | {
       readonly state: 'missing';
@@ -250,10 +249,6 @@ export function createHomeService(kernel: Kernel): HomeService {
         percent,
         label: current.t('home.download.progress', { language: autonym }),
         detail: countLine(current, status.installed.length, total),
-        size:
-          progress.bytes > 0
-            ? current.t('home.download.detail', { size: current.size(progress.bytes) })
-            : undefined,
       };
     }
     const online = await kernel.catalog.online();

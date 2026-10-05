@@ -515,7 +515,6 @@ export const ur: LocaleTable = {
   'session.audio.time': '{position} / {duration}',
   'settings.footer':
     'جو آپ نے بھیجنے کے لیے منتخب نہیں کیا وہ اس فون سے باہر نہیں جاتا، اور ایپ صرف استعمال کی گمنام گنتیاں رکھتی ہے جو رازداری کی اسکرین پر درج ہیں۔',
-  'home.download.detail': 'زبان کا پیک، اب تک {size}، مکمل ہونے پر آف لائن پڑھنے کے لیے تیار۔',
   'home.download.waiting': 'انٹرنیٹ سے جڑیں، پھر ڈاؤن لوڈ کرنے کے لیے تھپتھپائیں۔',
   'languages.row': '{english} · {resources} · تقریباً {size}',
   'languages.offline': 'آپ آف لائن ہیں، اس لیے دوبارہ جڑنے تک نئی زبانیں ڈاؤن لوڈ نہیں ہو سکتیں۔',

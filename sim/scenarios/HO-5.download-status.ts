@@ -54,7 +54,6 @@ export default scenario(
     if (installing.state === 'installing') {
       assert.equal(installing.label, 'Downloading Fixture A');
       assert.equal(installing.detail, '2 of 11 resources on this phone');
-      assert.equal(installing.size, undefined, 'nothing has arrived yet, so no size is claimed');
     }
     held();
     assert.ok((await completing)?.ok);

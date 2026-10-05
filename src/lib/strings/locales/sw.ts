@@ -526,8 +526,6 @@ export const sw: LocaleTable = {
   'session.audio.time': '{position} / {duration}',
   'settings.footer':
     'Hakuna kinachotoka kwenye simu hii bila wewe kuchagua kukituma, na programu huweka tu hesabu zisizo na majina za jinsi inavyotumika, zilizoorodheshwa kwenye skrini ya faragha.',
-  'home.download.detail':
-    'Kifurushi cha lugha, {size} hadi sasa, tayari kusomwa nje ya mtandao kitakapokamilika.',
   'home.download.waiting': 'Unganisha na intaneti, kisha gusa ili kupakua.',
   'languages.row': '{english} · {resources} · takriban {size}',
   'languages.offline': 'Uko nje ya mtandao, kwa hivyo lugha mpya haziwezi kupakuliwa hadi uunganishe tena.',

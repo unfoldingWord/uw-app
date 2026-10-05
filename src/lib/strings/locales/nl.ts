@@ -531,7 +531,6 @@ export const nl: LocaleTable = {
   'session.audio.time': '{position} / {duration}',
   'settings.footer':
     'Niets verlaat deze telefoon zonder dat u ervoor kiest het te versturen, en de app bewaart alleen anonieme tellingen van het gebruik, vermeld op het privacyscherm.',
-  'home.download.detail': 'Taalpakket, tot nu toe {size}, offline te lezen zodra het klaar is.',
   'home.download.waiting': 'Maak verbinding met internet en tik dan om te downloaden.',
   'languages.row': '{english} · {resources} · ongeveer {size}',
   'languages.offline':

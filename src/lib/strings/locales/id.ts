@@ -502,7 +502,6 @@ export const id: LocaleTable = {
   'session.audio.time': '{position} / {duration}',
   'settings.footer':
     'Tidak ada yang keluar dari ponsel ini tanpa Anda pilih untuk dikirim, dan aplikasi hanya menyimpan hitungan anonim tentang penggunaannya, yang tercantum di layar privasi.',
-  'home.download.detail': 'Paket bahasa, {size} sejauh ini, siap dibaca luring saat selesai.',
   'home.download.waiting': 'Sambungkan ke internet, lalu ketuk untuk mengunduh.',
   'languages.row': '{english} · {resources} · sekitar {size}',
   'languages.offline': 'Anda sedang luring, jadi bahasa baru tidak dapat diunduh sampai tersambung lagi.',

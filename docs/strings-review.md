@@ -81,7 +81,7 @@ release gate is `releaseGate` in `src/lib/strings/locales.ts` (`reviewed`).
   `library.wordLinks`, `library.questions`, `library.storyHelps`, `library.movements`, `library.chapters`,
   `library.pictures`), `study.original.read`, `study.audio.noChapter`, `common.linksOpenBrowser` and
   `about.logo`. Eight keys were reworded in every locale to say what the app does (`home.download.waiting`,
-  `home.download.detail`, `languages.offline`, `languages.row`, `settings.footer`) or to drop product names
+  `languages.offline`, `languages.row`, `settings.footer`; `home.download.detail` was then removed) or to drop product names
   from running copy (`transfer.note`, `transfer.app.ios`, `languages.import.about`).
 - **Drafted with the Transfer, Share and diagnostics services.** `transfer.code`, `transfer.code.hint` and
   `transfer.nothing`. The code is the six digits both phones show while they pair (four until v1.1.0, issue #64); the word for it should be

@@ -534,7 +534,6 @@ export const ptBR: LocaleTable = {
   'session.audio.time': '{position} / {duration}',
   'settings.footer':
     'Nada sai deste telefone sem que você escolha enviar, e o aplicativo guarda apenas contagens anônimas de uso, listadas na tela de privacidade.',
-  'home.download.detail': 'Pacote de idioma, {size} até agora, pronto para ler off-line quando terminar.',
   'home.download.waiting': 'Conecte-se à internet e depois toque para baixar.',
   'languages.row': '{english} · {resources} · cerca de {size}',
   'languages.offline': 'Você está off-line, então novos idiomas não podem ser baixados até reconectar.',

@@ -39,11 +39,6 @@ export function DownloadCard({ view, autonym, onOpenLanguages, onComplete }: Dow
           <ThemedText variant="caption" tone="body">
             {view.detail}
           </ThemedText>
-          {view.size === undefined ? null : (
-            <ThemedText variant="caption" tone="dim">
-              {view.size}
-            </ThemedText>
-          )}
         </Card>
       );
     case 'none':

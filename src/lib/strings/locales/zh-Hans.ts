@@ -472,7 +472,6 @@ export const zhHans: LocaleTable = {
   'session.audio.time': '{position} / {duration}',
   'settings.footer':
     '除非你选择发送，否则任何内容都不会离开这部手机，应用只保留匿名的使用计数，列在隐私页面上。',
-  'home.download.detail': '语言包，目前 {size}，下载完成后即可离线阅读。',
   'home.download.waiting': '连接网络后，点按即可下载。',
   'languages.row': '{english} · {resources} · 约 {size}',
   'languages.offline': '你现在处于离线状态，重新联网前无法下载新的语言。',

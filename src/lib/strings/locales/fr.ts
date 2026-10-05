@@ -557,7 +557,6 @@ export const fr: LocaleTable = {
   'session.audio.time': '{position} / {duration}',
   'settings.footer':
     'Rien ne quitte ce téléphone sans que vous ayez choisi de l’envoyer, et l’application ne garde que des comptes anonymes de son utilisation, listés sur l’écran de confidentialité.',
-  'home.download.detail': 'Pack de langue, {size} pour l’instant, lisible hors ligne une fois terminé.',
   'home.download.waiting': 'Connectez-vous à internet, puis touchez pour télécharger.',
   'languages.row': '{english} · {resources} · environ {size}',
   'languages.offline':

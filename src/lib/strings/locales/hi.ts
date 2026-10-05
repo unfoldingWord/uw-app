@@ -517,7 +517,6 @@ export const hi: LocaleTable = {
   'session.audio.time': '{position} / {duration}',
   'settings.footer':
     'जो आपने भेजना नहीं चुना वह इस फ़ोन से बाहर नहीं जाता, और ऐप केवल उपयोग की गुमनाम गिनतियाँ रखता है, जो गोपनीयता स्क्रीन पर सूचीबद्ध हैं।',
-  'home.download.detail': 'भाषा पैक, अब तक {size}, पूरा होने पर ऑफ़लाइन पढ़ने के लिए तैयार।',
   'home.download.waiting': 'इंटरनेट से जुड़ें, फिर डाउनलोड करने के लिए टैप करें।',
   'languages.row': '{english} · {resources} · लगभग {size}',
   'languages.offline': 'आप ऑफ़लाइन हैं, इसलिए फिर से जुड़ने तक नई भाषाएँ डाउनलोड नहीं की जा सकतीं।',
