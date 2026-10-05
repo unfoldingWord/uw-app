@@ -1,6 +1,7 @@
 import type { CatalogLanguage, CatalogRelease, RefreshOutcome, ScriptDirection } from '@lib/catalog/types';
 import type { FailureCode } from '@lib/domain/failures';
 import { imagePackId, languagePackId, originalPackId, type PackId } from '@lib/domain/pack';
+import { resourceKey } from '@lib/domain/release';
 import type { Kernel } from '@lib/kernel';
 import {
   optionalReleases,
@@ -43,6 +44,8 @@ export type MissingResource = {
   readonly code: FailureCode | undefined;
 };
 
+export type EmptyCause = 'offline' | 'empty';
+
 export type ReplaceQuestion = { readonly question: string; readonly replace: string; readonly keep: string };
 
 export type ImportOutcome =
@@ -53,6 +56,7 @@ export type LanguagesService = {
   refresh(): Promise<RefreshOutcome>;
   online(): Promise<boolean>;
   list(query?: string): readonly LanguageRow[];
+  emptyCause(online: boolean | undefined): EmptyCause | undefined;
   overline(): string;
   current(): string | undefined;
   select(language: string): Promise<boolean>;
@@ -77,8 +81,11 @@ export type LanguagesService = {
   openedName(uri: string): string;
 };
 
-function languageBytes(releases: readonly CatalogRelease[]): number | undefined {
-  const sizes = releases.filter((release) => release.kind === 'language').map((release) => release.bytes);
+function languageBytes(releases: readonly CatalogRelease[], pack: PackId): number | undefined {
+  const optional = new Set(optionalReleases(releases, pack).map(resourceKey));
+  const sizes = releases
+    .filter((release) => release.pack === pack && !optional.has(resourceKey(release)))
+    .map((release) => release.bytes);
   return sizes.length === 0 || sizes.some((bytes) => bytes === undefined)
     ? undefined
     : sizes.reduce<number>((sum, bytes) => sum + (bytes ?? 0), 0);
@@ -90,7 +97,7 @@ function installedPacks(kernel: Kernel): ReadonlySet<PackId> {
 
 function rowOf(kernel: Kernel, words: LanguagesWords, item: CatalogLanguage): LanguageRow {
   const pack = languagePackId(item.language);
-  const bytes = languageBytes(kernel.catalog.releases(item.language));
+  const bytes = languageBytes(kernel.catalog.releases(item.language), pack);
   const resources = words.plural('languages.resources', item.resources);
   return {
     language: item.language,
@@ -179,6 +186,12 @@ export function createLanguagesService(kernel: Kernel): LanguagesService {
           ? kernel.catalog.languages()
           : kernel.catalog.search(query);
       return found.map((item) => rowOf(kernel, current, item));
+    },
+    emptyCause(online) {
+      if (kernel.catalog.languages().length > 0) {
+        return undefined;
+      }
+      return online === false ? 'offline' : 'empty';
     },
     overline() {
       const current = words();

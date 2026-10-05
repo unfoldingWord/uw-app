@@ -54,6 +54,19 @@ type CatalogIngredient = {
   size: number;
 };
 
+function contentBytes(release: FixtureRelease): number {
+  return release.ingredients.reduce((sum, ingredient) => sum + ingredient.bytes.length, 0);
+}
+
+function bookBytes(release: FixtureRelease, book: string): number {
+  const own = release.ingredients.filter((ingredient) =>
+    ingredient.path.toUpperCase().includes(book.toUpperCase()),
+  );
+  return own.length > 0
+    ? own.reduce((sum, ingredient) => sum + ingredient.bytes.length, 0)
+    : Math.ceil(contentBytes(release) / release.books.length);
+}
+
 function catalogIngredients(release: FixtureRelease): CatalogIngredient[] {
   const ingredient = (
     identifier: string,
@@ -61,6 +74,7 @@ function catalogIngredients(release: FixtureRelease): CatalogIngredient[] {
     path: string,
     sort: number,
     isDirectory: boolean,
+    size: number,
   ) => ({
     categories: null,
     identifier,
@@ -70,10 +84,19 @@ function catalogIngredients(release: FixtureRelease): CatalogIngredient[] {
     versification: 'ufw',
     exists: true,
     is_dir: isDirectory,
-    size: 0,
+    size,
   });
   if (release.books.length === 0) {
-    return [ingredient(release.abbreviation.toLowerCase(), release.title, './content', 0, true)];
+    return [
+      ingredient(
+        release.abbreviation.toLowerCase(),
+        release.title,
+        './content',
+        0,
+        true,
+        contentBytes(release),
+      ),
+    ];
   }
   return release.books.map((book, index) =>
     ingredient(
@@ -82,6 +105,7 @@ function catalogIngredients(release: FixtureRelease): CatalogIngredient[] {
       `./${book.toUpperCase()}.${contentFormats[release.flavor] ?? 'md'}`,
       index + 1,
       false,
+      bookBytes(release, book),
     ),
   );
 }

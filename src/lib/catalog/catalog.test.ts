@@ -44,6 +44,17 @@ describe('catalog normalization (LA-1)', () => {
     });
   });
 
+  it('sums the ingredient sizes into the release bytes, and leaves unknown or empty sizes undefined', () => {
+    const sized = (sizes: readonly unknown[]) =>
+      normalizeEntry({ ...entry, ingredients: sizes.map((size) => ({ path: './x', size })) })?.bytes;
+    expect(sized([1200, 800])).toBe(2000);
+    expect(sized([0, 0])).toBeUndefined();
+    expect(sized([])).toBeUndefined();
+    expect(sized(['big', -5, 300])).toBe(300);
+    expect(normalizeEntry({ ...entry, repo: { ingredients: [{ size: 42 }] } })?.bytes).toBe(42);
+    expect(normalizeEntry({ ...entry, ingredients: 'none' })?.bytes).toBeUndefined();
+  });
+
   it('reads the repository fields when the entry leaves them out, and refuses what it cannot key', () => {
     const bare = Object.fromEntries(
       Object.entries(entry).filter(
