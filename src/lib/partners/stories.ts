@@ -40,6 +40,7 @@ export const shippedStories: readonly ImpactStory[] = Object.freeze([
       'The full account is on unfoldingword.org.',
     ],
     link: `${unfoldingWordSite}/africa/when-jeremiah-first-heard-that-his-chadian-church-planting/`,
+    securityNote: 'Names in this story are changed for security.',
     shipped: true,
   },
 ]);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { originalPackId } from '@lib/domain/pack';
+import { languagePackId, originalPackId } from '@lib/domain/pack';
 import { installFromCatalog } from './install';
 import { servicesOf } from './services';
 import { createWorld } from './world';
@@ -42,6 +42,19 @@ describe('the study service behind the passage view (ST-2, ST-7)', () => {
     expect(hebrew?.text.reading).toBe('original');
     expect(hebrew?.text.direction).toBe('rtl');
     expect(hebrew?.language).toBe('hbo');
+  });
+
+  it('tells the helps panel which help kinds are on the phone, so an empty verse is not a missing download', async () => {
+    const { phone, services } = await readyPhone();
+    const full = await services.study.passage('RUT 1:16');
+    expect(full.state === 'passage' && full.view.helps).toEqual({
+      notes: true,
+      wordLinks: true,
+      questions: true,
+    });
+    await installFromCatalog(phone, [languagePackId('qab')]);
+    expect(await services.languages.select('qab')).toBe(true);
+    expect(await services.study.open()).toEqual({ state: 'no-text', language: 'qab', originals: [] });
   });
 
   it('names what a leader reads: book names, the language by name, and article titles instead of ids', async () => {

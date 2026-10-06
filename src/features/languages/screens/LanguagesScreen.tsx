@@ -143,6 +143,7 @@ export default function LanguagesScreen() {
       <LanguageList
         rows={rows}
         query={query}
+        empty={languages.emptyCause(online.value)}
         failures={failures}
         onSelect={(row) =>
           run(row.language, async () => {

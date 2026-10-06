@@ -24,7 +24,7 @@ function lineFor(words: FormationWords, english: EnglishMovements, language: str
     case 'needs-download':
       return words.t('session.fallback.needsEnglish');
     case 'not-in-english':
-      return words.t('session.fallback.notYet');
+      return words.t('session.fallback.notInEnglish');
   }
 }
 

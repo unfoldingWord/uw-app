@@ -70,9 +70,19 @@ release gate is `releaseGate` in `src/lib/strings/locales.ts` (`reviewed`).
   section 9 fold list, so it never leaves the phone and the privacy screen no longer lists it.
 - **Drafted in T8.** Six keys were added with the feature services and drafted in every locale at once:
   `failure.partners.invalid-feed`, `settings.reducedBlur`, `settings.reducedBlur.about`,
-  `impact.securityNote`, `resource.wordLinks` and `resource.wordLinks.about`. `impact.securityNote` is a
-  placeholder until comms supplies the website's security note (`docs/impact-stories.md`); a story that carries
-  its own note shows that note instead.
+  `impact.securityNote`, `resource.wordLinks` and `resource.wordLinks.about`. `impact.securityNote` was removed
+  on 2026-10-05: the note now travels inside each story record, so a story without one shows none
+  (`docs/impact-stories.md`).
+- **Drafted on 2026-10-05, product and QA review.** Twenty-one keys across every locale: the Training course
+  outline (`formation.training.lessonNumber`, `formation.training.unit.count`, `formation.training.current`),
+  the move-the-group confirm (`session.move.ask`, `session.move.confirm`, `session.move.later`),
+  `session.fallback.notInEnglish`, the Home download counts (`home.download.count`), the Languages empty states
+  (`languages.empty`, `languages.empty.offline`), the library unit counts (`library.notes`,
+  `library.wordLinks`, `library.questions`, `library.storyHelps`, `library.movements`, `library.chapters`,
+  `library.pictures`), `study.original.read`, `study.audio.noChapter`, `common.linksOpenBrowser` and
+  `about.logo`. Eight keys were reworded in every locale to say what the app does (`home.download.waiting`,
+  `languages.offline`, `languages.row`, `settings.footer`; `home.download.detail` was then removed) or to drop product names
+  from running copy (`transfer.note`, `transfer.app.ios`, `languages.import.about`).
 - **Drafted with the Transfer, Share and diagnostics services.** `transfer.code`, `transfer.code.hint` and
   `transfer.nothing`. The code is the six digits both phones show while they pair (four until v1.1.0, issue #64); the word for it should be
   the one people use for a short number read aloud, not a password or a PIN.

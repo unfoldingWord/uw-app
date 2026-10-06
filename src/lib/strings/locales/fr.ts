@@ -77,8 +77,6 @@ export const fr: LocaleTable = {
   'home.formation.empty': 'Créez un groupe dans Formation pour parcourir les histoires ensemble.',
   'home.download.progress': 'Téléchargement de {language}',
   'home.download.percent': '{percent} %',
-  'home.download.detail': 'Pack de langue, {size}, lisible hors ligne une fois terminé.',
-  'home.download.waiting': 'Le téléchargement reprendra quand vous serez en ligne.',
   'home.download.none': 'Rien en {language} n’est encore sur ce téléphone.',
   'home.download.missing': 'Certaines ressources en {language} ne sont pas encore sur ce téléphone.',
   'home.download.complete': 'Télécharger le reste',
@@ -108,7 +106,6 @@ export const fr: LocaleTable = {
   'invitation.action': 'Devenir partenaire d’unfoldingWord',
   'invitation.dismiss': 'Pas maintenant',
   'invitation.readMore': 'Lire l’histoire complète sur unfoldingword.org',
-  'impact.securityNote': 'Les noms de cette histoire ont été changés par sécurité.',
   'study.text.literal': 'Proche de l’original',
   'study.text.simplified': 'Mots de tous les jours',
   'study.text.choice': 'Choisissez comment se lit le texte biblique',
@@ -139,7 +136,6 @@ export const fr: LocaleTable = {
   'study.audio.play': 'Lire l’audio',
   'study.audio.pause': 'Mettre l’audio en pause',
   'study.audio.label': '{reference} · audio',
-  'study.audio.streaming': 'En ligne',
   'study.audio.onPhone': 'Sur ce téléphone',
   'study.audio.time': '{position} / {duration}',
   'study.audio.download': 'Télécharger l’audio pour l’écouter hors ligne',
@@ -148,9 +144,9 @@ export const fr: LocaleTable = {
   'library.open': 'Bibliothèque',
   'library.title': 'Bibliothèque',
   'library.overline': {
-    one: '{language} · {count} ressource',
-    many: '{language} · {count} de ressources',
-    other: '{language} · {count} ressources',
+    one: '{language} · {count} type de ressource',
+    many: '{language} · {count} de types de ressources',
+    other: '{language} · {count} types de ressources',
   },
   'library.footer':
     'Tout le contenu est sous licence CC BY-SA 4.0 et attribué à l’organisation qui l’a publié, avec les ressources d’unfoldingWord en premier.',
@@ -215,7 +211,6 @@ export const fr: LocaleTable = {
   'formation.title': 'Formation',
   'formation.overline': '{language} · {coverage}',
   'formation.coverage.movements': 'cinq mouvements disponibles',
-  'formation.coverage.questions': 'histoires avec questions d’étude',
   'formation.coverage.stories': 'histoires',
   'formation.groups.title': 'Vos groupes',
   'formation.groups.add': 'Groupe',
@@ -296,11 +291,9 @@ export const fr: LocaleTable = {
     many: '{count} de ressources',
     other: '{count} ressources',
   },
-  'languages.row': '{english} · {resources} · {size}',
   'languages.select': 'Lire en {language}',
   'languages.selected': 'Choisie',
   'languages.noMatch': 'Aucune langue ne correspond à {query}.',
-  'languages.offline': 'Vous êtes hors ligne, seules les langues déjà sur ce téléphone sont listées.',
   'languages.coverage':
     '{available} des {total} langues de l’application ont du contenu publié aujourd’hui, et les autres apparaîtront dès qu’elles en auront.',
   'languages.download': 'Télécharger',
@@ -336,12 +329,8 @@ export const fr: LocaleTable = {
     many: '{count} de ressources choisies · {size}',
     other: '{count} ressources choisies · {size}',
   },
-  'transfer.note':
-    'Fonctionne entre iPhone et Android dans les deux sens, avec la licence et l’attribution sur chaque élément.',
   'transfer.app': 'Envoyer aussi cette application',
   'transfer.app.about': 'L’autre téléphone peut l’installer sans magasin d’applications.',
-  'transfer.app.ios':
-    'L’iPhone ne permet pas d’envoyer l’application elle-même, mais les ressources peuvent partir.',
   'transfer.find': 'Trouver un téléphone à proximité',
   'transfer.looking': 'Recherche d’un téléphone à proximité',
   'transfer.looking.hint': 'Ouvrez Recevoir sur l’autre téléphone et gardez les téléphones proches.',
@@ -468,8 +457,6 @@ export const fr: LocaleTable = {
   'settings.diagnostics': 'Partager le diagnostic',
   'settings.diagnostics.about':
     'Envoyer un relevé de ce qui s’est passé sur ce téléphone à la personne qui vous aide.',
-  'settings.footer':
-    'Rien ne quitte ce téléphone sans que vous ayez choisi de l’envoyer, et l’application compte les ouvertures, téléchargements, transferts et partages seulement au total, sans identifiant.',
   'diagnostics.title': 'Partager le diagnostic',
   'diagnostics.body':
     'Le fichier contient un relevé de ce que l’application a fait sur ce téléphone et un résumé de ce qu’il contient, sans les passages, articles et histoires que vous avez ouverts ou enregistrés, et sans noms, notes ni identifiants.',
@@ -559,8 +546,6 @@ export const fr: LocaleTable = {
   'failure.boot': 'L’application n’a pas pu se préparer sur ce téléphone, alors réessayez dans un instant.',
   'languages.import.title': 'Depuis un fichier',
   'languages.import': 'Importer depuis un fichier',
-  'languages.import.about':
-    'Installez une archive Scripture Burrito (.zip) que vous avez enregistrée ou reçue.',
   'languages.import.opened': 'Installer sur ce téléphone {name}, le fichier que vous avez ouvert ?',
   'languages.import.install': 'Installer',
   'languages.import.done': 'Installé depuis le fichier et lisible hors connexion.',
@@ -570,4 +555,59 @@ export const fr: LocaleTable = {
   'study.audio.forward': 'Avancer de 10 secondes',
   'study.audio.loading': 'Préparation de l’audio',
   'session.audio.time': '{position} / {duration}',
+  'settings.footer':
+    'Rien ne quitte ce téléphone sans que vous ayez choisi de l’envoyer, et l’application ne garde que des comptes anonymes de son utilisation, listés sur l’écran de confidentialité.',
+  'home.download.waiting': 'Connectez-vous à internet, puis touchez pour télécharger.',
+  'languages.row': '{english} · {resources} · environ {size}',
+  'languages.offline':
+    'Vous êtes hors ligne, donc aucune nouvelle langue ne peut être téléchargée avant la reconnexion.',
+  'transfer.note':
+    'Fonctionne entre deux téléphones équipés de l’application dans les deux sens, avec la licence et l’attribution sur chaque élément.',
+  'transfer.app.ios':
+    'Ce téléphone n’est pas autorisé à envoyer l’application elle-même, mais les ressources peuvent partir.',
+  'languages.import.about': 'Installez une archive de ressources (.zip) que vous avez enregistrée ou reçue.',
+  'about.logo': 'unfoldingWord',
+  'common.linksOpenBrowser': 'Les liens s’ouvrent dans votre navigateur.',
+  'formation.training.lessonNumber': 'Leçon {number}',
+  'formation.training.current': 'Où en est {group}',
+  'session.fallback.notInEnglish':
+    'Les mouvements ne sont pas encore disponibles en anglais sur ce téléphone.',
+  'session.move.ask': 'Déplacer {group} vers cette histoire ?',
+  'session.move.confirm': 'Déplacer',
+  'session.move.later': 'Pas maintenant',
+  'languages.empty': 'Aucune langue n’est encore disponible.',
+  'languages.empty.offline':
+    'Aucune langue n’est encore sur ce téléphone, connectez-vous pour voir la liste.',
+  'study.original.read': 'Lire le {text}',
+  'study.audio.noChapter': 'Ce chapitre n’a pas d’audio.',
+  'formation.training.unit.count': {
+    one: '{count} leçon',
+    many: '{count} de leçons',
+    other: '{count} leçons',
+  },
+  'home.download.count': {
+    one: '{count} ressource sur {total} sur ce téléphone',
+    many: '{count} de ressources sur {total} sur ce téléphone',
+    other: '{count} ressources sur {total} sur ce téléphone',
+  },
+  'library.notes': { one: '{count} note', many: '{count} de notes', other: '{count} notes' },
+  'library.wordLinks': {
+    one: '{count} lien de mot',
+    many: '{count} de liens de mots',
+    other: '{count} liens de mots',
+  },
+  'library.questions': { one: '{count} question', many: '{count} de questions', other: '{count} questions' },
+  'library.storyHelps': {
+    one: '{count} aide d’histoire',
+    many: '{count} d’aides d’histoires',
+    other: '{count} aides d’histoires',
+  },
+  'library.movements': {
+    one: '{count} histoire avec mouvements',
+    many: '{count} d’histoires avec mouvements',
+    other: '{count} histoires avec mouvements',
+  },
+  'library.chapters': { one: '{count} chapitre', many: '{count} de chapitres', other: '{count} chapitres' },
+  'library.pictures': { one: '{count} image', many: '{count} d’images', other: '{count} images' },
+  'formation.training.empty': 'L’Académie n’est pas encore disponible en {language}.',
 };

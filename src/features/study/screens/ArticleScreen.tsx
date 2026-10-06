@@ -117,7 +117,12 @@ export default function ArticleScreen() {
             </Say>
           )}
           <View style={{ direction: directionOf(article.title), gap: theme.space.sp6 }}>
-            <Blocks blocks={article.blocks} language={article.provenance.language} onLink={openTarget} />
+            <Blocks
+              blocks={article.blocks}
+              language={article.provenance.language}
+              onLink={openTarget}
+              linkMissing={words.t('article.linkMissing')}
+            />
           </View>
           {related.length === 0 ? null : (
             <View style={{ gap: theme.space.sp5, marginTop: theme.space.sp4 }}>

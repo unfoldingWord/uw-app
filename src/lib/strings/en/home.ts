@@ -29,11 +29,14 @@ export const home = {
   'home.formation.empty': 'Create a group in Formation to walk through the stories together.',
   'home.download.progress': 'Downloading {language}',
   'home.download.percent': '{percent}%',
-  'home.download.detail': 'Language pack, {size}, ready to read offline when it finishes.',
-  'home.download.waiting': 'Downloading continues when you are online.',
+  'home.download.waiting': 'Connect to the internet, then tap to download.',
   'home.download.none': 'Nothing for {language} is on this phone yet.',
   'home.download.missing': 'Some resources for {language} are not on this phone yet.',
   'home.download.complete': 'Download the rest',
+  'home.download.count': {
+    one: '{count} of {total} resource on this phone',
+    other: '{count} of {total} resources on this phone',
+  },
   'home.download.ready': {
     one: '{count} resource ready offline in {language}',
     other: '{count} resources ready offline in {language}',
@@ -58,5 +61,4 @@ export const home = {
   'invitation.action': 'Partner with unfoldingWord',
   'invitation.dismiss': 'Not now',
   'invitation.readMore': 'Read the full story on unfoldingword.org',
-  'impact.securityNote': 'Names in this story are changed for security.',
 } as const;

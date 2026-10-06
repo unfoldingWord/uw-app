@@ -5,7 +5,7 @@ import { defineModule } from '../module';
 import type { DbTransaction } from '../ports';
 import { dbWrite, refused, written, type Written } from '../written';
 import { firstPosition, isReachable, positionAt, progressOf, stepFrom } from './position';
-import { assembleSession, sessionCount, sessionTitle, trackSummaries } from './sessions';
+import { assembleSession, sessionCount, sessionTitle, trackSummaries, trainingOutlineOf } from './sessions';
 import {
   deleteGroup,
   formationTables,
@@ -27,10 +27,12 @@ import type {
   SessionOptions,
   Track,
   TrackSummary,
+  TrainingOutline,
 } from './types';
 
 export type FormationApi = {
   tracks(language: string): Promise<readonly TrackSummary[]>;
+  trainingOutline(language: string): Promise<TrainingOutline>;
   session(
     track: Track,
     number: number,
@@ -45,7 +47,7 @@ export type FormationApi = {
   remove(group: string): Promise<Written<true> | undefined>;
   activate(group: string): Promise<Written<Group> | undefined>;
   advance(group: string, to: Position): Promise<Written<Group> | undefined>;
-  start(group: string, language: string): Promise<Written<Group> | undefined>;
+  start(group: string, language: string, at?: Position): Promise<Written<Group> | undefined>;
   complete(group: string): Promise<Written<Group> | undefined>;
   progress(group: string, language: string): Promise<Progress | undefined>;
   next(group: string, language: string): Promise<NextSession | undefined>;
@@ -224,19 +226,27 @@ export const formationModule = defineModule<FormationApi>({
       ]);
     };
 
-    const startSession = async (id: string, language: string): Promise<Written<Group> | undefined> => {
+    const startSession = async (
+      id: string,
+      language: string,
+      at: Position | undefined,
+    ): Promise<Written<Group> | undefined> => {
       const row = groups.get(id);
       if (row === undefined) {
         return undefined;
       }
-      const title = await sessionTitle(view, row.position.track, row.position.session, language);
+      const position = at === undefined ? row.position : positionAt(at.track, at.session, at.movement);
+      if (!isReachable(position)) {
+        return undefined;
+      }
+      const title = await sessionTitle(view, position.track, position.session, language);
       if (title === undefined) {
         return undefined;
       }
-      if (row.started === startedKey(row.position)) {
+      if (row.started === startedKey(position)) {
         return written(publicGroup(row));
       }
-      return beginSession(id, row.position, language);
+      return beginSession(id, position, language);
     };
 
     const completeAt = async (id: string, position: Position): Promise<Written<Group> | undefined> => {
@@ -294,6 +304,7 @@ export const formationModule = defineModule<FormationApi>({
 
     const api: FormationApi = {
       tracks: (language) => trackSummaries(view, language),
+      trainingOutline: (language) => trainingOutlineOf(view, language),
       session: (track, number, language, options = {}) =>
         assembleSession(view, track, number, language, options),
       groups: () => ordered().map(publicGroup),
@@ -316,7 +327,7 @@ export const formationModule = defineModule<FormationApi>({
       remove: (id) => serial(() => removeGroup(id)),
       activate: (id) => serial(() => activateGroup(id)),
       advance: (id, to) => serial(() => advanceGroup(id, to)),
-      start: (id, language) => serial(() => startSession(id, language)),
+      start: (id, language, at) => serial(() => startSession(id, language, at)),
       complete: (id) =>
         serial(async () => {
           const row = groups.get(id);

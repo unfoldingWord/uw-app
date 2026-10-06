@@ -15,6 +15,12 @@ const feed = {
       image: imageUrl,
       securityNote: 'Names have been changed.',
     },
+    {
+      slug: 'a-leader-keeps-reading',
+      title: 'A leader keeps reading',
+      body: ['Only paragraph.'],
+      link: 'https://unfoldingword.org/stories/a-leader-keeps-reading/',
+    },
     { slug: 'Not A Slug', title: 'Refused', body: 'x', link: 'https://example.com/' },
   ],
 };
@@ -53,7 +59,7 @@ export default scenario(
     world.network.serve(imageUrl, { body: new Uint8Array([1, 2, 3]) });
     assert.deepEqual(
       await home().refreshStories(),
-      { ok: true, stories: 1 },
+      { ok: true, stories: 2 },
       'Home fetches the feed on focus when online',
     );
     assert.equal(
@@ -65,6 +71,7 @@ export default scenario(
       stories().map((story) => [story.slug, story.image]),
       [
         ['a-church-reads-together', { path: 'partners/images/a-church-reads-together' }],
+        ['a-leader-keeps-reading', undefined],
         ['jeremiah-and-the-occult-king', undefined],
       ],
       'the feed leads, the shipped story stays, and a story from another host is refused',
@@ -74,17 +81,22 @@ export default scenario(
       'Names have been changed.',
       'the security note from the website is carried verbatim',
     );
+    assert.equal(
+      about().story('a-leader-keeps-reading')?.securityNote,
+      undefined,
+      'a story the feed carries without a security note shows none',
+    );
     assert.deepEqual(
       about()
         .summary()
         .stories.map((story) => story.slug),
-      ['a-church-reads-together', 'jeremiah-and-the-occult-king'],
+      ['a-church-reads-together', 'a-leader-keeps-reading', 'jeremiah-and-the-occult-king'],
       'About shows the fetched stories',
     );
 
     phone.adapters.http.setOnline(false);
     await phone.restart();
-    assert.equal(stories().length, 2, 'cached for offline');
+    assert.equal(stories().length, 3, 'cached for offline');
     assert.deepEqual(
       await phone.adapters.files.readBytes('partners/images/a-church-reads-together'),
       new Uint8Array([1, 2, 3]),
@@ -113,6 +125,6 @@ export default scenario(
       { ok: false, code: 'partners.invalid-feed' },
       'About fetches the feed on focus after a new open',
     );
-    assert.equal(stories().length, 2, 'an unreadable feed keeps what is cached');
+    assert.equal(stories().length, 3, 'an unreadable feed keeps what is cached');
   },
 );

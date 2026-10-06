@@ -6,15 +6,16 @@ import type {
   FullTextHit,
   LinkTarget,
   Passage,
+  Reading,
   SearchResults,
   Story,
   TextChoice,
 } from '@lib/corpus/types';
 import { bookByCode, type Testament } from '@lib/domain/books';
 import { imagePackId, languagePackId, type PackId } from '@lib/domain/pack';
-import { formatReference, parseReference } from '@lib/domain/reference';
+import { formatReference, parseReference, type Reference } from '@lib/domain/reference';
 import type { Kernel } from '@lib/kernel';
-import type { InstallOutcome } from '@lib/packs/types';
+import type { CatalogInstallOptions, InstallOutcome } from '@lib/packs/types';
 import { clipControls, clockTime, type ClipControls, type PlayerStatus } from '@lib/player/types';
 import type { Written } from '@lib/written';
 import { isStoryAudio } from '@lib/catalog/types';
@@ -50,13 +51,27 @@ export type BookEntry = {
 
 export type OriginalChoice = { readonly language: string; readonly label: string };
 
+export type OriginalOpening = OriginalChoice & { readonly reference: string };
+
 const originalLanguages: Readonly<Record<Testament, string>> = { old: 'hbo', new: 'el-x-koine' };
 
+const testaments: readonly Testament[] = ['old', 'new'];
+
 export type TextChoiceView = {
-  readonly text: TextChoice;
+  readonly text: Reading;
   readonly label: string;
   readonly selected: boolean;
 };
+
+export type VersePlace = { readonly chapter: number; readonly verse: number };
+
+export type HelpsInstalled = {
+  readonly notes: boolean;
+  readonly wordLinks: boolean;
+  readonly questions: boolean;
+};
+
+export type PassageRequest = { readonly original?: boolean };
 
 export type AudioView =
   | { readonly state: 'on-phone'; readonly clip: AudioClip; readonly label: string }
@@ -68,6 +83,7 @@ export type AudioView =
       readonly detail: string;
     }
   | { readonly state: 'downloading'; readonly pack: PackId; readonly label: string }
+  | { readonly state: 'no-chapter'; readonly label: string; readonly detail: string }
   | { readonly state: 'none' };
 
 export type PassageView = {
@@ -75,18 +91,28 @@ export type PassageView = {
   readonly label: string;
   readonly language: string;
   readonly passage: Passage;
-  readonly reading: Passage['text']['reading'];
+  readonly landing: VersePlace | undefined;
+  readonly original: Passage | undefined;
+  readonly reading: Reading;
   readonly choices: readonly TextChoiceView[];
   readonly audio: AudioView;
   readonly saved: Bookmark | undefined;
+  readonly helps: HelpsInstalled;
 };
 
 export type StudyView =
   | { readonly state: 'no-language' }
   | { readonly state: 'not-downloaded'; readonly language: string; readonly pack: PackId }
-  | { readonly state: 'no-text'; readonly language: string }
+  | { readonly state: 'no-text'; readonly language: string; readonly originals: readonly OriginalOpening[] }
   | { readonly state: 'invalid-reference'; readonly language: string }
   | { readonly state: 'missing'; readonly language: string; readonly reference: string }
+  | {
+      readonly state: 'original';
+      readonly language: string;
+      readonly reference: string;
+      readonly passage: Passage;
+      readonly choice: OriginalChoice;
+    }
   | { readonly state: 'passage'; readonly view: PassageView };
 
 export type RelatedArticle = { readonly id: string; readonly title: string };
@@ -123,15 +149,16 @@ export type StudyService = {
   languageName(): string | undefined;
   referenceName(reference: string): string;
   label(target: LinkTarget): string | undefined;
-  open(): Promise<StudyView>;
-  passage(reference: string): Promise<StudyView>;
+  open(request?: PassageRequest): Promise<StudyView>;
+  opened(reference: string): Promise<void>;
+  passage(reference: string, request?: PassageRequest): Promise<StudyView>;
   reading(): TextChoice;
   setReading(text: TextChoice): Promise<boolean>;
   library(): Promise<LibraryView>;
-  download(pack: PackId): Promise<InstallOutcome>;
+  download(pack: PackId, options?: CatalogInstallOptions): Promise<InstallOutcome>;
   article(id: string): Promise<ArticleView>;
   story(number: number): Promise<StoryView>;
-  books(): Promise<readonly BookEntry[]>;
+  books(language?: string): Promise<readonly BookEntry[]>;
   originalOf(book: string): OriginalChoice | undefined;
   original(reference: string): Promise<Passage | undefined>;
   search(query: string): Promise<SearchView>;
@@ -146,6 +173,15 @@ export type StudyService = {
 
 function autonymOf(kernel: Kernel, language: string): string {
   return kernel.catalog.languages().find((item) => item.language === language)?.autonym ?? language;
+}
+
+function chapterAround(reference: Reference): Reference {
+  return { book: reference.book, start: { chapter: reference.start.chapter } };
+}
+
+function landingOf(reference: Reference): VersePlace | undefined {
+  const { chapter, verse } = reference.start;
+  return verse === undefined ? undefined : { chapter, verse };
 }
 
 export function createStudyService(kernel: Kernel): StudyService {
@@ -168,6 +204,9 @@ export function createStudyService(kernel: Kernel): StudyService {
     if (release?.pack === undefined) {
       return { state: 'none' };
     }
+    if (kernel.packs.installed().some((pack) => pack.pack === release.pack)) {
+      return { state: 'no-chapter', label, detail: current.t('study.audio.noChapter') };
+    }
     if (kernel.packs.installing().some((progress) => progress.pack === release.pack)) {
       return { state: 'downloading', pack: release.pack, label: current.t('study.audio.downloading') };
     }
@@ -186,7 +225,69 @@ export function createStudyService(kernel: Kernel): StudyService {
     pack: languagePackId(language),
   });
 
-  const passage = async (text: string): Promise<StudyView> => {
+  const originalOf = (code: string): OriginalChoice | undefined => {
+    const book = bookByCode(code);
+    if (book === undefined) {
+      return undefined;
+    }
+    const language = originalLanguages[book.testament];
+    if (!corpus.languages().includes(language)) {
+      return undefined;
+    }
+    return {
+      language,
+      label: words().t(book.testament === 'old' ? 'resource.hebrew' : 'resource.greek'),
+    };
+  };
+
+  const originalOpenings = async (): Promise<OriginalOpening[]> => {
+    const openings: OriginalOpening[] = [];
+    for (const testament of testaments) {
+      const language = originalLanguages[testament];
+      if (!corpus.languages().includes(language)) {
+        continue;
+      }
+      const [text] = (await corpus.contents(language)).texts;
+      const [book] = text?.books ?? [];
+      const [chapter] = book?.chapters ?? [];
+      if (book !== undefined && chapter !== undefined) {
+        openings.push({
+          language,
+          label: words().t(testament === 'old' ? 'resource.hebrew' : 'resource.greek'),
+          reference: formatReference({ book: book.code, start: { chapter } }),
+        });
+      }
+    }
+    return openings;
+  };
+
+  const helpsInstalled = (language: string): HelpsInstalled => {
+    const summary = corpus.summary(language);
+    return {
+      notes: summary.notes !== undefined,
+      wordLinks: summary.wordLinks !== undefined,
+      questions: summary.questions !== undefined,
+    };
+  };
+
+  const choicesOf = (
+    found: Passage,
+    original: OriginalChoice | undefined,
+    shown: Reading,
+  ): readonly TextChoiceView[] => {
+    const current = words();
+    const choices: TextChoiceView[] = found.availableTexts.map((choice) => ({
+      text: choice,
+      label: current.t(choice === 'literal' ? 'study.text.literal' : 'study.text.simplified'),
+      selected: choice === shown,
+    }));
+    if (original !== undefined) {
+      choices.push({ text: 'original', label: original.label, selected: shown === 'original' });
+    }
+    return choices.length < 2 ? [] : choices;
+  };
+
+  const passage = async (text: string, request: PassageRequest = {}): Promise<StudyView> => {
     const language = preferences.contentLanguage();
     if (language === undefined) {
       return { state: 'no-language' };
@@ -196,32 +297,37 @@ export function createStudyService(kernel: Kernel): StudyService {
       return { state: 'invalid-reference', language };
     }
     const reference = formatReference(parsed.reference);
-    const found = await corpus.passage(parsed.reference, { language, text: reading() });
+    const chapter = chapterAround(parsed.reference);
+    const found = await corpus.passage(chapter, { language, text: reading(), journal: false });
+    const original = originalOf(parsed.reference.book);
+    const originalPassage =
+      request.original === true && original !== undefined
+        ? await corpus.passage(chapter, { language: original.language, text: 'original', journal: false })
+        : undefined;
     if (found === undefined) {
+      if (originalPassage !== undefined && original !== undefined) {
+        return { state: 'original', language, reference, passage: originalPassage, choice: original };
+      }
       return corpus.languages().includes(language)
         ? { state: 'missing', language, reference }
         : notDownloaded(language);
     }
-    const current = words();
-    const choices: TextChoiceView[] =
-      found.availableTexts.length < 2
-        ? []
-        : found.availableTexts.map((choice) => ({
-            text: choice,
-            label: current.t(choice === 'literal' ? 'study.text.literal' : 'study.text.simplified'),
-            selected: choice === found.text.reading,
-          }));
+    await corpus.opened(parsed.reference, language);
+    const shown: Reading = originalPassage === undefined ? found.text.reading : 'original';
     return {
       state: 'passage',
       view: {
-        reference: found.reference,
-        label: corpus.referenceName(found.reference, language),
+        reference,
+        label: corpus.referenceName(reference, language),
         language,
         passage: found,
-        reading: found.text.reading,
-        choices,
+        landing: landingOf(parsed.reference),
+        original: originalPassage,
+        reading: shown,
+        choices: choicesOf(found, original, shown),
         audio: await audioOf(found),
-        saved: bookmarks.find({ target: 'passage', reference: found.reference, language }),
+        saved: bookmarks.find({ target: 'passage', reference, language }),
+        helps: helpsInstalled(language),
       },
     };
   };
@@ -246,14 +352,14 @@ export function createStudyService(kernel: Kernel): StudyService {
       const language = preferences.contentLanguage();
       return language === undefined ? undefined : corpus.title(target, language);
     },
-    async open() {
+    async open(request = {}) {
       const language = preferences.contentLanguage();
       if (language === undefined) {
         return { state: 'no-language' };
       }
       const last = preferences.lastPassage(language);
       if (last !== undefined) {
-        return passage(last);
+        return passage(last, request);
       }
       const contents = await corpus.contents(language);
       const [text] = contents.texts;
@@ -261,12 +367,19 @@ export function createStudyService(kernel: Kernel): StudyService {
       const [chapter] = book?.chapters ?? [];
       if (book === undefined || chapter === undefined) {
         return corpus.languages().includes(language)
-          ? { state: 'no-text', language }
+          ? { state: 'no-text', language, originals: await originalOpenings() }
           : notDownloaded(language);
       }
-      return passage(`${book.code} ${chapter}`);
+      return passage(formatReference({ book: book.code, start: { chapter } }), request);
     },
     passage,
+    async opened(text) {
+      const language = preferences.contentLanguage();
+      const parsed = parseReference(text);
+      if (language !== undefined && parsed.ok) {
+        await corpus.opened(parsed.reference, language);
+      }
+    },
     reading,
     setReading: (text) => preferences.set('study.reading', text),
     async library() {
@@ -300,7 +413,7 @@ export function createStudyService(kernel: Kernel): StudyService {
         footer: current.t('library.footer'),
       };
     },
-    download: (pack) => kernel.packs.installFromCatalog(pack),
+    download: (pack, options) => kernel.packs.installFromCatalog(pack, options),
     async article(id) {
       const language = preferences.contentLanguage();
       if (language === undefined) {
@@ -332,8 +445,8 @@ export function createStudyService(kernel: Kernel): StudyService {
         ? { state: 'missing', number }
         : { state: 'story', story, saved: bookmarks.find({ target: 'story', story: number, language }) };
     },
-    async books() {
-      const language = preferences.contentLanguage();
+    async books(of) {
+      const language = of ?? preferences.contentLanguage();
       if (language === undefined) {
         return [];
       }
@@ -358,21 +471,7 @@ export function createStudyService(kernel: Kernel): StudyService {
           chapters: [...found].sort((left, right) => left - right),
         }));
     },
-    originalOf(code) {
-      const book = bookByCode(code);
-      if (book === undefined) {
-        return undefined;
-      }
-      const language = originalLanguages[book.testament];
-      if (!corpus.languages().includes(language)) {
-        return undefined;
-      }
-      const current = words();
-      return {
-        language,
-        label: current.t(book.testament === 'old' ? 'resource.hebrew' : 'resource.greek'),
-      };
-    },
+    originalOf,
     async original(text) {
       const parsed = parseReference(text);
       if (!parsed.ok) {

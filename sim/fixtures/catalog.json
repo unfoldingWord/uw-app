@@ -40,7 +40,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": false,
-            "size": 0
+            "size": 1651
           },
           {
             "categories": null,
@@ -51,7 +51,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": false,
-            "size": 0
+            "size": 4421
           }
         ],
         "relations": null,
@@ -140,7 +140,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": false,
-          "size": 0
+          "size": 1651
         },
         {
           "categories": null,
@@ -151,7 +151,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": false,
-          "size": 0
+          "size": 4421
         }
       ],
       "books": ["rut", "3jn"],
@@ -203,7 +203,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": false,
-            "size": 0
+            "size": 729
           },
           {
             "categories": null,
@@ -214,7 +214,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": false,
-            "size": 0
+            "size": 513
           }
         ],
         "relations": null,
@@ -293,7 +293,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": false,
-          "size": 0
+          "size": 729
         },
         {
           "categories": null,
@@ -304,7 +304,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": false,
-          "size": 0
+          "size": 513
         }
       ],
       "books": ["rut", "3jn"],
@@ -356,7 +356,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": false,
-            "size": 0
+            "size": 729
           },
           {
             "categories": null,
@@ -367,7 +367,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": false,
-            "size": 0
+            "size": 513
           }
         ],
         "relations": null,
@@ -446,7 +446,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": false,
-          "size": 0
+          "size": 729
         },
         {
           "categories": null,
@@ -457,7 +457,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": false,
-          "size": 0
+          "size": 513
         }
       ],
       "books": ["rut", "3jn"],
@@ -509,7 +509,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": false,
-            "size": 0
+            "size": 729
           },
           {
             "categories": null,
@@ -520,7 +520,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": false,
-            "size": 0
+            "size": 513
           }
         ],
         "relations": null,
@@ -599,7 +599,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": false,
-          "size": 0
+          "size": 729
         },
         {
           "categories": null,
@@ -610,7 +610,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": false,
-          "size": 0
+          "size": 513
         }
       ],
       "books": ["rut", "3jn"],
@@ -662,7 +662,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": false,
-            "size": 0
+            "size": 670
           },
           {
             "categories": null,
@@ -673,7 +673,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": false,
-            "size": 0
+            "size": 607
           }
         ],
         "relations": null,
@@ -752,7 +752,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": false,
-          "size": 0
+          "size": 670
         },
         {
           "categories": null,
@@ -763,7 +763,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": false,
-          "size": 0
+          "size": 607
         }
       ],
       "books": ["rut", "3jn"],
@@ -815,7 +815,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": false,
-            "size": 0
+            "size": 1083
           },
           {
             "categories": null,
@@ -826,7 +826,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": false,
-            "size": 0
+            "size": 157
           }
         ],
         "relations": null,
@@ -905,7 +905,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": false,
-          "size": 0
+          "size": 1083
         },
         {
           "categories": null,
@@ -916,7 +916,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": false,
-          "size": 0
+          "size": 157
         }
       ],
       "books": ["rut", "3jn"],
@@ -968,7 +968,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": false,
-            "size": 0
+            "size": 242
           },
           {
             "categories": null,
@@ -979,7 +979,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": false,
-            "size": 0
+            "size": 211
           }
         ],
         "relations": null,
@@ -1058,7 +1058,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": false,
-          "size": 0
+          "size": 242
         },
         {
           "categories": null,
@@ -1069,7 +1069,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": false,
-          "size": 0
+          "size": 211
         }
       ],
       "books": ["rut", "3jn"],
@@ -1121,7 +1121,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": false,
-            "size": 0
+            "size": 1083
           },
           {
             "categories": null,
@@ -1132,7 +1132,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": false,
-            "size": 0
+            "size": 157
           }
         ],
         "relations": null,
@@ -1211,7 +1211,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": false,
-          "size": 0
+          "size": 1083
         },
         {
           "categories": null,
@@ -1222,7 +1222,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": false,
-          "size": 0
+          "size": 157
         }
       ],
       "books": ["rut", "3jn"],
@@ -1274,7 +1274,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": true,
-            "size": 0
+            "size": 1348
           }
         ],
         "relations": null,
@@ -1353,7 +1353,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": true,
-          "size": 0
+          "size": 1348
         }
       ],
       "books": [],
@@ -1405,7 +1405,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": true,
-            "size": 0
+            "size": 1512
           }
         ],
         "relations": null,
@@ -1503,7 +1503,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": true,
-          "size": 0
+          "size": 1512
         }
       ],
       "books": [],
@@ -1555,7 +1555,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": true,
-            "size": 0
+            "size": 1353
           }
         ],
         "relations": null,
@@ -1634,7 +1634,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": true,
-          "size": 0
+          "size": 1353
         }
       ],
       "books": [],
@@ -1686,7 +1686,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": true,
-            "size": 0
+            "size": 459
           }
         ],
         "relations": null,
@@ -1765,7 +1765,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": true,
-          "size": 0
+          "size": 459
         }
       ],
       "books": [],
@@ -1817,7 +1817,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": true,
-            "size": 0
+            "size": 411
           }
         ],
         "relations": null,
@@ -1896,7 +1896,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": true,
-          "size": 0
+          "size": 411
         }
       ],
       "books": [],
@@ -1948,7 +1948,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": true,
-            "size": 0
+            "size": 150
           }
         ],
         "relations": null,
@@ -2027,7 +2027,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": true,
-          "size": 0
+          "size": 150
         }
       ],
       "books": [],
@@ -2079,7 +2079,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": true,
-            "size": 0
+            "size": 2458
           }
         ],
         "relations": null,
@@ -2158,7 +2158,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": true,
-          "size": 0
+          "size": 2458
         }
       ],
       "books": [],
@@ -2210,7 +2210,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": true,
-            "size": 0
+            "size": 1380
           }
         ],
         "relations": null,
@@ -2289,7 +2289,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": true,
-          "size": 0
+          "size": 1380
         }
       ],
       "books": [],
@@ -2341,7 +2341,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": true,
-            "size": 0
+            "size": 414
           }
         ],
         "relations": null,
@@ -2420,7 +2420,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": true,
-          "size": 0
+          "size": 414
         }
       ],
       "books": [],
@@ -2472,7 +2472,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": true,
-            "size": 0
+            "size": 1353
           }
         ],
         "relations": null,
@@ -2551,7 +2551,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": true,
-          "size": 0
+          "size": 1353
         }
       ],
       "books": [],
@@ -2603,7 +2603,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": true,
-            "size": 0
+            "size": 2458
           }
         ],
         "relations": null,
@@ -2682,7 +2682,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": true,
-          "size": 0
+          "size": 2458
         }
       ],
       "books": [],
@@ -2734,7 +2734,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": false,
-            "size": 0
+            "size": 3210
           }
         ],
         "relations": null,
@@ -2813,7 +2813,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": false,
-          "size": 0
+          "size": 3210
         }
       ],
       "books": ["rut"],
@@ -2865,7 +2865,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": false,
-            "size": 0
+            "size": 2003
           }
         ],
         "relations": null,
@@ -2944,7 +2944,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": false,
-          "size": 0
+          "size": 2003
         }
       ],
       "books": ["3jn"],

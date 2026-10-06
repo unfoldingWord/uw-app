@@ -181,10 +181,16 @@ export async function academyArticle(
   return subtitle === undefined || subtitle === '' ? article : { ...article, subtitle };
 }
 
-export function academyOrder(library: Library, entry: Entry): Promise<readonly string[]> {
-  return library.cached(entry, 'academy-order', async (reader) => {
+type AcademyManual = {
+  readonly manual: string;
+  readonly title: string;
+  readonly articles: readonly string[];
+};
+
+export function academyManuals(library: Library, entry: Entry): Promise<readonly AcademyManual[]> {
+  return library.cached(entry, 'academy-manuals', async (reader) => {
     const manuals = [...new Set([...academyEntries(reader).values()].map((item) => item.manual))];
-    const ordered: string[] = [];
+    const found: AcademyManual[] = [];
     for (const manual of manuals) {
       const key = academyFile(reader, manual, 'toc.yaml');
       let toc: unknown;
@@ -193,6 +199,7 @@ export function academyOrder(library: Library, entry: Entry): Promise<readonly s
       } catch {
         toc = undefined;
       }
+      const articles: string[] = [];
       const walk = (node: unknown): void => {
         if (typeof node !== 'object' || node === null) {
           return;
@@ -200,14 +207,24 @@ export function academyOrder(library: Library, entry: Entry): Promise<readonly s
         const record = node as Record<string, unknown>;
         const id = typeof record.link === 'string' ? academyArticleId(manual, record.link) : undefined;
         if (id !== undefined) {
-          ordered.push(id);
+          articles.push(id);
         }
         if (Array.isArray(record.sections)) {
           record.sections.forEach(walk);
         }
       };
       walk(toc);
+      const root = typeof toc === 'object' && toc !== null ? (toc as Record<string, unknown>) : {};
+      const title = typeof root.title === 'string' && root.title.trim() !== '' ? root.title.trim() : manual;
+      found.push({ manual, title, articles });
     }
+    return found;
+  });
+}
+
+export function academyOrder(library: Library, entry: Entry): Promise<readonly string[]> {
+  return library.cached(entry, 'academy-order', async (reader) => {
+    const ordered = (await academyManuals(library, entry)).flatMap((manual) => manual.articles);
     const rest = [...academyEntries(reader).keys()].filter((id) => !ordered.includes(id)).sort();
     return [...ordered, ...rest];
   });

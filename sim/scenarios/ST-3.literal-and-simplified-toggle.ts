@@ -9,6 +9,7 @@ import { fromFile } from '@lib/packs/source';
 import { importLocalBurrito } from '../burritos';
 import { installFromCatalog } from '../install';
 import { scenario } from '../scenario';
+import { servicesOf } from '../services';
 
 export default scenario(
   'ST-3',
@@ -16,7 +17,7 @@ export default scenario(
   async (world) => {
     const device = world.device('phone');
     await device.start();
-    await installFromCatalog(device, [languagePackId('qaa'), originalPackId('hbo')]);
+    await installFromCatalog(device, [languagePackId('qaa')]);
     const installedTexts = device.kernel.packs
       .installed()
       .flatMap((pack) => (pack.pack === languagePackId('qaa') ? pack.burritos : []))
@@ -94,10 +95,6 @@ export default scenario(
     );
     assert.deepEqual(everyday?.availableTexts, ['literal', 'simplified']);
 
-    const hebrew = await corpus.passage(parsed.reference, { language: 'hbo' });
-    assert.equal(hebrew?.text.reading, 'original');
-    assert.deepEqual(hebrew?.availableTexts, [], 'no toggle where neither reading exists');
-
     const literalOnly = buildBurrito({
       publisher: 'unfoldingWord',
       resource: 'qac_ult',
@@ -132,8 +129,44 @@ export default scenario(
     const single = await corpus.passage(parsed.reference, { language: 'qac' });
     assert.equal(single?.text.reading, 'literal');
     assert.equal(single?.text.verses[0]?.text, 'Ruth answered.');
-    assert.deepEqual(single?.availableTexts, [], 'no toggle when only one reading exists');
-    assert.equal(await corpus.passage(parsed.reference, { language: 'qac', text: 'simplified' }), undefined);
+    assert.deepEqual(single?.availableTexts, ['literal'], 'one reading on the phone');
+    const fallback = await corpus.passage(parsed.reference, { language: 'qac', text: 'simplified' });
+    assert.equal(
+      fallback?.text.reading,
+      'literal',
+      'a wanted reading the language does not carry falls back to the one it does',
+    );
+
+    const services = servicesOf(device);
+    assert.ok(await services.languages.select('qac'));
+    assert.ok(await services.study.setReading('simplified'));
+    const literalView = await services.study.passage('RUT 1:16');
+    assert.equal(literalView.state, 'passage');
+    assert.equal(literalView.state === 'passage' && literalView.view.reading, 'literal');
+    assert.deepEqual(
+      literalView.state === 'passage' && literalView.view.choices,
+      [],
+      'no toggle when only one reading exists',
+    );
+
+    await installFromCatalog(device, [originalPackId('hbo')]);
+    const hebrew = await corpus.passage(parsed.reference, { language: 'hbo' });
+    assert.equal(hebrew?.text.reading, 'original');
+    assert.deepEqual(hebrew?.availableTexts, [], 'neither reading exists in the original');
+    assert.equal(
+      await corpus.passage(parsed.reference, { language: 'qac', text: 'original' }),
+      undefined,
+      'asking for the original never falls back to a translation',
+    );
+    const withHebrew = await services.study.passage('RUT 1:16');
+    assert.deepEqual(
+      withHebrew.state === 'passage' && withHebrew.view.choices,
+      [
+        { text: 'literal', label: 'Close to the original', selected: true },
+        { text: 'original', label: 'Hebrew Old Testament', selected: false },
+      ],
+      'a single text and the Hebrew make two choices',
+    );
 
     for (const [resource, abbreviation, verse] of [
       ['qad_rlob', 'rlob', 'Ruth said, Do not urge me.'],

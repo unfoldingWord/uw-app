@@ -84,7 +84,13 @@ export default scenario(
     );
     assert.deepEqual(literalOf(phone), original, 'the catalog release stays until the leader chooses');
 
+    assert.equal((await phone.kernel.packs.status('qaa')).failure, 'pack.replace-unconfirmed');
     await phone.kernel.packs.declineReplace();
+    assert.equal(
+      (await phone.kernel.packs.status('qaa')).failure,
+      undefined,
+      'keeping the catalog copy answers the question, so Home shows no failure for it',
+    );
     const nothing = await phone.kernel.packs.confirmReplace();
     assert.ok(!nothing.ok && nothing.code === 'pack.empty-plan', 'keeping it leaves nothing to confirm');
     assert.deepEqual(literalOf(phone), original);

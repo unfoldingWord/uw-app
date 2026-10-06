@@ -53,12 +53,6 @@ export function helpsAt(passage: Passage, at: VerseKey): VerseHelps {
   };
 }
 
-export function hasHelps(passage: Passage): boolean {
-  return (
-    passage.intros.length + passage.notes.length + passage.wordLinks.length + passage.questions.length > 0
-  );
-}
-
 export function keyOf(verse: Verse): VerseKey {
   return { chapter: verse.chapter, verse: verse.verse };
 }
@@ -73,14 +67,6 @@ export function highlightedIn(spans: readonly WordSpan[], at: VerseKey): Readonl
       .filter((span) => span.chapter === at.chapter && span.verse === at.verse)
       .flatMap((span) => span.tokens),
   );
-}
-
-export function verseOf(reference: string): VerseKey | undefined {
-  const parsed = parseReference(reference);
-  if (!parsed.ok || parsed.reference.start.verse === undefined) {
-    return undefined;
-  }
-  return { chapter: parsed.reference.start.chapter, verse: parsed.reference.start.verse };
 }
 
 export function chapterOf(reference: string): { book: string; chapter: number } | undefined {

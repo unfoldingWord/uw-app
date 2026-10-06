@@ -14,7 +14,9 @@ import type {
   SessionOptions,
   Track,
   TrackSummary,
+  TrainingOutline,
   TrainingSession,
+  TrainingUnit,
 } from './types';
 
 const englishLanguage = 'en';
@@ -46,10 +48,11 @@ function formationOf(movements: Movements): FormationContent {
   };
 }
 
-function outlineOf(formation: FormationContent | undefined): OutlinePart[] {
+function outlineOf(formation: FormationContent | undefined, studyQuestions: boolean): OutlinePart[] {
   if (formation === undefined) {
     return ['frames', 'study-questions'];
   }
+  const afterFrames: OutlinePart[] = studyQuestions ? ['frames', 'study-questions'] : ['frames'];
   const opening: OutlinePart[] = [];
   if (formation.keyIdea !== undefined) {
     opening.push('key-idea');
@@ -62,7 +65,7 @@ function outlineOf(formation: FormationContent | undefined): OutlinePart[] {
   }
   return [
     ...opening,
-    'frames',
+    ...afterFrames,
     ...formation.movements.map((movement) => movement.id),
     ...formation.closing.map((section) => section.id),
   ];
@@ -112,7 +115,7 @@ async function foundationsSession(
     track: 'foundations',
     number,
     language,
-    outline: outlineOf(shown),
+    outline: outlineOf(shown, layer.state === 'not-in-language' && story.questions.length > 0),
     story,
     play: {
       frames: story.frames,
@@ -150,6 +153,27 @@ export function assembleSession(
     case 'topics':
       return Promise.resolve(undefined);
   }
+}
+
+function manualOf(id: string): string {
+  return id.split('/')[1] ?? '';
+}
+
+export async function trainingOutlineOf(view: CorpusView, language: string): Promise<TrainingOutline> {
+  const contents = await view.contents(language);
+  const units = new Map<string, TrainingUnit>();
+  contents.academy.forEach((entry, index) => {
+    const manual = manualOf(entry.id);
+    const lesson = { number: index + 1, title: entry.title, id: entry.id };
+    const unit = units.get(manual);
+    if (unit !== undefined) {
+      units.set(manual, { ...unit, lessons: [...unit.lessons, lesson] });
+      return;
+    }
+    const title = contents.manuals.find((item) => item.manual === manual)?.title ?? manual;
+    units.set(manual, { manual, title, lessons: [lesson] });
+  });
+  return { lessons: contents.academy.length, units: [...units.values()] };
 }
 
 export async function trackSummaries(view: CorpusView, language: string): Promise<TrackSummary[]> {

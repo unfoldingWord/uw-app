@@ -31,7 +31,9 @@ async function readsRuth(device: SimDevice): Promise<readonly string[]> {
   assert.match(passage.text.provenance.licence, /CC BY-SA 4\.0/);
   assert.equal(passage.text.reading, 'literal');
   const other = await device.kernel.corpus.passage(ruth.reference, { language: 'qaa', text: 'simplified' });
-  return other === undefined ? passage.availableTexts : [...passage.availableTexts, 'simplified-found'];
+  return other?.text.reading === 'simplified'
+    ? [...passage.availableTexts, 'simplified-found']
+    : passage.availableTexts;
 }
 
 export default scenario(
@@ -83,7 +85,7 @@ export default scenario(
       first.installed.pack.burritos.map((burrito) => burrito.provenance.resource).sort(),
       chosen.map((item) => item.resource).sort(),
     );
-    assert.deepEqual(await readsRuth(android), [], 'the omitted simplified text did not travel');
+    assert.deepEqual(await readsRuth(android), ['literal'], 'the omitted simplified text did not travel');
 
     const received = transferEvents(android);
     const progress = received.filter((entry) => entry.type === 'TransferProgressed');
@@ -124,7 +126,7 @@ export default scenario(
     ipad.adapters.http.setOnline(false);
     const back = await transferBetween(android, ipad, { language: 'qaa' });
     assert.ok(back.sent.ok && back.accepted.ok && back.installed?.ok, 'Android sends to iPhone');
-    assert.deepEqual(await readsRuth(ipad), []);
+    assert.deepEqual(await readsRuth(ipad), ['literal']);
     const backCompleted = transferEvents(ipad).find((entry) => entry.type === 'TransferCompleted');
     assert.ok(backCompleted?.type === 'TransferCompleted');
     assert.deepEqual(
@@ -160,7 +162,7 @@ export default scenario(
       tree,
     );
     assert.deepEqual(leftovers(android), [], 'no half pack');
-    assert.deepEqual(await readsRuth(android), []);
+    assert.deepEqual(await readsRuth(android), ['literal']);
     assert.equal(android.kernel.transfer.last()?.code, 'transfer.peer-lost');
 
     const waiting = await startOffer(iphone, { language: 'qaa' });

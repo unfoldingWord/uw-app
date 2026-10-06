@@ -77,8 +77,6 @@ export const nl: LocaleTable = {
   'home.formation.empty': 'Maak een groep aan in Vorming om samen door de verhalen te gaan.',
   'home.download.progress': '{language} wordt gedownload',
   'home.download.percent': '{percent}%',
-  'home.download.detail': 'Taalpakket, {size}, dat je offline kunt lezen als het klaar is.',
-  'home.download.waiting': 'Het downloaden gaat verder zodra je online bent.',
   'home.download.none': 'Er staat nog niets in {language} op deze telefoon.',
   'home.download.missing': 'Sommige hulpmiddelen in {language} staan nog niet op deze telefoon.',
   'home.download.complete': 'De rest downloaden',
@@ -106,7 +104,6 @@ export const nl: LocaleTable = {
   'invitation.action': 'Word partner van unfoldingWord',
   'invitation.dismiss': 'Niet nu',
   'invitation.readMore': 'Lees het hele verhaal op unfoldingword.org',
-  'impact.securityNote': 'De namen in dit verhaal zijn om veiligheidsredenen veranderd.',
   'study.text.literal': 'Dicht bij het origineel',
   'study.text.simplified': 'Gewone woorden',
   'study.text.choice': 'Kies hoe de bijbeltekst leest',
@@ -137,7 +134,6 @@ export const nl: LocaleTable = {
   'study.audio.play': 'Audio afspelen',
   'study.audio.pause': 'Audio pauzeren',
   'study.audio.label': '{reference} · audio',
-  'study.audio.streaming': 'Online',
   'study.audio.onPhone': 'Op deze telefoon',
   'study.audio.time': '{position} / {duration}',
   'study.audio.download': 'Audio downloaden om offline te luisteren',
@@ -146,8 +142,8 @@ export const nl: LocaleTable = {
   'library.open': 'Bibliotheek',
   'library.title': 'Bibliotheek',
   'library.overline': {
-    one: '{language} · {count} hulpmiddel',
-    other: '{language} · {count} hulpmiddelen',
+    one: '{language} · {count} soort hulpmiddel',
+    other: '{language} · {count} soorten hulpmiddelen',
   },
   'library.footer':
     'Alle inhoud valt onder CC BY-SA 4.0 en wordt toegeschreven aan de organisatie die het publiceerde, met hulpmiddelen van unfoldingWord bovenaan.',
@@ -212,7 +208,6 @@ export const nl: LocaleTable = {
   'formation.title': 'Vorming',
   'formation.overline': '{language} · {coverage}',
   'formation.coverage.movements': 'vijf bewegingen beschikbaar',
-  'formation.coverage.questions': 'verhalen met studievragen',
   'formation.coverage.stories': 'verhalen',
   'formation.groups.title': 'Je groepen',
   'formation.groups.add': 'Groep',
@@ -287,11 +282,9 @@ export const nl: LocaleTable = {
   'languages.overline.onboarding': 'Kies de taal waarin je leest',
   'languages.search': 'Talen zoeken',
   'languages.resources': { one: '{count} hulpmiddel', other: '{count} hulpmiddelen' },
-  'languages.row': '{english} · {resources} · {size}',
   'languages.select': 'Lezen in {language}',
   'languages.selected': 'Gekozen',
   'languages.noMatch': 'Geen taal komt overeen met {query}.',
-  'languages.offline': 'Je bent offline, dus alleen talen die al op deze telefoon staan worden getoond.',
   'languages.coverage':
     '{available} van de {total} talen van de app hebben vandaag gepubliceerde inhoud, en de andere verschijnen zodra die er is.',
   'languages.download': 'Downloaden',
@@ -325,12 +318,8 @@ export const nl: LocaleTable = {
     one: '{count} hulpmiddel gekozen · {size}',
     other: '{count} hulpmiddelen gekozen · {size}',
   },
-  'transfer.note':
-    'Werkt tussen iPhone en Android in beide richtingen, met licentie en toeschrijving bij elk onderdeel.',
   'transfer.app': 'Deze app ook sturen',
   'transfer.app.about': 'De andere telefoon kan hem installeren zonder winkel.',
-  'transfer.app.ios':
-    'Een iPhone staat niet toe dat de app zelf wordt verstuurd, maar hulpmiddelen kunnen wel mee.',
   'transfer.find': 'Een telefoon in de buurt zoeken',
   'transfer.looking': 'Zoeken naar een telefoon in de buurt',
   'transfer.looking.hint': 'Open Ontvangen op de andere telefoon en houd de telefoons dicht bij elkaar.',
@@ -447,8 +436,6 @@ export const nl: LocaleTable = {
   'settings.diagnostics': 'Diagnose delen',
   'settings.diagnostics.about':
     'Stuur een verslag van wat er op deze telefoon gebeurde naar iemand die je helpt.',
-  'settings.footer':
-    'Niets verlaat deze telefoon als je er niet zelf voor kiest het te sturen, en de app telt openingen, downloads, overdrachten en gedeelde items alleen in totaal, zonder kenmerken.',
   'diagnostics.title': 'Diagnose delen',
   'diagnostics.body':
     'Het bestand bevat een verslag van wat de app op deze telefoon deed en een overzicht van wat erop staat, zonder de passages, artikelen en verhalen die je opende of bewaarde, en zonder namen, aantekeningen of kenmerken.',
@@ -533,8 +520,6 @@ export const nl: LocaleTable = {
   'failure.boot': 'De app kon zich niet klaarmaken op deze telefoon, dus probeer het zo meteen opnieuw.',
   'languages.import.title': 'Uit een bestand',
   'languages.import': 'Importeren uit een bestand',
-  'languages.import.about':
-    'Installeer een Scripture Burrito-archief (.zip) dat je hebt bewaard of gekregen.',
   'languages.import.opened': '{name}, het bestand dat je hebt geopend, op deze telefoon installeren?',
   'languages.import.install': 'Installeren',
   'languages.import.done': 'Geïnstalleerd uit het bestand en nu offline te lezen.',
@@ -544,4 +529,40 @@ export const nl: LocaleTable = {
   'study.audio.forward': '10 seconden vooruit',
   'study.audio.loading': 'De audio wordt klaargezet',
   'session.audio.time': '{position} / {duration}',
+  'settings.footer':
+    'Niets verlaat deze telefoon zonder dat u ervoor kiest het te versturen, en de app bewaart alleen anonieme tellingen van het gebruik, vermeld op het privacyscherm.',
+  'home.download.waiting': 'Maak verbinding met internet en tik dan om te downloaden.',
+  'languages.row': '{english} · {resources} · ongeveer {size}',
+  'languages.offline':
+    'U bent offline, dus nieuwe talen kunnen pas worden gedownload als u weer verbinding hebt.',
+  'transfer.note':
+    'Werkt tussen twee willekeurige telefoons met de app in beide richtingen, met licentie en naamsvermelding op elk onderdeel.',
+  'transfer.app.ios': 'Deze telefoon mag de app zelf niet versturen, maar hulpmiddelen kunnen wel mee.',
+  'languages.import.about': 'Installeer een hulpmiddelenarchief (.zip) dat u hebt opgeslagen of gekregen.',
+  'about.logo': 'unfoldingWord',
+  'common.linksOpenBrowser': 'Links openen in uw browser.',
+  'formation.training.lessonNumber': 'Les {number}',
+  'formation.training.current': 'Waar {group} nu is',
+  'session.fallback.notInEnglish': 'De bewegingen zijn op deze telefoon nog niet in het Engels beschikbaar.',
+  'session.move.ask': '{group} naar dit verhaal verplaatsen?',
+  'session.move.confirm': 'Verplaatsen',
+  'session.move.later': 'Niet nu',
+  'languages.empty': 'Er zijn nog geen talen beschikbaar.',
+  'languages.empty.offline':
+    'Er staan nog geen talen op deze telefoon, dus maak verbinding om de lijst te zien.',
+  'study.original.read': 'Lees het {text}',
+  'study.audio.noChapter': 'Dit hoofdstuk heeft geen audio.',
+  'formation.training.unit.count': { one: '{count} les', other: '{count} lessen' },
+  'home.download.count': {
+    one: '{count} van {total} hulpmiddel op deze telefoon',
+    other: '{count} van {total} hulpmiddelen op deze telefoon',
+  },
+  'library.notes': { one: '{count} notitie', other: '{count} notities' },
+  'library.wordLinks': { one: '{count} woordkoppeling', other: '{count} woordkoppelingen' },
+  'library.questions': { one: '{count} vraag', other: '{count} vragen' },
+  'library.storyHelps': { one: '{count} verhaalhulp', other: '{count} verhaalhulpen' },
+  'library.movements': { one: '{count} verhaal met bewegingen', other: '{count} verhalen met bewegingen' },
+  'library.chapters': { one: '{count} hoofdstuk', other: '{count} hoofdstukken' },
+  'library.pictures': { one: '{count} afbeelding', other: '{count} afbeeldingen' },
+  'formation.training.empty': 'De Academie is nog niet beschikbaar in het {language}.',
 };

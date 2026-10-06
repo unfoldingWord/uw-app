@@ -90,7 +90,7 @@ export default scenario(
       iphoneView.app,
       {
         state: 'ios-not-permitted',
-        reason: 'iPhone does not allow sending the app itself, but resources can still go.',
+        reason: 'This phone is not allowed to send the app itself, but resources can still go.',
       },
       'an iPhone says why it cannot',
     );

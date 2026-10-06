@@ -64,9 +64,11 @@ export default function ImpactStoryScreen() {
               {paragraph}
             </ThemedText>
           ))}
-          <ThemedText variant="caption" tone="dim" family="brand">
-            {story.securityNote}
-          </ThemedText>
+          {story.securityNote === undefined ? null : (
+            <ThemedText variant="caption" tone="dim" family="brand">
+              {story.securityNote}
+            </ThemedText>
+          )}
         </View>
         <GlassButton
           full
@@ -79,6 +81,9 @@ export default function ImpactStoryScreen() {
             {story.readMore}
           </ThemedText>
         </GlassButton>
+        <ThemedText variant="caption" tone="dim" family="brand">
+          {words.t('common.linksOpenBrowser')}
+        </ThemedText>
       </GlassSurface>
     </Screen>
   );

@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { GlassButton, GlassSurface } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
-import { Card, Screen, SectionTitle, ThemedText, useAsyncValue } from '@shared/ui';
+import { Card, Logo, Screen, SectionTitle, ThemedText, useAsyncValue } from '@shared/ui';
 import { createAboutService, type ImpactStoryView } from '../service';
 import { LinkRow } from './parts/LinkRow';
 import { StoryWell } from './parts/StoryWell';
@@ -28,6 +28,7 @@ export default function AboutScreen() {
       title={summary.title}
       back={{ label: words.t('common.back'), onPress: () => router.back() }}
     >
+      <Logo label={words.t('about.logo')} />
       <View style={[styles.stats, { gap: theme.space.sp4 }]}>
         {summary.stats.map((stat) => (
           <GlassSurface
@@ -115,6 +116,9 @@ export default function AboutScreen() {
           onPress={() => router.push(link.url)}
         />
       ))}
+      <ThemedText variant="caption" tone="dim" family="brand">
+        {words.t('common.linksOpenBrowser')}
+      </ThemedText>
     </Screen>
   );
 }
@@ -142,9 +146,11 @@ function StoryCard({ story, open, onOpen }: { story: ImpactStoryView; open: stri
             {story.body[0]}
           </ThemedText>
         )}
-        <ThemedText variant="caption" tone="dim" family="brand">
-          {story.securityNote}
-        </ThemedText>
+        {story.securityNote === undefined ? null : (
+          <ThemedText variant="caption" tone="dim" family="brand">
+            {story.securityNote}
+          </ThemedText>
+        )}
       </View>
       <GlassButton full accessibilityLabel={`${open}, ${story.title}`} onPress={onOpen}>
         <ThemedText variant="label" tone="title" family="brand" weight={theme.fontWeight.fwSemibold}>

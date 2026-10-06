@@ -47,6 +47,21 @@ function audioAssetsOf(entry: Record<string, unknown>): ReleaseAsset[] {
   });
 }
 
+function ingredientBytesOf(entry: Record<string, unknown>): number | undefined {
+  const repo = isRecord(entry.repo) ? entry.repo : {};
+  const listed = Array.isArray(entry.ingredients)
+    ? entry.ingredients
+    : Array.isArray(repo.ingredients)
+      ? repo.ingredients
+      : [];
+  const ingredients: readonly unknown[] = listed;
+  const total = ingredients.reduce<number>((sum, ingredient) => {
+    const size = isRecord(ingredient) ? ingredient.size : undefined;
+    return sum + (typeof size === 'number' && Number.isFinite(size) && size > 0 ? size : 0);
+  }, 0);
+  return total > 0 ? total : undefined;
+}
+
 export function normalizeEntry(entry: unknown): CatalogRelease | undefined {
   if (!isRecord(entry)) {
     return undefined;
@@ -89,7 +104,7 @@ export function normalizeEntry(entry: unknown): CatalogRelease | undefined {
     row,
     kind,
     pack: kind === undefined ? undefined : packIdOf(kind, language, resource),
-    bytes: undefined,
+    bytes: ingredientBytesOf(entry),
     autonym: field(entry, 'language_title') ?? language,
     direction: field(entry, 'language_direction') === 'rtl' ? 'rtl' : 'ltr',
     assets: audioAssetsOf(entry),

@@ -20,6 +20,7 @@ export function InvitationCard() {
   const theme = useTheme();
   const [at] = useState(() => Date.now());
   const [version, setVersion] = useState(0);
+  const [opening, setOpening] = useState(false);
   const invitation = home.invitation(at);
   const due = invitation.state === 'due';
   const shown = due && invitation.shown;
@@ -85,15 +86,28 @@ export function InvitationCard() {
             {excerpt}
           </ThemedText>
         )}
-        <ThemedText variant="caption" tone="dim" family="brand">
-          {words.securityNote}
-        </ThemedText>
+        {words.securityNote === undefined ? null : (
+          <ThemedText variant="caption" tone="dim" family="brand">
+            {words.securityNote}
+          </ThemedText>
+        )}
         <GlassButton
           variant="quiet"
           size="sm"
+          busy={opening}
           accessibilityLabel={words.readMore}
           accessibilityHint={words.opensBrowser}
-          onPress={() => Linking.openURL(story.link)}
+          onPress={async () => {
+            setOpening(true);
+            try {
+              const link = await home.openStory(story.slug);
+              if (link !== undefined) {
+                await Linking.openURL(link);
+              }
+            } finally {
+              setOpening(false);
+            }
+          }}
         >
           <ButtonLabel tone="link">{words.readMore}</ButtonLabel>
         </GlassButton>
@@ -127,6 +141,14 @@ export function InvitationCard() {
           <ButtonLabel tone="dim">{words.dismiss}</ButtonLabel>
         </GlassButton>
       </View>
+      <ThemedText
+        variant="caption"
+        tone="dim"
+        family="brand"
+        style={{ paddingHorizontal: theme.space.sp4, paddingBottom: theme.space.sp4 }}
+      >
+        {words.linksOpenBrowser}
+      </ThemedText>
     </Card>
   );
 }

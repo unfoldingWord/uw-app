@@ -101,9 +101,21 @@ export function readingTexts(library: Library, language: string, book: string): 
     .map(({ entry }) => entry);
 }
 
-export function defaultText(texts: readonly Entry[], wanted?: Reading): Entry | undefined {
-  const pick = (kind: Reading): Entry | undefined => texts.find((entry) => entry.kind === kind);
-  return wanted === undefined ? (pick('literal') ?? pick('simplified') ?? pick('original')) : pick(wanted);
+function readingOrder(wanted: Reading | undefined): readonly Reading[] {
+  if (wanted === undefined) {
+    return textKinds;
+  }
+  return wanted === 'original' ? ['original'] : [wanted, ...choices];
+}
+
+function defaultText(texts: readonly Entry[], wanted?: Reading): Entry | undefined {
+  for (const kind of readingOrder(wanted)) {
+    const found = texts.find((entry) => entry.kind === kind);
+    if (found !== undefined) {
+      return found;
+    }
+  }
+  return undefined;
 }
 
 function chosenText(
@@ -298,7 +310,6 @@ export async function assemblePassage(
   if (verses.length === 0) {
     return undefined;
   }
-  const available = choices.filter((choice) => texts.some((text) => text.kind === choice));
   const language = options.language;
   return {
     reference: formatReference(reference),
@@ -312,7 +323,7 @@ export async function assemblePassage(
       verses,
       provenance: entry.provenance,
     },
-    availableTexts: available.length === choices.length ? available : [],
+    availableTexts: choices.filter((choice) => texts.some((text) => text.kind === choice)),
     intros: await introsFor(library, language, reference.book, verses),
     notes: await notesFor(library, language, reference.book, verses),
     wordLinks: await wordLinksFor(library, language, reference.book, verses),

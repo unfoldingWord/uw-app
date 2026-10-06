@@ -1,5 +1,5 @@
 import { resourceTypeOf, resourceTypes, type CatalogRelease, type ResourceType } from '@lib/catalog/types';
-import type { CorpusSummary } from '@lib/corpus/types';
+import type { CorpusKind, CorpusSummary } from '@lib/corpus/types';
 import type { PackId } from '@lib/domain/pack';
 import type { InstalledPack, InstallProgress } from '@lib/packs/types';
 import type { StudyWords } from './strings';
@@ -53,31 +53,55 @@ function titleOf(words: StudyWords, type: CardType): { title: string; about: str
   }
 }
 
-function countOf(words: StudyWords, type: CardType, input: LibraryInput): string | undefined {
-  switch (type) {
-    case 'literal':
-    case 'simplified': {
-      const items = input.summary(input.language)[type]?.items;
-      return items === undefined ? undefined : words.plural('library.books', items);
-    }
-    case 'hebrew':
-    case 'greek': {
-      const language = type === 'hebrew' ? 'hbo' : 'el-x-koine';
-      const items = input.summary(language).original?.items;
-      return items === undefined ? undefined : words.plural('library.books', items);
-    }
-    case 'words':
-    case 'academy': {
-      const items = input.summary(input.language)[type]?.items;
-      return items === undefined ? undefined : words.plural('library.articles', items);
-    }
-    case 'stories': {
-      const items = input.summary(input.language).stories?.items;
-      return items === undefined ? undefined : words.plural('library.stories', items);
-    }
-    default:
-      return undefined;
+const unitKeys = {
+  literal: 'library.books',
+  simplified: 'library.books',
+  hebrew: 'library.books',
+  greek: 'library.books',
+  notes: 'library.notes',
+  wordLinks: 'library.wordLinks',
+  questions: 'library.questions',
+  words: 'library.articles',
+  academy: 'library.articles',
+  stories: 'library.stories',
+  storyHelps: 'library.storyHelps',
+  formation: 'library.movements',
+  audio: 'library.chapters',
+  images: 'library.pictures',
+} as const satisfies Record<CardType, string>;
+
+const summaryKinds: Readonly<Record<CardType, readonly CorpusKind[]>> = {
+  literal: ['literal'],
+  simplified: ['simplified'],
+  hebrew: ['original'],
+  greek: ['original'],
+  notes: ['notes'],
+  wordLinks: ['wordLinks'],
+  questions: ['questions'],
+  words: ['words'],
+  academy: ['academy'],
+  stories: ['stories'],
+  storyHelps: ['storyNotes', 'storyQuestions', 'storyWordLinks'],
+  formation: ['movements'],
+  audio: ['audio'],
+  images: ['images'],
+};
+
+function countOf(
+  words: StudyWords,
+  type: CardType,
+  lead: CatalogRelease,
+  input: LibraryInput,
+): string | undefined {
+  const summary = input.summary(lead.language);
+  const counted = summaryKinds[type].flatMap((kind) => summary[kind]?.items ?? []);
+  if (counted.length === 0) {
+    return undefined;
   }
+  return words.plural(
+    unitKeys[type],
+    counted.reduce((sum, items) => sum + items, 0),
+  );
 }
 
 function isInstalled(release: CatalogRelease, installed: readonly InstalledPack[]): boolean {
@@ -123,7 +147,7 @@ export function libraryCards(words: StudyWords, input: LibraryInput): readonly L
         state,
         pack,
         optional: lead.kind === 'original' || lead.kind === 'audio',
-        count: countOf(words, type, input),
+        count: countOf(words, type, lead, input),
       },
     ];
   });

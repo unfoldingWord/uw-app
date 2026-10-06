@@ -41,7 +41,29 @@ export default scenario(
     assert.equal(
       byZone.kernel.partners.invitation(world.clock.now()).state,
       'due',
-      'a US time zone is enough',
+      'a US time zone with no locale region is the United States',
+    );
+    const abroad = await deviceOnDay(
+      world,
+      'abroad',
+      { tag: 'en-US', region: 'US', timeZone: 'Africa/Nairobi' },
+      5,
+    );
+    assert.deepEqual(
+      abroad.kernel.partners.invitation(world.clock.now()),
+      { state: 'not-due', reason: 'region' },
+      'a US locale outside a US time zone is not the United States',
+    );
+    const visitor = await deviceOnDay(
+      world,
+      'visitor',
+      { tag: 'en-IN', region: 'IN', timeZone: 'America/Denver' },
+      5,
+    );
+    assert.deepEqual(
+      visitor.kernel.partners.invitation(world.clock.now()),
+      { state: 'not-due', reason: 'region' },
+      'a locale region outside the US vetoes a US time zone',
     );
     await byZone.kernel.partners.shown(world.clock.now());
     await byZone.kernel.partners.tap();
@@ -58,7 +80,9 @@ export default scenario(
       reason: 'dismissed',
     });
 
-    const phone = world.device('phone', { locale: { tag: 'en-US', region: 'US', timeZone: 'UTC' } });
+    const phone = world.device('phone', {
+      locale: { tag: 'en-US', region: 'US', timeZone: 'America/New_York' },
+    });
     await phone.start();
     await phone.restart();
     await phone.restart();
@@ -106,7 +130,9 @@ export default scenario(
       'the region never enters the snapshot',
     );
 
-    const kept = world.device('kept', { locale: { tag: 'en-US', region: 'US', timeZone: 'UTC' } });
+    const kept = world.device('kept', {
+      locale: { tag: 'en-US', region: 'US', timeZone: 'America/New_York' },
+    });
     await kept.start();
     assert.equal(await kept.kernel.resume(), false, 'a resume on the day the app opened is not a new day');
     for (let opened = 2; opened <= 5; opened += 1) {

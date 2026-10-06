@@ -297,12 +297,17 @@ describe('corpus passages beyond the fixture language', () => {
     expect(passage?.notes).toEqual([]);
     expect(passage?.wordLinks).toEqual([]);
     expect(passage?.questions).toEqual([]);
-    expect(passage?.availableTexts).toEqual([]);
+    expect(passage?.availableTexts).toEqual(['literal']);
     expect(
       (await device.kernel.corpus.passage(reference('RUT 1-2'), { language: 'qac' }))?.text.verses,
     ).toHaveLength(5);
     expect(
-      await device.kernel.corpus.passage(reference('RUT 1:16'), { language: 'qac', text: 'simplified' }),
+      (await device.kernel.corpus.passage(reference('RUT 1:22'), { language: 'qac', text: 'simplified' }))
+        ?.text.reading,
+      'a reading the language does not carry falls back to the one it does',
+    ).toBe('literal');
+    expect(
+      await device.kernel.corpus.passage(reference('RUT 1:22'), { language: 'qac', text: 'original' }),
     ).toBeUndefined();
     const contents = await device.kernel.corpus.contents('qac');
     expect(contents.texts[0]?.books).toEqual([{ code: 'RUT', chapters: [1, 2, 3, 4] }]);
@@ -389,6 +394,28 @@ describe('corpus passages beyond the fixture language', () => {
     expect(failure?.payload).toEqual({ code: 'corpus.unreadable', context: { pack: 'language:qad' } });
     expect(device.kernel.corpus.summary('qaa').literal?.burritos).toBe(1);
     expect(device.kernel.corpus.languages()).toEqual(['qaa']);
+  });
+});
+
+describe('corpus opened passages (ST-1, ST-10)', () => {
+  it('journals the reference a leader opened without assembling it, and reads a chapter around it silently', async () => {
+    const device = await phone([qaa]);
+    const corpus = device.kernel.corpus;
+    const opened = () =>
+      device.kernel.journal
+        .read()
+        .flatMap((entry) => (entry.type === 'PassageOpened' ? [entry.payload] : []));
+    const chapter = await corpus.passage(reference('RUT 1'), { language: 'qaa', journal: false });
+    expect(chapter?.text.verses.length).toBe(5);
+    expect(opened()).toEqual([]);
+    await corpus.opened(reference('RUT 1:16'), 'qaa');
+    expect(opened()).toEqual([{ reference: 'RUT 1:16', language: 'qaa' }]);
+    expect(device.kernel.preferences.lastPassage('qaa')).toBe('RUT 1:16');
+    await corpus.passage(reference('3JN 1:2'), { language: 'qaa' });
+    expect(opened()).toEqual([
+      { reference: 'RUT 1:16', language: 'qaa' },
+      { reference: '3JN 1:2', language: 'qaa' },
+    ]);
   });
 });
 
@@ -533,6 +560,24 @@ describe('corpus note attachment', () => {
     const letter = await device.kernel.corpus.attachment('qaa', ['3JN']);
     expect(letter[0]?.books).toEqual({ '3JN': { quoted: 3, attached: 3 } });
     expect(await device.kernel.corpus.attachment('qab')).toEqual([]);
+  });
+
+  it('counts against the literal text only, so a language with only a simplified text counts no book', async () => {
+    const world = createWorld();
+    const device = world.device('phone');
+    await device.start();
+    await device.adapters.files.mkdir('imports');
+    for (const resource of ['qaa_ust', 'qaa_tn']) {
+      const archive = world.fixtures.archive('unfoldingWord', resource, 'v1');
+      expect(archive).toBeDefined();
+      await device.adapters.files.writeBytes(`imports/${resource}.zip`, archive ?? new Uint8Array());
+      const imported = await device.kernel.packs.install(fromFile(`imports/${resource}.zip`));
+      expect(imported.ok, imported.ok ? '' : imported.code).toBe(true);
+    }
+    const [notes] = await device.kernel.corpus.attachment('qaa');
+    expect(notes?.provenance.resource).toBe('qaa_tn');
+    expect(notes?.books).toEqual({});
+    expect([notes?.quoted, notes?.attached]).toEqual([0, 0]);
   });
 
   it('counts one book at a time without evicting the books a reader has open', async () => {

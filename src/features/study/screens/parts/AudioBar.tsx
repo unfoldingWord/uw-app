@@ -134,6 +134,24 @@ export function AudioBar({ words, reference, audio, onDownload, failure }: Audio
       </GlassSurface>
     );
   }
+  if (audio.state === 'no-chapter') {
+    return (
+      <GlassSurface
+        level={4}
+        blur="heavy"
+        radius="xl"
+        shadow="rest"
+        style={[surface, { gap: theme.space.sp1 }]}
+      >
+        <Say role="caption" tone="title" weight="medium">
+          {audio.label}
+        </Say>
+        <Say role="caption" tone="dim">
+          {audio.detail}
+        </Say>
+      </GlassSurface>
+    );
+  }
   return (
     <GlassSurface
       level={4}

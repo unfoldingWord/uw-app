@@ -91,10 +91,10 @@ describe('strings interface', () => {
   it('interpolates every parameter in a plural form, with a count the screen formatted', () => {
     const strings = createStrings(tables);
     expect(strings.plural('library.overline', 1, 'en', { language: 'Kiswahili' })).toBe(
-      'Kiswahili · 1 resource',
+      'Kiswahili · 1 resource type',
     );
     expect(strings.plural('library.overline', 1200, 'en', { language: 'English', count: '1,200' })).toBe(
-      'English · 1,200 resources',
+      'English · 1,200 resource types',
     );
   });
 

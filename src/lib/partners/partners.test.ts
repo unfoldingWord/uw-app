@@ -41,15 +41,25 @@ describe('the partner invitation rule', () => {
 });
 
 describe('the region, from locale and time zone', () => {
-  it('reads the United States from the region or a US time zone', () => {
-    expect(inUnitedStates({ tag: 'en-US', region: 'US', timeZone: 'Europe/Paris', rtl: false })).toBe(true);
+  it('needs a US time zone and a locale region that is US or unknown', () => {
+    expect(inUnitedStates({ tag: 'en-US', region: 'US', timeZone: 'America/Chicago', rtl: false })).toBe(
+      true,
+    );
     expect(inUnitedStates({ tag: 'es', region: undefined, timeZone: 'America/Chicago', rtl: false })).toBe(
       true,
+    );
+    expect(inUnitedStates({ tag: 'en-US', region: 'us', timeZone: 'Pacific/Honolulu', rtl: false })).toBe(
+      true,
+    );
+    expect(inUnitedStates({ tag: 'en-US', region: 'US', timeZone: 'Europe/Paris', rtl: false })).toBe(false);
+    expect(inUnitedStates({ tag: 'en-IN', region: 'IN', timeZone: 'America/Denver', rtl: false })).toBe(
+      false,
     );
     expect(inUnitedStates({ tag: 'sw', region: 'KE', timeZone: 'Africa/Nairobi', rtl: false })).toBe(false);
     expect(inUnitedStates({ tag: 'en', region: undefined, timeZone: 'America/Toronto', rtl: false })).toBe(
       false,
     );
+    expect(inUnitedStates({ tag: 'en-US', region: 'US', timeZone: 'UTC', rtl: false })).toBe(false);
     expect(isUnitedStatesZone('America/Indiana/Indianapolis')).toBe(true);
     expect(isUnitedStatesZone('Pacific/Honolulu')).toBe(true);
     expect(isUnitedStatesZone('America/Mexico_City')).toBe(false);

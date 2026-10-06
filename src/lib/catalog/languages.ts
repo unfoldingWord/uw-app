@@ -1,4 +1,6 @@
+import { languagePackId } from '../domain/pack';
 import { compareText } from '../order';
+import { defaultReleases } from '../packs/plan';
 import { englishNameOf } from './languageNames';
 import { compareReleases } from './normalize';
 import type { CatalogLanguage, CatalogRelease, LanguageName } from './types';
@@ -24,7 +26,7 @@ export function languagesOf(
         autonym,
         englishName: named?.englishName ?? englishNameOf(language, autonym),
         direction: named?.direction ?? first?.direction ?? 'ltr',
-        resources: new Set(items.map((item) => item.resource)).size,
+        resources: offeredResources(releases, language),
         installed: installed.has(language),
       };
     })
@@ -32,6 +34,10 @@ export function languagesOf(
       (left, right) =>
         compareText(left.englishName, right.englishName) || compareText(left.language, right.language),
     );
+}
+
+function offeredResources(releases: readonly CatalogRelease[], language: string): number {
+  return defaultReleases(releases, languagePackId(language)).length;
 }
 
 function folded(value: string): string {

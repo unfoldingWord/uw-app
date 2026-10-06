@@ -26,12 +26,12 @@ describe('movement questions (FO-3)', () => {
           ],
         },
       ]),
-    ).toEqual(['What happens?', 'Who acts?']);
+    ).toEqual({ source: 'list', items: ['What happens?', 'Who acts?'] });
   });
 
   it('takes each paragraph as a question when the movement has no list', () => {
     expect(
       questionsOf([{ kind: 'heading', level: 2, children: [] }, paragraph('Retell it. '), paragraph(' ')]),
-    ).toEqual(['Retell it.']);
+    ).toEqual({ source: 'paragraphs', items: ['Retell it.'] });
   });
 });

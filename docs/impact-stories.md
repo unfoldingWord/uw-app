@@ -20,10 +20,10 @@ Evidence labels: **checked** means read in this repository on 2026-09-29; **infe
    - Link: https://unfoldingword.org/africa/when-jeremiah-first-heard-that-his-chadian-church-planting/
    - Slug (journaled in `ImpactStoryOpened`): `jeremiah-and-the-occult-king`
 2. **The security note is not the website's note.** PA-6 asks for the website's security note, verbatim.
-   It was not available, so the shipped story has no `securityNote`, and the app shows the placeholder string
-   `impact.securityNote` ("Names in this story are changed for security.") in its place. Comms must paste the
-   website's note, verbatim, into the shipped story's `securityNote` field. A story from the feed that
-   carries `securityNote` shows it verbatim instead of the placeholder.
+   It was not available, so the shipped story's `securityNote` in `shippedStories` holds a placeholder written
+   by an agent ("Names in this story are changed for security."). Comms must replace it with the website's
+   note for this story, verbatim (issue #49). There is no fallback string: a story shows a security note only
+   when its record carries one, and a feed story without `securityNote` shows none.
 3. **The shipped story has no image.** PA-6 says each story has an image. None ships, because no image was
    available that is cleared for use (PRD section 12: no images of people in sensitive contexts). Comms
    should choose one to ship with the app and be referenced from the shipped story.
@@ -62,9 +62,11 @@ or replace). The host is on the allowlist (`src/lib/network.ts`). The shape the 
 
 ## The invitation schedule (inference where marked)
 
-- **Region**: the United States when the Locale port's region is `US` or its time zone is a US zone
-  (`src/lib/partners/region.ts`). No location permission. Either signal is enough (**inference**: a US
-  resident with another locale still has a US time zone; a US locale abroad still says US).
+- **Region**: the United States when the Locale port's time zone is a US zone and its region is `US` or
+  unknown (`src/lib/partners/region.ts`). No location permission. Both signals are needed, as PA-2 and
+  decision 22 say: a US locale in another time zone is not the United States, a locale region outside the
+  US vetoes a US time zone, and an unknown region does not veto (decision 97, **checked** in
+  `PA-2.invitation-schedule.ts` and `partners.test.ts`).
 - **First shown** on the fifth distinct day of use, counted from `AppOpened` days with the journal
   baseline, so dropped events do not reset it.
 - **Dismissed**: hidden for ninety days from the dismissal, then due again on the same rule, as a new

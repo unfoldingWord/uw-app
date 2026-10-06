@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { languagePackId } from '@lib/domain/pack';
 import { scenario } from '../scenario';
+import { servicesOf } from '../services';
 
 const languagesListUrl = 'https://git.door43.org/api/v1/catalog/list/languages';
 
@@ -10,7 +11,11 @@ export default scenario(
   async (world) => {
     const phone = world.device('phone');
     await phone.start();
+    const services = servicesOf(phone);
     assert.deepEqual(phone.kernel.catalog.languages(), [], 'nothing is listed before the first refresh');
+    assert.equal(services.languages.emptyCause(false), 'offline', 'offline with nothing cached says so');
+    assert.equal(services.languages.emptyCause(true), 'empty', 'online with an empty catalog says so');
+    assert.equal(services.languages.emptyCause(undefined), 'empty');
 
     const refreshed = await phone.kernel.catalog.refresh();
     assert.ok(refreshed.ok);
@@ -25,9 +30,10 @@ export default scenario(
       autonym: 'English',
       englishName: 'English',
       direction: 'ltr',
-      resources: 2,
+      resources: 1,
       installed: false,
     });
+    assert.equal(services.languages.emptyCause(true), undefined, 'a listed catalog has no empty state');
     const qaa = listed.find((item) => item.language === 'qaa');
     assert.equal(qaa?.autonym, 'Fixture A');
     assert.equal(
@@ -36,7 +42,21 @@ export default scenario(
       'the English name comes from the DCS languages list, not the two-letter table',
     );
     assert.equal(listed.find((item) => item.language === 'qab')?.englishName, 'Fixture language B');
-    assert.equal(qaa?.resources, 14, 'one per resource, however many publishers release it');
+    assert.equal(
+      qaa?.resources,
+      11,
+      "the eleven resources the language pack installs, not audio, optional texts or other publishers' copies",
+    );
+    const qaaRow = services.languages.list().find((row) => row.language === 'qaa');
+    assert.match(
+      qaaRow?.detail ?? '',
+      /^Fixture language A · 11 resources · about \d+(\.\d+)? KB$/,
+      'the row shows the approximate size of the language pack before download',
+    );
+    assert.match(
+      services.languages.list().find((row) => row.language === 'qab')?.detail ?? '',
+      /^Fixture language B · 2 resources · about \d+(\.\d+)? KB$/,
+    );
     assert.deepEqual(
       phone.kernel.catalog.originals().map((release) => release.language),
       ['el-x-koine', 'hbo'],
@@ -88,8 +108,8 @@ export default scenario(
     assert.deepEqual(phone.kernel.snapshot().modules.catalog, {
       releases: 24,
       languages: [
-        { language: 'en', resources: 2, installed: false },
-        { language: 'qaa', resources: 14, installed: false },
+        { language: 'en', resources: 1, installed: false },
+        { language: 'qaa', resources: 11, installed: false },
         { language: 'qab', resources: 2, installed: true },
       ],
       originals: ['el-x-koine', 'hbo'],

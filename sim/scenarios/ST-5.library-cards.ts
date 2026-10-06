@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { languagePackId } from '@lib/domain/pack';
+import { audioPackId, languagePackId, originalPackId } from '@lib/domain/pack';
+import { withFormation } from '../install';
 import { scenario } from '../scenario';
 import { servicesOf } from '../services';
 
@@ -51,14 +52,34 @@ export default scenario(
     assert.equal(byType.get('words')?.count, '6 articles');
     assert.equal(byType.get('academy')?.count, '3 articles');
     assert.equal(byType.get('stories')?.count, '3 stories');
+    assert.equal(byType.get('simplified')?.count, '2 books');
+    assert.equal(byType.get('notes')?.count, '8 notes');
+    assert.equal(byType.get('wordLinks')?.count, '6 word links');
+    assert.equal(byType.get('questions')?.count, '4 questions');
+    assert.equal(byType.get('storyHelps')?.count, '11 story helps');
+    assert.equal(byType.get('formation')?.count, undefined, 'nothing is counted before it is on the phone');
     assert.equal(byType.get('audio')?.state, 'not-downloaded', 'audio is never part of the language pack');
     assert.equal(byType.get('hebrew')?.optional, true, 'original-language texts are optional downloads');
-    assert.equal(after.overline, 'Fixture A · 14 resources');
+    assert.equal(after.overline, 'Fixture A · 14 resource types');
 
-    assert.ok((await services.study.download('original:hbo')).ok);
-    assert.equal(
-      (await services.study.library()).cards.find((card) => card.type === 'hebrew')?.state,
-      'on-phone',
+    assert.ok((await services.study.download(originalPackId('hbo'))).ok);
+    assert.ok((await services.study.download(audioPackId('qaa', 'qaa_ult'))).ok);
+    assert.ok((await services.languages.downloadImages()).ok);
+    const movements = byType.get('formation');
+    assert.ok(movements?.pack !== undefined, 'the Five movements card carries the language pack');
+    assert.ok(
+      (await services.study.download(movements.pack, withFormation)).ok,
+      'the card downloads the formation row through the service',
+    );
+    const counted = new Map((await services.study.library()).cards.map((card) => [card.type, card]));
+    assert.equal(counted.get('hebrew')?.state, 'on-phone');
+    assert.equal(counted.get('hebrew')?.count, '1 book');
+    assert.equal(counted.get('audio')?.count, '1 chapter');
+    assert.equal(counted.get('images')?.count, '7 pictures');
+    assert.equal(counted.get('formation')?.count, '3 stories with movements');
+    assert.ok(
+      [...counted.values()].every((card) => card.state !== 'on-phone' || card.count !== undefined),
+      'every card on the phone carries a count',
     );
   },
 );

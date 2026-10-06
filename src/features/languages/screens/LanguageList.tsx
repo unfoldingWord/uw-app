@@ -3,12 +3,13 @@ import { Icon } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
 import { Badge, EmptyState, Notice, Row, ThemedText } from '@shared/ui';
-import { createLanguagesService, type LanguageRow } from '../service';
+import { createLanguagesService, type EmptyCause, type LanguageRow } from '../service';
 import type { Failures } from './outcomes';
 
 export type LanguageListProps = {
   rows: readonly LanguageRow[];
   query: string;
+  empty: EmptyCause | undefined;
   failures: Failures;
   onSelect: (row: LanguageRow) => Promise<void>;
 };
@@ -30,12 +31,15 @@ function Trailing({ row }: { row: LanguageRow }) {
   );
 }
 
-export function LanguageList({ rows, query, failures, onSelect }: LanguageListProps) {
+export function LanguageList({ rows, query, empty, failures, onSelect }: LanguageListProps) {
   const languages = useService(createLanguagesService);
   const words = languages.words();
   if (rows.length === 0) {
     return query.trim() === '' ? (
-      <EmptyState icon="globe" title={words.t('languages.offline')} />
+      <EmptyState
+        icon="globe"
+        title={words.t(empty === 'offline' ? 'languages.empty.offline' : 'languages.empty')}
+      />
     ) : (
       <EmptyState icon="search" title={words.t('languages.noMatch', { query: query.trim() })} />
     );
