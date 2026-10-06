@@ -1,7 +1,7 @@
 import { attachQuote } from './alignment';
 import type { Library } from './library';
 import { bookNotesOnce, textBookOnce } from './loaders';
-import { defaultText, readingTexts } from './passage';
+import { readingTexts } from './passage';
 import type { Entry } from './tables';
 import type { HelpsReference, NoteRow } from './tsv';
 import type { AttachmentCount, NotesAttachment, Verse } from './types';
@@ -27,7 +27,7 @@ function isQuoted(row: NoteRow): row is QuotedRow {
 }
 
 async function bookAttachment(library: Library, notes: Entry, book: string): Promise<Counted | undefined> {
-  const text = defaultText(readingTexts(library, notes.language, book), 'literal');
+  const text = readingTexts(library, notes.language, book).find((entry) => entry.kind === 'literal');
   const parsed = text === undefined ? undefined : await textBookOnce(library, text, book);
   if (text === undefined || parsed === undefined) {
     return undefined;

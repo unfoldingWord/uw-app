@@ -562,6 +562,24 @@ describe('corpus note attachment', () => {
     expect(await device.kernel.corpus.attachment('qab')).toEqual([]);
   });
 
+  it('counts against the literal text only, so a language with only a simplified text counts no book', async () => {
+    const world = createWorld();
+    const device = world.device('phone');
+    await device.start();
+    await device.adapters.files.mkdir('imports');
+    for (const resource of ['qaa_ust', 'qaa_tn']) {
+      const archive = world.fixtures.archive('unfoldingWord', resource, 'v1');
+      expect(archive).toBeDefined();
+      await device.adapters.files.writeBytes(`imports/${resource}.zip`, archive ?? new Uint8Array());
+      const imported = await device.kernel.packs.install(fromFile(`imports/${resource}.zip`));
+      expect(imported.ok, imported.ok ? '' : imported.code).toBe(true);
+    }
+    const [notes] = await device.kernel.corpus.attachment('qaa');
+    expect(notes?.provenance.resource).toBe('qaa_tn');
+    expect(notes?.books).toEqual({});
+    expect([notes?.quoted, notes?.attached]).toEqual([0, 0]);
+  });
+
   it('counts one book at a time without evicting the books a reader has open', async () => {
     const device = await phone([qaa]);
     const ruth = reference('RUT 1:16');

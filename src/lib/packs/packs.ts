@@ -197,6 +197,13 @@ export const packsModule = defineModule<PacksApi>({
     async function discardPending(): Promise<void> {
       const kept = pending;
       pending = undefined;
+      const asked = [...lastFailure].filter(([, code]) => code === 'pack.replace-unconfirmed');
+      for (const [pack] of asked) {
+        lastFailure.delete(pack);
+      }
+      if (asked.length > 0) {
+        notify();
+      }
       if (kept?.source.kind === 'file' && kept.source.path.startsWith(`${inboxDirectory}/`)) {
         await removeIfPresent(ports.files, inboxDirectory);
       }

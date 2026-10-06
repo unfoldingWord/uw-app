@@ -108,7 +108,7 @@ function readingOrder(wanted: Reading | undefined): readonly Reading[] {
   return wanted === 'original' ? ['original'] : [wanted, ...choices];
 }
 
-export function defaultText(texts: readonly Entry[], wanted?: Reading): Entry | undefined {
+function defaultText(texts: readonly Entry[], wanted?: Reading): Entry | undefined {
   for (const kind of readingOrder(wanted)) {
     const found = texts.find((entry) => entry.kind === kind);
     if (found !== undefined) {
