@@ -84,7 +84,7 @@ const config: ExpoConfig = {
   slug: 'uw-app',
   owner: 'unfoldingword',
   scheme: 'unfoldingword',
-  version: '1.0.0',
+  version: '0.0.1',
   orientation: 'portrait',
   extra: { localeGate, eas: { projectId: easProjectId } },
   userInterfaceStyle: 'automatic',
