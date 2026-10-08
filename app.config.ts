@@ -77,13 +77,16 @@ const blockedOnThisBuild = installerBuild ? blockedPermissions : [...blockedPerm
 
 const localeGate = process.env.UW_LOCALE_GATE === 'drafts' ? 'drafts' : 'reviewed';
 
+const easProjectId = '047f36eb-f4b6-46a5-8668-ea6088f77d8f';
+
 const config: ExpoConfig = {
   name: 'unfoldingWord',
-  slug: 'unfoldingword',
+  slug: 'uw-app',
+  owner: 'unfoldingword',
   scheme: 'unfoldingword',
-  version: '1.0.0',
+  version: '0.0.1',
   orientation: 'portrait',
-  extra: { localeGate },
+  extra: { localeGate, eas: { projectId: easProjectId } },
   userInterfaceStyle: 'automatic',
   icon: './assets/icon.png',
   platforms: ['ios', 'android'],

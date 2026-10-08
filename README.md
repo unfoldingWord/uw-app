@@ -124,8 +124,8 @@ Pushing a tag `v*` runs `.github/workflows/release.yml`: `npm run verify`, an
 EAS `preview` build for Android, and the APK attached to the GitHub release for
 that tag (created as a draft if it does not exist). It needs one repository
 secret, `EXPO_TOKEN`, from an unfoldingWord Expo account; no secret is stored
-in this repository. Before the first build an account owner runs `eas init`
-and adds the project id it prints to `app.config.ts` as `extra.eas.projectId`.
+in this repository. The app is linked to the EAS project `@unfoldingword/uw-app`
+through `owner`, `slug` and `extra.eas.projectId` in `app.config.ts`.
 Store builds and submission run by hand for now
 (`eas build --profile production`, then `eas submit --profile production`);
 store credentials live in EAS, not here. Read the signing note in
