@@ -3,6 +3,50 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-10-20 P1 install and screen speed, measured in the sim and on Hermes
+
+Node v22.22.2 and Hermes 0.13.0 (`hermes-cli-linux` from the facebook/hermes release, set as `HERMES`). Nothing ran
+on a phone, an emulator or a simulator in this entry. The sandbox has no KVM; the device CI on the PR is the first
+native run.
+
+- **Harness:** `npm run perf` serves an English-size pack (11 resources, 237.2 MB on the phone, the live English
+  pack measures 228.5 MB) and a 414-release, 198-language catalog to a sim device. `npm run perf:engines` times the
+  hot functions on one English-size book and archive on Node and Hermes.
+- **Hermes against Node, before:** MD5 of the literal text (83 MB) 1443 ms on Node and 15696 ms on Hermes (x10.9).
+  Unzip 2685 and 4427 ms (x1.6). Parsing Psalms 311 and 484 ms (x1.6). One book of notes 24 and 77 ms (x3.3).
+- **Install, Node, wall and CPU:** 11 resources in 10.0 s wall, 10.7 s user CPU. The memory adapter still hashes in
+  JavaScript, which the device no longer does (`File.md5`), so the sim's CPU figure is not the phone's. An earlier
+  draft of this entry subtracted summed port durations from wall time; those durations overlap and nest, so that
+  figure is withdrawn (review on #77).
+- **Downloads overlapping unpacking:** with every download held 1.5 s (`PERF_LATENCY_MS=1500`), the install takes
+  16.1 s with two archives downloading ahead and 27.6 s with none.
+- **Scripts:** with words and notes rewritten into Arabic, Devanagari or Han letters (`PERF_SCRIPT`), the pack is
+  258.5 to 279.9 MB and installs in 10.8 to 11.5 s. Psalms 119 opens in 27 to 48 ms first and about 1 ms warm,
+  and five chapters forward in Psalms take 15 ms after the book's chapter index is built, against 114 ms before it.
+  `sim/chapter-helps.test.ts` covers Hindi, Arabic and Chinese notes in current, legacy and quoted tables.
+- **Screen calls, Node, first and warm:**
+
+  | Call | Before | After |
+  |---|---|---|
+  | `study.passage PSA 119` | 278 / 14 ms | 20 / 0.8 ms |
+  | `study.open` | 24 / 13 ms | 7 / 1.4 ms |
+  | `home.download` | 20 / 6.3 ms | 1.3 / 0.3 ms |
+  | `home.header` | 5.6 / 3.0 ms | 0.2 / 0 ms |
+  | `languages.list` | 34 / 18 ms | 19 / 1.3 ms |
+  | `languages.overline` | 5.2 / 5.0 ms | 0.2 / 0 ms |
+  | `formation.tracks` | 89 / 15 ms | 85 / 0.6 ms |
+  | `study.languageName` | 1.9 / 1.7 ms | 0.1 / 0 ms |
+
+- **Readiness, reproduced on the CI emulator before the fix:** run 37827082712 (`android`, optional pass) reached
+  "resources ready offline" and then failed `"Next chapter" is visible` after 60 s: Home reported complete while
+  corpus ingest was still running and Study never reloaded. `sim/ready-to-read.test.ts` reproduces it and passes
+  after the fix.
+- **Device CI on 8b8df5a (run 118749618966 android, 118749618259 ios):** the English download from the live catalog
+  waited 67 s for the pack on the Android emulator and 94 s on the iOS simulator (`flow-times.sh`). On `main`
+  (run 37827082712) the same Android flow took 5 min 2 s and failed after the download, because Study showed nothing
+  to read. On iOS the optional and large-text flows fail both passes, as they do on `main` (#73).
+- `npm run verify` green: 834 tests, 63 scenarios, 51 Must requirements traced, both bundles.
+
 ## 2026-10-05 Q1 product and QA review against the PRD: twenty findings fixed, driven in the web harness
 
 Node v22.22.0. Nothing ran on a phone, an emulator or a simulator: the sandbox has no KVM and no CPU

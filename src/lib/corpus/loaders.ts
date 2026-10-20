@@ -19,14 +19,19 @@ import { academyArticleId } from './links';
 import { parseStory, type ParsedStory } from './stories';
 import type { Entry } from './tables';
 import {
+  helpsFromIndex,
+  indexHelps,
   noteRows,
+  touchesChapters,
+  type HelpsIndex,
+  type HelpsReference,
   questionRows,
   wordLinkRows,
   type NoteRow,
   type QuestionRow,
   type WordLinkRow,
 } from './tsv';
-import { parseUsfm, type UsfmBook } from './usfm';
+import { indexUsfmChapters, parseUsfm, usfmFromIndex, type UsfmBook, type UsfmChapterIndex } from './usfm';
 import type { MovementSectionId } from './types';
 
 export type RawArticle = {
@@ -44,8 +49,27 @@ async function readTextBook(reader: BurritoReader, book: string): Promise<UsfmBo
   return key === undefined ? undefined : parseUsfm(await reader.read(key));
 }
 
-export function textBook(library: Library, entry: Entry, book: string): Promise<UsfmBook | undefined> {
-  return library.cached(entry, `usfm:${book}`, (reader) => readTextBook(reader, book));
+function chaptersKey(chapters: ReadonlySet<number>): string {
+  return [...chapters].sort((left, right) => left - right).join(',');
+}
+
+function usfmIndex(library: Library, entry: Entry, book: string): Promise<UsfmChapterIndex | undefined> {
+  return library.cached(entry, `usfm:${book}#index`, async (reader) => {
+    const key = bookKeys(reader, isUsfm).get(book);
+    return key === undefined ? undefined : indexUsfmChapters(await reader.read(key));
+  });
+}
+
+export function textChapters(
+  library: Library,
+  entry: Entry,
+  book: string,
+  chapters: ReadonlySet<number>,
+): Promise<UsfmBook | undefined> {
+  return library.cached(entry, `usfm:${book}@${chaptersKey(chapters)}`, async () => {
+    const index = await usfmIndex(library, entry, book);
+    return index === undefined ? undefined : parseUsfm(usfmFromIndex(index, chapters));
+  });
 }
 
 export async function textBookOnce(
@@ -70,22 +94,57 @@ export async function bookNotesOnce(
   return noteRows((await helpsText(library, entry, book)) ?? '');
 }
 
-export function bookNotes(library: Library, entry: Entry, book: string): Promise<readonly NoteRow[]> {
-  return library.cached(entry, `notes:${book}`, async () =>
-    noteRows((await helpsText(library, entry, book)) ?? ''),
-  );
+type HelpsKind = 'notes' | 'links' | 'questions';
+
+type HelpsSource = { readonly index: HelpsIndex } | { readonly text: string };
+
+function chapterHelps<Row extends { readonly reference: HelpsReference }>(
+  library: Library,
+  entry: Entry,
+  book: string,
+  chapters: ReadonlySet<number>,
+  kind: HelpsKind,
+  rows: (text: string) => Row[],
+): Promise<readonly Row[]> {
+  return library.cached(entry, `${kind}:${book}@${chaptersKey(chapters)}`, async () => {
+    const source = await library.cached(entry, `${kind}:${book}#index`, async (): Promise<HelpsSource> => {
+      const text = (await helpsText(library, entry, book)) ?? '';
+      const index = indexHelps(text);
+      return index === undefined ? { text } : { index };
+    });
+    if ('index' in source) {
+      return rows(helpsFromIndex(source.index, chapters));
+    }
+    const whole = await library.cached(entry, `${kind}:${book}`, async () => rows(source.text));
+    return whole.filter((row) => touchesChapters(row.reference, chapters));
+  });
 }
 
-export function bookWordLinks(library: Library, entry: Entry, book: string): Promise<readonly WordLinkRow[]> {
-  return library.cached(entry, `links:${book}`, async () =>
-    wordLinkRows((await helpsText(library, entry, book)) ?? ''),
-  );
+export function chapterNotes(
+  library: Library,
+  entry: Entry,
+  book: string,
+  chapters: ReadonlySet<number>,
+): Promise<readonly NoteRow[]> {
+  return chapterHelps(library, entry, book, chapters, 'notes', noteRows);
 }
 
-export function bookQuestions(library: Library, entry: Entry, book: string): Promise<readonly QuestionRow[]> {
-  return library.cached(entry, `questions:${book}`, async () =>
-    questionRows((await helpsText(library, entry, book)) ?? ''),
-  );
+export function chapterWordLinks(
+  library: Library,
+  entry: Entry,
+  book: string,
+  chapters: ReadonlySet<number>,
+): Promise<readonly WordLinkRow[]> {
+  return chapterHelps(library, entry, book, chapters, 'links', wordLinkRows);
+}
+
+export function chapterQuestions(
+  library: Library,
+  entry: Entry,
+  book: string,
+  chapters: ReadonlySet<number>,
+): Promise<readonly QuestionRow[]> {
+  return chapterHelps(library, entry, book, chapters, 'questions', questionRows);
 }
 
 async function storyHelpsText(library: Library, entry: Entry): Promise<string> {

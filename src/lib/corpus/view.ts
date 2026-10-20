@@ -20,15 +20,21 @@ export function corpusView(files: Files, db: Db): CorpusView {
 
   const catchUp = async (): Promise<void> => {
     const entries = await loadEntries(db);
-    const titles = await loadTitles(db);
     const current = new Set(entries.map((entry) => entry.root));
     const gone = [...known.keys()].filter((root) => !current.has(root));
-    library.remove(gone);
-    gone.forEach((root) => known.delete(root));
+    if (gone.length > 0) {
+      library.remove(gone);
+      gone.forEach((root) => known.delete(root));
+    }
     const changed = entries.filter((entry) => known.get(entry.root) !== stableJson(entry));
+    if (changed.length === 0) {
+      return;
+    }
+    const roots = new Set(changed.map((entry) => entry.root));
+    const titles = await loadTitles(db);
     library.put(
       changed,
-      titles.filter((title) => changed.some((entry) => entry.root === title.root)),
+      titles.filter((title) => roots.has(title.root)),
     );
     changed.forEach((entry) => known.set(entry.root, stableJson(entry)));
   };

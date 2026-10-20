@@ -81,6 +81,8 @@ run_pass() {
   [ "$run" = "main" ] && content_online
   [ "$run" = "large-text" ] && set_text_size large
 
+  bash "$GITHUB_WORKSPACE/device/ci/flow-times.sh" ios "$run" "$out/first" "$out/second"
+
   echo "::group::$run: failed steps"
   bash "$GITHUB_WORKSPACE/device/ci/failed-steps.sh" "$out" "$HOME/.maestro/tests"
   echo "::endgroup::"

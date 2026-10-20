@@ -95,9 +95,25 @@ function installedPacks(kernel: Kernel): ReadonlySet<PackId> {
   return new Set(kernel.packs.installed().map((pack) => pack.pack));
 }
 
-function rowOf(kernel: Kernel, words: LanguagesWords, item: CatalogLanguage): LanguageRow {
+const measured = new WeakMap<readonly CatalogRelease[], number | undefined>();
+
+function knownBytes(releases: readonly CatalogRelease[], pack: PackId): number | undefined {
+  if (!measured.has(releases)) {
+    measured.set(releases, languageBytes(releases, pack));
+  }
+  return measured.get(releases);
+}
+
+type ListMoment = { readonly installing: ReadonlySet<string>; readonly selected: string | undefined };
+
+function rowOf(
+  kernel: Kernel,
+  words: LanguagesWords,
+  item: CatalogLanguage,
+  moment: ListMoment,
+): LanguageRow {
   const pack = languagePackId(item.language);
-  const bytes = languageBytes(kernel.catalog.releases(item.language), pack);
+  const bytes = knownBytes(kernel.catalog.releases(item.language), pack);
   const resources = words.plural('languages.resources', item.resources);
   return {
     language: item.language,
@@ -111,8 +127,8 @@ function rowOf(kernel: Kernel, words: LanguagesWords, item: CatalogLanguage): La
         : words.t('languages.row', { english: item.englishName, resources, size: words.size(bytes) }),
     offline: item.installed,
     badge: item.installed ? words.t('common.offline') : undefined,
-    selected: kernel.preferences.contentLanguage() === item.language,
-    installing: kernel.packs.installing().some((progress) => progress.pack === pack),
+    selected: moment.selected === item.language,
+    installing: moment.installing.has(pack),
     pack,
   };
 }
@@ -185,7 +201,11 @@ export function createLanguagesService(kernel: Kernel): LanguagesService {
         query === undefined || query.trim() === ''
           ? kernel.catalog.languages()
           : kernel.catalog.search(query);
-      return found.map((item) => rowOf(kernel, current, item));
+      const moment: ListMoment = {
+        installing: new Set(kernel.packs.installing().map((progress) => progress.pack)),
+        selected: kernel.preferences.contentLanguage(),
+      };
+      return found.map((item) => rowOf(kernel, current, item, moment));
     },
     emptyCause(online) {
       if (kernel.catalog.languages().length > 0) {

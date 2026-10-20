@@ -37,6 +37,8 @@ import { writeInstalledPack } from './store';
 
 const archiveTimeoutMs = 120_000;
 
+const downloadsAhead = 2;
+
 const reportedSteps = 10;
 
 type Fetched =
@@ -173,7 +175,7 @@ async function catalogMatch(
 async function fileOffer(ports: ModulePorts, path: string, known: KnownReleases): Promise<Resolution> {
   let peeked: Awaited<ReturnType<typeof unpackArchive>>;
   try {
-    peeked = await unpackArchive(ports.files, path, { hash: false });
+    peeked = await unpackArchive(ports.files, path, {});
   } catch (error) {
     return { ok: false, code: failureCodeOf(error) };
   }
@@ -417,6 +419,9 @@ export function createInstaller(context: InstallerContext): Installer {
       if (expected === undefined || size !== expected.size) {
         throw new InstallFailure('pack.checksum-mismatch');
       }
+      if ((await files.md5(path)) !== burrito.checksums.get(key)) {
+        throw new InstallFailure('pack.checksum-mismatch');
+      }
     }
   }
 
@@ -501,51 +506,89 @@ export function createInstaller(context: InstallerContext): Installer {
     await files.mkdir(stage);
     const added: InstalledBurrito[] = [];
     const failed: FailedRelease[] = [];
-    for (const [index, offer] of offers.entries()) {
-      const before = progress.bytes;
-      let burrito: InstalledBurrito;
-      try {
-        const fetched = await offer.fetch(
-          stage,
-          index,
-          (bytes) => {
-            progress.bytes = before + bytes;
-          },
-          (done, total) => {
-            progress.items = { done, total };
-          },
-        );
-        if (!fetched.ok) {
-          throw new InstallFailure(fetched.code);
+    const arriving = new Map<number, number>();
+    let settledBytes = 0;
+    const showBytes = (): void => {
+      progress.bytes = settledBytes + [...arriving.values()].reduce((sum, bytes) => sum + bytes, 0);
+    };
+    const fetches = new Map<number, Promise<{ fetched: Fetched } | { error: unknown }>>();
+    const startFetch = (index: number): void => {
+      const offer = offers[index];
+      if (offer === undefined || fetches.has(index)) {
+        return;
+      }
+      arriving.set(index, 0);
+      fetches.set(
+        index,
+        offer
+          .fetch(
+            stage,
+            index,
+            (bytes) => {
+              arriving.set(index, bytes);
+              showBytes();
+            },
+            (done, total) => {
+              progress.items = { done, total };
+            },
+          )
+          .then(
+            (fetched) => ({ fetched }),
+            (error: unknown) => ({ error }),
+          ),
+      );
+    };
+    try {
+      for (const [index, offer] of offers.entries()) {
+        for (let ahead = index; ahead <= index + downloadsAhead; ahead += 1) {
+          startFetch(ahead);
         }
-        burrito = await place(install, resolved, offer, target, fetched, index, stage);
-      } catch (error) {
-        const code = installCodeOf(error);
-        if (isRequired(offer, target, resolved) || installWideFailures.includes(code)) {
-          throw new InstallFailure(code, offer.ref);
+        let burrito: InstalledBurrito;
+        try {
+          const settled = await fetches.get(index);
+          if (settled === undefined) {
+            throw new InstallFailure('pack.empty-plan');
+          }
+          if ('error' in settled) {
+            throw settled.error;
+          }
+          if (!settled.fetched.ok) {
+            throw new InstallFailure(settled.fetched.code);
+          }
+          burrito = await place(install, resolved, offer, target, settled.fetched, index, stage);
+        } catch (error) {
+          const code = installCodeOf(error);
+          if (isRequired(offer, target, resolved) || installWideFailures.includes(code)) {
+            throw new InstallFailure(code, offer.ref);
+          }
+          const release = { ...refOf(offer.ref), code };
+          failed.push(release);
+          await context.emit({
+            type: 'PackResourceFailed',
+            payload: { install, pack: target.pack, ...release },
+          });
+          await quietly(() => removeIfPresent(files, `${stage}/${index}`));
+          arriving.delete(index);
+          progress.resources = index + 1;
+          showBytes();
+          continue;
         }
-        const release = { ...refOf(offer.ref), code };
-        failed.push(release);
-        await context.emit({
-          type: 'PackResourceFailed',
-          payload: { install, pack: target.pack, ...release },
-        });
-        await quietly(() => removeIfPresent(files, `${stage}/${index}`));
+        delete progress.items;
+        placed.push(burrito.root);
+        added.push(burrito);
+        arriving.delete(index);
+        settledBytes += burrito.bytes;
         progress.resources = index + 1;
-        progress.bytes = before;
-        continue;
+        showBytes();
+        if (crossesStep(progress.resources, progress.total)) {
+          await context.emit({
+            type: 'PackInstallProgressed',
+            payload: { install, resources: progress.resources, total: progress.total, bytes: settledBytes },
+          });
+        }
       }
-      delete progress.items;
-      placed.push(burrito.root);
-      added.push(burrito);
-      progress.resources = index + 1;
-      progress.bytes = before + burrito.bytes;
-      if (crossesStep(progress.resources, progress.total)) {
-        await context.emit({
-          type: 'PackInstallProgressed',
-          payload: { install, resources: progress.resources, total: progress.total, bytes: progress.bytes },
-        });
-      }
+    } finally {
+      await Promise.all(fetches.values());
     }
     const [firstFailure] = failed;
     if (added.length === 0 && firstFailure !== undefined) {
@@ -620,24 +663,27 @@ export function createInstaller(context: InstallerContext): Installer {
       context.progress.delete(install);
       return { ok: false, install, pack: target.pack, code };
     }
-    context.progress.delete(install);
     await quietly(() => removeIfPresent(files, stagingDirectory));
     const { pack, roots, failed } = written;
     context.failed(pack.pack, failed);
-    await context.emit({
-      type: 'PackInstalled',
-      payload: {
-        install,
-        pack: pack.pack,
-        kind: pack.kind,
-        source: pack.source,
-        ...(pack.language === undefined ? {} : { language: pack.language }),
-        resources: pack.burritos.length,
-        bytes: pack.bytes,
-        burritos: pack.burritos.map(descriptorOf),
-        failed: failed.map((item) => ({ ...item })),
-      },
-    });
+    try {
+      await context.emit({
+        type: 'PackInstalled',
+        payload: {
+          install,
+          pack: pack.pack,
+          kind: pack.kind,
+          source: pack.source,
+          ...(pack.language === undefined ? {} : { language: pack.language }),
+          resources: pack.burritos.length,
+          bytes: pack.bytes,
+          burritos: pack.burritos.map(descriptorOf),
+          failed: failed.map((item) => ({ ...item })),
+        },
+      });
+    } finally {
+      context.progress.delete(install);
+    }
     await quietly(() => collectGarbage(files, packDirectory(pack.pack), roots));
     return { ok: true, install, pack };
   }

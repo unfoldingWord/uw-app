@@ -2,7 +2,7 @@ import { formatReference, type Reference } from '../domain/reference';
 import { attachQuote, coversVerse } from './alignment';
 import type { Library } from './library';
 import { resolveLink, wordLinkArticle, type LinkBase } from './links';
-import { audioClips, bookNotes, bookQuestions, bookWordLinks, textBook } from './loaders';
+import { audioClips, chapterNotes, chapterQuestions, chapterWordLinks, textChapters } from './loaders';
 import { renderMarkdown } from './markdown';
 import { isPairText, isStudyResource, readingOfKind } from './readings';
 import type { Entry } from './tables';
@@ -165,6 +165,10 @@ function introCovers(reference: HelpsReference, verses: readonly Verse[]): boole
   return opensChapter(verses, reference.chapter ?? 1);
 }
 
+function chaptersIn(verses: readonly Verse[]): ReadonlySet<number> {
+  return new Set(verses.map((verse) => verse.chapter));
+}
+
 async function introsFor(
   library: Library,
   language: string,
@@ -173,7 +177,7 @@ async function introsFor(
 ): Promise<Introduction[]> {
   const intros: Introduction[] = [];
   for (const entry of library.of(language, ['notes']).filter((item) => item.books.includes(book))) {
-    for (const row of await bookNotes(library, entry, book)) {
+    for (const row of await chapterNotes(library, entry, book, chaptersIn(verses))) {
       if (row.reference.kind !== 'intro' || !introCovers(row.reference, verses)) {
         continue;
       }
@@ -197,7 +201,7 @@ async function notesFor(
 ): Promise<Note[]> {
   const notes: Note[] = [];
   for (const entry of library.of(language, ['notes']).filter((item) => item.books.includes(book))) {
-    for (const row of await bookNotes(library, entry, book)) {
+    for (const row of await chapterNotes(library, entry, book, chaptersIn(verses))) {
       if (!helpsCover(row.reference, verses)) {
         continue;
       }
@@ -227,7 +231,7 @@ async function wordLinksFor(
 ): Promise<WordLink[]> {
   const links: WordLink[] = [];
   for (const entry of library.of(language, ['wordLinks']).filter((item) => item.books.includes(book))) {
-    for (const row of await bookWordLinks(library, entry, book)) {
+    for (const row of await chapterWordLinks(library, entry, book, chaptersIn(verses))) {
       const article = wordLinkArticle(row.link);
       if (article === undefined || !helpsCover(row.reference, verses)) {
         continue;
@@ -256,7 +260,7 @@ async function questionsFor(
 ): Promise<Question[]> {
   const questions: Question[] = [];
   for (const entry of library.of(language, ['questions']).filter((item) => item.books.includes(book))) {
-    for (const row of await bookQuestions(library, entry, book)) {
+    for (const row of await chapterQuestions(library, entry, book, chaptersIn(verses))) {
       if (helpsCover(row.reference, verses)) {
         questions.push({
           id: row.id,
@@ -300,7 +304,7 @@ export async function assemblePassage(
   if (entry === undefined) {
     return undefined;
   }
-  const book = await textBook(library, entry, reference.book);
+  const book = await textChapters(library, entry, reference.book, new Set(chaptersOf(reference)));
   if (book === undefined) {
     return undefined;
   }

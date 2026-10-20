@@ -15,6 +15,7 @@ export type Library = {
   cached<T>(entry: Entry, key: string, load: (reader: BurritoReader) => Promise<T>): Promise<T>;
   put(entries: readonly Entry[], titles: readonly TitleRow[]): void;
   remove(roots: readonly string[]): void;
+  generation(): number;
   index(language: string): IndexStatus;
   indexRow(language: string): IndexRow | undefined;
   setIndex(row: IndexRow | { readonly language: string; readonly built: false }): void;
@@ -23,7 +24,7 @@ export type Library = {
 
 const noIndex: IndexStatus = Object.freeze({ built: false, entries: 0, bytes: 0 });
 
-const bookCacheEntries = 4;
+const bookCacheEntries = 16;
 
 const bookCacheBytes = 32 * 1024 * 1024;
 
@@ -103,7 +104,7 @@ function createLru(limit: number, budget: number): Lru {
 }
 
 function weightOf(reader: BurritoReader, key: string): number {
-  const book = key.slice(key.indexOf(':') + 1);
+  const book = key.slice(key.indexOf(':') + 1).split(/[@#]/)[0] ?? '';
   return reader.ingredients
     .filter((ingredient) => Object.keys(ingredient.entry.scope ?? {}).includes(book))
     .reduce((sum, ingredient) => sum + ingredient.entry.size, 0);
@@ -119,7 +120,9 @@ export function createLibrary(files: Files): Library {
   const titlesByLanguage = new Map<string, readonly TitleRow[]>();
   const titleIndex = new Map<string, ReadonlyMap<string, string>>();
 
+  let generation = 0;
   const invalidate = (): void => {
+    generation += 1;
     titlesByLanguage.clear();
     titleIndex.clear();
   };
@@ -223,6 +226,7 @@ export function createLibrary(files: Files): Library {
       roots.forEach(forget);
       invalidate();
     },
+    generation: () => generation,
     index: (language) => {
       const row = indexRows.get(language);
       return row === undefined ? noIndex : { built: true, entries: row.entries, bytes: row.bytes };

@@ -46,7 +46,10 @@ function HomeTabBar({ state, navigation }: BottomTabBarProps) {
 
 export default function TabsLayout() {
   return (
-    <Tabs screenOptions={{ headerShown: false }} tabBar={(props) => <HomeTabBar {...props} />}>
+    <Tabs
+      screenOptions={{ headerShown: false, freezeOnBlur: true }}
+      tabBar={(props) => <HomeTabBar {...props} />}
+    >
       <Tabs.Screen name="index" />
       <Tabs.Screen name="study" />
       <Tabs.Screen name="formation" />

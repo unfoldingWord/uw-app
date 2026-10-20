@@ -26,6 +26,7 @@ export type Files = {
   list(path: string): Promise<readonly FileEntry[]>;
   exists(path: string): Promise<boolean>;
   size(path: string): Promise<number>;
+  md5(path: string): Promise<string>;
   mkdir(path: string): Promise<void>;
   rename(from: string, to: string): Promise<void>;
   remove(path: string): Promise<void>;

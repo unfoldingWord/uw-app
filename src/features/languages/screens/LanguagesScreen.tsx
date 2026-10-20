@@ -37,8 +37,8 @@ export default function LanguagesScreen() {
   const refreshed = useAsyncValue(() => languages.refresh(), []);
   const [running, setRunning] = useState(0);
   const online = useAsyncValue(() => languages.online(), [refreshed.value, running]);
-  const rows = languages.list(query);
   const everyRow = languages.list();
+  const rows = query.trim() === '' ? everyRow : languages.list(query);
   const installing = running > 0 || everyRow.some((row) => row.installing);
   const current = languages.current();
   const currentAutonym = everyRow.find((row) => row.language === current)?.autonym ?? current ?? '';

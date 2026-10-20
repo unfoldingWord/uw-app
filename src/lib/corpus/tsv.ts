@@ -285,6 +285,127 @@ export function questionRows(text: string): QuestionRow[] {
   }));
 }
 
+const quotedCellPattern = /(^|\t)"/m;
+
+function cellsUpTo(line: string, last: number): string[] {
+  const cells: string[] = [];
+  let at = 0;
+  while (cells.length <= last) {
+    const tab = line.indexOf('\t', at);
+    if (tab === -1) {
+      cells.push(line.slice(at));
+      break;
+    }
+    cells.push(line.slice(at, tab));
+    at = tab + 1;
+  }
+  return cells;
+}
+
+type HelpsLayout = {
+  readonly body: string;
+  readonly id: number;
+  readonly reference: number;
+  readonly chapter: number;
+  readonly verse: number;
+  readonly last: number;
+};
+
+function helpsLayout(text: string): HelpsLayout | undefined {
+  const normal = text.includes('\r') ? text.replace(/\r\n?/g, '\n') : text;
+  const headerEnd = normal.indexOf('\n');
+  if (headerEnd === -1) {
+    return undefined;
+  }
+  const header = normal
+    .slice(0, headerEnd)
+    .replace(/^\uFEFF/, '')
+    .split('\t')
+    .map((cell) => cell.trim());
+  const id = header.indexOf('ID');
+  const reference = header.indexOf('Reference');
+  const chapter = header.indexOf('Chapter');
+  const verse = header.indexOf('Verse');
+  const body = normal.slice(headerEnd + 1);
+  if (id === -1 || (reference === -1 && (chapter === -1 || verse === -1)) || quotedCellPattern.test(body)) {
+    return undefined;
+  }
+  return { body, id, reference, chapter, verse, last: Math.max(id, reference, chapter, verse) };
+}
+
+function citedIn(cells: readonly string[], layout: HelpsLayout): string {
+  if (layout.reference !== -1) {
+    return cells[layout.reference] ?? '';
+  }
+  const chapter = (cells[layout.chapter] ?? '').trim();
+  const verse = (cells[layout.verse] ?? '').trim();
+  return chapter === '' || verse === '' ? '' : `${chapter}:${verse}`;
+}
+
+function eachLine(body: string, visit: (line: string) => void): void {
+  let at = 0;
+  while (at < body.length) {
+    const found = body.indexOf('\n', at);
+    const end = found === -1 ? body.length : found;
+    const line = body.slice(at, end);
+    at = end + 1;
+    if (line.trim() !== '') {
+      visit(line);
+    }
+  }
+}
+
 export function helpsRowCount(text: string): number {
-  return readRows(text).length;
+  const layout = helpsLayout(text);
+  if (layout === undefined) {
+    return text.indexOf('\n') === -1 ? 0 : readRows(text).length;
+  }
+  let count = 0;
+  eachLine(layout.body, (line) => {
+    const cells = cellsUpTo(line, layout.last);
+    if ((cells[layout.id] ?? '').trim() !== '' && parseHelpsReference(citedIn(cells, layout)) !== undefined) {
+      count += 1;
+    }
+  });
+  return count;
+}
+
+export function touchesChapters(reference: HelpsReference, chapters: ReadonlySet<number>): boolean {
+  if (reference.kind === 'intro') {
+    return true;
+  }
+  return reference.ranges.some(({ start, end }) => {
+    for (const chapter of chapters) {
+      if (start.chapter <= chapter && chapter <= end.chapter) {
+        return true;
+      }
+    }
+    return false;
+  });
+}
+
+export type HelpsIndex = {
+  readonly header: string;
+  readonly rows: readonly { readonly reference: HelpsReference; readonly line: string }[];
+};
+
+export function indexHelps(text: string): HelpsIndex | undefined {
+  const layout = helpsLayout(text);
+  if (layout === undefined) {
+    return undefined;
+  }
+  const normal = text.includes('\r') ? text.replace(/\r\n?/g, '\n') : text;
+  const rows: { reference: HelpsReference; line: string }[] = [];
+  eachLine(layout.body, (line) => {
+    const reference = parseHelpsReference(citedIn(cellsUpTo(line, layout.last), layout));
+    if (reference !== undefined) {
+      rows.push({ reference, line });
+    }
+  });
+  return { header: normal.slice(0, normal.indexOf('\n')), rows };
+}
+
+export function helpsFromIndex(index: HelpsIndex, chapters: ReadonlySet<number>): string {
+  const kept = index.rows.filter((row) => touchesChapters(row.reference, chapters)).map((row) => row.line);
+  return `${[index.header, ...kept].join('\n')}\n`;
 }

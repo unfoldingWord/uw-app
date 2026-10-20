@@ -82,6 +82,8 @@ const filesCases: ContractCase[] = [
       await files.writeBytes(path, bytes('z'));
       same(await files.readBytes(path), bytes('z'), 'write replaces');
       same(await files.size(path), 1, 'file size');
+      same(await files.md5(path), 'fbade9e36a3f36d3d676c1b808451dd7', 'md5 of the bytes on disk');
+      same(await codeOf(files.md5(`${scratch}/absent.bin`)), 'files.not-found', 'md5 of a missing file');
     },
   },
   {

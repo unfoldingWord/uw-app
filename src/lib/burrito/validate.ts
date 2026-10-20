@@ -44,7 +44,7 @@ export type ValidateOptions = {
   readonly contents?: boolean;
 };
 
-export type IngredientFact = { readonly size: number; readonly md5: string };
+export type IngredientFact = { readonly size: number; readonly md5?: string };
 
 export type BurritoFacts = {
   readonly metadata: Uint8Array | undefined;
@@ -186,7 +186,7 @@ function checkPresence(
       );
     }
     const actual = found.md5;
-    if (actual !== entry.checksum.md5) {
+    if (actual !== undefined && actual !== entry.checksum.md5) {
       return invalid(
         'ingredient-checksum',
         key,

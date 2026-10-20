@@ -1,5 +1,3 @@
-import { md5 } from '@noble/hashes/legacy.js';
-import { bytesToHex } from '@noble/hashes/utils.js';
 import { Unzip, UnzipInflate } from 'fflate';
 import type { Files } from '../ports';
 import {
@@ -31,7 +29,7 @@ export type Unpacked =
 
 type Chunk = { readonly path: string; readonly data: Uint8Array; readonly final: boolean };
 
-type Hashing = { readonly hash: ReturnType<typeof md5.create>; size: number; started: boolean };
+type Writing = { size: number; started: boolean };
 
 function kept(path: string): boolean {
   const name = path.split('/').at(-1) ?? '';
@@ -46,7 +44,6 @@ function parentOf(path: string): string {
 export type UnpackOptions = {
   readonly into?: string;
   readonly limits?: ArchiveLimits;
-  readonly hash?: boolean;
 };
 
 export async function unpackArchive(
@@ -56,10 +53,9 @@ export async function unpackArchive(
 ): Promise<Unpacked> {
   const limits = options.limits ?? defaultArchiveLimits;
   const { into } = options;
-  const hashed = options.hash !== false;
   const names: string[] = [];
   const queue: Chunk[] = [];
-  const hashing = new Map<string, Hashing>();
+  const writing = new Map<string, Writing>();
   const facts = new Map<string, IngredientFact>();
   const keptParts = new Map<string, Uint8Array[]>();
   const madeDirectories = new Set<string>();
@@ -89,7 +85,7 @@ export async function unpackArchive(
     if (!mayHoldBurrito(file.name)) {
       return;
     }
-    hashing.set(file.name, { hash: md5.create(), size: 0, started: false });
+    writing.set(file.name, { size: 0, started: false });
     file.ondata = (error, data, final) => {
       if (problem !== undefined) {
         return;
@@ -109,12 +105,9 @@ export async function unpackArchive(
   };
 
   async function take(chunk: Chunk): Promise<void> {
-    const state = hashing.get(chunk.path);
+    const state = writing.get(chunk.path);
     if (state === undefined) {
       return;
-    }
-    if (hashed) {
-      state.hash.update(chunk.data);
     }
     state.size += chunk.data.byteLength;
     if (kept(chunk.path)) {
@@ -140,7 +133,7 @@ export async function unpackArchive(
     }
     state.started = true;
     if (chunk.final) {
-      facts.set(chunk.path, { size: state.size, md5: hashed ? bytesToHex(state.hash.digest()) : '' });
+      facts.set(chunk.path, { size: state.size });
     }
   }
 
@@ -166,7 +159,7 @@ export async function unpackArchive(
   if (problem !== undefined) {
     return { ok: false, ...problem };
   }
-  if (names.length === 0 || [...hashing.keys()].some((path) => !facts.has(path))) {
+  if (names.length === 0 || [...writing.keys()].some((path) => !facts.has(path))) {
     return { ok: false, rule: 'archive-unreadable', path: '' };
   }
   const root = rootOf(names);

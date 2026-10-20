@@ -1,5 +1,3 @@
-import { md5 } from '@noble/hashes/legacy.js';
-import { bytesToHex } from '@noble/hashes/utils.js';
 import { burritoMetadata, licenceIngredient } from '../burrito/build';
 import { fromUtf8, ingredientsDirectory, metadataPath, utf8 } from '../burrito/files';
 import { mimeTypes, unpinnedFlavors, storyImagesDirectory } from '../burrito/flavors';
@@ -18,8 +16,6 @@ import type { CatalogChoice } from './source';
 import { parentOf, removeIfPresent } from './tree';
 
 const assetTimeoutMs = 120_000;
-
-const hashChunk = 64 * 1024;
 
 const storyImageUrl = /https:\/\/cdn\.door43\.org\/obs\/jpg\/360px\/obs-[a-z]+-\d{2}-\d{2}\.jpg/g;
 
@@ -63,13 +59,8 @@ function problemOf(outcome: HttpDownloaded): FailureCode | undefined {
   }
 }
 
-async function factOfFile(ports: ModulePorts, path: string): Promise<IngredientFact> {
-  const size = await ports.files.size(path);
-  const hash = md5.create();
-  for (let offset = 0; offset < size; offset += hashChunk) {
-    hash.update(await ports.files.readRange(path, offset, Math.min(hashChunk, size - offset)));
-  }
-  return { size, md5: bytesToHex(hash.digest()) };
+async function factOfFile(ports: ModulePorts, path: string): Promise<{ size: number; md5: string }> {
+  return { size: await ports.files.size(path), md5: await ports.files.md5(path) };
 }
 
 function extensionOf(name: string): string {
@@ -196,7 +187,7 @@ async function storiesSource(
   }
   const unpacked = `${stage}.source`;
   try {
-    const read = await unpackArchive(ports.files, archive, { into: unpacked, hash: false });
+    const read = await unpackArchive(ports.files, archive, { into: unpacked });
     await removeIfPresent(ports.files, archive);
     if (!read.ok || read.directory === undefined) {
       return 'pack.invalid-burrito';

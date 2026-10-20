@@ -9,6 +9,19 @@ export type LanguagesWords = Words<AreaKey<StringKey>, AreaKey<PluralKey>> & { s
 
 const sizeUnits = ['B', 'KB', 'MB', 'GB', 'TB'] as const;
 
+const numberFormats = new Map<string, Intl.NumberFormat>();
+
+function numberFormat(locale: string, digits: number): Intl.NumberFormat {
+  const key = `${locale}|${digits}`;
+  const known = numberFormats.get(key);
+  if (known !== undefined) {
+    return known;
+  }
+  const made = new Intl.NumberFormat(locale, { maximumFractionDigits: digits });
+  numberFormats.set(key, made);
+  return made;
+}
+
 function sizeIn(locale: string, bytes: number): string {
   let value = Math.max(0, bytes);
   let unit = 0;
@@ -17,7 +30,7 @@ function sizeIn(locale: string, bytes: number): string {
     unit += 1;
   }
   const digits = unit > 0 && value < 10 ? 1 : 0;
-  const number = new Intl.NumberFormat(locale, { maximumFractionDigits: digits }).format(value);
+  const number = numberFormat(locale, digits).format(value);
   return `${number} ${sizeUnits[unit] ?? 'B'}`;
 }
 

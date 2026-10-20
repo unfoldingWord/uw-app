@@ -69,6 +69,7 @@ export async function shareWordsPayload(
   const words = await Promise.all(
     wordsRoots.map(async (words) => ({ words, listed: await listedOf(files, words) })),
   );
+  const emptied = new Set<string>();
   for (const [key, fact] of listed) {
     if (!key.startsWith(wordsPayload)) {
       continue;
@@ -81,8 +82,12 @@ export async function shareWordsPayload(
       (await files.exists(path))
     ) {
       await files.remove(path);
-      await pruneEmptyBelow(files, parentOf(path), `${root}/ingredients`);
+      emptied.add(parentOf(path));
     }
+  }
+  const deepestFirst = [...emptied].sort((left, right) => right.split('/').length - left.split('/').length);
+  for (const directory of deepestFirst) {
+    await pruneEmptyBelow(files, directory, `${root}/ingredients`);
   }
 }
 

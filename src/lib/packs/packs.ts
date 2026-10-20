@@ -156,7 +156,17 @@ export const packsModule = defineModule<PacksApi>({
     const sortedPacks = (): InstalledPack[] =>
       [...installed.values()].sort((left, right) => compareText(left.pack, right.pack));
 
-    const catalogReleases = (): Promise<CatalogRelease[]> => readCatalogReleases(ports.db);
+    let knownReleases: Promise<CatalogRelease[]> | undefined;
+    const catalogReleases = (): Promise<CatalogRelease[]> => {
+      const reading = knownReleases ?? readCatalogReleases(ports.db);
+      knownReleases = reading;
+      reading.catch(() => {
+        if (knownReleases === reading) {
+          knownReleases = undefined;
+        }
+      });
+      return reading;
+    };
 
     function noted(outcome: InstallOutcome): InstallOutcome {
       if (outcome.ok) {
@@ -396,6 +406,11 @@ export const packsModule = defineModule<PacksApi>({
             );
             return installNow(fromCatalog(chosen), { pack });
           }),
+      },
+      observe(entry) {
+        if (entry.type === 'CatalogRefreshed') {
+          knownReleases = undefined;
+        }
       },
       async start() {
         let roots: readonly string[] | undefined;

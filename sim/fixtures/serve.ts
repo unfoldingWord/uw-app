@@ -68,6 +68,12 @@ function serveCatalogPages(
   }
 }
 
+export function serveCatalog(network: MemoryNetwork, releases: readonly FixtureRelease[]): void {
+  serveJson(network, catalogSearchUrl, catalogSearch(releases));
+  serveCatalogPages(network, catalogSearch(releases));
+  serveJson(network, catalogLanguagesUrl, catalogLanguages(releases));
+}
+
 export function serveFixtures(network: MemoryNetwork): FixtureCatalog {
   for (const response of responses()) {
     network.serve(response.url, { body: response.bytes, headers: { 'content-type': response.contentType } });
@@ -94,9 +100,7 @@ export function serveFixtures(network: MemoryNetwork): FixtureCatalog {
         headers: { 'content-type': 'application/zip' },
       });
       releases = releases.map((release) => (release === current ? next : release));
-      serveJson(network, catalogSearchUrl, catalogSearch(releases));
-      serveCatalogPages(network, catalogSearch(releases));
-      serveJson(network, catalogLanguagesUrl, catalogLanguages(releases));
+      serveCatalog(network, releases);
       return next;
     },
     archive(publisher, resource, tag) {
