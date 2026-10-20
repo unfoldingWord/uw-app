@@ -104,7 +104,7 @@ function createLru(limit: number, budget: number): Lru {
 }
 
 function weightOf(reader: BurritoReader, key: string): number {
-  const book = key.slice(key.indexOf(':') + 1).split('@')[0] ?? '';
+  const book = key.slice(key.indexOf(':') + 1).split(/[@#]/)[0] ?? '';
   return reader.ingredients
     .filter((ingredient) => Object.keys(ingredient.entry.scope ?? {}).includes(book))
     .reduce((sum, ingredient) => sum + ingredient.entry.size, 0);

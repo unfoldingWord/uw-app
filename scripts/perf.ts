@@ -5,7 +5,7 @@ import type { FixtureRelease } from '@sim/fixtures/releases';
 import { serveCatalog } from '@sim/fixtures/serve';
 import { servicesOf } from '@sim/services';
 import { createWorld } from '@sim/world';
-import { englishTargets, scaleArchive } from './perf/scale.ts';
+import { englishTargets, scaleArchive, type PerfScript } from './perf/scale.ts';
 
 type PortStat = { calls: number; ms: number };
 
@@ -82,6 +82,8 @@ function portTable(top: number): string[] {
     );
 }
 
+const scripts: readonly PerfScript[] = ['latin', 'arabic', 'devanagari', 'han'];
+const perfScript = scripts.find((script) => script === process.env.PERF_SCRIPT) ?? 'latin';
 const world = createWorld();
 const scaled: string[] = [];
 let scaledBytes = 0;
@@ -95,7 +97,7 @@ for (const release of world.fixtures.releases()) {
   if (archive === undefined) {
     continue;
   }
-  const bigger = scaleArchive(archive, target);
+  const bigger = scaleArchive(archive, target, perfScript);
   scaledBytes += bigger.length;
   scaled.push(`${release.resource} ${megabytes(bigger.length)}`);
   world.network.serve(burritoArchiveUrl(release), {
@@ -108,7 +110,9 @@ serveCatalog(world.network, [
   ...world.fixtures.releases(),
   ...syntheticLanguages(world.fixtures.releases(), catalogLanguages),
 ]);
-console.log(`perf: scaled ${scaled.join(', ')}; ${megabytes(scaledBytes)} of archives`);
+console.log(
+  `perf: scaled ${scaled.join(', ')}; ${megabytes(scaledBytes)} of archives; words and notes in ${perfScript} letters`,
+);
 
 const device = world.device('phone');
 for (const [name, port] of Object.entries(device.adapters)) {
@@ -124,19 +128,38 @@ console.log(
 );
 
 await servicesOf(device).languages.select('qaa');
+const latencyMs = Number(process.env.PERF_LATENCY_MS ?? '0');
+if (latencyMs > 0) {
+  const download = device.adapters.http.download.bind(device.adapters.http);
+  device.adapters.http.download = async (request) => {
+    await new Promise((resolve) => setTimeout(resolve, latencyMs));
+    return download(request);
+  };
+}
 portStats.clear();
 const pack = languagePackId('qaa');
+const cpuBefore = process.cpuUsage();
 const startedInstall = performance.now();
 const outcome = await device.kernel.packs.installFromCatalog(pack);
 const installMs = performance.now() - startedInstall;
+const cpu = process.cpuUsage(cpuBefore);
 if (!outcome.ok) {
   console.log(`perf: install failed ${outcome.code}`);
   process.exit(1);
 }
 const portMs = [...portStats.values()].reduce((sum, stat) => sum + stat.ms, 0);
+const resources = outcome.pack.burritos.length;
 console.log(
-  `perf: install ${outcome.pack.burritos.length} resources in ${(installMs / 1000).toFixed(1)} s, ${megabytes(outcome.pack.bytes)} on the phone; time inside ports ${(portMs / 1000).toFixed(1)} s, JavaScript outside ports ${((installMs - portMs) / 1000).toFixed(1)} s`,
+  `perf: install ${resources} resources in ${(installMs / 1000).toFixed(1)} s wall, ${megabytes(outcome.pack.bytes)} on the phone; process CPU ${(cpu.user / 1e6).toFixed(1)} s user and ${(cpu.system / 1e6).toFixed(1)} s system`,
 );
+console.log(
+  `perf: port latency ${(portMs / 1000).toFixed(1)} s summed over calls; calls overlap and nest, so this is not a share of the wall time`,
+);
+if (latencyMs > 0) {
+  console.log(
+    `perf: each download waited ${latencyMs} ms; one after another that alone is ${((latencyMs * resources) / 1000).toFixed(1)} s`,
+  );
+}
 for (const line of portTable(12)) {
   console.log(line);
 }
@@ -170,6 +193,25 @@ const calls: [string, () => unknown][] = [
   ['settings.entries', () => services.settings.entries()],
   ['settings.storage', () => services.settings.storage()],
   ['about.summary', () => services.about.summary()],
+  [
+    'switch language and back',
+    async () => {
+      await services.languages.select('qab');
+      await services.home.download();
+      await services.study.open();
+      await services.languages.select('qaa');
+      await services.home.download();
+      await services.study.open();
+    },
+  ],
+  [
+    'chapter forward x5 PSA',
+    async () => {
+      for (const chapter of [20, 21, 22, 23, 24]) {
+        await services.study.passage(`PSA ${chapter}`);
+      }
+    },
+  ],
 ];
 console.log(`perf: screen calls, median and max of ${runs} runs`);
 for (const [label, call] of calls.filter(([label]) => only === undefined || label.startsWith(only))) {

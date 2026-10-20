@@ -72,6 +72,49 @@ const bibleBooks: readonly string[] = [
 
 export type ScaleTarget = { readonly bytes: number; readonly articles?: number };
 
+export type PerfScript = 'latin' | 'arabic' | 'devanagari' | 'han';
+
+const scriptBase: Readonly<Record<Exclude<PerfScript, 'latin'>, number>> = {
+  arabic: 0x0628,
+  devanagari: 0x0915,
+  han: 0x4e00,
+};
+
+function inScript(text: string, script: PerfScript): string {
+  if (script === 'latin') {
+    return text;
+  }
+  const base = scriptBase[script];
+  return text.replace(/[A-Za-z]/g, (letter) =>
+    String.fromCodePoint(base + (letter.toLowerCase().charCodeAt(0) - 97)),
+  );
+}
+
+function wordsInScript(usfm: string, script: PerfScript): string {
+  return usfm.replace(/\\w ([^|\\]*)\|/g, (_whole, word: string) => `\\w ${inScript(word, script)}|`);
+}
+
+function notesInScript(tsv: string, script: PerfScript): string {
+  return tsv
+    .split('\n')
+    .map((line, index) => {
+      if (index === 0) {
+        return line;
+      }
+      const cells = line.split('\t');
+      const last = cells.length - 1;
+      const text = cells[last];
+      if (text !== undefined && last > 0) {
+        cells[last] = text.replace(
+          /(\([^)]*\))|([^()]+)/g,
+          (_whole, link?: string, plain?: string) => link ?? inScript(plain ?? '', script),
+        );
+      }
+      return cells.join('\t');
+    })
+    .join('\n');
+}
+
 export const englishTargets: Readonly<Record<string, ScaleTarget>> = {
   ult: { bytes: 76_900_000 },
   ust: { bytes: 89_400_000 },
@@ -153,7 +196,11 @@ function bookOf(name: string): string | undefined {
   return code !== undefined && bibleBooks.includes(code) ? code : undefined;
 }
 
-export function scaleArchive(archive: Uint8Array, target: ScaleTarget): Uint8Array {
+export function scaleArchive(
+  archive: Uint8Array,
+  target: ScaleTarget,
+  script: PerfScript = 'latin',
+): Uint8Array {
   const files = unzipSync(archive);
   const names = Object.keys(files);
   const root = names[0]?.split('/')[0] ?? '';
@@ -185,7 +232,7 @@ export function scaleArchive(archive: Uint8Array, target: ScaleTarget): Uint8Arr
     if (usfm !== undefined && usfmEntry !== undefined) {
       const scaled = scaledUsfm(usfm, book, perBook);
       const mimeType = metadata.ingredients[usfmEntry.slice(prefix.length)]?.mimeType ?? 'text/x-usfm';
-      add(`ingredients/${book}.usfm`, encoder.encode(scaled.text), {
+      add(`ingredients/${book}.usfm`, encoder.encode(wordsInScript(scaled.text, script)), {
         mimeType,
         scope: { [book]: scaled.chapters },
       });
@@ -195,7 +242,10 @@ export function scaleArchive(archive: Uint8Array, target: ScaleTarget): Uint8Arr
       const path = tsvEntry.slice(prefix.length).replace(/[1-3A-Z]{3}\.tsv$/, `${book}.tsv`);
       const mimeType =
         metadata.ingredients[tsvEntry.slice(prefix.length)]?.mimeType ?? 'text/tab-separated-values';
-      add(path, encoder.encode(scaledTsv(tsv, perBook)), { mimeType, scope: { [book]: [] } });
+      add(path, encoder.encode(notesInScript(scaledTsv(tsv, perBook), script)), {
+        mimeType,
+        scope: { [book]: [] },
+      });
       scope[book] = [];
     }
   }

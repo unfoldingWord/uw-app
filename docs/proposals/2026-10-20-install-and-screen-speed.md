@@ -39,8 +39,9 @@ phone, matching the live English pack) and `npm run perf:engines` (the hot funct
 - **Catalog:** `languages()` is computed once per catalog, installed set and names, and releases are indexed by
   language; a language's offered count plans over its own releases, not the whole catalog. The packs module keeps
   its copy of the catalog rows until the next `CatalogRefreshed` instead of reading the table on every status.
-- **Study:** a passage parses only its chapters (USFM sliced at `\c`, helps rows kept when their reference touches
-  the chapters, book introductions always). The book cache holds 16 entries, still under its 32 MB weight.
+- **Study:** a passage parses only its chapters. Each book is indexed once by chapter (USFM at `\c`, helps rows by
+  their reference in current or legacy columns, book introductions always), and a table with quoted cells is
+  parsed once for the book and filtered. The book cache holds 16 entries, still under its 32 MB weight.
   Corpus contents are kept until the library changes; Formation's corpus view reloads titles only when an entry
   changed. Choosing a reading reloads Study from current state, not from the closure that started the change.
 - **Languages:** each language's size is measured once per catalog; the installing set and the selected language

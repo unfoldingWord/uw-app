@@ -396,20 +396,32 @@ export function parseUsfm(source: string): UsfmBook {
 
 const chapterMarker = /\\c\s+(\d+)/g;
 
-export function usfmChapters(source: string, chapters: ReadonlySet<number>): string {
+export type UsfmChapterIndex = {
+  readonly header: string;
+  readonly blocks: readonly { readonly chapter: number; readonly text: string }[];
+};
+
+export function indexUsfmChapters(source: string): UsfmChapterIndex {
   const marks = [...source.matchAll(chapterMarker)].map((match) => ({
     at: match.index,
     chapter: Number(match[1]),
   }));
   const first = marks[0];
   if (first === undefined) {
-    return source;
+    return { header: source, blocks: [] };
   }
-  const parts = [source.slice(0, first.at)];
-  marks.forEach((mark, index) => {
-    if (chapters.has(mark.chapter)) {
-      parts.push(source.slice(mark.at, marks[index + 1]?.at ?? source.length));
-    }
-  });
-  return parts.join('');
+  return {
+    header: source.slice(0, first.at),
+    blocks: marks.map((mark, index) => ({
+      chapter: mark.chapter,
+      text: source.slice(mark.at, marks[index + 1]?.at ?? source.length),
+    })),
+  };
+}
+
+export function usfmFromIndex(index: UsfmChapterIndex, chapters: ReadonlySet<number>): string {
+  return [
+    index.header,
+    ...index.blocks.filter((block) => chapters.has(block.chapter)).map((block) => block.text),
+  ].join('');
 }

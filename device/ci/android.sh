@@ -51,6 +51,8 @@ run_pass() {
 
   [ "$run" = "large-text" ] && set_text_scale 1.0
 
+  bash "$GITHUB_WORKSPACE/device/ci/flow-times.sh" android "$run" "$out/first" "$out/second"
+
   echo "::group::$run: failed steps"
   bash "$GITHUB_WORKSPACE/device/ci/failed-steps.sh" "$out" "$HOME/.maestro/tests"
   echo "::endgroup::"
