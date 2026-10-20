@@ -41,6 +41,10 @@ native run.
   "resources ready offline" and then failed `"Next chapter" is visible` after 60 s: Home reported complete while
   corpus ingest was still running and Study never reloaded. `sim/ready-to-read.test.ts` reproduces it and passes
   after the fix.
+- **Device CI on 8b8df5a (run 118749618966 android, 118749618259 ios):** the English download from the live catalog
+  waited 67 s for the pack on the Android emulator and 94 s on the iOS simulator (`flow-times.sh`). On `main`
+  (run 37827082712) the same Android flow took 5 min 2 s and failed after the download, because Study showed nothing
+  to read. On iOS the optional and large-text flows fail both passes, as they do on `main` (#73).
 - `npm run verify` green: 834 tests, 63 scenarios, 51 Must requirements traced, both bundles.
 
 ## 2026-10-05 Q1 product and QA review against the PRD: twenty findings fixed, driven in the web harness
