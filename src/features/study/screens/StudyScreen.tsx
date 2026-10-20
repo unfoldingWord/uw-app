@@ -90,7 +90,7 @@ export default function StudyScreen() {
     const books = await service.books(view.state === 'original' ? view.passage.language : undefined);
     return { view, books };
   }, [service, target, original]);
-  const { value, reload } = useLoaded(load);
+  const { value, reload } = useLoaded(load, service.onPacksChange);
 
   const chosenVerse = selected ?? (value?.view.state === 'passage' ? value.view.view.landing : undefined);
   const selectedVerse = useMemo(() => {

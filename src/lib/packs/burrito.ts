@@ -15,6 +15,7 @@ export type CheckedBurrito = {
   provenance: Provenance;
   revision: string | undefined;
   listed: readonly string[];
+  checksums: ReadonlyMap<string, string>;
   bytes: number;
 };
 
@@ -81,5 +82,6 @@ export function checkBurrito(
   const listed = Object.keys(metadata.ingredients);
   const bytes =
     (facts.metadata?.byteLength ?? 0) + listed.reduce((sum, key) => sum + (facts.fact(key)?.size ?? 0), 0);
-  return { ok: true, burrito: { row, provenance, revision: read?.commit, listed, bytes } };
+  const checksums = new Map(listed.map((key) => [key, metadata.ingredients[key]?.checksum.md5 ?? '']));
+  return { ok: true, burrito: { row, provenance, revision: read?.commit, listed, checksums, bytes } };
 }

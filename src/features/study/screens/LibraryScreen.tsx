@@ -23,7 +23,7 @@ export default function LibraryScreen() {
   const words = service.words();
   const [failures, setFailures] = useState<Readonly<Record<string, string>>>({});
   const load = useCallback(() => service.library(), [service]);
-  const { value, reload } = useLoaded(load);
+  const { value, reload } = useLoaded(load, service.onPacksChange);
 
   const download = async (card: LibraryCard) => {
     if (card.pack === undefined) {

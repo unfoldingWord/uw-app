@@ -113,6 +113,7 @@ export function scopedFiles(scope: Scope, files: Files): Files {
     list: (path) => files.list(path),
     exists: (path) => files.exists(path),
     size: (path) => files.size(path),
+    md5: (path) => files.md5(path),
     freeSpace: () => files.freeSpace(),
     uriOf: (path) => files.uriOf(path),
     writeBytes: async (path, data) => {

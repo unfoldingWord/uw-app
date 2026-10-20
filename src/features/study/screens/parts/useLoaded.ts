@@ -1,12 +1,15 @@
 import { useFocusEffect } from 'expo-router';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type Loaded<T> = {
   readonly value: T | undefined;
   readonly reload: () => Promise<void>;
 };
 
-export function useLoaded<T>(load: () => Promise<T>): Loaded<T> {
+export function useLoaded<T>(
+  load: () => Promise<T>,
+  subscribe?: (listener: () => void) => () => void,
+): Loaded<T> {
   const [value, setValue] = useState<T | undefined>(undefined);
   const generation = useRef(0);
   const reload = useCallback(async () => {
@@ -24,6 +27,13 @@ export function useLoaded<T>(load: () => Promise<T>): Loaded<T> {
         generation.current += 1;
       };
     }, [reload]),
+  );
+  useEffect(
+    () =>
+      subscribe?.(() => {
+        void reload();
+      }),
+    [subscribe, reload],
   );
   return { value, reload };
 }

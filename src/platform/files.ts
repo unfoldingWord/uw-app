@@ -44,7 +44,20 @@ function ioError(error: unknown, detail: string): Error {
   return portError(noSpace.test(message) ? 'files.no-space' : 'files.io', `${detail}: ${message}`);
 }
 
+const busyBudgetMs = 24;
+
+let busySince = Date.now();
+
+async function letTheEventLoopRun(): Promise<void> {
+  if (Date.now() - busySince < busyBudgetMs) {
+    return;
+  }
+  await new Promise<void>((resolve) => setTimeout(resolve, 0));
+  busySince = Date.now();
+}
+
 async function guarded<T>(detail: string, work: () => T | Promise<T>): Promise<T> {
+  await letTheEventLoopRun();
   try {
     return await work();
   } catch (error) {
@@ -170,6 +183,14 @@ export function createPlatformFiles(root: DeviceRoot): Files {
       guarded(`size ${path}`, () => {
         const target = normalize(path);
         return isFile(target) ? fileAt(target).size : sizeOfDirectory(requireDirectory(target));
+      }),
+    md5: (path) =>
+      guarded(`hash ${path}`, () => {
+        const hash = requireFile(path, path).md5;
+        if (hash === null) {
+          throw portError('files.io', `${path} could not be hashed`);
+        }
+        return hash;
       }),
     mkdir: (path) =>
       guarded(`make ${path}`, () => {

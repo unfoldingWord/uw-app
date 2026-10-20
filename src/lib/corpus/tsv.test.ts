@@ -120,6 +120,21 @@ describe('helps rows', () => {
       'Reference\tID\tQuestion\tResponse\n1:1\tq1\tWho?\tJohn.\n1:2\t\tNo id\t-\nsomewhere\tq3\tWhere?\tHere.\n';
     expect(helpsRowCount(text)).toBe(1);
   });
+
+  it('counts the same rows as a full read, whatever the table looks like', () => {
+    const tables = [
+      'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote\nfront:intro\tr001\t\t\t\t0\t# Intro\n1:1\tr002\t\t\tword\t1\tA note\n1:intro\tr003\t\t\t\t0\tChapter\n1:2-4\tr004\t\t\tx\t1\tRange\n',
+      '\uFEFFReference\tID\tNote\r\n1:1\ta1\tone\r\n\r\n1:2\ta2\ttwo\r\n',
+      'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote\nRUT\t1\t1\tb1\t\tq\t1\t\tlegacy\nRUT\tfront\tintro\tb2\t\t\t0\t\tintro\nRUT\t1\t\tb3\t\t\t0\t\tno verse\n',
+      'Reference\tID\tNote\n1:1\tc1\t"quoted\nacross lines"\n1:2\tc2\tplain\n',
+      'Reference\tID\tNote\n1:1\td1\n1:2\td2\ttoo\tmany\tcells\nnot a ref\td3\tx\n2:5\t \tblank id\n',
+      'Reference\tID\tNote',
+      '',
+    ];
+    for (const table of tables) {
+      expect(helpsRowCount(table)).toBe(noteRows(table).length);
+    }
+  });
 });
 
 describe('parseHelpsReference in the forms releases carry', () => {

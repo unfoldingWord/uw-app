@@ -1,3 +1,4 @@
+import { md5Hex } from '@lib/burrito/files';
 import type { FileEntry, Files } from '@lib/ports';
 import { portError } from './errors';
 
@@ -240,6 +241,7 @@ export function createMemoryFiles(options: { capacity?: number } = {}): MemoryFi
       return files.has(target) || directories.has(target);
     },
     size: async (path) => sizeOf(normalize(path)),
+    md5: async (path) => md5Hex(whole(stored(path))),
     mkdir: async (path) => {
       const target = normalize(path);
       guardWrite('mkdir', target);

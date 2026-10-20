@@ -285,6 +285,66 @@ export function questionRows(text: string): QuestionRow[] {
   }));
 }
 
+const quotedCellPattern = /(^|\t)"/m;
+
+function cellsUpTo(line: string, last: number): string[] {
+  const cells: string[] = [];
+  let at = 0;
+  while (cells.length <= last) {
+    const tab = line.indexOf('\t', at);
+    if (tab === -1) {
+      cells.push(line.slice(at));
+      break;
+    }
+    cells.push(line.slice(at, tab));
+    at = tab + 1;
+  }
+  return cells;
+}
+
 export function helpsRowCount(text: string): number {
-  return readRows(text).length;
+  const normal = text.includes('\r') ? text.replace(/\r\n?/g, '\n') : text;
+  const headerEnd = normal.indexOf('\n');
+  if (headerEnd === -1) {
+    return 0;
+  }
+  const header = normal
+    .slice(0, headerEnd)
+    .replace(/^\uFEFF/, '')
+    .split('\t')
+    .map((cell) => cell.trim());
+  const id = header.indexOf('ID');
+  const reference = header.indexOf('Reference');
+  const chapter = header.indexOf('Chapter');
+  const verse = header.indexOf('Verse');
+  if (
+    id === -1 ||
+    (reference === -1 && (chapter === -1 || verse === -1)) ||
+    quotedCellPattern.test(normal.slice(headerEnd + 1))
+  ) {
+    return readRows(text).length;
+  }
+  const last = Math.max(id, reference, chapter, verse);
+  let count = 0;
+  let at = headerEnd + 1;
+  while (at < normal.length) {
+    const found = normal.indexOf('\n', at);
+    const end = found === -1 ? normal.length : found;
+    const line = normal.slice(at, end);
+    at = end + 1;
+    if (line.trim() === '') {
+      continue;
+    }
+    const cells = cellsUpTo(line, last);
+    const cited =
+      reference !== -1
+        ? (cells[reference] ?? '')
+        : (cells[chapter] ?? '').trim() === '' || (cells[verse] ?? '').trim() === ''
+          ? ''
+          : `${(cells[chapter] ?? '').trim()}:${(cells[verse] ?? '').trim()}`;
+    if ((cells[id] ?? '').trim() !== '' && parseHelpsReference(cited) !== undefined) {
+      count += 1;
+    }
+  }
+  return count;
 }

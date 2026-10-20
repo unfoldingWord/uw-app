@@ -169,6 +169,7 @@ export type StudyService = {
   picture(frame: Frame): string | undefined;
   listen(clip: Pick<AudioClip, 'path'>): ClipControls;
   audioTime(status: PlayerStatus): string;
+  onPacksChange(listener: () => void): () => void;
 };
 
 function autonymOf(kernel: Kernel, language: string): string {
@@ -506,6 +507,7 @@ export function createStudyService(kernel: Kernel): StudyService {
     unsave: (id) => bookmarks.remove(id),
     picture: (frame) => (frame.image === undefined ? undefined : kernel.media.uriOf(frame.image.path)),
     listen: (clip) => clipControls(kernel.player, { kind: 'file', path: clip.path }),
+    onPacksChange: (listener) => kernel.packs.onChange(listener),
     audioTime: (status) =>
       words().t('study.audio.time', {
         position: clockTime('positionMs' in status ? status.positionMs : 0),
