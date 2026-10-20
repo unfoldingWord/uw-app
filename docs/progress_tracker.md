@@ -29,6 +29,11 @@ the PR is their first build and first run.
   finalizes with no input until `COMPRESSION_STATUS_END`, refusing only when a call makes no progress, and the
   directory is read record by record within its claimed range. Neither change has been compiled here; the iOS
   device CI and its English download flow are the check. The memory contract gained a 200000-byte entry.
+- **Device CI on fa2d953:** `android` and `ios` green. iOS: the Swift module compiled and linked, and the English
+  download flow passed twice, waiting 47 s and 46 s for the language pack (94 s before this PR). Android waited
+  23 s here and 72 s on 2349841 with the same Kotlin, so the emulator figure is noise, not a measurement. The iOS
+  large-text and right-to-left flows, which are optional, failed as they do on `main` (#73). Release run
+  39479789907 built `unfoldingWord-v0.0.2-native-unzip.1.apk` on EAS from 2349841; no phone run is recorded yet.
 - **Not verified:** zip-slip, limits and unreadable archives on either native implementation; the iOS
   central-directory reader against DCS archives; any device timing. Those come from the device CI and the APK.
 
