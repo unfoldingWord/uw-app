@@ -3,6 +3,21 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-10-20 P2 native unzip, sim and checks only
+
+Node v22.22.2. Nothing ran on a phone, an emulator or a simulator in this entry, and the Kotlin and Swift in
+`modules/uw-archive/` have not been compiled: the sandbox has no Android SDK, no Xcode and no KVM. The device CI on
+the PR is their first build and first run.
+
+- **Contract:** the new Files case (`extracts an archive into a directory ...`) passes on the memory adapter. It
+  failed with the adapter's path check disabled (`../escape.txt leaves the device root`) and with its byte limit
+  disabled (`expected "archive-too-large", got "extracted"`); both were restored.
+- **Streaming test:** `sim/packs-streaming.test.ts` still bounds every read of the archive and every write the
+  kernel makes, and now also requires the burrito's files to arrive through `extract`.
+- **Verify:** `npm run verify` green: 834 tests, 9 checks, 63 of 63 scenarios, 21 fixture burritos, both bundles.
+- **Not verified:** zip-slip, limits and unreadable archives on either native implementation; the iOS
+  central-directory reader against DCS archives; any device timing. Those come from the device CI and the APK.
+
 ## 2026-10-20 P1 install and screen speed, measured in the sim and on Hermes
 
 Node v22.22.2 and Hermes 0.13.0 (`hermes-cli-linux` from the facebook/hermes release, set as `HERMES`). Nothing ran

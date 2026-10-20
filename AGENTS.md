@@ -77,7 +77,7 @@ adapter; versions live in `package.json`.
 
 | Port | Platform adapter | Notes |
 |---|---|---|
-| Files | expo-file-system | Packs under a per-language directory; replaced by rename, never in place |
+| Files | expo-file-system and the local module `modules/uw-archive/` (extract) | Packs under a per-language directory; replaced by rename, never in place |
 | Db | expo-sqlite | Migrations in `migrations/`; schema changes go through a migration file only |
 | Kv | expo-sqlite key-value or MMKV | One writer per key (rule 3) |
 | Http | fetch behind `src/platform/http.ts` | Timeout, host allowlist and offline signal in one place |

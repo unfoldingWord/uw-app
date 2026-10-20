@@ -132,6 +132,10 @@ export function scopedFiles(scope: Scope, files: Files): Files {
       guard(path);
       await files.mkdir(path);
     },
+    extract: async (archive, into, limits) => {
+      guard(into);
+      return files.extract(archive, into, limits);
+    },
     rename: async (from, to) => {
       guard(from);
       guard(to);

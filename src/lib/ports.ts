@@ -16,6 +16,14 @@ export type Ids = {
 
 export type FileEntry = { name: string; kind: 'file' | 'directory'; bytes: number };
 
+export type ExtractLimits = { readonly entries: number; readonly bytes: number };
+
+export type ExtractRefusal = 'archive-unreadable' | 'archive-path' | 'archive-too-large';
+
+export type Extracted =
+  | { readonly ok: true; readonly files: readonly { readonly path: string; readonly bytes: number }[] }
+  | { readonly ok: false; readonly rule: ExtractRefusal; readonly path: string };
+
 export type Files = {
   readBytes(path: string): Promise<Uint8Array>;
   readText(path: string): Promise<string>;
@@ -27,6 +35,7 @@ export type Files = {
   exists(path: string): Promise<boolean>;
   size(path: string): Promise<number>;
   md5(path: string): Promise<string>;
+  extract(archive: string, into: string, limits: ExtractLimits): Promise<Extracted>;
   mkdir(path: string): Promise<void>;
   rename(from: string, to: string): Promise<void>;
   remove(path: string): Promise<void>;

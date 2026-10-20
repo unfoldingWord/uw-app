@@ -1,5 +1,6 @@
 import { Directory, File, FileMode, Paths } from 'expo-file-system';
-import type { FileEntry, Files } from '@lib/ports';
+import type { Extracted, ExtractRefusal, FileEntry, Files } from '@lib/ports';
+import type { ArchiveModule, NativeExtracted } from '@modules/uw-archive';
 import { isPortError, messageOf, portError } from './errors';
 
 export type DeviceRoot = { directory: Directory; uriOf(path: string): string };
@@ -86,7 +87,17 @@ function discardHandedCopy(source: File): void {
   }
 }
 
-export function createPlatformFiles(root: DeviceRoot): Files {
+const refusals: readonly ExtractRefusal[] = ['archive-unreadable', 'archive-path', 'archive-too-large'];
+
+function extractedOf(native: NativeExtracted): Extracted {
+  if (native.ok) {
+    return { ok: true, files: (native.files ?? []).map(({ path, bytes }) => ({ path, bytes })) };
+  }
+  const rule = refusals.find((known) => known === native.rule) ?? 'archive-unreadable';
+  return { ok: false, rule, path: native.path ?? '' };
+}
+
+export function createPlatformFiles(root: DeviceRoot, archive: () => ArchiveModule): Files {
   const fileAt = (path: string): File => new File(root.directory, path);
   const directoryAt = (path: string): Directory =>
     path === '' ? root.directory : new Directory(root.directory, path);
@@ -201,6 +212,21 @@ export function createPlatformFiles(root: DeviceRoot): Files {
         if (target !== '') {
           directoryAt(target).create({ intermediates: true, idempotent: true });
         }
+      }),
+    extract: (from, into, limits) =>
+      guarded(`extract ${from}`, async () => {
+        const source = requireFile(from, from);
+        const target = normalize(into);
+        if (target === '' || isFile(target)) {
+          throw portError('files.io', `${into} cannot hold an archive`);
+        }
+        const native = await archive().extract(
+          source.uri,
+          directoryAt(target).uri,
+          limits.entries,
+          limits.bytes,
+        );
+        return extractedOf(native);
       }),
     rename: (from, to) =>
       guarded(`rename ${from}`, async () => {
