@@ -23,6 +23,12 @@ the PR is their first build and first run.
   waited 72 s (67 s before this PR, so no gain measured on the emulator). `ios`: the Swift compiled, the link failed
   with `ld: framework 'Compression' not found`; Compression is `libcompression`, so the podspec names it in
   `libraries`.
+- **Review on 2349841 (jag3773):** host-side Swift probes showed the DEFLATE loop refusing valid entries
+  (`en_ult` v91 `1CO.usfm`; 200000 bytes of `a`) because it gave up when the last input was consumed with output
+  still buffered, and the central directory read into one buffer of the size the archive claims. The loop now
+  finalizes with no input until `COMPRESSION_STATUS_END`, refusing only when a call makes no progress, and the
+  directory is read record by record within its claimed range. Neither change has been compiled here; the iOS
+  device CI and its English download flow are the check. The memory contract gained a 200000-byte entry.
 - **Not verified:** zip-slip, limits and unreadable archives on either native implementation; the iOS
   central-directory reader against DCS archives; any device timing. Those come from the device CI and the APK.
 

@@ -126,35 +126,34 @@ private final class Extraction {
     guard UInt64(directoryOffset) + UInt64(directorySize) <= size else {
       throw ArchiveUnreadable()
     }
-    try handle.seek(toOffset: UInt64(directoryOffset))
-    guard let directory = try handle.read(upToCount: Int(directorySize)),
-      directory.count == Int(directorySize)
-    else {
-      throw ArchiveUnreadable()
-    }
+    let directoryEnd = UInt64(directoryOffset) + UInt64(directorySize)
     var entries: [Entry] = []
-    var position = 0
+    var position = UInt64(directoryOffset)
     for _ in 0..<Int(count) {
-      guard position + 46 <= directory.count, little32(directory, position) == 0x0201_4b50 else {
+      guard position + 46 <= directoryEnd else {
         throw ArchiveUnreadable()
       }
-      let flags = little16(directory, position + 8)
-      let method = little16(directory, position + 10)
-      let compressed = little32(directory, position + 20)
-      let uncompressed = little32(directory, position + 24)
-      let nameLength = Int(little16(directory, position + 28))
-      let extraLength = Int(little16(directory, position + 30))
-      let commentLength = Int(little16(directory, position + 32))
-      let local = little32(directory, position + 42)
-      guard flags & 1 == 0, method == 0 || method == 8, compressed != 0xFFFF_FFFF,
-        uncompressed != 0xFFFF_FFFF, local != 0xFFFF_FFFF,
-        position + 46 + nameLength <= directory.count
+      try handle.seek(toOffset: position)
+      guard let header = try handle.read(upToCount: 46), header.count == 46,
+        little32(header, 0) == 0x0201_4b50
       else {
         throw ArchiveUnreadable()
       }
-      let start = directory.startIndex + position + 46
-      let nameBytes = directory.subdata(in: start..<(start + nameLength))
-      guard
+      let flags = little16(header, 8)
+      let method = little16(header, 10)
+      let compressed = little32(header, 20)
+      let uncompressed = little32(header, 24)
+      let nameLength = Int(little16(header, 28))
+      let extraLength = Int(little16(header, 30))
+      let commentLength = Int(little16(header, 32))
+      let local = little32(header, 42)
+      let recordEnd = position + 46 + UInt64(nameLength + extraLength + commentLength)
+      guard flags & 1 == 0, method == 0 || method == 8, compressed != 0xFFFF_FFFF,
+        uncompressed != 0xFFFF_FFFF, local != 0xFFFF_FFFF, recordEnd <= directoryEnd
+      else {
+        throw ArchiveUnreadable()
+      }
+      guard let nameBytes = try handle.read(upToCount: nameLength), nameBytes.count == nameLength,
         let name = String(data: nameBytes, encoding: .utf8)
           ?? String(data: nameBytes, encoding: .isoLatin1)
       else {
@@ -164,7 +163,7 @@ private final class Extraction {
         Entry(
           name: name, method: method, compressed: UInt64(compressed), size: UInt64(uncompressed),
           local: UInt64(local)))
-      position += 46 + nameLength + extraLength + commentLength
+      position = recordEnd
     }
     return entries
   }
@@ -226,40 +225,36 @@ private final class Extraction {
     let output = UnsafeMutablePointer<UInt8>.allocate(capacity: chunkSize)
     defer { output.deallocate() }
     var remaining = count
-    var finished = false
-    while !finished {
-      var read = 0
-      if remaining > 0 {
+    stream.pointee.src_ptr = UnsafePointer(input)
+    stream.pointee.src_size = 0
+    while true {
+      if stream.pointee.src_size == 0 && remaining > 0 {
         guard let chunk = try handle.read(upToCount: Int(min(remaining, UInt64(chunkSize)))),
           !chunk.isEmpty
         else {
           throw ArchiveUnreadable()
         }
-        read = chunk.count
-        chunk.copyBytes(to: input, count: read)
-        remaining -= UInt64(read)
+        chunk.copyBytes(to: input, count: chunk.count)
+        remaining -= UInt64(chunk.count)
+        stream.pointee.src_ptr = UnsafePointer(input)
+        stream.pointee.src_size = chunk.count
       }
       let flags = remaining == 0 ? Int32(COMPRESSION_STREAM_FINALIZE.rawValue) : 0
-      stream.pointee.src_ptr = UnsafePointer(input)
-      stream.pointee.src_size = read
-      repeat {
-        stream.pointee.dst_ptr = output
-        stream.pointee.dst_size = chunkSize
-        let status = compression_stream_process(stream, flags)
-        let produced = chunkSize - stream.pointee.dst_size
-        if produced > 0 {
-          try emit(Data(bytes: output, count: produced))
-        }
-        switch status {
-        case COMPRESSION_STATUS_END:
-          finished = true
-        case COMPRESSION_STATUS_OK:
-          break
-        default:
-          throw ArchiveUnreadable()
-        }
-      } while !finished && (stream.pointee.src_size > 0 || stream.pointee.dst_size == 0)
-      if !finished && remaining == 0 {
+      let pending = stream.pointee.src_size
+      stream.pointee.dst_ptr = output
+      stream.pointee.dst_size = chunkSize
+      let status = compression_stream_process(stream, flags)
+      let produced = chunkSize - stream.pointee.dst_size
+      if produced > 0 {
+        try emit(Data(bytes: output, count: produced))
+      }
+      if status == COMPRESSION_STATUS_END {
+        return
+      }
+      guard status == COMPRESSION_STATUS_OK else {
+        throw ArchiveUnreadable()
+      }
+      if produced == 0 && stream.pointee.src_size == pending {
         throw ArchiveUnreadable()
       }
     }

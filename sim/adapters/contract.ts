@@ -93,12 +93,13 @@ const filesCases: ContractCase[] = [
     async run({ ports: { files }, scratch }) {
       await files.mkdir(scratch);
       const archive = `${scratch}/burrito.zip`;
-      const limits = { entries: 10, bytes: 1024 };
+      const limits = { entries: 10, bytes: 512 * 1024 };
       await files.writeBytes(
         archive,
         zipSync({
           'b/metadata.json': bytes('{}'),
           'b/ingredients/a.txt': [bytes('abc'.repeat(50)), { level: 6 }],
+          'b/ingredients/long.txt': [bytes('a'.repeat(200_000)), { level: 9 }],
         }),
       );
       const extracted = await files.extract(archive, `${scratch}/out`, limits);
@@ -108,6 +109,7 @@ const filesCases: ContractCase[] = [
           : extracted,
         [
           { path: 'b/ingredients/a.txt', bytes: 150 },
+          { path: 'b/ingredients/long.txt', bytes: 200_000 },
           { path: 'b/metadata.json', bytes: 2 },
         ],
         'every file with its inflated size',
@@ -132,7 +134,12 @@ const filesCases: ContractCase[] = [
         'more entries than the limit',
       );
       same(
-        await refusal({ 'a.txt': new Uint8Array(2048) }),
+        await files.size(`${scratch}/out/b/ingredients/long.txt`),
+        200_000,
+        'an entry that inflates to many times its compressed size is drained to the end',
+      );
+      same(
+        await refusal({ 'a.txt': new Uint8Array(2048) }, { entries: 10, bytes: 1024 }),
         'archive-too-large',
         'more inflated bytes than the limit',
       );
