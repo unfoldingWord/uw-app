@@ -19,6 +19,10 @@ the PR is their first build and first run.
   equivalents and the Image Pack ended in `files.not-found`. Their archives carry a `LICENSE.md` beside
   `metadata.json` as well as in `ingredients/`; unpack removed the outer one and then read it as a licence.
   `sim/unpack.test.ts` reproduced it red and passes with kept files read only from the burrito's own files.
+- **Device CI on 2349841:** `android` green: the Kotlin module compiled and every flow passed, the English download
+  waited 72 s (67 s before this PR, so no gain measured on the emulator). `ios`: the Swift compiled, the link failed
+  with `ld: framework 'Compression' not found`; Compression is `libcompression`, so the podspec names it in
+  `libraries`.
 - **Not verified:** zip-slip, limits and unreadable archives on either native implementation; the iOS
   central-directory reader against DCS archives; any device timing. Those come from the device CI and the APK.
 
