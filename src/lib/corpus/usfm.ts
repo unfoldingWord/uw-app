@@ -393,3 +393,23 @@ export function parseUsfm(source: string): UsfmBook {
   ];
   return { code, name: names[0] ?? code, names, chapters, titles };
 }
+
+const chapterMarker = /\\c\s+(\d+)/g;
+
+export function usfmChapters(source: string, chapters: ReadonlySet<number>): string {
+  const marks = [...source.matchAll(chapterMarker)].map((match) => ({
+    at: match.index,
+    chapter: Number(match[1]),
+  }));
+  const first = marks[0];
+  if (first === undefined) {
+    return source;
+  }
+  const parts = [source.slice(0, first.at)];
+  marks.forEach((mark, index) => {
+    if (chapters.has(mark.chapter)) {
+      parts.push(source.slice(mark.at, marks[index + 1]?.at ?? source.length));
+    }
+  });
+  return parts.join('');
+}

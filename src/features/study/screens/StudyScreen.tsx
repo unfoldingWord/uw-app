@@ -69,6 +69,7 @@ export default function StudyScreen() {
   const [chosen, setChosen] = useState<string | undefined>(undefined);
   const [selected, setSelected] = useState<VerseKey | undefined>(undefined);
   const [original, setOriginal] = useState(false);
+  const [readingChanges, setReadingChanges] = useState(0);
   const [picking, setPicking] = useState(false);
   const [tab, setTab] = useState<HelpsTab>('notes');
   const [focused, setFocused] = useState<string | undefined>(undefined);
@@ -89,7 +90,7 @@ export default function StudyScreen() {
       target === undefined ? await service.open({ original }) : await service.passage(target, { original });
     const books = await service.books(view.state === 'original' ? view.passage.language : undefined);
     return { view, books };
-  }, [service, target, original]);
+  }, [service, target, original, readingChanges]);
   const { value, reload } = useLoaded(load, service.onPacksChange);
 
   const chosenVerse = selected ?? (value?.view.state === 'passage' ? value.view.view.landing : undefined);
@@ -302,7 +303,7 @@ export default function StudyScreen() {
             }
             setOriginal(false);
             await service.setReading(key);
-            await reload();
+            setReadingChanges((current) => current + 1);
           }}
           style={{ marginHorizontal: theme.space.gutterScreen, marginTop: theme.space.sp6 }}
         />

@@ -36,6 +36,17 @@ phone, matching the live English pack) and `npm run perf:engines` (the hot funct
 - **Corpus:** `helpsRowCount` counts the rows a full read would accept from the reference and ID cells alone,
   and falls back to the full read for a table with quoted cells. A test holds the two equal.
 - **Word Links:** the emptied folders are pruned once after the duplicate articles are removed.
+- **Catalog:** `languages()` is computed once per catalog, installed set and names, and releases are indexed by
+  language; a language's offered count plans over its own releases, not the whole catalog. The packs module keeps
+  its copy of the catalog rows until the next `CatalogRefreshed` instead of reading the table on every status.
+- **Study:** a passage parses only its chapters (USFM sliced at `\c`, helps rows kept when their reference touches
+  the chapters, book introductions always). The book cache holds 16 entries, still under its 32 MB weight.
+  Corpus contents are kept until the library changes; Formation's corpus view reloads titles only when an entry
+  changed. Choosing a reading reloads Study from current state, not from the closure that started the change.
+- **Languages:** each language's size is measured once per catalog; the installing set and the selected language
+  are read once per list; the screen builds the list once when the search is empty; number formats are reused.
+- **Navigation:** the root layout re-renders only when onboarding is needed or not, and unfocused tabs and stack
+  screens are frozen (`freezeOnBlur`).
 - **Harness:** `npm run perf` and `npm run perf:engines`, with English-size data scaled from the fixtures
   (`scripts/perf/scale.ts`), since the sandbox cannot reach DCS.
 
@@ -52,6 +63,6 @@ phone, matching the live English pack) and `npm run perf:engines` (the hot funct
 
 ## Rules affected
 
-- Rule 4: `src/lib/ports.ts` (one Files method) and `src/platform/files.ts` are shared roots; both adapters change
-  in this PR, as rule 1 requires for a port.
+- Rule 4: `src/lib/ports.ts` (one Files method), `src/platform/files.ts`, `app/_layout.tsx` and the tabs layout are
+  shared roots; both Files adapters change in this PR, as rule 1 requires for a port.
 - Rule 2: the yield uses `setTimeout` in `src/platform`, never in `src/lib`.

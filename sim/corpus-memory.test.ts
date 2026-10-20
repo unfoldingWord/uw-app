@@ -19,8 +19,12 @@ function retained(collect: Collect): number {
   return process.memoryUsage().heapUsed;
 }
 
-async function open(device: ReturnType<ReturnType<typeof createWorld>['device']>, book: string) {
-  const reference = parseReference(`${book} 1:1`);
+async function open(
+  device: ReturnType<ReturnType<typeof createWorld>['device']>,
+  book: string,
+  chapter: number,
+) {
+  const reference = parseReference(`${book} ${chapter}:1`);
   if (!reference.ok) {
     throw new Error(book);
   }
@@ -28,7 +32,7 @@ async function open(device: ReturnType<ReturnType<typeof createWorld>['device']>
 }
 
 describe('corpus memory on a large pack (ST-9, PRD 8.5)', () => {
-  it('keeps a few parsed books, not every book it has opened, and builds the index book by book', async () => {
+  it('keeps a bounded number of parsed chapters, not every chapter it has opened, and builds the index book by book', async () => {
     const collect = collector();
     expect(collect, 'vitest runs with --expose-gc (vitest.config.ts execArgv)').toBeDefined();
     if (collect === undefined) {
@@ -44,21 +48,23 @@ describe('corpus memory on a large pack (ST-9, PRD 8.5)', () => {
     expect(outcome.ok).toBe(true);
 
     const baseline = retained(collect);
-    expect(await open(device, 'GEN')).toBeDefined();
-    const oneBook = retained(collect) - baseline;
-    expect(oneBook).toBeGreaterThan(1024 * 1024);
-    for (const book of books) {
-      expect(await open(device, book)).toBeDefined();
+    expect(await open(device, 'GEN', 1)).toBeDefined();
+    const oneChapter = retained(collect) - baseline;
+    expect(oneChapter).toBeGreaterThan(64 * 1024);
+    for (const chapter of [1, 2, 3, 4, 5, 6, 7, 8]) {
+      for (const book of books) {
+        expect(await open(device, book, chapter)).toBeDefined();
+      }
     }
-    const everyBook = retained(collect) - baseline;
+    const manyChapters = retained(collect) - baseline;
     expect(
-      everyBook,
-      `opening ${books.length} books kept ${Math.round(everyBook / 1e6)} MB against ${Math.round(oneBook / 1e6)} MB for one`,
-    ).toBeLessThan(oneBook * 4);
+      manyChapters,
+      `opening ${books.length * 8} chapters kept ${Math.round(manyChapters / 1e6)} MB against ${Math.round(oneChapter / 1e6)} MB for one`,
+    ).toBeLessThan(oneChapter * 20);
 
     const built = await device.kernel.corpus.reindex('qay');
     expect(built.built).toBe(true);
     const afterIndex = retained(collect) - baseline;
-    expect(afterIndex, 'building the index keeps no book it parsed').toBeLessThan(oneBook * 4);
+    expect(afterIndex, 'building the index keeps no book it parsed').toBeLessThan(oneChapter * 20);
   }, 60_000);
 });

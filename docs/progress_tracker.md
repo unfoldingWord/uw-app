@@ -3,6 +3,38 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-10-20 P1 install and screen speed, measured in the sim and on Hermes
+
+Node v22.22.2 and Hermes 0.13.0 (`hermes-cli-linux` from the facebook/hermes release, set as `HERMES`). Nothing ran
+on a phone, an emulator or a simulator in this entry. The sandbox has no KVM; the device CI on the PR is the first
+native run.
+
+- **Harness:** `npm run perf` serves an English-size pack (11 resources, 237.2 MB on the phone, the live English
+  pack measures 228.5 MB) and a 414-release, 198-language catalog to a sim device. `npm run perf:engines` times the
+  hot functions on one English-size book and archive on Node and Hermes.
+- **Hermes against Node, before:** MD5 of the literal text (83 MB) 1443 ms on Node and 15696 ms on Hermes (x10.9).
+  Unzip 2685 and 4427 ms (x1.6). Parsing Psalms 311 and 484 ms (x1.6). One book of notes 24 and 77 ms (x3.3).
+- **Install, JavaScript outside the ports, Node:** 8.5 s before, 3.5 s after. MD5 now runs natively on the device
+  (`File.md5`); the memory adapter still hashes in JavaScript, so the sim's total stays near 12 s.
+- **Screen calls, Node, first and warm:**
+
+  | Call | Before | After |
+  |---|---|---|
+  | `study.passage PSA 119` | 278 / 14 ms | 20 / 0.8 ms |
+  | `study.open` | 24 / 13 ms | 7 / 1.4 ms |
+  | `home.download` | 20 / 6.3 ms | 1.3 / 0.3 ms |
+  | `home.header` | 5.6 / 3.0 ms | 0.2 / 0 ms |
+  | `languages.list` | 34 / 18 ms | 19 / 1.3 ms |
+  | `languages.overline` | 5.2 / 5.0 ms | 0.2 / 0 ms |
+  | `formation.tracks` | 89 / 15 ms | 85 / 0.6 ms |
+  | `study.languageName` | 1.9 / 1.7 ms | 0.1 / 0 ms |
+
+- **Readiness, reproduced on the CI emulator before the fix:** run 37827082712 (`android`, optional pass) reached
+  "resources ready offline" and then failed `"Next chapter" is visible` after 60 s: Home reported complete while
+  corpus ingest was still running and Study never reloaded. `sim/ready-to-read.test.ts` reproduces it and passes
+  after the fix.
+- `npm run verify` green: 825 tests, 63 scenarios, 51 Must requirements traced, both bundles.
+
 ## 2026-10-05 Q1 product and QA review against the PRD: twenty findings fixed, driven in the web harness
 
 Node v22.22.0. Nothing ran on a phone, an emulator or a simulator: the sandbox has no KVM and no CPU

@@ -348,3 +348,52 @@ export function helpsRowCount(text: string): number {
   }
   return count;
 }
+
+function touches(reference: HelpsReference | undefined, chapters: ReadonlySet<number>): boolean {
+  if (reference === undefined) {
+    return false;
+  }
+  if (reference.kind === 'intro') {
+    return true;
+  }
+  return reference.ranges.some(({ start, end }) => {
+    for (const chapter of chapters) {
+      if (start.chapter <= chapter && chapter <= end.chapter) {
+        return true;
+      }
+    }
+    return false;
+  });
+}
+
+export function helpsChapters(text: string, chapters: ReadonlySet<number>): string {
+  const normal = text.includes('\r') ? text.replace(/\r\n?/g, '\n') : text;
+  const headerEnd = normal.indexOf('\n');
+  if (headerEnd === -1) {
+    return normal;
+  }
+  const header = normal
+    .slice(0, headerEnd)
+    .replace(/^\uFEFF/, '')
+    .split('\t')
+    .map((cell) => cell.trim());
+  const reference = header.indexOf('Reference');
+  if (reference === -1 || quotedCellPattern.test(normal.slice(headerEnd + 1))) {
+    return normal;
+  }
+  const kept = [normal.slice(0, headerEnd)];
+  let at = headerEnd + 1;
+  while (at < normal.length) {
+    const found = normal.indexOf('\n', at);
+    const end = found === -1 ? normal.length : found;
+    const line = normal.slice(at, end);
+    at = end + 1;
+    if (
+      line.trim() !== '' &&
+      touches(parseHelpsReference(cellsUpTo(line, reference)[reference] ?? ''), chapters)
+    ) {
+      kept.push(line);
+    }
+  }
+  return `${kept.join('\n')}\n`;
+}

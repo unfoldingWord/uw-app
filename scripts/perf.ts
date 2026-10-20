@@ -145,6 +145,7 @@ const services = servicesOf(device);
 const landing = await services.study.open();
 console.log(`perf: study opens in state ${landing.state}`);
 const runs = Number(process.env.PERF_RUNS ?? '5');
+const only = process.env.PERF_ONLY;
 const calls: [string, () => unknown][] = [
   ['home.header', () => services.home.header()],
   ['home.saved', () => services.home.saved()],
@@ -171,7 +172,7 @@ const calls: [string, () => unknown][] = [
   ['about.summary', () => services.about.summary()],
 ];
 console.log(`perf: screen calls, median and max of ${runs} runs`);
-for (const [label, call] of calls) {
+for (const [label, call] of calls.filter(([label]) => only === undefined || label.startsWith(only))) {
   portStats.clear();
   const first = await measure(1, call);
   const warm = await measure(runs, call);

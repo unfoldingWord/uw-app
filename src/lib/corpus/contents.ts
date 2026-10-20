@@ -13,7 +13,27 @@ function chaptersInScope(code: string, scoped: readonly string[]): number[] {
   return Array.from({ length: bookByCode(code)?.chapters ?? 0 }, (_, index) => index + 1);
 }
 
-export async function contentsOf(library: Library, language: string): Promise<Contents> {
+const remembered = new WeakMap<Library, Map<string, { generation: number; contents: Promise<Contents> }>>();
+
+export function contentsOf(library: Library, language: string): Promise<Contents> {
+  const known =
+    remembered.get(library) ?? new Map<string, { generation: number; contents: Promise<Contents> }>();
+  remembered.set(library, known);
+  const held = known.get(language);
+  if (held !== undefined && held.generation === library.generation()) {
+    return held.contents;
+  }
+  const contents = buildContents(library, language);
+  known.set(language, { generation: library.generation(), contents });
+  contents.catch(() => {
+    if (known.get(language)?.contents === contents) {
+      known.delete(language);
+    }
+  });
+  return contents;
+}
+
+async function buildContents(library: Library, language: string): Promise<Contents> {
   const texts = [];
   for (const entry of library.of(language, ['literal', 'simplified', 'original'])) {
     const reader = await library.reader(entry);
@@ -32,6 +52,12 @@ export async function contentsOf(library: Library, language: string): Promise<Co
     titles.filter((row) => row.kind === kind).map((row) => ({ id: row.target, title: row.title }));
   const [academy] = library.of(language, ['academy']);
   const order = academy === undefined ? [] : await academyOrder(library, academy);
+  const position = new Map<string, number>();
+  order.forEach((id, index) => {
+    if (!position.has(id)) {
+      position.set(id, index);
+    }
+  });
   const manuals =
     academy === undefined
       ? []
@@ -50,7 +76,7 @@ export async function contentsOf(library: Library, language: string): Promise<Co
     texts,
     words: articleEntries('word').sort((left, right) => compareText(left.id, right.id)),
     academy: articleEntries('academy').sort(
-      (left, right) => order.indexOf(left.id) - order.indexOf(right.id),
+      (left, right) => (position.get(left.id) ?? -1) - (position.get(right.id) ?? -1),
     ),
     manuals,
     stories: storyList.map((story) => ({ number: story.number, title: story.title })),

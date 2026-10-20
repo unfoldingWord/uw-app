@@ -135,14 +135,22 @@ function useOnboardingNeeded(kernel: Kernel | undefined): boolean {
     if (kernel === undefined) {
       return undefined;
     }
-    return serviceOf(kernel, createHomeService).onChange(() => setVersion((current) => current + 1));
+    const onboarding = serviceOf(kernel, createOnboardingService);
+    let shown = onboarding.needed();
+    return serviceOf(kernel, createHomeService).onChange(() => {
+      const needed = onboarding.needed();
+      if (needed !== shown) {
+        shown = needed;
+        setVersion((current) => current + 1);
+      }
+    });
   }, [kernel]);
   return kernel === undefined ? true : serviceOf(kernel, createOnboardingService).needed();
 }
 
 function Routes({ needed }: { needed: boolean }) {
   return (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack screenOptions={{ headerShown: false, freezeOnBlur: true }}>
       <Stack.Protected guard={needed}>
         <Stack.Screen name="onboarding" />
       </Stack.Protected>

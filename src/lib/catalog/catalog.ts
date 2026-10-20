@@ -6,7 +6,7 @@ import type { ModulePorts } from '../module';
 import type { HttpResponse } from '../ports';
 import { readInstalledPacks } from '../packs/store';
 import { withBuiltReleases } from './built';
-import { languagesOf, releasesIn, searchLanguages } from './languages';
+import { languagesOf, searchLanguages } from './languages';
 import { compareReleases, normalizeLanguageNames, normalizePage, uniqueReleases } from './normalize';
 import {
   catalogTables,
@@ -115,7 +115,42 @@ export const catalogModule = defineModule<CatalogApi>({
     let installed = new Set<string>();
     let queue: Promise<unknown> = Promise.resolve();
 
-    const languages = (): readonly CatalogLanguage[] => languagesOf(releases, installed, names);
+    let listed:
+      | {
+          releases: readonly CatalogRelease[];
+          installed: ReadonlySet<string>;
+          names: ReadonlyMap<string, LanguageName>;
+          languages: readonly CatalogLanguage[];
+          byLanguage: ReadonlyMap<string, readonly CatalogRelease[]>;
+        }
+      | undefined;
+
+    const current = (): NonNullable<typeof listed> => {
+      if (listed?.releases !== releases || listed.installed !== installed || listed.names !== names) {
+        const byLanguage = new Map<string, CatalogRelease[]>();
+        for (const release of releases) {
+          const items = byLanguage.get(release.language);
+          if (items === undefined) {
+            byLanguage.set(release.language, [release]);
+          } else {
+            items.push(release);
+          }
+        }
+        for (const items of byLanguage.values()) {
+          items.sort(compareReleases);
+        }
+        listed = {
+          releases,
+          installed,
+          names,
+          languages: languagesOf(releases, installed, names),
+          byLanguage,
+        };
+      }
+      return listed;
+    };
+
+    const languages = (): readonly CatalogLanguage[] => current().languages;
 
     function refresh(): Promise<RefreshOutcome> {
       const next = queue.then(refreshNow, refreshNow);
@@ -158,7 +193,7 @@ export const catalogModule = defineModule<CatalogApi>({
         refresh,
         languages,
         search: (query) => searchLanguages(languages(), query),
-        releases: (language) => releasesIn(releases, language),
+        releases: (language) => current().byLanguage.get(language) ?? [],
         originals: () => releases.filter((release) => release.kind === 'original'),
         all: () => releases,
         online: () => ports.http.online(),

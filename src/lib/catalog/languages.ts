@@ -13,7 +13,12 @@ export function languagesOf(
   const byLanguage = new Map<string, CatalogRelease[]>();
   for (const release of releases) {
     if (release.kind === 'language') {
-      byLanguage.set(release.language, [...(byLanguage.get(release.language) ?? []), release]);
+      const items = byLanguage.get(release.language);
+      if (items === undefined) {
+        byLanguage.set(release.language, [release]);
+      } else {
+        items.push(release);
+      }
     }
   }
   return [...byLanguage.entries()]
@@ -26,7 +31,7 @@ export function languagesOf(
         autonym,
         englishName: named?.englishName ?? englishNameOf(language, autonym),
         direction: named?.direction ?? first?.direction ?? 'ltr',
-        resources: offeredResources(releases, language),
+        resources: offeredResources(items, language),
         installed: installed.has(language),
       };
     })
@@ -58,8 +63,4 @@ export function searchLanguages(
       folded(item.englishName).includes(wanted) ||
       item.language.toLowerCase().startsWith(wanted),
   );
-}
-
-export function releasesIn(releases: readonly CatalogRelease[], language: string): CatalogRelease[] {
-  return releases.filter((release) => release.language === language).sort(compareReleases);
 }

@@ -17,7 +17,6 @@ import { parentOf, removeIfPresent } from './tree';
 
 const assetTimeoutMs = 120_000;
 
-
 const storyImageUrl = /https:\/\/cdn\.door43\.org\/obs\/jpg\/360px\/obs-[a-z]+-\d{2}-\d{2}\.jpg/g;
 
 const storyFile = /(?:^|\/)content\/\d{1,2}\.md$/;
