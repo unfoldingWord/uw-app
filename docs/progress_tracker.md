@@ -14,7 +14,11 @@ the PR is their first build and first run.
   disabled (`expected "archive-too-large", got "extracted"`); both were restored.
 - **Streaming test:** `sim/packs-streaming.test.ts` still bounds every read of the archive and every write the
   kernel makes, and now also requires the burrito's files to arrive through `extract`.
-- **Verify:** `npm run verify` green: 834 tests, 9 checks, 63 of 63 scenarios, 21 fixture burritos, both bundles.
+- **Verify:** `npm run verify` green: 836 tests, 9 checks, 63 of 63 scenarios, 21 fixture burritos, both bundles.
+- **Live contract on CI, first push:** `verify` run 39473993686 failed: en_obs, en_ta, en_tw, the Indonesian
+  equivalents and the Image Pack ended in `files.not-found`. Their archives carry a `LICENSE.md` beside
+  `metadata.json` as well as in `ingredients/`; unpack removed the outer one and then read it as a licence.
+  `sim/unpack.test.ts` reproduced it red and passes with kept files read only from the burrito's own files.
 - **Not verified:** zip-slip, limits and unreadable archives on either native implementation; the iOS
   central-directory reader against DCS archives; any device timing. Those come from the device CI and the APK.
 

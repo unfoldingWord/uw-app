@@ -47,7 +47,7 @@ type Refused = Extract<Unpacked, { ok: false }>;
 
 function factsOf(found: Found, root: string): Promise<BurritoFacts> {
   const inner = (key: string): string => `${root}${key}`;
-  const keptKeys = found.names.filter((path) => path.startsWith(root) && kept(path));
+  const keptKeys = [...found.sizes.keys()].filter((path) => path.startsWith(root) && kept(path));
   return Promise.all(keptKeys.map(async (path) => [path, await found.keptBytes(path)] as const)).then(
     (pairs) => {
       const keptBytes = new Map(pairs);
