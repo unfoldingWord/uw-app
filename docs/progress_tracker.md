@@ -3,6 +3,40 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-10-20 P2 native unzip, sim and checks only
+
+Node v22.22.2. Nothing ran on a phone, an emulator or a simulator in this entry, and the Kotlin and Swift in
+`modules/uw-archive/` have not been compiled: the sandbox has no Android SDK, no Xcode and no KVM. The device CI on
+the PR is their first build and first run.
+
+- **Contract:** the new Files case (`extracts an archive into a directory ...`) passes on the memory adapter. It
+  failed with the adapter's path check disabled (`../escape.txt leaves the device root`) and with its byte limit
+  disabled (`expected "archive-too-large", got "extracted"`); both were restored.
+- **Streaming test:** `sim/packs-streaming.test.ts` still bounds every read of the archive and every write the
+  kernel makes, and now also requires the burrito's files to arrive through `extract`.
+- **Verify:** `npm run verify` green: 836 tests, 9 checks, 63 of 63 scenarios, 21 fixture burritos, both bundles.
+- **Live contract on CI, first push:** `verify` run 39473993686 failed: en_obs, en_ta, en_tw, the Indonesian
+  equivalents and the Image Pack ended in `files.not-found`. Their archives carry a `LICENSE.md` beside
+  `metadata.json` as well as in `ingredients/`; unpack removed the outer one and then read it as a licence.
+  `sim/unpack.test.ts` reproduced it red and passes with kept files read only from the burrito's own files.
+- **Device CI on 2349841:** `android` green: the Kotlin module compiled and every flow passed, the English download
+  waited 72 s (67 s before this PR, so no gain measured on the emulator). `ios`: the Swift compiled, the link failed
+  with `ld: framework 'Compression' not found`; Compression is `libcompression`, so the podspec names it in
+  `libraries`.
+- **Review on 2349841 (jag3773):** host-side Swift probes showed the DEFLATE loop refusing valid entries
+  (`en_ult` v91 `1CO.usfm`; 200000 bytes of `a`) because it gave up when the last input was consumed with output
+  still buffered, and the central directory read into one buffer of the size the archive claims. The loop now
+  finalizes with no input until `COMPRESSION_STATUS_END`, refusing only when a call makes no progress, and the
+  directory is read record by record within its claimed range. Neither change has been compiled here; the iOS
+  device CI and its English download flow are the check. The memory contract gained a 200000-byte entry.
+- **Device CI on fa2d953:** `android` and `ios` green. iOS: the Swift module compiled and linked, and the English
+  download flow passed twice, waiting 47 s and 46 s for the language pack (94 s before this PR). Android waited
+  23 s here and 72 s on 2349841 with the same Kotlin, so the emulator figure is noise, not a measurement. The iOS
+  large-text and right-to-left flows, which are optional, failed as they do on `main` (#73). Release run
+  39479789907 built `unfoldingWord-v0.0.2-native-unzip.1.apk` on EAS from 2349841; no phone run is recorded yet.
+- **Not verified:** zip-slip, limits and unreadable archives on either native implementation; the iOS
+  central-directory reader against DCS archives; any device timing. Those come from the device CI and the APK.
+
 ## 2026-10-20 P1 install and screen speed, measured in the sim and on Hermes
 
 Node v22.22.2 and Hermes 0.13.0 (`hermes-cli-linux` from the facebook/hermes release, set as `HERMES`). Nothing ran

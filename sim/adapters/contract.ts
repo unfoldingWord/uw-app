@@ -1,3 +1,4 @@
+import { zipSync } from 'fflate';
 import { failureCodeOf } from '@lib/domain/failures';
 import { allowlistedHttp } from '@lib/guard';
 import type { AudioSource, Ports } from '@lib/ports';
@@ -84,6 +85,72 @@ const filesCases: ContractCase[] = [
       same(await files.size(path), 1, 'file size');
       same(await files.md5(path), 'fbade9e36a3f36d3d676c1b808451dd7', 'md5 of the bytes on disk');
       same(await codeOf(files.md5(`${scratch}/absent.bin`)), 'files.not-found', 'md5 of a missing file');
+    },
+  },
+  {
+    port: 'files',
+    name: 'extracts an archive into a directory with the size of each file, and refuses unsafe, oversized or unreadable archives',
+    async run({ ports: { files }, scratch }) {
+      await files.mkdir(scratch);
+      const archive = `${scratch}/burrito.zip`;
+      const limits = { entries: 10, bytes: 512 * 1024 };
+      await files.writeBytes(
+        archive,
+        zipSync({
+          'b/metadata.json': bytes('{}'),
+          'b/ingredients/a.txt': [bytes('abc'.repeat(50)), { level: 6 }],
+          'b/ingredients/long.txt': [bytes('a'.repeat(200_000)), { level: 9 }],
+        }),
+      );
+      const extracted = await files.extract(archive, `${scratch}/out`, limits);
+      same(
+        extracted.ok
+          ? [...extracted.files].sort((left, right) => left.path.localeCompare(right.path))
+          : extracted,
+        [
+          { path: 'b/ingredients/a.txt', bytes: 150 },
+          { path: 'b/ingredients/long.txt', bytes: 200_000 },
+          { path: 'b/metadata.json', bytes: 2 },
+        ],
+        'every file with its inflated size',
+      );
+      same(
+        await files.readBytes(`${scratch}/out/b/ingredients/a.txt`),
+        bytes('abc'.repeat(50)),
+        'inflated bytes',
+      );
+      const refusal = async (entries: Record<string, Uint8Array>, within = limits) => {
+        const path = `${scratch}/refused.zip`;
+        await files.writeBytes(path, zipSync(entries));
+        const outcome = await files.extract(path, `${scratch}/refused`, within);
+        return outcome.ok ? 'extracted' : outcome.rule;
+      };
+      same(await refusal({ '../escape.txt': bytes('x') }), 'archive-path', 'a path above the directory');
+      same(await refusal({ '/absolute.txt': bytes('x') }), 'archive-path', 'an absolute path');
+      same(await files.exists(`${scratch}/escape.txt`), false, 'nothing lands outside the directory');
+      same(
+        await refusal({ 'a.txt': bytes('x'), 'b.txt': bytes('y') }, { entries: 1, bytes: 1024 }),
+        'archive-too-large',
+        'more entries than the limit',
+      );
+      same(
+        await files.size(`${scratch}/out/b/ingredients/long.txt`),
+        200_000,
+        'an entry that inflates to many times its compressed size is drained to the end',
+      );
+      same(
+        await refusal({ 'a.txt': new Uint8Array(2048) }, { entries: 10, bytes: 1024 }),
+        'archive-too-large',
+        'more inflated bytes than the limit',
+      );
+      await files.writeBytes(`${scratch}/garbage.zip`, bytes('not a zip archive'));
+      const garbage = await files.extract(`${scratch}/garbage.zip`, `${scratch}/garbage`, limits);
+      same(garbage.ok ? 'extracted' : garbage.rule, 'archive-unreadable', 'bytes that are not an archive');
+      same(
+        await codeOf(files.extract(`${scratch}/absent.zip`, `${scratch}/absent`, limits)),
+        'files.not-found',
+        'a missing archive',
+      );
     },
   },
   {

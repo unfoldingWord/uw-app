@@ -17,17 +17,25 @@ async function phone(capacity?: number) {
   return { world, device };
 }
 
-type Traffic = { largestRead: number; largestWrite: number; reads: string[]; writes: string[] };
+type Traffic = {
+  largestRead: number;
+  largestWrite: number;
+  reads: string[];
+  writes: string[];
+  extracted: string[];
+};
 
 function watch(device: Awaited<ReturnType<typeof phone>>['device']): { traffic: Traffic; stop(): void } {
-  const traffic: Traffic = { largestRead: 0, largestWrite: 0, reads: [], writes: [] };
+  const traffic: Traffic = { largestRead: 0, largestWrite: 0, reads: [], writes: [], extracted: [] };
   const stops = [
     device.adapters.files.onRead((_operation, path, bytes) => {
       traffic.largestRead = Math.max(traffic.largestRead, bytes);
       traffic.reads.push(path);
     }),
-    device.adapters.files.onWrite((_operation, path, bytes) => {
-      if (!path.startsWith('imports/')) {
+    device.adapters.files.onWrite((operation, path, bytes) => {
+      if (operation === 'extract') {
+        traffic.extracted.push(path);
+      } else if (!path.startsWith('imports/')) {
         traffic.largestWrite = Math.max(traffic.largestWrite, bytes);
       }
       traffic.writes.push(path);
@@ -87,6 +95,10 @@ describe('packs install by streaming (LA-2, LA-7)', () => {
     expect(archive.byteLength).toBeGreaterThan(archiveReadBytes * 4);
     expect(watched.traffic.largestRead).toBeLessThanOrEqual(archiveReadBytes * 4);
     expect(watched.traffic.largestWrite).toBeLessThan(largestIngredient / 4);
+    expect(
+      watched.traffic.extracted.some((path) => path.endsWith('.usfm')),
+      'the archive is unpacked by the Files port, not inflated in the kernel',
+    ).toBe(true);
     const root = burritoRootOf(device, 'qaz_ult');
     const onDisk = await readBurrito(device.adapters.files, root);
     expect(validate(onDisk, { rows: packRows })).toMatchObject({ ok: true, kind: 'valid' });

@@ -10,7 +10,7 @@ import {
 } from './archive';
 import { fromUtf8, metadataPath } from './files';
 import { isLicenceFile } from './licence';
-import type { BurritoFacts, IngredientFact } from './validate';
+import type { BurritoFacts } from './validate';
 
 export const archiveReadBytes = 64 * 1024;
 
@@ -27,18 +27,9 @@ export type Unpacked =
     }
   | { readonly ok: false; readonly rule: UnpackRule; readonly path: string };
 
-type Chunk = { readonly path: string; readonly data: Uint8Array; readonly final: boolean };
-
-type Writing = { size: number; started: boolean };
-
 function kept(path: string): boolean {
   const name = path.split('/').at(-1) ?? '';
   return name === metadataPath || isLicenceFile(name);
-}
-
-function parentOf(path: string): string {
-  const index = path.lastIndexOf('/');
-  return index === -1 ? '' : path.slice(0, index);
 }
 
 export type UnpackOptions = {
@@ -46,22 +37,42 @@ export type UnpackOptions = {
   readonly limits?: ArchiveLimits;
 };
 
-export async function unpackArchive(
-  files: Files,
-  archive: string,
-  options: UnpackOptions = {},
-): Promise<Unpacked> {
-  const limits = options.limits ?? defaultArchiveLimits;
-  const { into } = options;
+type Found = {
+  readonly names: readonly string[];
+  readonly sizes: ReadonlyMap<string, number>;
+  readonly keptBytes: (path: string) => Promise<Uint8Array | undefined>;
+};
+
+type Refused = Extract<Unpacked, { ok: false }>;
+
+function factsOf(found: Found, root: string): Promise<BurritoFacts> {
+  const inner = (key: string): string => `${root}${key}`;
+  const keptKeys = [...found.sizes.keys()].filter((path) => path.startsWith(root) && kept(path));
+  return Promise.all(keptKeys.map(async (path) => [path, await found.keptBytes(path)] as const)).then(
+    (pairs) => {
+      const keptBytes = new Map(pairs);
+      return {
+        metadata: keptBytes.get(inner(metadataPath)),
+        fact: (key) => {
+          const size = found.sizes.get(inner(key));
+          return size === undefined ? undefined : { size };
+        },
+        text: (key) => {
+          const bytes = keptBytes.get(inner(key));
+          return bytes === undefined ? undefined : fromUtf8(bytes);
+        },
+      };
+    },
+  );
+}
+
+async function peek(files: Files, archive: string, limits: ArchiveLimits): Promise<Found | Refused> {
   const names: string[] = [];
-  const queue: Chunk[] = [];
-  const writing = new Map<string, Writing>();
-  const facts = new Map<string, IngredientFact>();
   const keptParts = new Map<string, Uint8Array[]>();
-  const madeDirectories = new Set<string>();
-  let problem: { rule: UnpackRule; path: string } | undefined;
+  const sizes = new Map<string, number>();
+  const started = new Set<string>();
+  let problem: Refused | undefined;
   let entries = 0;
-  let total = 0;
   let keptTotal = 0;
   const unzip = new Unzip();
   unzip.register(UnzipInflate);
@@ -71,72 +82,41 @@ export async function unpackArchive(
       return;
     }
     if (entries > limits.entries) {
-      problem = { rule: 'archive-too-large', path: file.name };
+      problem = { ok: false, rule: 'archive-too-large', path: file.name };
       return;
     }
     if (file.name.endsWith('/')) {
       return;
     }
     if (isUnsafePath(file.name)) {
-      problem = { rule: 'archive-path', path: file.name };
+      problem = { ok: false, rule: 'archive-path', path: file.name };
       return;
     }
     names.push(file.name);
-    if (!mayHoldBurrito(file.name)) {
+    if (!mayHoldBurrito(file.name) || !kept(file.name)) {
       return;
     }
-    writing.set(file.name, { size: 0, started: false });
+    started.add(file.name);
     file.ondata = (error, data, final) => {
       if (problem !== undefined) {
         return;
       }
       if (error !== null) {
-        problem = { rule: 'archive-unreadable', path: file.name };
+        problem = { ok: false, rule: 'archive-unreadable', path: file.name };
         return;
       }
-      total += data.byteLength;
-      if (total > limits.bytes) {
-        problem = { rule: 'archive-too-large', path: file.name };
+      keptTotal += data.byteLength;
+      if (keptTotal > keptBytesLimit) {
+        problem = { ok: false, rule: 'archive-too-large', path: file.name };
         return;
       }
-      queue.push({ path: file.name, data, final });
+      keptParts.set(file.name, [...(keptParts.get(file.name) ?? []), data]);
+      if (final) {
+        sizes.set(file.name, joined(keptParts.get(file.name) ?? []).byteLength);
+      }
     };
     file.start();
   };
-
-  async function take(chunk: Chunk): Promise<void> {
-    const state = writing.get(chunk.path);
-    if (state === undefined) {
-      return;
-    }
-    state.size += chunk.data.byteLength;
-    if (kept(chunk.path)) {
-      keptTotal += chunk.data.byteLength;
-      if (keptTotal > keptBytesLimit) {
-        problem = { rule: 'archive-too-large', path: chunk.path };
-        return;
-      }
-      keptParts.set(chunk.path, [...(keptParts.get(chunk.path) ?? []), chunk.data]);
-    }
-    if (into !== undefined) {
-      const target = `${into}/${chunk.path}`;
-      const directory = parentOf(target);
-      if (!madeDirectories.has(directory)) {
-        await files.mkdir(directory);
-        madeDirectories.add(directory);
-      }
-      if (state.started) {
-        await files.appendBytes(target, chunk.data);
-      } else {
-        await files.writeBytes(target, chunk.data);
-      }
-    }
-    state.started = true;
-    if (chunk.final) {
-      facts.set(chunk.path, { size: state.size });
-    }
-  }
-
   const size = await files.size(archive);
   let offset = 0;
   do {
@@ -145,45 +125,95 @@ export async function unpackArchive(
     try {
       unzip.push(chunk, offset >= size);
     } catch {
-      problem ??= { rule: 'archive-unreadable', path: '' };
+      problem ??= { ok: false, rule: 'archive-unreadable', path: '' };
     }
-    while (queue.length > 0 && problem === undefined) {
-      const next = queue.shift();
-      if (next !== undefined) {
-        await take(next);
-      }
-    }
-    queue.length = 0;
   } while (offset < size && problem === undefined);
-
   if (problem !== undefined) {
-    return { ok: false, ...problem };
+    return problem;
   }
-  if (names.length === 0 || [...writing.keys()].some((path) => !facts.has(path))) {
+  if (names.length === 0 || [...started].some((path) => !sizes.has(path))) {
     return { ok: false, rule: 'archive-unreadable', path: '' };
   }
-  const root = rootOf(names);
+  return {
+    names,
+    sizes,
+    keptBytes: async (path) => {
+      const parts = keptParts.get(path);
+      return parts === undefined ? undefined : joined(parts);
+    },
+  };
+}
+
+function unwantedRoots(names: readonly string[], wanted: readonly string[]): readonly string[] {
+  const roots = new Set<string>();
+  for (const path of names) {
+    if (mayHoldBurrito(path)) {
+      continue;
+    }
+    const parts = path.split('/');
+    const shallowest = parts
+      .slice(1)
+      .map((_part, index) => parts.slice(0, index + 1).join('/'))
+      .find((directory) => !wanted.some((kept) => kept.startsWith(`${directory}/`)));
+    roots.add(shallowest ?? path);
+  }
+  return [...roots];
+}
+
+async function extractInto(
+  files: Files,
+  archive: string,
+  into: string,
+  limits: ArchiveLimits,
+): Promise<Found | Refused> {
+  const extracted = await files.extract(archive, into, limits);
+  if (!extracted.ok) {
+    return extracted;
+  }
+  const names = extracted.files.map((file) => file.path);
+  const wantedPaths = names.filter(mayHoldBurrito);
+  for (const path of unwantedRoots(names, wantedPaths)) {
+    await files.remove(`${into}/${path}`);
+  }
+  const keptTotal = extracted.files
+    .filter((file) => mayHoldBurrito(file.path) && kept(file.path))
+    .reduce((sum, file) => sum + file.bytes, 0);
+  if (keptTotal > keptBytesLimit) {
+    return { ok: false, rule: 'archive-too-large', path: '' };
+  }
+  const wanted = extracted.files.filter((file) => mayHoldBurrito(file.path));
+  return {
+    names,
+    sizes: new Map(wanted.map((file) => [file.path, file.bytes])),
+    keptBytes: (path) => files.readBytes(`${into}/${path}`),
+  };
+}
+
+export async function unpackArchive(
+  files: Files,
+  archive: string,
+  options: UnpackOptions = {},
+): Promise<Unpacked> {
+  const limits = options.limits ?? defaultArchiveLimits;
+  const { into } = options;
+  const found =
+    into === undefined ? await peek(files, archive, limits) : await extractInto(files, archive, into, limits);
+  if ('ok' in found) {
+    return found;
+  }
+  const root = rootOf(found.names);
   if (root === undefined) {
     return { ok: false, rule: 'metadata-missing', path: metadataPath };
   }
-  const inner = (key: string): string => `${root}${key}`;
-  const keptBytes = (key: string): Uint8Array | undefined => {
-    const parts = keptParts.get(inner(key));
-    return parts === undefined ? undefined : joined(parts);
-  };
-  const burritoFacts: BurritoFacts = {
-    metadata: keptBytes(metadataPath),
-    fact: (key) => facts.get(inner(key)),
-    text: (key) => {
-      const bytes = keptBytes(key);
-      return bytes === undefined ? undefined : fromUtf8(bytes);
-    },
-  };
-  const written = [...facts.keys()]
-    .filter((path) => path.startsWith(root))
-    .map((path) => path.slice(root.length));
+  const facts = await factsOf(found, root);
+  const written =
+    into === undefined
+      ? []
+      : [...found.sizes.keys()]
+          .filter((path) => path.startsWith(root))
+          .map((path) => path.slice(root.length));
   const directory = into === undefined ? undefined : root === '' ? into : `${into}/${root.slice(0, -1)}`;
-  return { ok: true, directory, facts: burritoFacts, written };
+  return { ok: true, directory, facts, written };
 }
 
 const endOfCentralDirectory = 0x06054b50;

@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["UwArchiveModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.uwarchive.UwArchiveModule"]
+  }
+}

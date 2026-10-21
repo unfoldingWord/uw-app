@@ -1,8 +1,10 @@
+import { Unzip, UnzipInflate } from 'fflate';
+import { isUnsafePath } from '@lib/burrito/archive';
 import { md5Hex } from '@lib/burrito/files';
-import type { FileEntry, Files } from '@lib/ports';
+import type { Extracted, ExtractLimits, FileEntry, Files } from '@lib/ports';
 import { portError } from './errors';
 
-export type FileWrite = 'write' | 'append' | 'mkdir' | 'rename' | 'remove' | 'adopt';
+export type FileWrite = 'write' | 'append' | 'mkdir' | 'rename' | 'remove' | 'adopt' | 'extract';
 
 export type FileRead = 'bytes' | 'text' | 'range';
 
@@ -146,6 +148,87 @@ export function createMemoryFiles(options: { capacity?: number } = {}): MemoryFi
     files.set(target, { parts: [data.slice()], length: data.byteLength });
   }
 
+  function makeDirectory(target: string): void {
+    guardWrite('mkdir', target);
+    if (files.has(target)) {
+      throw portError('files.io', `${target} is a file`);
+    }
+    const parts = target.split('/');
+    parts.forEach((_, index) => directories.add(parts.slice(0, index + 1).join('/')));
+  }
+
+  function extract(archive: string, into: string, limits: ExtractLimits): Extracted {
+    const source = whole(stored(archive));
+    const target = normalize(into);
+    const found: { path: string; bytes: number }[] = [];
+    const pending: { path: string; parts: Uint8Array[]; bytes: number }[] = [];
+    let refused: Extract<Extracted, { ok: false }> | undefined;
+    let entries = 0;
+    let total = 0;
+    const unzip = new Unzip((file) => {
+      entries += 1;
+      if (refused !== undefined) {
+        return;
+      }
+      if (entries > limits.entries) {
+        refused = { ok: false, rule: 'archive-too-large', path: file.name };
+        return;
+      }
+      if (file.name.endsWith('/')) {
+        return;
+      }
+      if (isUnsafePath(file.name)) {
+        refused = { ok: false, rule: 'archive-path', path: file.name };
+        return;
+      }
+      const entry = { path: file.name, parts: [] as Uint8Array[], bytes: 0 };
+      pending.push(entry);
+      file.ondata = (error, data) => {
+        if (refused !== undefined) {
+          return;
+        }
+        if (error !== null) {
+          refused = { ok: false, rule: 'archive-unreadable', path: file.name };
+          return;
+        }
+        total += data.byteLength;
+        if (total > limits.bytes) {
+          refused = { ok: false, rule: 'archive-too-large', path: file.name };
+          return;
+        }
+        entry.parts.push(data);
+        entry.bytes += data.byteLength;
+      };
+      file.start();
+    });
+    unzip.register(UnzipInflate);
+    try {
+      unzip.push(source, true);
+    } catch {
+      refused ??= { ok: false, rule: 'archive-unreadable', path: '' };
+    }
+    if (refused !== undefined) {
+      return refused;
+    }
+    if (entries === 0) {
+      return { ok: false, rule: 'archive-unreadable', path: '' };
+    }
+    makeDirectory(target);
+    for (const entry of pending) {
+      const path = target === '' ? entry.path : `${target}/${entry.path}`;
+      makeDirectory(parentOf(path));
+      const bytes = new Uint8Array(entry.bytes);
+      let at = 0;
+      for (const part of entry.parts) {
+        bytes.set(part, at);
+        at += part.byteLength;
+      }
+      write('extract', path, bytes);
+      found.push({ path: entry.path, bytes: entry.bytes });
+    }
+    return { ok: true, files: found };
+  }
+
   function removeTree(target: string): void {
     for (const [path, data] of [...files.entries()]) {
       if (within(path, target)) {
@@ -242,6 +325,7 @@ export function createMemoryFiles(options: { capacity?: number } = {}): MemoryFi
     },
     size: async (path) => sizeOf(normalize(path)),
     md5: async (path) => md5Hex(whole(stored(path))),
+    extract: async (archive, into, limits) => extract(archive, into, limits),
     mkdir: async (path) => {
       const target = normalize(path);
       guardWrite('mkdir', target);
