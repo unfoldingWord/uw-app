@@ -653,4 +653,6 @@ export const ru: LocaleTable = {
     other: '{count} изображения',
   },
   'formation.training.empty': 'Академия пока недоступна на языке {language}.',
+  'formation.training.missing': 'Это руководство не найдено.',
+  'formation.training.open': 'Перейти к разделу «Обучение»',
 };

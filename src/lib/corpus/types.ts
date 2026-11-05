@@ -276,7 +276,17 @@ export type TextContents = Sourced & { readonly reading: Reading; readonly books
 
 export type ArticleEntry = { readonly id: string; readonly title: string };
 
-export type ManualEntry = { readonly manual: string; readonly title: string };
+export type AcademySection = {
+  readonly title: string;
+  readonly article?: string;
+  readonly sections: readonly AcademySection[];
+};
+
+export type ManualEntry = {
+  readonly manual: string;
+  readonly title: string;
+  readonly sections: readonly AcademySection[];
+};
 
 export type Contents = {
   readonly language: string;

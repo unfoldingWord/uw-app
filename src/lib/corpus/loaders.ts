@@ -15,6 +15,7 @@ import {
 } from './layout';
 import type { Library } from './library';
 import type { BurritoReader } from './source';
+import { compareText } from '../order';
 import { academyArticleId } from './links';
 import { parseStory, type ParsedStory } from './stories';
 import type { Entry } from './tables';
@@ -32,7 +33,7 @@ import {
   type WordLinkRow,
 } from './tsv';
 import { indexUsfmChapters, parseUsfm, usfmFromIndex, type UsfmBook, type UsfmChapterIndex } from './usfm';
-import type { MovementSectionId } from './types';
+import type { AcademySection, ManualEntry, MovementSectionId } from './types';
 
 export type RawArticle = {
   readonly path: string;
@@ -240,15 +241,39 @@ export async function academyArticle(
   return subtitle === undefined || subtitle === '' ? article : { ...article, subtitle };
 }
 
-type AcademyManual = {
-  readonly manual: string;
-  readonly title: string;
-  readonly articles: readonly string[];
-};
+type AcademyManual = ManualEntry & { readonly articles: readonly string[] };
+
+const manualOrder: readonly string[] = ['intro', 'process', 'translate', 'checking'];
+
+function manualRank(manual: string): number {
+  const rank = manualOrder.indexOf(manual);
+  return rank === -1 ? manualOrder.length : rank;
+}
+
+function academySection(manual: string, node: unknown, articles: string[]): AcademySection | undefined {
+  if (typeof node !== 'object' || node === null) {
+    return undefined;
+  }
+  const record = node as Record<string, unknown>;
+  const article = typeof record.link === 'string' ? academyArticleId(manual, record.link) : undefined;
+  if (article !== undefined) {
+    articles.push(article);
+  }
+  const sections = academySections(manual, record.sections, articles);
+  const title = typeof record.title === 'string' ? record.title.trim() : '';
+  return article === undefined ? { title, sections } : { title, article, sections };
+}
+
+function academySections(manual: string, nodes: unknown, articles: string[]): AcademySection[] {
+  return Array.isArray(nodes)
+    ? nodes.flatMap((node: unknown) => academySection(manual, node, articles) ?? [])
+    : [];
+}
 
 export function academyManuals(library: Library, entry: Entry): Promise<readonly AcademyManual[]> {
   return library.cached(entry, 'academy-manuals', async (reader) => {
-    const manuals = [...new Set([...academyEntries(reader).values()].map((item) => item.manual))];
+    const entries = [...academyEntries(reader).values()];
+    const manuals = [...new Set(entries.map((item) => item.manual))];
     const found: AcademyManual[] = [];
     for (const manual of manuals) {
       const key = academyFile(reader, manual, 'toc.yaml');
@@ -258,35 +283,24 @@ export function academyManuals(library: Library, entry: Entry): Promise<readonly
       } catch {
         toc = undefined;
       }
-      const articles: string[] = [];
-      const walk = (node: unknown): void => {
-        if (typeof node !== 'object' || node === null) {
-          return;
-        }
-        const record = node as Record<string, unknown>;
-        const id = typeof record.link === 'string' ? academyArticleId(manual, record.link) : undefined;
-        if (id !== undefined) {
-          articles.push(id);
-        }
-        if (Array.isArray(record.sections)) {
-          record.sections.forEach(walk);
-        }
-      };
-      walk(toc);
       const root = typeof toc === 'object' && toc !== null ? (toc as Record<string, unknown>) : {};
+      const listed: string[] = [];
+      const sections = academySections(manual, root.sections, listed);
+      const unlisted = entries
+        .filter((item) => item.manual === manual && !listed.includes(item.id))
+        .map((item) => item.id)
+        .sort(compareText);
       const title = typeof root.title === 'string' && root.title.trim() !== '' ? root.title.trim() : manual;
-      found.push({ manual, title, articles });
+      found.push({ manual, title, sections, articles: [...new Set([...listed, ...unlisted])] });
     }
-    return found;
+    return found.sort((left, right) => manualRank(left.manual) - manualRank(right.manual));
   });
 }
 
 export function academyOrder(library: Library, entry: Entry): Promise<readonly string[]> {
-  return library.cached(entry, 'academy-order', async (reader) => {
-    const ordered = (await academyManuals(library, entry)).flatMap((manual) => manual.articles);
-    const rest = [...academyEntries(reader).keys()].filter((id) => !ordered.includes(id)).sort();
-    return [...ordered, ...rest];
-  });
+  return library.cached(entry, 'academy-order', async () =>
+    (await academyManuals(library, entry)).flatMap((manual) => manual.articles),
+  );
 }
 
 export function stories(library: Library, entry: Entry): Promise<ReadonlyMap<number, ParsedStory>> {

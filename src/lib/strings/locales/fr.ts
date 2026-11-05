@@ -619,4 +619,6 @@ export const fr: LocaleTable = {
   'library.chapters': { one: '{count} chapitre', many: '{count} de chapitres', other: '{count} chapitres' },
   'library.pictures': { one: '{count} image', many: '{count} d’images', other: '{count} images' },
   'formation.training.empty': 'L’Académie n’est pas encore disponible en {language}.',
+  'formation.training.missing': 'Ce manuel est introuvable.',
+  'formation.training.open': 'Aller à Formation pratique',
 };

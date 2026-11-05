@@ -220,6 +220,145 @@ describe('corpus contents', () => {
   });
 });
 
+function academyIngredient(path: string, text: string) {
+  return { path, bytes: utf8(text), mimeType: path.endsWith('.yaml') ? mimeTypes.yaml : mimeTypes.markdown };
+}
+
+function academyArticle(manual: string, slug: string, title: string) {
+  return [
+    academyIngredient(`${manual}/${slug}/title.md`, `${title}\n`),
+    academyIngredient(`${manual}/${slug}/01.md`, `${title} body.\n`),
+  ];
+}
+
+const nestedAcademy = [
+  academyIngredient(
+    'checking/toc.yaml',
+    [
+      'title: Checking Manual',
+      'sections:',
+      '  - title: Introduction to Checking',
+      '    link: intro-check',
+      '',
+    ].join('\n'),
+  ),
+  ...academyArticle('checking', 'intro-check', 'Introduction to Checking'),
+  academyIngredient(
+    'translate/toc.yaml',
+    [
+      'title: Translation Manual',
+      'sections:',
+      '  - title: Defining a Good Translation',
+      '    sections:',
+      '      - title: The Qualities',
+      '        link: guidelines-intro',
+      '      - title: Figures of Speech',
+      '        link: figs-intro',
+      '        sections:',
+      '          - title: Metaphor',
+      '            link: figs-metaphor',
+      '  - title: Names',
+      '    link: translate-names',
+      '',
+    ].join('\n'),
+  ),
+  ...academyArticle('translate', 'figs-unlisted', 'Not in the contents'),
+  ...academyArticle('translate', 'figs-metaphor', 'Metaphor'),
+  ...academyArticle('translate', 'figs-intro', 'Figures of Speech'),
+  ...academyArticle('translate', 'guidelines-intro', 'The Qualities of a Good Translation'),
+  ...academyArticle('translate', 'translate-names', 'How to Translate Names'),
+  academyIngredient(
+    'drafting/toc.yaml',
+    ['title: Drafting Manual', 'sections:', '  - title: Drafting', '    link: draft-first', ''].join('\n'),
+  ),
+  ...academyArticle('drafting', 'draft-first', 'Drafting First'),
+  academyIngredient(
+    'intro/toc.yaml',
+    [
+      'title: Introduction to translationAcademy',
+      'sections:',
+      '  - title: Welcome',
+      '    link: ta-intro',
+      '',
+    ].join('\n'),
+  ),
+  ...academyArticle('intro', 'ta-intro', 'Welcome to translationAcademy'),
+  academyIngredient(
+    'process/toc.yaml',
+    ['title: Process Manual', 'sections:', '  - title: Choosing a Team', '    link: choose-team', ''].join(
+      '\n',
+    ),
+  ),
+  ...academyArticle('process', 'choose-team', 'Choosing a Translation Team'),
+];
+
+describe('corpus academy contents (FO-1)', () => {
+  it('keeps each manual table of contents as a tree, orders the manuals Introduction, Process, Translate, Checking, and puts an article the contents miss at the end of its manual', async () => {
+    const device = await phone([]);
+    const academy = burrito({
+      resource: 'qac_ta',
+      flavorType: 'peripheral',
+      flavor: 'x-peripheralArticles',
+      ingredients: nestedAcademy,
+    });
+    expect((await importBurrito(device, 'qac_ta', academy)).ok).toBe(true);
+    const contents = await device.kernel.corpus.contents('qac');
+    expect(contents.manuals.map((manual) => manual.manual)).toEqual([
+      'intro',
+      'process',
+      'translate',
+      'checking',
+      'drafting',
+    ]);
+    expect(contents.academy.map((entry) => entry.id)).toEqual([
+      'ta/intro/ta-intro',
+      'ta/process/choose-team',
+      'ta/translate/guidelines-intro',
+      'ta/translate/figs-intro',
+      'ta/translate/figs-metaphor',
+      'ta/translate/translate-names',
+      'ta/translate/figs-unlisted',
+      'ta/checking/intro-check',
+      'ta/drafting/draft-first',
+    ]);
+    expect(contents.manuals.find((manual) => manual.manual === 'translate')).toEqual({
+      manual: 'translate',
+      title: 'Translation Manual',
+      sections: [
+        {
+          title: 'Defining a Good Translation',
+          sections: [
+            { title: 'The Qualities', article: 'ta/translate/guidelines-intro', sections: [] },
+            {
+              title: 'Figures of Speech',
+              article: 'ta/translate/figs-intro',
+              sections: [{ title: 'Metaphor', article: 'ta/translate/figs-metaphor', sections: [] }],
+            },
+          ],
+        },
+        { title: 'Names', article: 'ta/translate/translate-names', sections: [] },
+      ],
+    });
+    const outline = await device.kernel.formation.trainingOutline('qac');
+    expect(outline.units.map((unit) => [unit.manual, unit.title, unit.lessons.length])).toEqual([
+      ['intro', 'Introduction to translationAcademy', 1],
+      ['process', 'Process Manual', 1],
+      ['translate', 'Translation Manual', 5],
+      ['checking', 'Checking Manual', 1],
+      ['drafting', 'Drafting Manual', 1],
+    ]);
+    expect(
+      outline.units
+        .find((unit) => unit.manual === 'translate')
+        ?.sections.map((section) => [section.title, section.lessons.map((lesson) => lesson.number)]),
+    ).toEqual([
+      ['Defining a Good Translation', [3]],
+      ['Figures of Speech', [4, 5]],
+      [undefined, [6, 7]],
+    ]);
+  });
+});
+
 describe('corpus book names', () => {
   it('names a book from the installed text in its language, keeps the name across a restart, and falls back to the English name', async () => {
     const device = await phone([]);

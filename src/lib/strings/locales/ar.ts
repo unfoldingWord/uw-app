@@ -679,4 +679,6 @@ export const ar: LocaleTable = {
     other: '{count} صورة',
   },
   'formation.training.empty': 'الأكاديمية ليست متاحة بلغة {language} بعد.',
+  'formation.training.missing': 'لا يمكن العثور على هذا الدليل.',
+  'formation.training.open': 'انتقل إلى التدريب',
 };

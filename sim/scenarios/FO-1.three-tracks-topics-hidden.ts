@@ -54,10 +54,19 @@ export default scenario(
               { number: 2, title: 'Idiom', id: 'ta/translate/figs-idiom' },
               { number: 3, title: 'How to Translate Names', id: 'ta/translate/translate-names' },
             ],
+            sections: [
+              {
+                lessons: [
+                  { number: 1, title: 'Metaphor', id: 'ta/translate/figs-metaphor' },
+                  { number: 2, title: 'Idiom', id: 'ta/translate/figs-idiom' },
+                  { number: 3, title: 'How to Translate Names', id: 'ta/translate/translate-names' },
+                ],
+              },
+            ],
           },
         ],
       },
-      'Training is a course: one unit per manual, titled from its table of contents, lessons numbered through the course',
+      'Training is a course: one unit per manual, titled from its table of contents, its sections in contents order, lessons numbered through the course',
     );
     assert.deepEqual(await formation.trainingOutline('qab'), { lessons: 0, units: [] });
     assert.equal(await formation.session('topics', 1, 'qaa'), undefined);

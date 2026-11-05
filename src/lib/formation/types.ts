@@ -102,10 +102,13 @@ export type SessionOptions = { readonly englishAlongside?: boolean };
 
 export type TrainingLesson = { readonly number: number; readonly title: string; readonly id: string };
 
+export type TrainingSection = { readonly title?: string; readonly lessons: readonly TrainingLesson[] };
+
 export type TrainingUnit = {
   readonly manual: string;
   readonly title: string;
   readonly lessons: readonly TrainingLesson[];
+  readonly sections: readonly TrainingSection[];
 };
 
 export type TrainingOutline = { readonly lessons: number; readonly units: readonly TrainingUnit[] };

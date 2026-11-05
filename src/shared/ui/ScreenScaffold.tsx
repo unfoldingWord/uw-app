@@ -1,14 +1,27 @@
 import type { ReactNode } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuroraField, StatusBar } from '@shared/glass';
 import { referenceValues } from '@shared/glass/referenceValues';
 import { useTheme } from '@shared/theme';
 import { prototypeValues } from './prototypeValues';
 import { useTabBarGrowth } from './tabBarHeight';
-import { useKeyboardInset } from './useKeyboardInset';
+import { useKeyboardInset, type KeyboardInset } from './useKeyboardInset';
 
 export type ScreenClearance = 'tabs' | 'footer' | 'none';
+
+export type ScreenListFrame = {
+  readonly props: {
+    readonly style: ViewStyle;
+    readonly contentContainerStyle: ViewStyle;
+    readonly keyboardShouldPersistTaps: 'handled';
+    readonly showsVerticalScrollIndicator: false;
+    readonly onScroll: KeyboardInset['onScroll'];
+    readonly scrollEventThrottle: number;
+    readonly onContentSizeChange: KeyboardInset['onContentSizeChange'];
+  };
+  readonly gap: number;
+};
 
 export type ScreenScaffoldProps = {
   header?: ReactNode;
@@ -17,6 +30,7 @@ export type ScreenScaffoldProps = {
   scroll?: boolean;
   dense?: boolean;
   clearance?: ScreenClearance;
+  list?: (frame: ScreenListFrame) => ReactNode;
   children?: ReactNode;
 };
 
@@ -33,6 +47,7 @@ export function ScreenScaffold({
   scroll = true,
   dense = false,
   clearance = 'none',
+  list,
   children,
 }: ScreenScaffoldProps) {
   const theme = useTheme();
@@ -61,7 +76,20 @@ export function ScreenScaffold({
       <StatusBar />
       {header}
       <View ref={keyboard.frame} style={styles.fill} onLayout={keyboard.onLayout}>
-        {scroll ? (
+        {list !== undefined ? (
+          list({
+            props: {
+              style: styles.fill,
+              contentContainerStyle: { ...content, gap: 0 },
+              keyboardShouldPersistTaps: 'handled',
+              showsVerticalScrollIndicator: false,
+              onScroll: keyboard.onScroll,
+              scrollEventThrottle: keyboard.scrollEventThrottle,
+              onContentSizeChange: keyboard.onContentSizeChange,
+            },
+            gap: content.gap,
+          })
+        ) : scroll ? (
           <ScrollView
             ref={keyboard.scroll}
             style={styles.fill}

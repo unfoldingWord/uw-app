@@ -552,4 +552,6 @@ export const bn: LocaleTable = {
   'library.chapters': { one: '{count}টি অধ্যায়', other: '{count}টি অধ্যায়' },
   'library.pictures': { one: '{count}টি ছবি', other: '{count}টি ছবি' },
   'formation.training.empty': 'একাডেমি এখনও {language} ভাষায় নেই।',
+  'formation.training.missing': 'এই নির্দেশিকাটি খুঁজে পাওয়া যাচ্ছে না।',
+  'formation.training.open': 'প্রশিক্ষণে যান',
 };

@@ -118,71 +118,81 @@ export default function LanguagesScreen() {
           />
         )
       }
-    >
-      {opened === undefined ? null : (
-        <OpenedFile
-          opened={opened}
+      list={(frame) => (
+        <LanguageList
+          frame={frame}
+          header={
+            <>
+              {opened === undefined ? null : (
+                <OpenedFile
+                  opened={opened}
+                  failures={failures}
+                  onImport={runImport}
+                  onDismiss={() => setDismissed(opened)}
+                  asking={asking}
+                  onKeep={keepInstalled}
+                />
+              )}
+              <GlassInput
+                accessibilityLabel={words.t('languages.search')}
+                placeholder={words.t('languages.search')}
+                value={query}
+                onChangeText={setQuery}
+                autoCorrect={false}
+                leading={<Icon name="search" size={theme.fontSize.fsBody} />}
+                returnKeyType="search"
+              />
+              {online.value === false ? <Notice tone="progress" text={words.t('languages.offline')} /> : null}
+              {refreshFailure === undefined ? null : <Notice text={words.t(`failure.${refreshFailure}`)} />}
+            </>
+          }
+          footer={
+            <>
+              <MissingSection
+                version={version}
+                language={current}
+                autonym={currentAutonym}
+                failures={failures}
+                onRetry={(language) => run(language, () => languages.download(language))}
+              />
+              <MoreSection
+                autonym={currentAutonym}
+                failures={failures}
+                onInstall={(key, item) => run(key, () => languages.installMore(item))}
+              />
+              <ExtrasSection
+                version={version}
+                failures={failures}
+                onInstall={(pack: PackId) => run(pack, () => languages.install(pack))}
+              />
+              <UpdatesSection
+                version={version}
+                rows={everyRow}
+                failures={failures}
+                onUpdate={(pack) => run(pack, () => languages.update(pack))}
+              />
+              <ImportSection
+                imported={imported}
+                failures={failures}
+                onImport={runImport}
+                asking={asking}
+                onKeep={keepInstalled}
+              />
+              <StorageSection version={version} rows={everyRow} failures={failures} onRemove={setPending} />
+            </>
+          }
+          rows={rows}
+          query={query}
+          empty={languages.emptyCause(online.value)}
           failures={failures}
-          onImport={runImport}
-          onDismiss={() => setDismissed(opened)}
-          asking={asking}
-          onKeep={keepInstalled}
+          onSelect={(row) =>
+            run(row.language, async () => {
+              await languages.select(row.language);
+              return row.offline || row.installing ? { ok: true } : languages.download(row.language);
+            })
+          }
         />
       )}
-      <GlassInput
-        accessibilityLabel={words.t('languages.search')}
-        placeholder={words.t('languages.search')}
-        value={query}
-        onChangeText={setQuery}
-        autoCorrect={false}
-        leading={<Icon name="search" size={theme.fontSize.fsBody} />}
-        returnKeyType="search"
-      />
-      {online.value === false ? <Notice tone="progress" text={words.t('languages.offline')} /> : null}
-      {refreshFailure === undefined ? null : <Notice text={words.t(`failure.${refreshFailure}`)} />}
-      <LanguageList
-        rows={rows}
-        query={query}
-        empty={languages.emptyCause(online.value)}
-        failures={failures}
-        onSelect={(row) =>
-          run(row.language, async () => {
-            await languages.select(row.language);
-            return row.offline || row.installing ? { ok: true } : languages.download(row.language);
-          })
-        }
-      />
-      <MissingSection
-        version={version}
-        language={current}
-        autonym={currentAutonym}
-        failures={failures}
-        onRetry={(language) => run(language, () => languages.download(language))}
-      />
-      <MoreSection
-        autonym={currentAutonym}
-        failures={failures}
-        onInstall={(key, item) => run(key, () => languages.installMore(item))}
-      />
-      <ExtrasSection
-        version={version}
-        failures={failures}
-        onInstall={(pack: PackId) => run(pack, () => languages.install(pack))}
-      />
-      <UpdatesSection
-        version={version}
-        rows={everyRow}
-        failures={failures}
-        onUpdate={(pack) => run(pack, () => languages.update(pack))}
-      />
-      <ImportSection
-        imported={imported}
-        failures={failures}
-        onImport={runImport}
-        asking={asking}
-        onKeep={keepInstalled}
-      />
-      <StorageSection version={version} rows={everyRow} failures={failures} onRemove={setPending} />
-    </ScreenScaffold>
+    />
   );
 }

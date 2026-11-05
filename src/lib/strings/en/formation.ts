@@ -31,6 +31,8 @@ export const formation = {
   'formation.training.unit.count': { one: '{count} lesson', other: '{count} lessons' },
   'formation.training.current': 'Where {group} is now',
   'formation.training.empty': 'The Academy is not in {language} yet.',
+  'formation.training.missing': 'This manual cannot be found.',
+  'formation.training.open': 'Go to Training',
   'formation.topics': 'Topics',
   'formation.topics.about': 'Themes for deeper study.',
   'session.overline': 'Story {number} of {total}',

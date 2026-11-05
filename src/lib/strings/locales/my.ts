@@ -548,4 +548,6 @@ export const my: LocaleTable = {
   'library.chapters': { other: 'အခန်း {count} ခန်း' },
   'library.pictures': { other: 'ပုံ {count} ပုံ' },
   'formation.training.empty': 'အကယ်ဒမီသည် {language} ဖြင့် မရနိုင်သေးပါ။',
+  'formation.training.missing': 'ဤလက်စွဲကို ရှာမတွေ့ပါ။',
+  'formation.training.open': 'သင်တန်းသို့ သွားပါ',
 };

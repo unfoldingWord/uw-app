@@ -3,6 +3,30 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-11-05 Training table of contents and virtualised lists (#85, #87), sim, checks and web shots only
+
+Node v22.22.2. Nothing ran on a phone, an emulator or a simulator in this entry, so scrolling speed on a low-end
+Android phone (#85 definition of done) is not measured, and the native blur is not seen.
+
+- **Corpus test first:** `sim/corpus.test.ts` "corpus academy contents (FO-1)" imports a Translation Academy with a
+  nested `toc.yaml` and five manuals. It failed before the change: the manuals came in ingredient order
+  (`checking`, `drafting`, `intro`, `process`, `translate`), so the inference in #87 that the order is alphabetical
+  holds for this fixture. It passes with the tree kept, the manuals ordered Introduction, Process, Translate,
+  Checking and then the rest, and the article missing from the contents at the end of its manual.
+- **FO-1 scenario:** extended with the outline's sections; red before `trainingOutlineOf` built them, green after.
+  Lesson numbers still run 1..N through the course in the order `contents.academy` gives, which is what Training
+  sessions and group positions use.
+- **Web shots:** `npm run shots -- --only formation-training,formation-manual,languages,study-library --modes
+  light,dark,reduced-blur` rendered 12 shots with no target under 44 px and no text escaping its box. Seen: the
+  Training page lists the fixture's one manual with its lesson count; the manual page lists its three lessons as
+  flat rows; the language list scrolls with the sections after it. The fixture's flat contents show no section
+  headings, so a nested contents was seen only in the test, not on screen. The web harness renders the memory
+  adapters through react-native-web, not the native blur.
+- **Verify:** `npm run verify` green: 837 tests, 9 checks, 63 of 63 scenarios, 21 fixture burritos, both bundles.
+- **Review follow-up, manual not found:** `parts/course.test.ts` (FO-1) failed before `manualStateOf` existed and
+  passes after; a route naming no manual now says the manual cannot be found with a Go to Training button, seen in
+  the `formation-manual-missing` web shot in light, dark and reduced-blur.
+
 ## 2026-11-05 Full-text index state, Search toggle and keyboard-aware scaffold (#98, #95, #99 and #85 Search parts)
 
 Node v22.23.4. Nothing ran on a phone, an emulator or a simulator in this entry. The keyboard handling, the Search

@@ -567,4 +567,6 @@ export const sw: LocaleTable = {
   'library.chapters': { one: 'Sura {count}', other: 'Sura {count}' },
   'library.pictures': { one: 'Picha {count}', other: 'Picha {count}' },
   'formation.training.empty': 'Akademia bado haipo kwa {language}.',
+  'formation.training.missing': 'Mwongozo huu haupatikani.',
+  'formation.training.open': 'Nenda kwenye Mafunzo',
 };
