@@ -56,7 +56,7 @@ export default scenario(
     assert.equal(byType.get('notes')?.count, '8 notes');
     assert.equal(byType.get('wordLinks')?.count, '6 word links');
     assert.equal(byType.get('questions')?.count, '4 questions');
-    assert.equal(byType.get('storyHelps')?.count, '11 story helps');
+    assert.equal(byType.get('storyHelps')?.count, '12 story helps');
     assert.equal(byType.get('formation')?.count, undefined, 'nothing is counted before it is on the phone');
     assert.equal(byType.get('audio')?.state, 'not-downloaded', 'audio is never part of the language pack');
     assert.equal(byType.get('hebrew')?.optional, true, 'original-language texts are optional downloads');

@@ -56,10 +56,19 @@ describe('resolveLink', () => {
   });
 
   it('resolves links to stories and frames, in the forms story helps and notes carry', () => {
-    expect(resolveLink('rc://*/obs/book/obs/01/01', note)).toEqual({ kind: 'story', story: 1 });
-    expect(resolveLink('rc://*/tn/help/obs/01/02', note)).toEqual({ kind: 'story', story: 1 });
-    expect(resolveLink('rc://en/obs/01/02', note)).toEqual({ kind: 'story', story: 1 });
-    expect(resolveLink('rc://*/obs/50', note)).toEqual({ kind: 'story', story: 50 });
+    expect(resolveLink('rc://*/obs/book/obs/01/01', note)).toStrictEqual({
+      kind: 'story',
+      story: 1,
+      frame: 1,
+    });
+    expect(resolveLink('rc://*/tn/help/obs/01/02', note)).toStrictEqual({
+      kind: 'story',
+      story: 1,
+      frame: 2,
+    });
+    expect(resolveLink('rc://en/obs/01/02', note)).toStrictEqual({ kind: 'story', story: 1, frame: 2 });
+    expect(resolveLink('rc://*/obs/50', note)).toStrictEqual({ kind: 'story', story: 50 });
+    expect(resolveLink('rc://*/obs/02/intro', note)).toStrictEqual({ kind: 'story', story: 2 });
     expect(resolveLink('rc://*/obs/51/01', note)).toBeUndefined();
     expect(resolveLink('rc://*/bible/gen/01/02', note)).toEqual({ kind: 'passage', reference: 'GEN 1:2' });
   });

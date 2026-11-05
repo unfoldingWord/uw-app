@@ -115,6 +115,7 @@ describe('corpus stories', () => {
       ['s003', 2, false],
     ]);
     expect(story?.questions.map((question) => [question.id, question.frame, question.study])).toEqual([
+      ['q000', undefined, true],
       ['q001', 1, true],
       ['q002', 3, true],
     ]);
@@ -124,6 +125,31 @@ describe('corpus stories', () => {
         .filter((entry) => entry.type === 'StoryOpened')
         .map((entry) => entry.payload),
     ).toEqual([{ story: 1, language: 'qaa' }]);
+  });
+
+  it('resolves the English picture names a non-English stories burrito cites from the shared Image Pack', async () => {
+    const device = await phone([languagePackId('qab')]);
+    const before = await device.kernel.corpus.story(2, 'qab');
+    expect(before?.frames.map((frame) => [frame.imageName, frame.image])).toEqual([
+      ['obs-en-02-01.jpg', undefined],
+      ['obs-en-02-02.jpg', undefined],
+    ]);
+    await installFromCatalog(device, [imagePackId]);
+    const after = await device.kernel.corpus.story(2, 'qab');
+    expect(after?.frames[0]?.text).toContain('Yahweh');
+    expect(
+      after?.frames.map((frame) => [
+        frame.image?.name,
+        frame.image?.provenance.resource,
+        frame.provenance.resource,
+      ]),
+    ).toEqual([
+      ['obs-en-02-01.jpg', 'en_obs', 'qab_obs'],
+      ['obs-en-02-02.jpg', 'en_obs', 'qab_obs'],
+    ]);
+    for (const frame of after?.frames ?? []) {
+      expect(await device.adapters.files.exists(frame.image?.path ?? '')).toBe(true);
+    }
   });
 
   it('names a frame image it cannot find, and has no story it was not given', async () => {

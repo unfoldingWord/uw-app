@@ -1817,7 +1817,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": true,
-            "size": 411
+            "size": 529
           }
         ],
         "relations": null,
@@ -1896,7 +1896,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": true,
-          "size": 411
+          "size": 529
         }
       ],
       "books": [],
@@ -2341,7 +2341,7 @@
             "versification": "ufw",
             "exists": true,
             "is_dir": true,
-            "size": 414
+            "size": 532
           }
         ],
         "relations": null,
@@ -2420,7 +2420,7 @@
           "versification": "ufw",
           "exists": true,
           "is_dir": true,
-          "size": 414
+          "size": 532
         }
       ],
       "books": [],

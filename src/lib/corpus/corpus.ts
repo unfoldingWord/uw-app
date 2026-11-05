@@ -1,4 +1,5 @@
 import { failureCodeOf } from '../domain/failures';
+import { anchorStoryHits } from './anchor';
 import { bookByCode } from '../domain/books';
 import { formatReference, parseReference, type Reference } from '../domain/reference';
 import type { JsonValue } from '../json';
@@ -354,7 +355,12 @@ export const corpusModule = defineModule<CorpusApi>({
       dropIndex: (language) => indexing.drop(language),
       fullText: (query, language) =>
         read(async () => {
-          const hits = await searchIndex(library, db, query, language);
+          const hits = await anchorStoryHits(
+            library,
+            language,
+            query,
+            await searchIndex(library, db, query, language),
+          );
           await context.emit({
             type: 'SearchRun',
             payload: { kind: 'fulltext', language, hits: hits.length },

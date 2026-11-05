@@ -43,7 +43,7 @@ export type CorpusSource = {
 export type LinkTarget =
   | { readonly kind: 'article'; readonly id: string }
   | { readonly kind: 'passage'; readonly reference: string }
-  | { readonly kind: 'story'; readonly story: number };
+  | { readonly kind: 'story'; readonly story: number; readonly frame?: number };
 
 export type Inline =
   | { readonly kind: 'text'; readonly text: string }
@@ -192,7 +192,7 @@ export type StoryNote = Sourced & {
 export type StoryQuestion = Sourced & {
   readonly id: string;
   readonly study: boolean;
-  readonly frame: number;
+  readonly frame?: number;
   readonly question: string;
   readonly response: string;
 };

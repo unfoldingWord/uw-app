@@ -205,6 +205,15 @@ export function storyQuestions(language: 'qaa' | 'qab'): HelpsTable {
     header: questionsHeader,
     rows: [
       [
+        '1:intro',
+        'q000',
+        '',
+        '',
+        '',
+        'What do you already know about how the world began?',
+        'Let each person answer from what they have heard.',
+      ],
+      [
         '1:1',
         'q001',
         '',

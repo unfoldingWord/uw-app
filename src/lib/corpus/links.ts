@@ -63,7 +63,12 @@ function storyFrom(segments: readonly string[]): LinkTarget | undefined {
     return undefined;
   }
   const story = Number(number);
-  return story >= 1 && story <= storyCount ? { kind: 'story', story } : undefined;
+  if (story < 1 || story > storyCount) {
+    return undefined;
+  }
+  const frameText = segments[at + 2];
+  const frame = frameText !== undefined && numbered.test(frameText) ? Number(frameText) : 0;
+  return frame >= 1 ? { kind: 'story', story, frame } : { kind: 'story', story };
 }
 
 function resolveRc(href: string): LinkTarget | undefined {
