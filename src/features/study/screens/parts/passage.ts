@@ -61,6 +61,30 @@ export function sameVerse(left: VerseKey | undefined, right: VerseKey): boolean 
   return left !== undefined && left.chapter === right.chapter && left.verse === right.verse;
 }
 
+export function helpKey(help: {
+  readonly id: string;
+  readonly provenance: { readonly resource: string };
+}): string {
+  return `${help.provenance.resource}/${help.id}`;
+}
+
+export function focusedSpans(helps: VerseHelps, focused: string | undefined): readonly WordSpan[] {
+  if (focused === undefined) {
+    return [];
+  }
+  const help = [...helps.notes, ...helps.wordLinks].find((item) => helpKey(item) === focused);
+  return help?.words ?? [];
+}
+
+export type Placement = 'placed' | 'not-found' | 'unquoted';
+
+export function placementOf(note: Note, at: VerseKey): Placement {
+  if (note.quote.trim().length === 0) {
+    return 'unquoted';
+  }
+  return spansTouch(note.words, at) ? 'placed' : 'not-found';
+}
+
 export function highlightedIn(spans: readonly WordSpan[], at: VerseKey): ReadonlySet<number> {
   return new Set(
     spans

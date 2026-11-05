@@ -43,6 +43,9 @@ const legacyNotes = [
   'MAT\tfront\tintro\tm000\t\t\t0\t\t# Matthew',
   'MAT\t1\t1\tm001\t\tκαὶ εἶπεν καὶ\t1\tand said and\tA repeated word.',
   'MAT\t1\t1\tm002\t\tκαὶ … καὶ\t1\tand and\tTwo parts.',
+  'MAT\t1\t1\tm003\t\tκαὶ\t2\tand\tThe second and.',
+  'MAT\t1\t1\tm004\t\tἦλθεν\t1\tcame\tThe last word.',
+  'MAT\t1\t1\tm005\t\tλόγος\t1\tword\tA quote this text does not hold.',
 ].join('\n');
 
 export default scenario(
@@ -192,10 +195,23 @@ export default scenario(
       [
         ['m001', 'and said and'],
         ['m002', 'and and'],
+        ['m003', 'and'],
+        ['m004', 'came'],
+        ['m005', ''],
       ],
       'a quote that repeats a word attaches to each of its words, from nine-column notes',
     );
-    assert.equal(device.kernel.corpus.summary('qaf').notes?.items, 3, 'the count is of the rows read');
+    assert.deepEqual(
+      matthew.notes.find((note) => note.id === 'm003')?.words,
+      [{ chapter: 1, verse: 1, tokens: [2] }],
+      'a note on the second occurrence of a repeated word attaches to that occurrence, not the first',
+    );
+    assert.deepEqual(
+      matthew.notes.find((note) => note.id === 'm005')?.words,
+      [],
+      'a quote the text does not hold attaches to no words, and the note stays on its verse',
+    );
+    assert.equal(device.kernel.corpus.summary('qaf').notes?.items, 6, 'the count is of the rows read');
     const psalm = await device.kernel.corpus.passage(reference('PSA 3:1'), { language: 'qaf' });
     assert.deepEqual(psalm?.text.titles, [{ chapter: 3, text: 'A psalm of David.' }]);
     assert.equal(psalm?.text.verses[0]?.text, 'Yahweh, how many are my foes!');

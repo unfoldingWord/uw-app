@@ -112,6 +112,34 @@ describe('attachQuote with repeated words', () => {
   });
 });
 
+describe('ST-2 three notes on one verse each attach to their own words (issue #91)', () => {
+  const verse = greekVerse([
+    ['and', 'καὶ', 1],
+    ['said', 'εἶπεν', 1],
+    ['and', 'καὶ', 2],
+    ['came', 'ἦλθεν', 1],
+  ]);
+  const notes: readonly [string, number][] = [
+    ['καὶ εἶπεν', 1],
+    ['καὶ', 2],
+    ['ἦλθεν', 1],
+  ];
+
+  it('places the first, the second occurrence of a repeated word, and the third', () => {
+    expect(
+      notes.map(([quote, occurrence]) => attachQuote(quote, occurrence, reference('1:1'), [verse])),
+    ).toEqual([
+      [{ chapter: 1, verse: 1, tokens: [0, 1] }],
+      [{ chapter: 1, verse: 1, tokens: [2] }],
+      [{ chapter: 1, verse: 1, tokens: [3] }],
+    ]);
+  });
+
+  it('places nothing for a quote the verse does not hold', () => {
+    expect(attachQuote('λόγος', 1, reference('1:1'), [verse])).toEqual([]);
+  });
+});
+
 describe('attachQuote when the target reorders the original words', () => {
   const day: Verse = {
     chapter: 1,
