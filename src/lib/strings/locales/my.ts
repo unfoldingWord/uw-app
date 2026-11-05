@@ -539,6 +539,7 @@ export const my: LocaleTable = {
   'library.pictures': { other: 'ပုံ {count} ပုံ' },
   'formation.training.empty': 'အကယ်ဒမီသည် {language} ဖြင့် မရနိုင်သေးပါ။',
   'session.story.list': 'ဇာတ်လမ်းတစ်ပုဒ် ရွေးရန်',
+  'session.story.notFound': '{language} တွင် ဇာတ်လမ်း {number} မရှိပါ။',
   'session.story.previous': 'ယခင်ဇာတ်လမ်း',
   'session.story.next': 'နောက်ဇာတ်လမ်း',
   'session.talk.frame': 'ပုံ {number} အကြောင်း ဆွေးနွေးကြစို့',

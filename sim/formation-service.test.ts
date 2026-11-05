@@ -58,5 +58,12 @@ describe('the formation service behind the story reader (FO-3, FO-5, LA-3)', () 
     expect(await formation.storyList(1)).toEqual({ stories: [] });
     expect(formation.saved(1)).toBeUndefined();
     expect(formation.pictures()).toBe('not-offered');
+    expect(await formation.absence(1)).toBe('not-downloaded');
+  });
+
+  it('tells a story number the language does not have from a language with no stories on the phone', async () => {
+    const { formation } = await readyPhone();
+    expect(await formation.read(999)).toBeUndefined();
+    expect(await formation.absence(999)).toBe('not-found');
   });
 });

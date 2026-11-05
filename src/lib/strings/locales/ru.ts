@@ -644,6 +644,7 @@ export const ru: LocaleTable = {
   },
   'formation.training.empty': 'Академия пока недоступна на языке {language}.',
   'session.story.list': 'Выберите историю',
+  'session.story.notFound': 'В языке {language} нет истории {number}.',
   'session.story.previous': 'Предыдущая история',
   'session.story.next': 'Следующая история',
   'session.talk.frame': 'Обсудим кадр {number}',

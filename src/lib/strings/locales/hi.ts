@@ -549,6 +549,7 @@ export const hi: LocaleTable = {
   'library.pictures': { one: '{count} चित्र', other: '{count} चित्र' },
   'formation.training.empty': 'अकादमी अभी {language} में नहीं है।',
   'session.story.list': 'एक कहानी चुनें',
+  'session.story.notFound': '{language} में कहानी {number} नहीं है।',
   'session.story.previous': 'पिछली कहानी',
   'session.story.next': 'अगली कहानी',
   'session.talk.frame': 'दृश्य {number} पर बात करें',

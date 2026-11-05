@@ -523,6 +523,7 @@ export const vi: LocaleTable = {
   'library.pictures': { other: '{count} hình ảnh' },
   'formation.training.empty': 'Học viện chưa có bằng {language}.',
   'session.story.list': 'Chọn một câu chuyện',
+  'session.story.notFound': 'Không có câu chuyện {number} bằng {language}.',
   'session.story.previous': 'Câu chuyện trước',
   'session.story.next': 'Câu chuyện sau',
   'session.talk.frame': 'Cùng trò chuyện về khung {number}',

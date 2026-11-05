@@ -558,6 +558,7 @@ export const sw: LocaleTable = {
   'library.pictures': { one: 'Picha {count}', other: 'Picha {count}' },
   'formation.training.empty': 'Akademia bado haipo kwa {language}.',
   'session.story.list': 'Chagua hadithi',
+  'session.story.notFound': 'Hakuna hadithi ya {number} katika {language}.',
   'session.story.previous': 'Hadithi iliyotangulia',
   'session.story.next': 'Hadithi inayofuata',
   'session.talk.frame': 'Zungumzeni kuhusu picha ya {number}',

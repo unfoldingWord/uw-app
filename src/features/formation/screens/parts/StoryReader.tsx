@@ -15,6 +15,7 @@ import {
   type Group,
   type Pictures,
   type SessionMovementId,
+  type StoryAbsence,
   type StoryList as StoryListValue,
 } from '../../service';
 import { Blocks } from './Blocks';
@@ -47,6 +48,7 @@ type Reading = {
   readonly alongside: boolean;
   readonly saved: Bookmark | undefined;
   readonly pictures: Pictures;
+  readonly absence: StoryAbsence | undefined;
 };
 
 async function loadReading(service: FormationService, mode: ReaderMode, number: number): Promise<Reading> {
@@ -65,6 +67,7 @@ async function loadReading(service: FormationService, mode: ReaderMode, number: 
     alongside: service.englishAlongside(),
     saved: service.saved(number),
     pictures: service.pictures(),
+    absence: session === undefined ? await service.absence(number) : undefined,
   };
 }
 
@@ -92,11 +95,19 @@ export function StoryReader({ mode, number, frame }: StoryReaderProps) {
         ) : (
           <Card level={1}>
             <ThemedText variant="body" tone="title">
-              {words.t('state.notDownloaded', { language: languageName })}
+              {value?.absence === 'not-found'
+                ? words.t('session.story.notFound', { number, language: languageName })
+                : words.t('state.notDownloaded', { language: languageName })}
             </ThemedText>
-            <GlassButton variant="dark" onPress={() => router.push('/languages')}>
-              {words.t('state.notDownloaded.action', { language: languageName })}
-            </GlassButton>
+            {value?.absence === 'not-found' ? (
+              <GlassButton variant="dark" onPress={() => router.navigate('/formation')}>
+                {words.t('session.story.list')}
+              </GlassButton>
+            ) : (
+              <GlassButton variant="dark" onPress={() => router.push('/languages')}>
+                {words.t('state.notDownloaded.action', { language: languageName })}
+              </GlassButton>
+            )}
           </Card>
         )}
         {loaded.failure === undefined ? null : (

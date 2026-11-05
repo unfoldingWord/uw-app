@@ -77,6 +77,7 @@ export const formation = {
   'session.picturesMissing':
     'Story pictures are not on this phone yet, and they download once for every language.',
   'session.story.list': 'Choose a story',
+  'session.story.notFound': 'There is no story {number} in {language}.',
   'session.story.previous': 'Previous story',
   'session.story.next': 'Next story',
   'session.talk.frame': 'Talk about frame {number}',

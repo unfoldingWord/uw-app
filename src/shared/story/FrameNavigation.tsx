@@ -42,6 +42,8 @@ function Step({ step, direction }: { step: FrameStep; direction: 'previous' | 'n
   );
 }
 
+const playControlMinimumWidthUntilClaudeDesignSpecifiesIt = '45%';
+
 export function FrameNavigation({ previous, next, children, below }: FrameNavigationProps) {
   const theme = useTheme();
   return (
@@ -71,5 +73,10 @@ export function FrameNavigation({ previous, next, children, below }: FrameNaviga
 
 const styles = StyleSheet.create({
   footer: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' },
-  grow: { flexGrow: 1, flexShrink: 1, flexBasis: 0, minWidth: '45%' },
+  grow: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    minWidth: playControlMinimumWidthUntilClaudeDesignSpecifiesIt,
+  },
 });

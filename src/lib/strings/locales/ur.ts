@@ -547,6 +547,7 @@ export const ur: LocaleTable = {
   'library.pictures': { one: '{count} تصویر', other: '{count} تصاویر' },
   'formation.training.empty': 'اکیڈمی ابھی {language} میں نہیں ہے۔',
   'session.story.list': 'کوئی کہانی چنیں',
+  'session.story.notFound': '{language} میں کہانی نمبر {number} نہیں ہے۔',
   'session.story.previous': 'پچھلی کہانی',
   'session.story.next': 'اگلی کہانی',
   'session.talk.frame': 'منظر {number} پر بات کریں',

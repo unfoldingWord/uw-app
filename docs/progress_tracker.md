@@ -24,6 +24,11 @@ on a device.
   reduced blur, RTL, Urdu, Hindi and large text: 18 screenshots, 0 targets under 44 px, 0 text escaping its parent,
   after moving the story step to a text button only where a neighbouring story exists. The missing-picture notice
   in the picture well was not in any shot (the shot device has the pictures) and has not been seen rendered.
+- **Review follow-up:** `corpus.storyOpened` (red first in `sim/corpus.test.ts`), `formation.absence` for a story
+  number the language lacks (red first in `sim/formation-service.test.ts`), and anchoring folded like the index
+  (red first in `sim/corpus-dcs.test.ts`: `tenebres` matched `ténèbres` but carried no frame). `npm run verify`
+  green: 845 tests, 9 checks, 65 of 65 scenarios, trace 0 unproven, both bundles. The story-not-found state was not
+  rendered in a shot in any mode.
 
 ## 2026-10-20 P2 native unzip, sim and checks only
 

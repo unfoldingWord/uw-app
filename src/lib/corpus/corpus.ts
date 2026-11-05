@@ -48,6 +48,7 @@ export type CorpusApi = {
   opened(reference: Reference, language: string): Promise<void>;
   article(id: string, language: string): Promise<Article | undefined>;
   story(number: number, language: string): Promise<Story | undefined>;
+  storyOpened(number: number, language: string): Promise<void>;
   movements(story: number, language: string): Promise<Movements | undefined>;
   movementStories(language: string): Promise<readonly number[]>;
   search(query: string, language: string): Promise<SearchResults>;
@@ -292,6 +293,10 @@ export const corpusModule = defineModule<CorpusApi>({
       });
     };
 
+    const storyOpened = async (number: number, language: string): Promise<void> => {
+      await context.emit({ type: 'StoryOpened', payload: { story: number, language } });
+    };
+
     const api: CorpusApi = {
       languages: () => contentLanguages(library),
       summary: (language) => summarize(library, language),
@@ -320,10 +325,11 @@ export const corpusModule = defineModule<CorpusApi>({
         read(async () => {
           const story = await assembleStory(library, number, language);
           if (story !== undefined) {
-            await context.emit({ type: 'StoryOpened', payload: { story: number, language } });
+            await storyOpened(number, language);
           }
           return story;
         }),
+      storyOpened,
       movements: (story, language) => read(() => assembleMovements(library, story, language)),
       movementStories: (language) =>
         read(async () => {

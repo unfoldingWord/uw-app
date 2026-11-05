@@ -591,6 +591,7 @@ export const es419: LocaleTable = {
   'library.pictures': { one: '{count} imagen', many: '{count} de imágenes', other: '{count} imágenes' },
   'formation.training.empty': 'La Academia todavía no está en {language}.',
   'session.story.list': 'Elige una historia',
+  'session.story.notFound': 'No hay una historia {number} en {language}.',
   'session.story.previous': 'Historia anterior',
   'session.story.next': 'Historia siguiente',
   'session.talk.frame': 'Conversen sobre el cuadro {number}',

@@ -152,6 +152,17 @@ describe('corpus stories', () => {
     }
   });
 
+  it('journals a story opened by a reader that assembled it from another module', async () => {
+    const device = await phone([qaa]);
+    await device.kernel.corpus.storyOpened(1, 'qaa');
+    expect(
+      device.kernel.journal
+        .read()
+        .filter((entry) => entry.type === 'StoryOpened')
+        .map((entry) => entry.payload),
+    ).toEqual([{ story: 1, language: 'qaa' }]);
+  });
+
   it('names a frame image it cannot find, and has no story it was not given', async () => {
     const device = await phone([qaa]);
     const story = await device.kernel.corpus.story(1, 'qaa');

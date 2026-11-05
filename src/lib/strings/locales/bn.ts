@@ -543,6 +543,7 @@ export const bn: LocaleTable = {
   'library.pictures': { one: '{count}টি ছবি', other: '{count}টি ছবি' },
   'formation.training.empty': 'একাডেমি এখনও {language} ভাষায় নেই।',
   'session.story.list': 'একটি গল্প বেছে নিন',
+  'session.story.notFound': '{language}-এ {number} নম্বর কোনো গল্প নেই।',
   'session.story.previous': 'আগের গল্প',
   'session.story.next': 'পরের গল্প',
   'session.talk.frame': 'দৃশ্য {number} নিয়ে কথা বলুন',

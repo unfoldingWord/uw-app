@@ -565,6 +565,7 @@ export const nl: LocaleTable = {
   'library.pictures': { one: '{count} afbeelding', other: '{count} afbeeldingen' },
   'formation.training.empty': 'De Academie is nog niet beschikbaar in het {language}.',
   'session.story.list': 'Kies een verhaal',
+  'session.story.notFound': 'Er is geen verhaal {number} in het {language}.',
   'session.story.previous': 'Vorig verhaal',
   'session.story.next': 'Volgend verhaal',
   'session.talk.frame': 'Praat over beeld {number}',

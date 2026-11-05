@@ -60,6 +60,8 @@ export type StoryTalk = {
 
 export type Pictures = 'on-phone' | 'offered' | 'not-offered';
 
+export type StoryAbsence = 'not-downloaded' | 'not-found';
+
 function storyListOf(stories: readonly StoryTitle[], current: number): StoryList {
   const sorted = [...stories].sort((left, right) => left.number - right.number);
   const previous = sorted.filter((story) => story.number < current).at(-1)?.number;
@@ -85,6 +87,7 @@ export type FormationService = {
   trainingOutline(): Promise<TrainingOutline>;
   session(track: Track, number: number): Promise<Session | undefined>;
   read(story: number): Promise<FoundationsSession | undefined>;
+  absence(story: number): Promise<StoryAbsence>;
   storyList(current: number): Promise<StoryList>;
   talk(story: Story, frame: number): StoryTalk;
   saved(story: number): Bookmark | undefined;
@@ -140,11 +143,20 @@ export function createFormationService(kernel: Kernel): FormationService {
       if (current === undefined) {
         return undefined;
       }
-      const [session] = await Promise.all([
-        formation.session('foundations', story, current, { englishAlongside: englishAlongside() }),
-        corpus.story(story, current),
-      ]);
-      return session?.track === 'foundations' ? session : undefined;
+      const session = await formation.session('foundations', story, current, {
+        englishAlongside: englishAlongside(),
+      });
+      if (session?.track !== 'foundations') {
+        return undefined;
+      }
+      await corpus.storyOpened(story, current);
+      return session;
+    },
+    async absence(story) {
+      const stories = (await withLanguage((code) => corpus.contents(code)))?.stories ?? [];
+      return stories.length > 0 && !stories.some((item) => item.number === story)
+        ? 'not-found'
+        : 'not-downloaded';
     },
     storyList: async (current) =>
       storyListOf((await withLanguage((code) => corpus.contents(code)))?.stories ?? [], current),

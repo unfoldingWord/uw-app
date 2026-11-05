@@ -670,6 +670,7 @@ export const ar: LocaleTable = {
   },
   'formation.training.empty': 'الأكاديمية ليست متاحة بلغة {language} بعد.',
   'session.story.list': 'اختر قصة',
+  'session.story.notFound': 'لا توجد قصة رقم {number} في {language}.',
   'session.story.previous': 'القصة السابقة',
   'session.story.next': 'القصة التالية',
   'session.talk.frame': 'لنتحدث عن المشهد {number}',

@@ -610,6 +610,7 @@ export const fr: LocaleTable = {
   'library.pictures': { one: '{count} image', many: '{count} d’images', other: '{count} images' },
   'formation.training.empty': 'L’Académie n’est pas encore disponible en {language}.',
   'session.story.list': 'Choisir une histoire',
+  'session.story.notFound': 'Il n’y a pas d’histoire {number} en {language}.',
   'session.story.previous': 'Histoire précédente',
   'session.story.next': 'Histoire suivante',
   'session.talk.frame': 'Parlons de l’image {number}',

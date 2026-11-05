@@ -532,6 +532,7 @@ export const id: LocaleTable = {
   'library.pictures': { other: '{count} gambar' },
   'formation.training.empty': 'Akademi belum tersedia dalam {language}.',
   'session.story.list': 'Pilih cerita',
+  'session.story.notFound': 'Tidak ada cerita {number} dalam {language}.',
   'session.story.previous': 'Cerita sebelumnya',
   'session.story.next': 'Cerita berikutnya',
   'session.talk.frame': 'Diskusikan bingkai {number}',

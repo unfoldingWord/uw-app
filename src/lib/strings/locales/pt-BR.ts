@@ -584,6 +584,7 @@ export const ptBR: LocaleTable = {
   'library.pictures': { one: '{count} imagem', many: '{count} de imagens', other: '{count} imagens' },
   'formation.training.empty': 'A Academia ainda não está em {language}.',
   'session.story.list': 'Escolha uma história',
+  'session.story.notFound': 'Não há uma história {number} em {language}.',
   'session.story.previous': 'História anterior',
   'session.story.next': 'Próxima história',
   'session.talk.frame': 'Vamos conversar sobre o quadro {number}',

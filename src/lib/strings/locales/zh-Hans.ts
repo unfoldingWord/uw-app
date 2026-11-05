@@ -500,6 +500,7 @@ export const zhHans: LocaleTable = {
   'library.pictures': { other: '{count} 张图片' },
   'formation.training.empty': '学院还没有{language}版本。',
   'session.story.list': '选择一个故事',
+  'session.story.notFound': '{language}中没有第 {number} 个故事。',
   'session.story.previous': '上一个故事',
   'session.story.next': '下一个故事',
   'session.talk.frame': '谈谈第 {number} 幅',

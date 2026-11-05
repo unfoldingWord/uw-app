@@ -548,6 +548,7 @@ export const fa: LocaleTable = {
   'library.pictures': { one: '{count} تصویر', other: '{count} تصویر' },
   'formation.training.empty': 'آکادمی هنوز به زبان {language} نیست.',
   'session.story.list': 'یک داستان انتخاب کنید',
+  'session.story.notFound': 'داستان شماره {number} در {language} وجود ندارد.',
   'session.story.previous': 'داستان قبلی',
   'session.story.next': 'داستان بعدی',
   'session.talk.frame': 'دربارهٔ صحنهٔ {number} گفت‌وگو کنید',

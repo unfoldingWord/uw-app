@@ -1,6 +1,7 @@
 import { matchTerms } from './fulltext';
 import type { Library } from './library';
 import { stories } from './loaders';
+import { fold } from './search';
 import type { FullTextHit } from './types';
 
 async function matchingFrame(
@@ -15,7 +16,7 @@ async function matchingFrame(
       continue;
     }
     const found = parsed.frames.find((frame) => {
-      const text = frame.text.toLowerCase();
+      const text = fold(frame.text);
       return terms.some((term) => text.includes(term));
     });
     return found?.number;
@@ -29,7 +30,7 @@ export async function anchorStoryHits(
   query: string,
   hits: readonly FullTextHit[],
 ): Promise<FullTextHit[]> {
-  const terms = matchTerms(query).map((term) => term.toLowerCase());
+  const terms = matchTerms(query).map(fold);
   return Promise.all(
     hits.map(async (hit) => {
       if (hit.target.kind !== 'story' || terms.length === 0) {
