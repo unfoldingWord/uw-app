@@ -1,9 +1,9 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 import type { PackId } from '@lib/domain/pack';
 import { formatReference } from '@lib/domain/reference';
-import { GlassButton } from '@shared/glass';
+import { GlassButton, GlassSheet, sheetHeights } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
 import { Notice, useTabBarClearance } from '@shared/ui';
@@ -15,13 +15,16 @@ import { BookPicker } from './parts/BookPicker';
 import { Choices } from './parts/Choices';
 import { failureText } from './parts/failure';
 import { ScreenFrame } from './parts/Frame';
-import { HelpsPanel, helpsShare, type HelpsTab } from './parts/HelpsPanel';
+import { HelpsPanel, helpsHeading, helpsPeekShare, type HelpsTab } from './parts/HelpsPanel';
 import {
   chapterOf,
+  focusedSpans,
   helpsAt,
   highlightedIn,
   keyOf,
   neighbours,
+  requestedVerse,
+  sameVerse,
   type ChapterPlace,
   type VerseKey,
 } from './parts/passage';
@@ -67,7 +70,7 @@ export default function StudyScreen() {
   const params = useLocalSearchParams<{ reference?: string }>();
   const requested = asText(params.reference);
   const [chosen, setChosen] = useState<string | undefined>(undefined);
-  const [selected, setSelected] = useState<VerseKey | undefined>(undefined);
+  const [selected, setSelected] = useState<VerseKey | undefined>(() => requestedVerse(requested));
   const [original, setOriginal] = useState(false);
   const [readingChanges, setReadingChanges] = useState(0);
   const [picking, setPicking] = useState(false);
@@ -76,38 +79,44 @@ export default function StudyScreen() {
   const [failure, setFailure] = useState<string | undefined>(undefined);
   const [audioFailure, setAudioFailure] = useState<string | undefined>(undefined);
   const [saveFailure, setSaveFailure] = useState<string | undefined>(undefined);
+  const [room, setRoom] = useState(0);
   const [seen, setSeen] = useState(requested);
   if (seen !== requested) {
     setSeen(requested);
     setChosen(undefined);
-    setSelected(undefined);
+    setSelected(requestedVerse(requested));
+    setFocused(undefined);
   }
   const words = service.words();
 
   const target = chosen ?? requested;
+  const request = JSON.stringify([target ?? null, original, readingChanges]);
   const load = useCallback(async () => {
     const view: StudyView =
       target === undefined ? await service.open({ original }) : await service.passage(target, { original });
     const books = await service.books(view.state === 'original' ? view.passage.language : undefined);
-    return { view, books };
-  }, [service, target, original, readingChanges]);
+    return { view, books, request };
+  }, [service, target, original, request]);
   const { value, reload } = useLoaded(load, service.onPacksChange);
+  const changing = value !== undefined && value.request !== request;
 
-  const chosenVerse = selected ?? (value?.view.state === 'passage' ? value.view.view.landing : undefined);
   const selectedVerse = useMemo(() => {
-    if (value?.view.state !== 'passage') {
+    if (value?.view.state !== 'passage' || selected === undefined) {
       return undefined;
     }
-    const verses = value.view.view.passage.text.verses;
-    const found = verses.find(
-      (verse) =>
-        chosenVerse !== undefined &&
-        verse.chapter === chosenVerse.chapter &&
-        verse.verse === chosenVerse.verse,
-    );
-    const first = found ?? verses[0];
-    return first === undefined ? undefined : keyOf(first);
-  }, [value, chosenVerse]);
+    const found = value.view.view.passage.text.verses.find((verse) => sameVerse(selected, keyOf(verse)));
+    return found === undefined ? undefined : keyOf(found);
+  }, [value, selected]);
+
+  const [helpsVerse, setHelpsVerse] = useState<VerseKey | undefined>(undefined);
+  if (selectedVerse !== undefined && !sameVerse(helpsVerse, selectedVerse)) {
+    setHelpsVerse(selectedVerse);
+  }
+
+  const dismissHelps = useCallback(() => {
+    setSelected(undefined);
+    setFocused(undefined);
+  }, []);
 
   const go = (reference: string) => {
     setChosen(reference);
@@ -158,6 +167,7 @@ export default function StudyScreen() {
           next={around.next}
           onGo={(next) => go(placeReference(next))}
           onChoose={() => setPicking(true)}
+          busy={changing}
         />
         <Choices
           label={words.t('study.text.choice')}
@@ -260,22 +270,16 @@ export default function StudyScreen() {
   const place = chapterOf(passageView.reference);
   const around = neighbours(books, place);
   const focusReference =
-    chosenVerse === undefined ? passageView.reference : verseReference(passage.text.book, chosenVerse);
+    selectedVerse === undefined ? passageView.reference : verseReference(passage.text.book, selectedVerse);
   const saved = service.saved({
     target: 'passage',
     reference: focusReference,
     language: passageView.language,
   });
-  const helps = selectedVerse === undefined ? undefined : helpsAt(passage, selectedVerse);
-  const focusedSpans =
-    helps?.notes.find((note) => note.id === focused)?.words ??
-    helps?.wordLinks.find((link) => link.id === focused)?.words ??
-    helps?.notes[0]?.words ??
-    [];
   const highlighted =
     showingOriginal || selectedVerse === undefined
       ? new Set<number>()
-      : highlightedIn(focusedSpans, selectedVerse);
+      : highlightedIn(focusedSpans(helpsAt(passage, selectedVerse), focused), selectedVerse);
 
   return (
     <ScreenFrame>
@@ -287,6 +291,7 @@ export default function StudyScreen() {
         next={around.next}
         onGo={(next) => go(placeReference(next))}
         onChoose={() => setPicking(true)}
+        busy={changing}
       />
       {passageView.choices.length === 0 ? null : (
         <Choices
@@ -308,52 +313,69 @@ export default function StudyScreen() {
           style={{ marginHorizontal: theme.space.gutterScreen, marginTop: theme.space.sp6 }}
         />
       )}
-      <View style={styles.fill}>
-        <VerseList
-          passage={shown}
-          language={shown.language}
-          selected={selectedVerse}
-          highlighted={highlighted}
-          verseLabel={verseLabelOf(words)}
-          onSelect={(verse) => {
-            setSelected(verse);
-            setFocused(undefined);
-            void service.opened(verseReference(passage.text.book, verse));
-          }}
-          footer={<Attribution words={words} provenance={shown.text.provenance} />}
-        />
-      </View>
-      {saveFailure === undefined ? null : (
-        <View style={{ paddingHorizontal: theme.space.gutterScreen, paddingVertical: theme.space.sp4 }}>
-          <Notice text={saveFailure} />
+      <View
+        style={styles.fill}
+        accessibilityState={{ busy: changing }}
+        onLayout={(event: LayoutChangeEvent) => setRoom(event.nativeEvent.layout.height)}
+      >
+        <View style={styles.fill}>
+          <VerseList
+            passage={shown}
+            language={shown.language}
+            selected={selectedVerse}
+            landing={passageView.landing}
+            highlighted={highlighted}
+            verseLabel={verseLabelOf(words)}
+            onSelect={(verse) => {
+              setSelected(verse);
+              setFocused(undefined);
+              void service.opened(verseReference(passage.text.book, verse));
+            }}
+            footer={<Attribution words={words} provenance={shown.text.provenance} />}
+          />
         </View>
-      )}
-      <HelpsPanel
-        words={words}
-        passage={passage}
-        installed={passageView.helps}
-        at={selectedVerse}
-        tab={tab}
-        onTab={setTab}
-        focused={focused}
-        onFocus={setFocused}
-        onLink={openTarget}
-        labelOf={service.label}
-        saved={saved !== undefined}
-        onToggleSave={async () => {
-          const outcome =
-            saved === undefined
-              ? await service.save({
-                  target: 'passage',
-                  reference: focusReference,
-                  language: passageView.language,
-                })
-              : await service.unsave(saved.id);
-          setSaveFailure(outcome === undefined || outcome.ok ? undefined : failureText(words, outcome.code));
-          await reload();
-        }}
-        onShare={() => router.push(shareHref('passage', focusReference, passageView.language))}
-      />
+        <GlassSheet
+          open={selectedVerse !== undefined}
+          heights={sheetHeights(room, helpsPeekShare)}
+          accessibilityLabel={helpsVerse === undefined ? '' : helpsHeading(words, tab, helpsVerse)}
+          closeLabel={words.t('common.close')}
+          expandLabel={words.t('study.helps.expand')}
+          collapseLabel={words.t('study.helps.collapse')}
+          onDismiss={dismissHelps}
+        >
+          {saveFailure === undefined ? null : <Notice text={saveFailure} />}
+          {helpsVerse === undefined ? null : (
+            <HelpsPanel
+              words={words}
+              passage={passage}
+              installed={passageView.helps}
+              at={helpsVerse}
+              tab={tab}
+              onTab={setTab}
+              focused={focused}
+              onFocus={setFocused}
+              onLink={openTarget}
+              labelOf={service.label}
+              saved={saved !== undefined}
+              onToggleSave={async () => {
+                const outcome =
+                  saved === undefined
+                    ? await service.save({
+                        target: 'passage',
+                        reference: focusReference,
+                        language: passageView.language,
+                      })
+                    : await service.unsave(saved.id);
+                setSaveFailure(
+                  outcome === undefined || outcome.ok ? undefined : failureText(words, outcome.code),
+                );
+                await reload();
+              }}
+              onShare={() => router.push(shareHref('passage', focusReference, passageView.language))}
+            />
+          )}
+        </GlassSheet>
+      </View>
       <AudioBar
         words={words}
         reference={placeLabel(words, passage, place)}
@@ -368,5 +390,5 @@ export default function StudyScreen() {
 }
 
 const styles = StyleSheet.create({
-  fill: { flexGrow: 1, flexShrink: 1, flexBasis: helpsShare },
+  fill: { flex: 1 },
 });

@@ -3,6 +3,26 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-11-05 Study helps sheet, note focus and chapter-change progress (#90, #91, part of #99), Node only
+
+Node v22.22.2. Nothing ran on a phone, an emulator, a simulator or the web harness in this entry. The sheet's
+drag, its focus move, TalkBack and VoiceOver, Android Back, the largest text size, right to left, Reduce Motion,
+light, dark and reduced-blur, and whether a tap on a note's "Show in the verse" now reaches its handler on
+Android and iOS are all unverified.
+
+- **Red first:** `src/features/study/screens/parts/passage.test.ts` (help keys qualified by resource, no
+  first-note fallback, the not-found placement) and `src/shared/glass/sheet.test.ts` (peek, drag, settle) failed
+  before the code existed: 5 failed, and the sheet suite could not import.
+- **Corpus:** the three-note verse in `src/lib/corpus/alignment.test.ts` and the extended ST-2 scenario (m003 on
+  the second "and", m004, and m005 that the text does not hold) passed on their first run. The corpus already
+  placed each quote; this supports the issue's inference that #91 is in the screen, not in `attachQuote`.
+- **Verify:** `npm run verify` green: 848 tests, 9 checks, 63 of 63 scenarios, 21 fixture burritos, both
+  bundles; the live contract was skipped offline.
+- **Review follow-up:** a request that names a verse selects it again, so the sheet opens at peek on a verse
+  reached from a search hit, a note link or a Home bookmark; `requestedVerse` in `parts/passage.test.ts` failed
+  first (3 failed) and then passed. The expanded detent hiding the verse list is recorded as a design question in
+  the proposal. Not run on a device.
+
 ## 2026-11-05 Loading feedback (#99, #86), tests and checks only
 
 Node v22. Nothing ran on a phone, an emulator or a simulator, and no screen was rendered: light, dark,

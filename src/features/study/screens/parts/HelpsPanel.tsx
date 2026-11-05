@@ -1,23 +1,23 @@
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { GlassButton, GlassIconButton, GlassSurface, Icon } from '@shared/glass';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { GlassButton, GlassIconButton, Icon } from '@shared/glass';
 import { contentText, useTheme } from '@shared/theme';
 import type { HelpsInstalled, Introduction, LinkTarget, Note, Passage, Question } from '../../service';
 import type { StudyWords } from '../../strings';
 import { Blocks } from './Blocks';
 import { Choices } from './Choices';
-import { helpsAt, type VerseKey } from './passage';
+import { helpKey, helpsAt, placementOf, type VerseKey } from './passage';
 import { Say } from './Say';
 
 export type HelpsTab = 'notes' | 'wordLinks' | 'questions';
 
-export const helpsShare = '50%';
+export const helpsPeekShare = 0.5;
 
 export type HelpsPanelProps = {
   words: StudyWords;
   passage: Passage;
   installed: HelpsInstalled;
-  at: VerseKey | undefined;
+  at: VerseKey;
   tab: HelpsTab;
   onTab: (tab: HelpsTab) => void;
   focused: string | undefined;
@@ -44,6 +44,7 @@ const emptyKeys = {
 function NoteItem({
   words,
   note,
+  at,
   focused,
   language,
   onFocus,
@@ -52,14 +53,16 @@ function NoteItem({
 }: {
   words: StudyWords;
   note: Note;
+  at: VerseKey;
   focused: boolean;
   language: string;
-  onFocus: (id: string) => void;
+  onFocus: (key: string) => void;
   onLink: (target: LinkTarget) => void;
   labelOf: (target: LinkTarget) => string | undefined;
 }) {
   const theme = useTheme();
   const support = note.support;
+  const placement = placementOf(note, at);
   const supportLabel =
     support === undefined
       ? ''
@@ -70,11 +73,7 @@ function NoteItem({
             ? support.reference
             : words.t('search.kind.story')));
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={note.quote}
-      accessibilityState={{ selected: focused }}
-      onPress={() => onFocus(note.id)}
+    <View
       style={{
         gap: theme.space.sp3,
         padding: theme.space.sp5,
@@ -82,7 +81,7 @@ function NoteItem({
         backgroundColor: focused ? theme.color.glassFill2 : undefined,
       }}
     >
-      {note.quote.length === 0 ? null : (
+      {placement === 'unquoted' ? null : (
         <Say
           role="label"
           tone="title"
@@ -92,6 +91,26 @@ function NoteItem({
           {note.quote}
         </Say>
       )}
+      {placement === 'placed' ? (
+        <GlassButton
+          variant="quiet"
+          size="sm"
+          accessibilityLabel={words.t('common.joined', {
+            first: words.t('study.helps.showInVerse'),
+            second: note.quote,
+          })}
+          onPress={() => onFocus(helpKey(note))}
+          leading={<Icon name={focused ? 'check' : 'search'} size={theme.fontSize.fsLabel} />}
+        >
+          <Say role="caption" tone="link" weight="medium">
+            {words.t('study.helps.showInVerse')}
+          </Say>
+        </GlassButton>
+      ) : placement === 'not-found' ? (
+        <Say role="caption" tone="dim">
+          {words.t('study.helps.notFound')}
+        </Say>
+      ) : null}
       <Blocks
         blocks={note.blocks}
         language={language}
@@ -112,7 +131,7 @@ function NoteItem({
           </Say>
         </GlassButton>
       )}
-    </Pressable>
+    </View>
   );
 }
 
@@ -213,6 +232,10 @@ function QuestionItem({
   );
 }
 
+export function helpsHeading(words: StudyWords, tab: HelpsTab, at: VerseKey): string {
+  return words.t('study.helps.heading', { helps: words.t(tabKeys[tab]), verse: String(at.verse) });
+}
+
 export function HelpsPanel({
   words,
   passage,
@@ -230,10 +253,7 @@ export function HelpsPanel({
 }: HelpsPanelProps) {
   const theme = useTheme();
   const language = passage.language;
-  const helps =
-    at === undefined
-      ? { intros: [], notes: [], wordLinks: [], questions: [], footnotes: [] }
-      : helpsAt(passage, at);
+  const helps = helpsAt(passage, at);
   const choices = (Object.keys(tabKeys) as HelpsTab[]).map((key) => ({
     key,
     label: words.t(tabKeys[key]),
@@ -246,21 +266,7 @@ export function HelpsPanel({
         ? helps.wordLinks.length
         : helps.questions.length;
   return (
-    <GlassSurface
-      level={3}
-      blur="heavy"
-      radius="xl"
-      style={[
-        styles.panel,
-        {
-          marginHorizontal: theme.space.sp5,
-          paddingTop: theme.space.sp6,
-          paddingHorizontal: theme.space.sp7,
-          paddingBottom: theme.space.sp6,
-          gap: theme.space.sp5,
-        },
-      ]}
-    >
+    <View style={[styles.fill, { gap: theme.space.sp5 }]}>
       <View style={[styles.row, { gap: theme.space.sp3 }]}>
         <Choices choices={choices} onChoose={onTab} compact style={styles.fill} />
         <GlassIconButton
@@ -274,11 +280,9 @@ export function HelpsPanel({
           <Icon name="navigation" />
         </GlassIconButton>
       </View>
-      {at === undefined ? null : (
-        <Say role="overline" tone="dim">
-          {words.t('study.helps.heading', { helps: words.t(tabKeys[tab]), verse: String(at.verse) })}
-        </Say>
-      )}
+      <Say role="overline" tone="dim">
+        {helpsHeading(words, tab, at)}
+      </Say>
       <ScrollView style={styles.body} contentContainerStyle={{ gap: theme.space.sp3 }}>
         {count === 0 && !installed[tab] ? (
           <Say role="caption" tone="body">
@@ -295,10 +299,11 @@ export function HelpsPanel({
             ))}
             {helps.notes.map((note) => (
               <NoteItem
-                key={note.id}
+                key={helpKey(note)}
                 words={words}
                 note={note}
-                focused={note.id === focused}
+                at={at}
+                focused={helpKey(note) === focused}
                 language={language}
                 onFocus={onFocus}
                 onLink={onLink}
@@ -320,11 +325,11 @@ export function HelpsPanel({
             <View style={[styles.wrap, { gap: theme.space.sp3 }]}>
               {helps.wordLinks.map((link) => (
                 <GlassButton
-                  key={link.id}
+                  key={helpKey(link)}
                   variant="glass"
                   size="sm"
                   onPress={() => {
-                    onFocus(link.id);
+                    onFocus(helpKey(link));
                     onLink({ kind: 'article', id: link.article });
                   }}
                 >
@@ -342,12 +347,11 @@ export function HelpsPanel({
           ))
         )}
       </ScrollView>
-    </GlassSurface>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  panel: { flexShrink: 1, maxHeight: helpsShare },
   row: { flexDirection: 'row', alignItems: 'center' },
   wrap: { flexDirection: 'row', flexWrap: 'wrap' },
   fill: { flex: 1 },
