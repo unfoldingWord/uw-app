@@ -1,7 +1,6 @@
 # Performance strategy: tune, measure on phones, move only hot paths native
 
-Status: proposed, awaiting a decision from the requirements owner (issue #100). If accepted, it becomes an ADR,
-since it settles the platform question and is hard to reverse.
+Status: approved by the requirements owner on 2026-11-05 ("Go with your suggestions above"): the recommended option of every question below is the decision. (issue #100)
 
 ## Problem
 
@@ -98,7 +97,7 @@ and targeted native modules behind ports where a measurement on a phone names th
   installed today; the alternative is a local config plugin under `plugins/`.
 - DX-3 and the sim: unchanged. A work-off-thread option that the sim cannot run is refused.
 
-## Decision needed
+## Decision taken
 
 1. Strategy: **tune the current codebase, measuring on phones first, and move only measured hot paths
    native behind ports** (recommended), or a native rewrite (Kotlin and Swift, or Kotlin Multiplatform or

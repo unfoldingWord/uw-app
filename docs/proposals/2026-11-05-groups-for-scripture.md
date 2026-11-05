@@ -1,6 +1,6 @@
 # Groups for Scripture
 
-Status: proposed, awaiting a decision from the requirements owner (issue #94).
+Status: approved by the requirements owner on 2026-11-05 ("Go with your suggestions above"): the recommended option of every question below is the decision. (issue #94)
 
 ## Problem
 
@@ -82,7 +82,7 @@ product decision, recorded in the decision log once taken.
 - DX-3: held by the replay scenario above. This would also become an ADR if accepted, since it changes the
   shape of a Position and is hard to reverse once journals carry it.
 
-## Decision needed
+## Decision taken
 
 1. Should a group be able to follow Scripture, widening FO-4 and FO-6? **Yes, as a fourth track, `scripture`**
    (recommended), or no.

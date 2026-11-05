@@ -1,6 +1,6 @@
 # The five movements in other languages
 
-Status: proposed, awaiting a decision from the requirements owner (issue #92).
+Status: approved by the requirements owner on 2026-11-05 ("Go with your suggestions above"): the recommended option of every question below is the decision. (issue #92)
 
 ## Problem
 
@@ -64,7 +64,7 @@ state is already in `FoundationsSession`.
 - Section 10: unchanged. A contribution link, if chosen, opens in the browser; it is not an Http port call.
 - No change to rules 2 to 5 and no shared root.
 
-## Decision needed
+## Decision taken
 
 1. Content when a language has no five-movement content: **(a) keep the English fallback and say so plainly**
    (recommended), or (b) generic per-movement prompts as strings (the #93 work), or both.

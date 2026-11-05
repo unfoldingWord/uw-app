@@ -1,6 +1,6 @@
 # The five movements on any Scripture passage
 
-Status: proposed, awaiting a decision from the requirements owner (issue #93).
+Status: approved by the requirements owner on 2026-11-05 ("Go with your suggestions above"): the recommended option of every question below is the decision. (issue #93)
 
 ## Problem
 
@@ -70,7 +70,7 @@ Scripture track and there is one position model and one note table.
 - Rule 3: no new writer; notes stay in `formation_notes`, owned by `formation`.
 - Rule 1: new strings in the formation table and every locale file.
 
-## Decision needed
+## Decision taken
 
 1. Should leaders be able to run the five movements on any Scripture passage? If yes, this adds a Must or
    Should requirement to PRD section 7.4; which priority?

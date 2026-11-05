@@ -13,6 +13,9 @@ d53a075.
   bundles. The live contract was skipped, offline.
 - **Not verified:** nothing in the proposals ran on a phone. The APK figures in the performance proposal come
   from issue #100 (measured from `unfoldingWord-v0.0.2-native-unzip.1.apk`), not from a run in this entry.
+- **Decisions, follow-up:** the owner approved the recommended option of every question on 2026-11-05 ("Go with
+  your suggestions above"). Decision-log rows 98 to 103 and ADR 0014 record them, with rows 102 and 103 for the
+  Training renumbering (#105) and the Image Pack with the first language (#107). No code changed.
 
 ## 2026-10-20 P2 native unzip, sim and checks only
 
