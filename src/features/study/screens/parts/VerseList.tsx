@@ -3,6 +3,7 @@ import { FlatList, Pressable, StyleSheet, Text, type TextStyle, type ViewToken }
 import { contentText, type Direction, useTheme } from '@shared/theme';
 import type { Passage, Verse } from '../../service';
 import {
+  inSpan,
   keyOf,
   middleOf,
   sameVerse,
@@ -18,10 +19,12 @@ export type VerseListProps = {
   passage: Passage;
   language: string;
   selected: VerseKey | undefined;
+  through?: VerseKey;
   landing?: VerseKey;
   highlighted: ReadonlySet<number>;
   verseLabel: (verse: Verse) => string;
   onSelect: (verse: VerseKey) => void;
+  onExtend?: (verse: VerseKey) => void;
   footer?: ReactElement;
 };
 
@@ -29,20 +32,24 @@ type RowProps = {
   verse: Verse;
   title: string | undefined;
   active: boolean;
+  inRange: boolean;
   highlighted: ReadonlySet<number>;
   text: TextStyle;
   label: string;
   onSelect: (verse: VerseKey) => void;
+  onExtend: ((verse: VerseKey) => void) | undefined;
 };
 
 const VerseRow = memo(function VerseRow({
   verse,
   title,
   active,
+  inRange,
   highlighted,
   text,
   label,
   onSelect,
+  onExtend,
 }: RowProps) {
   const theme = useTheme();
   const number =
@@ -52,8 +59,9 @@ const VerseRow = memo(function VerseRow({
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
-      accessibilityState={{ selected: active }}
+      accessibilityState={{ selected: inRange }}
       onPress={() => onSelect(keyOf(verse))}
+      onLongPress={onExtend === undefined ? undefined : () => onExtend(keyOf(verse))}
       style={[
         styles.row,
         {
@@ -61,7 +69,7 @@ const VerseRow = memo(function VerseRow({
           paddingVertical: theme.space.sp5,
           paddingHorizontal: theme.space.sp6,
           borderRadius: theme.radius.rSm,
-          backgroundColor: active ? theme.color.glassFill2 : undefined,
+          backgroundColor: inRange ? theme.color.glassFill2 : undefined,
         },
       ]}
     >
@@ -111,10 +119,12 @@ export function VerseList({
   passage,
   language,
   selected,
+  through,
   landing,
   highlighted,
   verseLabel,
   onSelect,
+  onExtend,
   footer,
 }: VerseListProps) {
   const theme = useTheme();
@@ -186,14 +196,16 @@ export function VerseList({
             verse={item}
             title={item.verse === 1 ? titles.get(item.chapter) : undefined}
             active={active}
+            inRange={selected !== undefined && inSpan(item, selected, through)}
             highlighted={active ? highlighted : emptySet}
             text={text}
             label={verseLabel(item)}
             onSelect={onSelect}
+            onExtend={onExtend}
           />
         );
       }}
-      extraData={`${selectedIndex}:${[...highlighted].join(',')}`}
+      extraData={`${selectedIndex}:${through === undefined ? '' : `${through.chapter}:${through.verse}`}:${[...highlighted].join(',')}`}
       onScrollToIndexFailed={({ index, averageItemLength }) => {
         const estimate =
           averageItemLength > 0 ? averageItemLength : (text.lineHeight ?? theme.fontSize.fsSubtitle) * 2;

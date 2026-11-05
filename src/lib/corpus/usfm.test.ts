@@ -35,6 +35,12 @@ describe('parseUsfm', () => {
     expect(book.code).toBe('TIT');
     expect(book.name).toBe('Titus');
     expect(book.names).toEqual(['Titus', 'The Letter of Paul to Titus', 'Tit']);
+    expect(book.abbreviation).toBe('Tit');
+  });
+
+  it('falls back to the book name for the short name when the book has no toc3', () => {
+    const book = parseUsfm('\\id RUT\n\\toc2 Ruth\n\\c 1\n\\p\n\\v 1 In the days.');
+    expect(book.abbreviation).toBe('Ruth');
   });
 
   it('keeps each word with the original words it is aligned to, nested alignment included', () => {

@@ -4,6 +4,7 @@ import type { Note, Verse, WordLink, WordSpan } from '../../service';
 import {
   focusedSpans,
   helpKey,
+  inSpan,
   indexNear,
   middleOf,
   placementOf,
@@ -232,5 +233,31 @@ describe('ST-3 switching the reading keeps the verse in view, centred (issue #10
         { chapter: 1, verse: 6 },
       ]),
     ).toEqual({ chapter: 1, verse: 5 });
+  });
+});
+
+describe('the verses a copy covers', () => {
+  const row = (number: number, through?: number): Verse => ({
+    chapter: 1,
+    verse: number,
+    ...(through === undefined ? {} : { through }),
+    text: '',
+    tokens: [],
+  });
+
+  it('is the selected verse alone until another is pressed and held', () => {
+    expect(
+      [row(1), row(2), row(3)].map((verse) => inSpan(verse, { chapter: 1, verse: 2 }, undefined)),
+    ).toEqual([false, true, false]);
+  });
+
+  it('runs either way between the two verses and takes a bridge it touches', () => {
+    const rows = [row(1), row(2, 3), row(4), row(5)];
+    expect(rows.map((verse) => inSpan(verse, { chapter: 1, verse: 4 }, { chapter: 1, verse: 3 }))).toEqual([
+      false,
+      true,
+      true,
+      false,
+    ]);
   });
 });

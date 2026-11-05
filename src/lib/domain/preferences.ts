@@ -4,6 +4,10 @@ export const freeText = 'free-text';
 
 export const languageValue = 'language';
 
+export const copyReferences = ['before-short', 'before-full', 'after-short', 'after-full', 'none'] as const;
+
+export type CopyReference = (typeof copyReferences)[number];
+
 type PreferenceSpec = typeof freeText | typeof languageValue | readonly string[];
 
 export const preferenceSchemas = {
@@ -14,6 +18,7 @@ export const preferenceSchemas = {
   'settings.reducedMotion': ['on', 'off'],
   'study.language': languageValue,
   'study.reading': ['literal', 'simplified'],
+  'study.copyReference': copyReferences,
   'formation.englishMovements': ['on', 'off'],
 } as const satisfies Record<string, PreferenceSpec>;
 

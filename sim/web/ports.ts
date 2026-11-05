@@ -1,5 +1,6 @@
 import type { Db, DevicePlatform, Files, Http, HttpDownload, HttpRequest, Kv, Ports } from '@lib/ports';
 import { createMemoryAudio, type MemoryAudio } from '@sim/adapters/audio';
+import { createMemoryClipboard } from '@sim/adapters/clipboard';
 import { createMemoryClock } from '@sim/adapters/clock';
 import { createMemoryFiles } from '@sim/adapters/files';
 import { createMemoryHttp, createMemoryNetwork, type MemoryNetwork } from '@sim/adapters/http';
@@ -210,6 +211,7 @@ export function createPlatformPorts(policy: HostPolicy): Ports {
     transport: bus.transport({ platform: harnessPlatform, appPackage: harnessAppPackage }),
     audio,
     shareSheet: createMemoryShareSheet(),
+    clipboard: createMemoryClipboard(),
     locale,
     picker: createMemoryPicker(),
   };

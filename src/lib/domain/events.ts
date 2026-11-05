@@ -232,6 +232,7 @@ export const eventSchemas = {
   },
   ImportReceived: { replay: 'verbatim', payload: { install: 'id' } },
   ShareSent: { replay: 'verbatim', payload: { kind: shareKinds, language: 'language?' } },
+  VersesCopied: { replay: 'verbatim', payload: { reference: 'reference?', language: 'language' } },
   BookmarkAdded: {
     replay: 'redo',
     payload: {

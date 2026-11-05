@@ -32,6 +32,7 @@ const passage: Passage = {
     reading: 'literal',
     book: 'RUT',
     bookName: 'Ruth',
+    bookAbbreviation: 'Rut',
     direction: 'ltr',
     titles: [],
     verses: [

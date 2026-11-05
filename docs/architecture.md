@@ -38,7 +38,7 @@ The controls: `start()` runs the migrations, reads the journal and journals `App
 
 ## Ports
 
-Every port has exactly two adapters, platform and memory, so every seam is real. Ports are the only place the kernel touches the world. There are eleven (`Ports` in `src/lib/ports.ts`).
+Every port has exactly two adapters, platform and memory, so every seam is real. Ports are the only place the kernel touches the world. There are twelve (`Ports` in `src/lib/ports.ts`).
 
 | Port | Provides | Memory adapter |
 |---|---|---|
@@ -51,6 +51,7 @@ Every port has exactly two adapters, platform and memory, so every seam is real.
 | Transport | availability, advertise under a pairing code (with an address), discover, connect, a link of byte chunks, the Android app package and `install(path)` | a shared in-memory bus between sim devices |
 | Audio | `load(source)`, `play`, `pause`, `seek`, `status`, `unload` | scripted clock |
 | ShareSheet | hand a payload with provenance to the system | records payloads |
+| Clipboard | `copy(text)`: put plain text on the system clipboard | holds the last text, scripted refusals |
 | Picker | `pickArchive()`: ask the system for a burrito file | scripted picks, cancels and failures |
 | Locale | device locale, region, time zone, direction | settable |
 
@@ -74,7 +75,7 @@ Each is a deep module: small interface, tests at the interface, internals free t
 
 **Transfer.** Sender: `offer(plan)` advertises under a short code, `run(transfer)` sends what the receiver accepts. Receiver: `discover()`, `connect(peer)` (or `connectAt(address, code)` for a typed or scanned address) sends the pairing code and shows the offer, `accept(selection)` receives and verifies every archive and returns a peer delivery (`PeerDelivery`) that hands Packs each archive as the file it was received into (`{ ok: true, path }`), never its bytes; then it is just `packs.install(fromPeer(delivery))`. Either side: `cancel()`, `current()`, `decline()`. On Android the receiver hands a received app package to the system installer with `installApp()`, and journals `AppInstallerOpened` once the installer is open. A state machine over the Transport port, speaking a small versioned protocol (`src/lib/transfer/protocol.ts`). Carries burritos, and on Android the app package.
 
-**Share.** `passage(passage)`, `story(story)`, `audio(clip)`, `journal(report)`, each with the locale for its words. Builds payloads with provenance and the link from content the corpus already returned, hands them to ShareSheet. `journal(report)` shares the diagnostics file; by default it leaves out what the leader read (the `reference`, `article` and `story` fields of the opening events, and bookmarks), keeping every event, unless the leader turns on "Include what I read" for that one share (issue #20, `replay.md`).
+**Share.** `passage(passage)`, `story(story)`, `audio(clip)`, `journal(report)`, each with the locale for its words, and `copy(passage, span)`, which writes a verse or range with the reference format the reader chose and the attribution line to Clipboard. Builds payloads with provenance and the link from content the corpus already returned, hands them to ShareSheet. `journal(report)` shares the diagnostics file; by default it leaves out what the leader read (the `reference`, `article` and `story` fields of the opening events, and bookmarks), keeping every event, unless the leader turns on "Include what I read" for that one share (issue #20, `replay.md`).
 
 **Strings.** `t(key, locale, params)`, `plural(key, n, locale)`, `direction(locale)`, `resolveLocale(tags)`, `words(locale)`, `completeness()`. The one string table. A sentence a module produces is a code; a screen words it. Only the locales the locale gate admits are offered.
 
@@ -103,7 +104,7 @@ Nothing it reads identifies the leader or the device. The glass primitives in `s
 
 ## Events are the spine
 
-Every module returns events; the kernel appends them to the journal. Modules never call each other's internals; where one needs to react to another, it reacts to an event. There are 45 (`eventSchemas` in `src/lib/domain/events.ts`), each with a replay class (`redo`, `follows` or `verbatim`, `replay.md`):
+Every module returns events; the kernel appends them to the journal. Modules never call each other's internals; where one needs to react to another, it reacts to an event. There are 46 (`eventSchemas` in `src/lib/domain/events.ts`), each with a replay class (`redo`, `follows` or `verbatim`, `replay.md`):
 
 ```
 AppOpened   Failure(code, context)
@@ -113,7 +114,7 @@ PassageOpened   ArticleOpened   StoryOpened   SearchRun   IndexStarted   IndexBu
 GroupCreated   GroupRenamed   GroupDeleted   GroupActivated   PositionChanged
 SessionStarted   MovementCompleted   SessionCompleted   SessionNoteSaved   LessonCompleted
 TransferOffered   TransferAccepted   TransferProgressed   TransferCompleted   TransferFailed   AppInstallerOpened
-ImportReceived   ShareSent   BookmarkAdded   BookmarkRemoved   PreferenceChanged   TelemetrySent
+ImportReceived   ShareSent   VersesCopied   BookmarkAdded   BookmarkRemoved   PreferenceChanged   TelemetrySent
 InvitationShown   InvitationTapped   InvitationDismissed
 ImpactStoryOpened   ImpactStoriesRefreshStarted   ImpactStoriesRefreshed
 ```

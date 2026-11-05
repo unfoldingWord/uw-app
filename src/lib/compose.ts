@@ -150,6 +150,7 @@ function modulePorts(ports: Ports, scope: Scope, ids: Ids, send: SendPolicy): Mo
     transport: ports.transport,
     audio: ports.audio,
     shareSheet: ports.shareSheet,
+    clipboard: ports.clipboard,
     picker: ports.picker,
     locale: ports.locale,
   };

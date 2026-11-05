@@ -322,6 +322,7 @@ export async function assemblePassage(
       reading: readingOfKind(entry.kind),
       book: reference.book,
       bookName: book.name,
+      bookAbbreviation: book.abbreviation,
       direction: entry.direction,
       titles: chapterTitles(book, verses),
       verses,

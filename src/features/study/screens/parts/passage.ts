@@ -203,3 +203,18 @@ export function scrollPlan(move: ScrollMove, verses: readonly Verse[]): ScrollPl
 export function middleOf(keys: readonly VerseKey[]): VerseKey | undefined {
   return keys[Math.floor(keys.length / 2)];
 }
+
+function compareKeys(left: VerseKey, right: VerseKey): number {
+  return left.chapter - right.chapter || left.verse - right.verse;
+}
+
+export function orderedSpan(from: VerseKey, to: VerseKey | undefined): { from: VerseKey; to: VerseKey } {
+  const end = to ?? from;
+  return compareKeys(from, end) <= 0 ? { from, to: end } : { from: end, to: from };
+}
+
+export function inSpan(verse: Verse, from: VerseKey, to: VerseKey | undefined): boolean {
+  const { from: low, to: high } = orderedSpan(from, to);
+  const last = { chapter: verse.chapter, verse: verse.through ?? verse.verse };
+  return compareKeys(verse, high) <= 0 && compareKeys(last, low) >= 0;
+}

@@ -43,6 +43,7 @@ export const failures = {
   'failure.transfer.cancelled': 'The transfer was stopped, and nothing partial was kept.',
   'failure.audio.unavailable': 'Audio is not available for this right now.',
   'failure.share.unavailable': 'Sharing is not available on this phone right now.',
+  'failure.clipboard.unavailable': 'Copying is not available on this phone right now.',
   'failure.partners.invalid-feed':
     'The impact stories came back in a form the app cannot read, but the ones on this phone still show.',
   'failure.unexpected': 'Something did not work, so try again or share diagnostics for someone to help.',

@@ -182,6 +182,10 @@ export type ShareSheet = {
   share(payload: SharePayload): Promise<ShareOutcome>;
 };
 
+export type Clipboard = {
+  copy(text: string): Promise<void>;
+};
+
 export type PickedFile = { uri: string };
 
 export type Picker = {
@@ -204,6 +208,7 @@ export type Ports = {
   transport: Transport;
   audio: Audio;
   shareSheet: ShareSheet;
+  clipboard: Clipboard;
   picker: Picker;
   locale: Locale;
 };

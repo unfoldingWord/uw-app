@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { GlassButton, GlassIconButton, Icon } from '@shared/glass';
 import { contentText, useTheme } from '@shared/theme';
@@ -27,6 +27,9 @@ export type HelpsPanelProps = {
   saved: boolean;
   onToggleSave: () => Promise<void>;
   onShare: () => void;
+  copyLabel: string;
+  onCopy: () => Promise<void>;
+  copyPanel: ReactNode;
 };
 
 const tabKeys = {
@@ -250,6 +253,9 @@ export function HelpsPanel({
   saved,
   onToggleSave,
   onShare,
+  copyLabel,
+  onCopy,
+  copyPanel,
 }: HelpsPanelProps) {
   const theme = useTheme();
   const language = passage.language;
@@ -269,6 +275,9 @@ export function HelpsPanel({
     <View style={[styles.fill, { gap: theme.space.sp5 }]}>
       <View style={[styles.row, { gap: theme.space.sp3 }]}>
         <Choices choices={choices} onChoose={onTab} compact style={styles.fill} />
+        <GlassButton variant="glass" size="sm" accessibilityLabel={copyLabel} onPress={onCopy}>
+          {words.t('study.copy')}
+        </GlassButton>
         <GlassIconButton
           label={words.t(saved ? 'common.bookmark.remove' : 'study.passage.save')}
           size={theme.space.sp13}
@@ -280,6 +289,7 @@ export function HelpsPanel({
           <Icon name="navigation" />
         </GlassIconButton>
       </View>
+      {copyPanel}
       <Say role="overline" tone="dim">
         {helpsHeading(words, tab, at)}
       </Say>

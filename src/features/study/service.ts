@@ -11,11 +11,14 @@ import type {
   TextChoice,
 } from '@lib/corpus/types';
 import { bookByCode, type Testament } from '@lib/domain/books';
+import type { FailureCode } from '@lib/domain/failures';
 import { imagePackId, languagePackId, type PackId } from '@lib/domain/pack';
+import { copyReferences, type CopyReference } from '@lib/domain/preferences';
 import { formatReference, parseReference, type Reference } from '@lib/domain/reference';
 import type { Kernel } from '@lib/kernel';
 import type { CatalogInstallOptions, InstallOutcome } from '@lib/packs/types';
 import { clipControls, clockTime, type ClipControls, type PlayerStatus } from '@lib/player/types';
+import type { VerseSpan } from '@lib/share/types';
 import type { Written } from '@lib/written';
 import { isStoryAudio } from '@lib/catalog/types';
 import { libraryCards, type LibraryCard } from './library';
@@ -39,6 +42,8 @@ export type {
   WordSpan,
 } from '@lib/corpus/types';
 export type { LibraryCard } from './library';
+export type { CopyReference } from '@lib/domain/preferences';
+export type { VerseSpan } from '@lib/share/types';
 export type { ClipControls, PlayerStatus } from '@lib/player/types';
 export { skipMs } from '@lib/player/types';
 
@@ -115,6 +120,18 @@ export type StudyView =
     }
   | { readonly state: 'passage'; readonly view: PassageView };
 
+export type CopyReferenceChoice = {
+  readonly key: CopyReference;
+  readonly label: string;
+  readonly selected: boolean;
+};
+
+export type CopyOutcome =
+  | { readonly ok: true; readonly text: string; readonly label: string }
+  | { readonly ok: false; readonly code: FailureCode };
+
+const defaultCopyReference: CopyReference = 'before-short';
+
 export type RelatedArticle = { readonly id: string; readonly title: string };
 
 export type ArticleView =
@@ -155,6 +172,10 @@ export type StudyService = {
   passage(reference: string, request?: PassageRequest): Promise<StudyView>;
   reading(): TextChoice;
   setReading(text: TextChoice): Promise<boolean>;
+  copyReference(): CopyReference;
+  copyReferences(): readonly CopyReferenceChoice[];
+  setCopyReference(format: CopyReference): Promise<boolean>;
+  copy(passage: Passage, span: VerseSpan): Promise<CopyOutcome>;
   library(): Promise<LibraryView>;
   download(pack: PackId, options?: CatalogInstallOptions): Promise<InstallOutcome>;
   article(id: string): Promise<ArticleView>;
@@ -197,6 +218,7 @@ export function createStudyService(kernel: Kernel): StudyService {
   const { preferences, corpus, bookmarks } = kernel;
   const words = (): StudyWords => studyWords(kernel);
   const reading = (): TextChoice => preferences.get('study.reading') ?? 'literal';
+  const copyReference = (): CopyReference => preferences.get('study.copyReference') ?? defaultCopyReference;
 
   const audioOf = async (passage: Passage): Promise<AudioView> => {
     const current = words();
@@ -391,6 +413,26 @@ export function createStudyService(kernel: Kernel): StudyService {
     },
     reading,
     setReading: (text) => preferences.set('study.reading', text),
+    copyReference,
+    copyReferences: () => {
+      const current = words();
+      const chosen = copyReference();
+      return copyReferences.map((key) => ({
+        key,
+        label: current.t(`study.copy.${key}`),
+        selected: key === chosen,
+      }));
+    },
+    setCopyReference: (format) => preferences.set('study.copyReference', format),
+    async copy(found, span) {
+      const copied = await kernel.share.copy(found, span, {
+        locale: preferences.locale(),
+        reference: copyReference(),
+      });
+      return copied.ok
+        ? { ok: true, text: copied.text, label: words().t('study.copy.done', { reference: copied.label }) }
+        : copied;
+    },
     async library() {
       const language = preferences.contentLanguage();
       const current = words();

@@ -10,6 +10,7 @@ import { createMemoryKv } from './kv';
 import { createMemoryLocale, defaultSimLocale } from './locale';
 import { createPlaybackClock, createPlaybackIds } from './playback';
 import { createMemoryShareSheet } from './share-sheet';
+import { createMemoryClipboard } from './clipboard';
 import { createTransportBus } from './transport';
 
 async function codeOf(work: Promise<unknown>): Promise<string> {
@@ -300,6 +301,19 @@ describe('ShareSheet memory adapter', () => {
     sheet.respondWith('dismissed');
     expect(await sheet.share({ title: 't', text: 'x', provenance: [] })).toBe('dismissed');
     expect(sheet.shared().map((payload) => payload.title)).toEqual(['JHN 3:16', 't']);
+  });
+});
+
+describe('Clipboard memory adapter', () => {
+  it('holds the last text and refuses once when told to', async () => {
+    const clipboard = createMemoryClipboard();
+    expect(clipboard.text()).toBeUndefined();
+    await clipboard.copy('Rut 1:16');
+    clipboard.failNext('clipboard.unavailable');
+    await expect(clipboard.copy('Rut 1:17')).rejects.toMatchObject({ code: 'clipboard.unavailable' });
+    expect(clipboard.text()).toBe('Rut 1:16');
+    await clipboard.copy('Rut 1:17');
+    expect(clipboard.text()).toBe('Rut 1:17');
   });
 });
 
