@@ -1,7 +1,7 @@
 import { compareReleases } from '../catalog/normalize';
 import { comparePublishers, compareText } from '../order';
 import type { CatalogRelease } from '../catalog/types';
-import type { PackId, ResourceRow } from '../domain/pack';
+import { imagePackId, languagePackId, type PackId, type ResourceRow } from '../domain/pack';
 import { resourceKey } from '../domain/release';
 import type { InstalledBurrito, InstalledPack, PackUpdate, ResourceUpdate } from './types';
 
@@ -97,6 +97,22 @@ export function defaultReleases(releases: readonly CatalogRelease[], pack: PackI
     }
   }
   return [...publishersPair(inPack.filter(isText)), ...chosen.values()].sort(compareReleases);
+}
+
+export function picturesFollow(
+  releases: readonly CatalogRelease[],
+  installed: readonly InstalledPack[],
+  language: string,
+): boolean {
+  const readsStories = installed.some(
+    (pack) => pack.kind === 'language' && pack.burritos.some((burrito) => burrito.row === 'stories'),
+  );
+  return (
+    !readsStories &&
+    !installed.some((pack) => pack.pack === imagePackId) &&
+    releases.some((release) => release.pack === imagePackId) &&
+    defaultReleases(releases, languagePackId(language)).some((release) => release.row === 'stories')
+  );
 }
 
 export function optionalReleases(releases: readonly CatalogRelease[], pack: PackId): CatalogRelease[] {

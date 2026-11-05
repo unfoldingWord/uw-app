@@ -74,6 +74,7 @@ export const hi: LocaleTable = {
   'home.formation.action': '{group} के साथ जारी रखें',
   'home.formation.empty': 'कहानियों से साथ मिलकर गुज़रने के लिए शिष्यता में एक समूह बनाएँ।',
   'home.download.progress': '{language} डाउनलोड हो रही है',
+  'home.download.pictures': 'कहानी के चित्र डाउनलोड हो रहे हैं',
   'home.download.percent': '{percent}%',
   'home.download.none': 'इस फ़ोन पर अभी {language} में कुछ नहीं है।',
   'home.download.missing': '{language} के कुछ संसाधन अभी इस फ़ोन पर नहीं हैं।',
@@ -518,6 +519,7 @@ export const hi: LocaleTable = {
     'जो आपने भेजना नहीं चुना वह इस फ़ोन से बाहर नहीं जाता, और ऐप केवल उपयोग की गुमनाम गिनतियाँ रखता है, जो गोपनीयता स्क्रीन पर सूचीबद्ध हैं।',
   'home.download.waiting': 'इंटरनेट से जुड़ें, फिर डाउनलोड करने के लिए टैप करें।',
   'languages.row': '{english} · {resources} · लगभग {size}',
+  'languages.row.pictures': '{english} · {resources} · कहानी के चित्रों सहित लगभग {size}',
   'languages.offline': 'आप ऑफ़लाइन हैं, इसलिए फिर से जुड़ने तक नई भाषाएँ डाउनलोड नहीं की जा सकतीं।',
   'transfer.note':
     'ऐप वाले किन्हीं दो फ़ोनों के बीच दोनों दिशाओं में काम करता है, हर मद पर लाइसेंस और श्रेय के साथ।',

@@ -13,7 +13,9 @@ export default scenario(
     await phone.start();
     const services = servicesOf(phone);
     await services.onboarding.refresh();
-    assert.ok((await (await services.onboarding.choose('qaa')).done).ok);
+    const chosen = await services.onboarding.choose('qaa');
+    assert.ok((await chosen.done).ok);
+    await chosen.pictures;
 
     const opened = await services.study.passage('RUT 1:1');
     assert.equal(opened.state, 'passage');

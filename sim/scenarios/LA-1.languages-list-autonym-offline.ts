@@ -50,12 +50,12 @@ export default scenario(
     const qaaRow = services.languages.list().find((row) => row.language === 'qaa');
     assert.match(
       qaaRow?.detail ?? '',
-      /^Fixture language A · 11 resources · about \d+(\.\d+)? KB$/,
-      'the row shows the approximate size of the language pack before download',
+      /^Fixture language A · 11 resources · about 31 MB with story pictures$/,
+      'the row shows the approximate size of the language pack, with the pictures the first language brings, before download',
     );
     assert.match(
       services.languages.list().find((row) => row.language === 'qab')?.detail ?? '',
-      /^Fixture language B · 2 resources · about \d+(\.\d+)? KB$/,
+      /^Fixture language B · 2 resources · about 31 MB with story pictures$/,
     );
     assert.deepEqual(
       phone.kernel.catalog.originals().map((release) => release.language),

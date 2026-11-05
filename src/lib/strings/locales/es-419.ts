@@ -76,6 +76,7 @@ export const es419: LocaleTable = {
   'home.formation.action': 'Continuar con {group}',
   'home.formation.empty': 'Crea un grupo en Formación para recorrer juntos las historias.',
   'home.download.progress': 'Descargando {language}',
+  'home.download.pictures': 'Descargando las imágenes de las historias',
   'home.download.percent': '{percent} %',
   'home.download.none': 'Todavía no hay nada de {language} en este teléfono.',
   'home.download.missing': 'Algunos recursos de {language} todavía no están en este teléfono.',
@@ -541,6 +542,7 @@ export const es419: LocaleTable = {
     'Nada sale de este teléfono sin que usted elija enviarlo, y la aplicación guarda solo recuentos anónimos de su uso, listados en la pantalla de privacidad.',
   'home.download.waiting': 'Conéctese a internet y luego toque para descargar.',
   'languages.row': '{english} · {resources} · unos {size}',
+  'languages.row.pictures': '{english} · {resources} · unos {size} con las imágenes de las historias',
   'languages.offline':
     'Está sin conexión, así que no se pueden descargar idiomas nuevos hasta que vuelva a conectarse.',
   'transfer.note':

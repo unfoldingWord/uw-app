@@ -74,6 +74,7 @@ export const ru: LocaleTable = {
   'home.formation.action': 'Продолжить с группой {group}',
   'home.formation.empty': 'Создайте группу в разделе Формирование, чтобы проходить истории вместе.',
   'home.download.progress': 'Загрузка: {language}',
+  'home.download.pictures': 'Загрузка иллюстраций к историям',
   'home.download.percent': '{percent} %',
   'home.download.none': 'На этом телефоне пока нет ничего на языке {language}.',
   'home.download.missing': 'Некоторых ресурсов на языке {language} пока нет на этом телефоне.',
@@ -571,6 +572,7 @@ export const ru: LocaleTable = {
     'Ничто не покидает этот телефон, если вы сами не решили это отправить, а приложение хранит только анонимные подсчёты использования, перечисленные на экране конфиденциальности.',
   'home.download.waiting': 'Подключитесь к интернету, затем нажмите, чтобы загрузить.',
   'languages.row': '{english} · {resources} · около {size}',
+  'languages.row.pictures': '{english} · {resources} · около {size} вместе с иллюстрациями к историям',
   'languages.offline': 'Вы не в сети, поэтому новые языки нельзя загрузить, пока вы не подключитесь снова.',
   'transfer.note':
     'Работает между любыми двумя телефонами с приложением в обе стороны, и с каждым элементом идут лицензия и указание авторства.',

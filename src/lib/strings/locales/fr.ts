@@ -76,6 +76,7 @@ export const fr: LocaleTable = {
   'home.formation.action': 'Continuer avec {group}',
   'home.formation.empty': 'Créez un groupe dans Formation pour parcourir les histoires ensemble.',
   'home.download.progress': 'Téléchargement de {language}',
+  'home.download.pictures': 'Téléchargement des images des histoires',
   'home.download.percent': '{percent} %',
   'home.download.none': 'Rien en {language} n’est encore sur ce téléphone.',
   'home.download.missing': 'Certaines ressources en {language} ne sont pas encore sur ce téléphone.',
@@ -558,6 +559,7 @@ export const fr: LocaleTable = {
     'Rien ne quitte ce téléphone sans que vous ayez choisi de l’envoyer, et l’application ne garde que des comptes anonymes de son utilisation, listés sur l’écran de confidentialité.',
   'home.download.waiting': 'Connectez-vous à internet, puis touchez pour télécharger.',
   'languages.row': '{english} · {resources} · environ {size}',
+  'languages.row.pictures': '{english} · {resources} · environ {size} avec les images des histoires',
   'languages.offline':
     'Vous êtes hors ligne, donc aucune nouvelle langue ne peut être téléchargée avant la reconnexion.',
   'transfer.note':

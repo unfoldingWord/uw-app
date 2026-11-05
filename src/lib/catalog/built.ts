@@ -1,6 +1,8 @@
 import { audioPackId, imagePackId } from '../domain/pack';
 import type { CatalogRelease } from './types';
 
+export const imagePackApproximateBytes = 31_000_000;
+
 const imagePackSource = { publisher: 'unfoldingWord', resource: 'en_obs' } as const;
 
 function knownBytes(release: CatalogRelease): number | undefined {

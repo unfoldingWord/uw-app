@@ -16,6 +16,7 @@ export default scenario(
 
     const chosen = await onboarding.choose('qab', { name: '  Jesse  ' });
     assert.ok((await chosen.done).ok);
+    await chosen.pictures;
     assert.equal(home.greeting(localTime(phone)).text, 'Good morning, Jesse');
     assert.equal(await phone.adapters.kv.get('home.name'), 'Jesse', 'the name is on the device');
 

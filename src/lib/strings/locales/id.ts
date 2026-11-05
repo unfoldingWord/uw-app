@@ -74,6 +74,7 @@ export const id: LocaleTable = {
   'home.formation.action': 'Lanjutkan bersama {group}',
   'home.formation.empty': 'Buat kelompok di Pembinaan untuk menjalani cerita-cerita bersama.',
   'home.download.progress': 'Mengunduh {language}',
+  'home.download.pictures': 'Mengunduh gambar cerita',
   'home.download.percent': '{percent}%',
   'home.download.none': 'Belum ada apa pun dalam {language} di ponsel ini.',
   'home.download.missing': 'Beberapa sumber dalam {language} belum ada di ponsel ini.',
@@ -503,6 +504,7 @@ export const id: LocaleTable = {
     'Tidak ada yang keluar dari ponsel ini tanpa Anda pilih untuk dikirim, dan aplikasi hanya menyimpan hitungan anonim tentang penggunaannya, yang tercantum di layar privasi.',
   'home.download.waiting': 'Sambungkan ke internet, lalu ketuk untuk mengunduh.',
   'languages.row': '{english} · {resources} · sekitar {size}',
+  'languages.row.pictures': '{english} · {resources} · sekitar {size} dengan gambar cerita',
   'languages.offline': 'Anda sedang luring, jadi bahasa baru tidak dapat diunduh sampai tersambung lagi.',
   'transfer.note':
     'Berfungsi antara dua ponsel mana pun yang memiliki aplikasi ini dalam dua arah, dengan lisensi dan atribusi pada setiap item.',

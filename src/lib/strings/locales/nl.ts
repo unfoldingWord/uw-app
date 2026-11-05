@@ -76,6 +76,7 @@ export const nl: LocaleTable = {
   'home.formation.action': 'Verder met {group}',
   'home.formation.empty': 'Maak een groep aan in Vorming om samen door de verhalen te gaan.',
   'home.download.progress': '{language} wordt gedownload',
+  'home.download.pictures': 'De afbeeldingen bij de verhalen worden gedownload',
   'home.download.percent': '{percent}%',
   'home.download.none': 'Er staat nog niets in {language} op deze telefoon.',
   'home.download.missing': 'Sommige hulpmiddelen in {language} staan nog niet op deze telefoon.',
@@ -532,6 +533,7 @@ export const nl: LocaleTable = {
     'Niets verlaat deze telefoon zonder dat u ervoor kiest het te versturen, en de app bewaart alleen anonieme tellingen van het gebruik, vermeld op het privacyscherm.',
   'home.download.waiting': 'Maak verbinding met internet en tik dan om te downloaden.',
   'languages.row': '{english} · {resources} · ongeveer {size}',
+  'languages.row.pictures': '{english} · {resources} · ongeveer {size} met de afbeeldingen bij de verhalen',
   'languages.offline':
     'U bent offline, dus nieuwe talen kunnen pas worden gedownload als u weer verbinding hebt.',
   'transfer.note':

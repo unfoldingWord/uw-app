@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { languagePackId } from '@lib/domain/pack';
+import { imagePackId, languagePackId } from '@lib/domain/pack';
 import { emptyTelemetry, telemetryFolds } from '@lib/telemetry/folds';
 import { scenario } from '../scenario';
 import { servicesOf } from '../services';
@@ -25,7 +25,9 @@ export default scenario(
     );
 
     await services.onboarding.refresh();
-    assert.ok((await (await services.onboarding.choose('qaa')).done).ok);
+    const chosen = await services.onboarding.choose('qaa');
+    assert.ok((await chosen.done).ok);
+    await chosen.pictures;
     assert.equal(services.settings.layoutDirection(), 'ltr');
     const directions: string[] = [];
     const stop = services.settings.onLayoutDirection((next) => directions.push(next));
@@ -99,10 +101,14 @@ export default scenario(
 
     const storage = await settings.storage();
     assert.deepEqual(
-      storage.packs.map((pack) => [pack.pack, pack.label]),
-      [[languagePackId('qaa'), `Fixture A · ${storage.packs[0]?.size ?? ''}`]],
+      storage.packs.map((pack) => pack.pack),
+      [imagePackId, languagePackId('qaa')],
+      'the pictures that came with the first language are listed beside it',
     );
+    const language = storage.packs.find((pack) => pack.pack === languagePackId('qaa'));
+    assert.equal(language?.label, `Fixture A · ${language?.size ?? ''}`);
     assert.ok((await settings.remove(languagePackId('qaa'))).ok);
+    assert.ok((await settings.remove(imagePackId)).ok);
     assert.deepEqual((await settings.storage()).packs, []);
 
     assert.deepEqual(

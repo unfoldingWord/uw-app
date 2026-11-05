@@ -74,6 +74,7 @@ export const ptBR: LocaleTable = {
   'home.formation.action': 'Continuar com {group}',
   'home.formation.empty': 'Crie um grupo em Formação para percorrer as histórias juntos.',
   'home.download.progress': 'Baixando {language}',
+  'home.download.pictures': 'Baixando as imagens das histórias',
   'home.download.percent': '{percent}%',
   'home.download.none': 'Ainda não há nada em {language} neste celular.',
   'home.download.missing': 'Alguns recursos em {language} ainda não estão neste celular.',
@@ -535,6 +536,7 @@ export const ptBR: LocaleTable = {
     'Nada sai deste telefone sem que você escolha enviar, e o aplicativo guarda apenas contagens anônimas de uso, listadas na tela de privacidade.',
   'home.download.waiting': 'Conecte-se à internet e depois toque para baixar.',
   'languages.row': '{english} · {resources} · cerca de {size}',
+  'languages.row.pictures': '{english} · {resources} · cerca de {size} com as imagens das histórias',
   'languages.offline': 'Você está off-line, então novos idiomas não podem ser baixados até reconectar.',
   'transfer.note':
     'Funciona entre quaisquer dois telefones com o aplicativo nas duas direções, com licença e atribuição em cada item.',

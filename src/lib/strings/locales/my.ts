@@ -76,6 +76,7 @@ export const my: LocaleTable = {
   'home.formation.action': '{group} နှင့် ဆက်လုပ်ရန်',
   'home.formation.empty': 'ဇာတ်လမ်းများကို အတူတကွ လေ့လာရန် ပျိုးထောင်ခြင်းတွင် အဖွဲ့တစ်ဖွဲ့ ဖွဲ့ပါ။',
   'home.download.progress': '{language} ကို ဒေါင်းလုဒ်လုပ်နေသည်',
+  'home.download.pictures': 'ဇာတ်လမ်း ပုံများကို ဒေါင်းလုဒ်လုပ်နေသည်',
   'home.download.percent': '{percent}%',
   'home.download.none': 'ဤဖုန်းပေါ်တွင် {language} ဖြင့် ဘာမျှ မရှိသေးပါ။',
   'home.download.missing': '{language} အရင်းအမြစ် အချို့ ဤဖုန်းပေါ်တွင် မရှိသေးပါ။',
@@ -508,6 +509,7 @@ export const my: LocaleTable = {
     'သင်ပို့ရန် မရွေးချယ်ထားသည့် မည်သည့်အရာမျှ ဤဖုန်းမှ ထွက်မသွားပါ၊ အက်ပ်သည် အသုံးပြုမှုကို အမည်မဖော်သော အရေအတွက်များအဖြစ်သာ သိမ်းထားပြီး ကိုယ်ရေးလုံခြုံမှု မျက်နှာပြင်တွင် ဖော်ပြထားပါသည်။',
   'home.download.waiting': 'အင်တာနက် ချိတ်ဆက်ပြီးနောက် ဒေါင်းလုဒ်လုပ်ရန် နှိပ်ပါ။',
   'languages.row': '{english} · {resources} · {size} ခန့်',
+  'languages.row.pictures': '{english} · {resources} · ဇာတ်လမ်း ပုံများ အပါအဝင် {size} ခန့်',
   'languages.offline':
     'သင် အော့ဖ်လိုင်း ဖြစ်နေသဖြင့် ပြန်ချိတ်ဆက်သည်အထိ ဘာသာစကားအသစ်များကို ဒေါင်းလုဒ် မလုပ်နိုင်ပါ။',
   'transfer.note':

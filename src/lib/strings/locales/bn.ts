@@ -74,6 +74,7 @@ export const bn: LocaleTable = {
   'home.formation.action': '{group} দলের সাথে চালিয়ে যান',
   'home.formation.empty': 'একসাথে গল্পগুলোর মধ্য দিয়ে যেতে শিষ্যত্বে একটি দল তৈরি করুন।',
   'home.download.progress': '{language} ডাউনলোড হচ্ছে',
+  'home.download.pictures': 'গল্পের ছবি ডাউনলোড হচ্ছে',
   'home.download.percent': '{percent}%',
   'home.download.none': 'এই ফোনে এখনও {language} ভাষার কিছু নেই।',
   'home.download.missing': '{language} ভাষার কিছু উপকরণ এখনও এই ফোনে নেই।',
@@ -512,6 +513,7 @@ export const bn: LocaleTable = {
     'আপনি যা পাঠাতে চাননি তা এই ফোন থেকে বের হয় না, আর অ্যাপটি কেবল ব্যবহারের নামবিহীন গণনা রাখে, যা গোপনীয়তা পর্দায় তালিকাভুক্ত।',
   'home.download.waiting': 'ইন্টারনেটে সংযোগ করুন, তারপর ডাউনলোড করতে ট্যাপ করুন।',
   'languages.row': '{english} · {resources} · প্রায় {size}',
+  'languages.row.pictures': '{english} · {resources} · গল্পের ছবিসহ প্রায় {size}',
   'languages.offline': 'আপনি অফলাইনে আছেন, তাই পুনরায় সংযোগ না হওয়া পর্যন্ত নতুন ভাষা ডাউনলোড করা যাবে না।',
   'transfer.note':
     'অ্যাপ থাকা যেকোনো দুটি ফোনের মধ্যে দুই দিকেই কাজ করে, প্রতিটি উপকরণে লাইসেন্স ও স্বীকৃতি সহ।',

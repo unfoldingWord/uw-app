@@ -543,6 +543,7 @@ Decisions taken in the requirements interview of 2026-09-29 with Jesse Griffin. 
 | 95 | The strings scan reads every feature file for prose, and `description`, `helperText` and `error` are copy props; addresses and preference keys are names. (2026-09-30, issue #33) |
 | 96 | The device CI builds with `UW_LOCALE_GATE=drafts` so its RTL flow can choose Arabic; release builds keep `reviewed`, proven by `npm run bundle` and by no `eas.json` profile setting the flag. New device flows stay optional until green twice; `android` and `ios` become required checks on `main` once green twice. (2026-09-30, issue #65) |
 | 97 | The invitation's region test needs both signals: a United States time zone and a locale region that is US or unknown; a locale region outside the US vetoes. (2026-10-05, product and QA review) |
+| 98 | The Image Pack installs with the first language pack that carries Open Bible Stories, from onboarding or Languages, after the language pack and under the same tap, whose size line includes the pictures (about 31 MB). It stays its own pack: a picture failure never fails the language, a later language never downloads it again, and while a language with stories is on the phone a leader who removes it gets it back only from the in-place download or Languages. (2026-11-05, issue #97, "Go with your suggestions") |
 
 ---
 

@@ -1,7 +1,7 @@
 import type { Bookmark } from '@lib/bookmarks/types';
 import type { RefreshOutcome } from '@lib/catalog/types';
 import type { FailureCode } from '@lib/domain/failures';
-import { languagePackId, type PackId } from '@lib/domain/pack';
+import { imagePackId, languagePackId, type PackId } from '@lib/domain/pack';
 import type { Position } from '@lib/formation/types';
 import type { Kernel } from '@lib/kernel';
 import type { InstallOutcome, InstallProgress, PackUpdate } from '@lib/packs/types';
@@ -248,6 +248,19 @@ export function createHomeService(kernel: Kernel): HomeService {
         progress,
         percent,
         label: current.t('home.download.progress', { language: autonym }),
+        detail: countLine(current, status.installed.length, total),
+      };
+    }
+    const pictures = kernel.packs.installing().find((item) => item.pack === imagePackId);
+    if (pictures !== undefined && status.missing.length === 0) {
+      const done = pictures.items ?? { done: pictures.resources, total: pictures.total };
+      return {
+        state: 'installing',
+        language,
+        pack: imagePackId,
+        progress: pictures,
+        percent: done.total === 0 ? 0 : Math.round((done.done / done.total) * 100),
+        label: current.t('home.download.pictures'),
         detail: countLine(current, status.installed.length, total),
       };
     }

@@ -29,6 +29,11 @@ on a device.
   (red first in `sim/corpus-dcs.test.ts`: `tenebres` matched `ténèbres` but carried no frame). `npm run verify`
   green: 845 tests, 9 checks, 65 of 65 scenarios, trace 0 unproven, both bundles. The story-not-found state was not
   rendered in a shot in any mode.
+- **Image Pack with the first language (owner decision, #97):** `LA-3.first-language-brings-the-pictures` failed
+  first on the Languages size line, then passed. `LA-1`, `ON-3`, `SE-1` and `ST-10` were updated for the pictures
+  that now follow the first language. `npm run verify` green: 848 tests, 9 checks, 66 of 66 scenarios, trace 0
+  unproven, both bundles. Not verified: the 31 MB figure against the CDN (unreachable from the sandbox), the longer
+  Languages row and the pictures progress on Home in any shot, and the download on a phone.
 
 ## 2026-10-20 P2 native unzip, sim and checks only
 

@@ -74,6 +74,7 @@ export const vi: LocaleTable = {
   'home.formation.action': 'Tiếp tục với {group}',
   'home.formation.empty': 'Tạo một nhóm trong Đào tạo để cùng nhau đi qua các câu chuyện.',
   'home.download.progress': 'Đang tải {language}',
+  'home.download.pictures': 'Đang tải hình ảnh câu chuyện',
   'home.download.percent': '{percent}%',
   'home.download.none': 'Chưa có nội dung {language} nào trên điện thoại này.',
   'home.download.missing': 'Một số tài nguyên {language} chưa có trên điện thoại này.',
@@ -495,6 +496,7 @@ export const vi: LocaleTable = {
     'Không có gì rời khỏi điện thoại này mà bạn không chọn gửi, và ứng dụng chỉ giữ các số đếm ẩn danh về cách sử dụng, được liệt kê trên màn hình quyền riêng tư.',
   'home.download.waiting': 'Kết nối internet, rồi chạm để tải xuống.',
   'languages.row': '{english} · {resources} · khoảng {size}',
+  'languages.row.pictures': '{english} · {resources} · khoảng {size} kèm hình ảnh câu chuyện',
   'languages.offline': 'Bạn đang ngoại tuyến, nên không thể tải ngôn ngữ mới cho đến khi kết nối lại.',
   'transfer.note':
     'Hoạt động giữa bất kỳ hai điện thoại nào có ứng dụng theo cả hai chiều, với giấy phép và ghi công trên mọi mục.',
