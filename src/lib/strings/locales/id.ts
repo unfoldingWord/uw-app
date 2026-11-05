@@ -472,7 +472,6 @@ export const id: LocaleTable = {
   'library.download': 'Unduh {resource}',
   'library.onPhone': 'Di ponsel ini',
   'search.fullText.inSettings': 'Aktifkan di Pengaturan, dan indeksnya tetap di ponsel ini.',
-  'study.frame.picture': 'Gambar untuk bingkai {number}',
   'transfer.app.ready': 'Aplikasi sudah sampai di ponsel ini ({size}) dan siap dipasang.',
   'transfer.network': 'Hubungkan kedua ponsel ke Wi-Fi atau hotspot yang sama terlebih dahulu.',
   'transfer.localNetwork.prompt':
@@ -532,4 +531,11 @@ export const id: LocaleTable = {
   'library.chapters': { other: '{count} pasal' },
   'library.pictures': { other: '{count} gambar' },
   'formation.training.empty': 'Akademi belum tersedia dalam {language}.',
+  'session.story.list': 'Pilih cerita',
+  'session.story.previous': 'Cerita sebelumnya',
+  'session.story.next': 'Cerita berikutnya',
+  'session.talk.frame': 'Diskusikan bingkai {number}',
+  'session.pictures.download': 'Unduh gambar cerita',
+  'session.pictures.notFound': 'Bingkai ini tidak punya gambar di gambar cerita.',
+  'session.read.play': 'Putar cerita',
 };

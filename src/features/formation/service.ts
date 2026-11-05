@@ -1,5 +1,7 @@
-import type { Frame } from '@lib/corpus/types';
+import type { Bookmark } from '@lib/bookmarks/types';
+import type { Frame, Story, StoryQuestion } from '@lib/corpus/types';
 import type {
+  FoundationsSession,
   Group,
   NextSession,
   Position,
@@ -11,12 +13,14 @@ import type {
   TrainingOutline,
 } from '@lib/formation/types';
 import type { FailureCode } from '@lib/domain/failures';
+import { imagePackId } from '@lib/domain/pack';
 import type { Kernel } from '@lib/kernel';
 import { clipControls, clockTime, type ClipControls, type PlayerStatus } from '@lib/player/types';
 import type { Written } from '@lib/written';
 import { formationWords, type FormationWords } from './strings';
 
-export type { Block, Frame, Inline, MovementSection } from '@lib/corpus/types';
+export type { Bookmark } from '@lib/bookmarks/types';
+export type { Block, Frame, Inline, MovementSection, Story, StoryQuestion } from '@lib/corpus/types';
 export type {
   EnglishMovements,
   FormationContent,
@@ -41,12 +45,53 @@ export type { Written } from '@lib/written';
 
 export type DownloadOutcome = { readonly ok: true } | { readonly ok: false; readonly code: FailureCode };
 
+export type StoryTitle = { readonly number: number; readonly title: string };
+
+export type StoryList = {
+  readonly stories: readonly StoryTitle[];
+  readonly previous?: number;
+  readonly next?: number;
+};
+
+export type StoryTalk = {
+  readonly frame: readonly StoryQuestion[];
+  readonly story: readonly StoryQuestion[];
+};
+
+export type Pictures = 'on-phone' | 'offered' | 'not-offered';
+
+function storyListOf(stories: readonly StoryTitle[], current: number): StoryList {
+  const sorted = [...stories].sort((left, right) => left.number - right.number);
+  const previous = sorted.filter((story) => story.number < current).at(-1)?.number;
+  const next = sorted.find((story) => story.number > current)?.number;
+  return {
+    stories: sorted,
+    ...(previous === undefined ? {} : { previous }),
+    ...(next === undefined ? {} : { next }),
+  };
+}
+
+function storyTalk(story: Story, frame: number): StoryTalk {
+  return {
+    frame: story.questions.filter((question) => question.frame === frame),
+    story: story.questions.filter((question) => question.frame === undefined),
+  };
+}
+
 export type FormationService = {
   words(): FormationWords;
   language(): string | undefined;
   tracks(): Promise<readonly TrackSummary[]>;
   trainingOutline(): Promise<TrainingOutline>;
   session(track: Track, number: number): Promise<Session | undefined>;
+  read(story: number): Promise<FoundationsSession | undefined>;
+  storyList(current: number): Promise<StoryList>;
+  talk(story: Story, frame: number): StoryTalk;
+  saved(story: number): Bookmark | undefined;
+  save(story: number): Promise<Written<Bookmark> | undefined>;
+  unsave(id: string): Promise<Written<true> | undefined>;
+  pictures(): Pictures;
+  downloadPictures(): Promise<DownloadOutcome>;
   englishAlongside(): boolean;
   setEnglishAlongside(on: boolean): Promise<boolean>;
   groups(): readonly Group[];
@@ -71,7 +116,7 @@ export type FormationService = {
 };
 
 export function createFormationService(kernel: Kernel): FormationService {
-  const { formation, preferences } = kernel;
+  const { formation, preferences, corpus, bookmarks } = kernel;
   const language = (): string | undefined => preferences.contentLanguage();
   const englishAlongside = (): boolean => preferences.get('formation.englishMovements') === 'on';
 
@@ -90,6 +135,38 @@ export function createFormationService(kernel: Kernel): FormationService {
       withLanguage((current) =>
         formation.session(track, number, current, { englishAlongside: englishAlongside() }),
       ),
+    async read(story) {
+      const current = language();
+      if (current === undefined) {
+        return undefined;
+      }
+      const [session] = await Promise.all([
+        formation.session('foundations', story, current, { englishAlongside: englishAlongside() }),
+        corpus.story(story, current),
+      ]);
+      return session?.track === 'foundations' ? session : undefined;
+    },
+    storyList: async (current) =>
+      storyListOf((await withLanguage((code) => corpus.contents(code)))?.stories ?? [], current),
+    talk: storyTalk,
+    saved(story) {
+      const current = language();
+      return current === undefined
+        ? undefined
+        : bookmarks.find({ target: 'story', story, language: current });
+    },
+    save: (story) => withLanguage((current) => bookmarks.add({ target: 'story', story, language: current })),
+    unsave: (id) => bookmarks.remove(id),
+    pictures() {
+      if (kernel.packs.installed().some((pack) => pack.pack === imagePackId)) {
+        return 'on-phone';
+      }
+      return kernel.catalog.all().some((release) => release.pack === imagePackId) ? 'offered' : 'not-offered';
+    },
+    async downloadPictures() {
+      const outcome = await kernel.packs.installFromCatalog(imagePackId);
+      return outcome.ok ? { ok: true } : { ok: false, code: outcome.code };
+    },
     englishAlongside,
     setEnglishAlongside: (on) => preferences.set('formation.englishMovements', on ? 'on' : 'off'),
     groups: () => formation.groups(),

@@ -504,7 +504,6 @@ export const ptBR: LocaleTable = {
   'library.download': 'Baixar {resource}',
   'library.onPhone': 'Neste celular',
   'search.fullText.inSettings': 'Ative nas Configurações, e o índice fica neste celular.',
-  'study.frame.picture': 'Imagem do quadro {number}',
   'transfer.app.ready': 'O aplicativo chegou a este celular ({size}) e está pronto para instalar.',
   'transfer.network': 'Primeiro conecte os dois celulares ao mesmo Wi-Fi ou roteador do celular.',
   'transfer.localNetwork.prompt':
@@ -584,4 +583,11 @@ export const ptBR: LocaleTable = {
   'library.chapters': { one: '{count} capítulo', many: '{count} de capítulos', other: '{count} capítulos' },
   'library.pictures': { one: '{count} imagem', many: '{count} de imagens', other: '{count} imagens' },
   'formation.training.empty': 'A Academia ainda não está em {language}.',
+  'session.story.list': 'Escolha uma história',
+  'session.story.previous': 'História anterior',
+  'session.story.next': 'Próxima história',
+  'session.talk.frame': 'Vamos conversar sobre o quadro {number}',
+  'session.pictures.download': 'Baixar as imagens das histórias',
+  'session.pictures.notFound': 'Este quadro não tem imagem nas imagens das histórias.',
+  'session.read.play': 'Ouvir a história',
 };

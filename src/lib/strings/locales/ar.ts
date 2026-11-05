@@ -549,7 +549,6 @@ export const ar: LocaleTable = {
   'library.download': 'تنزيل {resource}',
   'library.onPhone': 'على هذا الهاتف',
   'search.fullText.inSettings': 'فعِّله من الإعدادات، ويبقى الفهرس على هذا الهاتف.',
-  'study.frame.picture': 'صورة المشهد {number}',
   'transfer.app.ready': 'وصل التطبيق إلى هذا الهاتف ({size}) وهو جاهز للتثبيت.',
   'transfer.network': 'صِل الهاتفين أولًا بشبكة Wi-Fi نفسها أو نقطة الاتصال نفسها.',
   'transfer.localNetwork.prompt':
@@ -670,4 +669,11 @@ export const ar: LocaleTable = {
     other: '{count} صورة',
   },
   'formation.training.empty': 'الأكاديمية ليست متاحة بلغة {language} بعد.',
+  'session.story.list': 'اختر قصة',
+  'session.story.previous': 'القصة السابقة',
+  'session.story.next': 'القصة التالية',
+  'session.talk.frame': 'لنتحدث عن المشهد {number}',
+  'session.pictures.download': 'نزّل صور القصص',
+  'session.pictures.notFound': 'لا توجد صورة لهذا المشهد في صور القصص.',
+  'session.read.play': 'شغِّل القصة',
 };

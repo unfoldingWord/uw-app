@@ -16,8 +16,10 @@ export function articleHref(id: string): Href {
   return `/study/article/${id.split('/').map(encodeURIComponent).join('/')}`;
 }
 
-function storyHref(story: number): Href {
-  return `/study/story/${String(story)}`;
+function storyHref(story: number, frame: number | undefined): Href {
+  return frame === undefined
+    ? `/formation/story/${String(story)}`
+    : { pathname: '/formation/story/[number]', params: { number: String(story), frame: String(frame) } };
 }
 
 export function passageHref(reference: string): Href {
@@ -37,7 +39,7 @@ export function useOpenTarget(): (target: LinkTarget) => void {
           router.push(articleHref(target.id));
           return;
         case 'story':
-          router.push(storyHref(target.story));
+          router.push(storyHref(target.story, target.frame));
           return;
         case 'passage':
           router.navigate(passageHref(target.reference));

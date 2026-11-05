@@ -501,7 +501,6 @@ export const nl: LocaleTable = {
   'library.download': '{resource} downloaden',
   'library.onPhone': 'Op deze telefoon',
   'search.fullText.inSettings': 'Zet het aan in Instellingen, en de index blijft op deze telefoon.',
-  'study.frame.picture': 'Afbeelding bij beeld {number}',
   'transfer.app.ready': 'De app staat nu op deze telefoon ({size}) en is klaar om te installeren.',
   'transfer.network': 'Zet beide telefoons eerst op hetzelfde wifi-netwerk of dezelfde hotspot.',
   'transfer.localNetwork.prompt':
@@ -565,4 +564,11 @@ export const nl: LocaleTable = {
   'library.chapters': { one: '{count} hoofdstuk', other: '{count} hoofdstukken' },
   'library.pictures': { one: '{count} afbeelding', other: '{count} afbeeldingen' },
   'formation.training.empty': 'De Academie is nog niet beschikbaar in het {language}.',
+  'session.story.list': 'Kies een verhaal',
+  'session.story.previous': 'Vorig verhaal',
+  'session.story.next': 'Volgend verhaal',
+  'session.talk.frame': 'Praat over beeld {number}',
+  'session.pictures.download': 'Afbeeldingen bij de verhalen downloaden',
+  'session.pictures.notFound': 'Dit beeld heeft geen afbeelding bij de verhalen.',
+  'session.read.play': 'Het verhaal afspelen',
 };

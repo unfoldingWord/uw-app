@@ -487,7 +487,6 @@ export const hi: LocaleTable = {
   'library.download': '{resource} डाउनलोड करें',
   'library.onPhone': 'इस फ़ोन पर',
   'search.fullText.inSettings': 'इसे सेटिंग्स में चालू करें, और अनुक्रमणिका इसी फ़ोन पर रहती है।',
-  'study.frame.picture': 'दृश्य {number} का चित्र',
   'transfer.app.ready': 'ऐप इस फ़ोन पर आ गया है ({size}) और इंस्टॉल के लिए तैयार है।',
   'transfer.network': 'पहले दोनों फ़ोन एक ही वाई-फ़ाई या हॉटस्पॉट से जोड़ें।',
   'transfer.localNetwork.prompt':
@@ -549,4 +548,11 @@ export const hi: LocaleTable = {
   'library.chapters': { one: '{count} अध्याय', other: '{count} अध्याय' },
   'library.pictures': { one: '{count} चित्र', other: '{count} चित्र' },
   'formation.training.empty': 'अकादमी अभी {language} में नहीं है।',
+  'session.story.list': 'एक कहानी चुनें',
+  'session.story.previous': 'पिछली कहानी',
+  'session.story.next': 'अगली कहानी',
+  'session.talk.frame': 'दृश्य {number} पर बात करें',
+  'session.pictures.download': 'कहानी के चित्र डाउनलोड करें',
+  'session.pictures.notFound': 'कहानी के चित्रों में इस दृश्य का कोई चित्र नहीं है।',
+  'session.read.play': 'कहानी चलाएँ',
 };

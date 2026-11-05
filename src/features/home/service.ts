@@ -167,7 +167,7 @@ function bookmarkHref(bookmark: Bookmark): string {
     case 'passage':
       return `/study?reference=${encodeURIComponent(bookmark.reference)}`;
     case 'story':
-      return `/study/story/${String(bookmark.story)}`;
+      return `/formation/story/${String(bookmark.story)}`;
     case 'article':
       return `/study/article/${bookmark.article.split('/').map(encodeURIComponent).join('/')}`;
   }

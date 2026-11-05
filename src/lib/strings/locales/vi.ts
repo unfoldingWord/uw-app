@@ -464,7 +464,6 @@ export const vi: LocaleTable = {
   'library.download': 'Tải {resource}',
   'library.onPhone': 'Trên điện thoại này',
   'search.fullText.inSettings': 'Bật trong Cài đặt, và chỉ mục nằm trên điện thoại này.',
-  'study.frame.picture': 'Hình cho khung {number}',
   'transfer.app.ready': 'Ứng dụng đã đến điện thoại này ({size}) và sẵn sàng để cài đặt.',
   'transfer.network': 'Trước tiên hãy kết nối cả hai điện thoại vào cùng một Wi-Fi hoặc điểm phát sóng.',
   'transfer.localNetwork.prompt':
@@ -523,4 +522,11 @@ export const vi: LocaleTable = {
   'library.chapters': { other: '{count} chương' },
   'library.pictures': { other: '{count} hình ảnh' },
   'formation.training.empty': 'Học viện chưa có bằng {language}.',
+  'session.story.list': 'Chọn một câu chuyện',
+  'session.story.previous': 'Câu chuyện trước',
+  'session.story.next': 'Câu chuyện sau',
+  'session.talk.frame': 'Cùng trò chuyện về khung {number}',
+  'session.pictures.download': 'Tải hình ảnh câu chuyện',
+  'session.pictures.notFound': 'Khung này không có hình trong hình ảnh câu chuyện.',
+  'session.read.play': 'Phát câu chuyện',
 };

@@ -524,7 +524,6 @@ export const fr: LocaleTable = {
   'library.download': 'Télécharger {resource}',
   'library.onPhone': 'Sur ce téléphone',
   'search.fullText.inSettings': 'Activez-la dans Réglages, et l’index reste sur ce téléphone.',
-  'study.frame.picture': 'Illustration de l’image {number}',
   'transfer.app.ready':
     'L’application est arrivée sur ce téléphone ({size}) et elle est prête à être installée.',
   'transfer.network': 'Connectez d’abord les deux téléphones au même Wi-Fi ou partage de connexion.',
@@ -610,4 +609,11 @@ export const fr: LocaleTable = {
   'library.chapters': { one: '{count} chapitre', many: '{count} de chapitres', other: '{count} chapitres' },
   'library.pictures': { one: '{count} image', many: '{count} d’images', other: '{count} images' },
   'formation.training.empty': 'L’Académie n’est pas encore disponible en {language}.',
+  'session.story.list': 'Choisir une histoire',
+  'session.story.previous': 'Histoire précédente',
+  'session.story.next': 'Histoire suivante',
+  'session.talk.frame': 'Parlons de l’image {number}',
+  'session.pictures.download': 'Télécharger les images des histoires',
+  'session.pictures.notFound': 'Cette image n’a pas d’illustration dans les images des histoires.',
+  'session.read.play': 'Écouter l’histoire',
 };

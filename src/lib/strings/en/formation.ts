@@ -76,4 +76,11 @@ export const formation = {
   'session.chooseGroup': 'Choose a group to keep your place.',
   'session.picturesMissing':
     'Story pictures are not on this phone yet, and they download once for every language.',
+  'session.story.list': 'Choose a story',
+  'session.story.previous': 'Previous story',
+  'session.story.next': 'Next story',
+  'session.talk.frame': 'Talk about frame {number}',
+  'session.pictures.download': 'Download story pictures',
+  'session.pictures.notFound': 'This frame has no picture in the story pictures.',
+  'session.read.play': 'Play the story',
 } as const;

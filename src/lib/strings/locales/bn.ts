@@ -481,7 +481,6 @@ export const bn: LocaleTable = {
   'library.download': '{resource} ডাউনলোড করুন',
   'library.onPhone': 'এই ফোনে',
   'search.fullText.inSettings': 'সেটিংসে এটি চালু করুন, আর সূচিটি এই ফোনেই থাকে।',
-  'study.frame.picture': 'দৃশ্য {number}-এর ছবি',
   'transfer.app.ready': 'অ্যাপটি এই ফোনে এসেছে ({size}) এবং ইনস্টলের জন্য প্রস্তুত।',
   'transfer.network': 'আগে দুটি ফোনই একই ওয়াই-ফাই বা হটস্পটে যুক্ত করুন।',
   'transfer.localNetwork.prompt':
@@ -543,4 +542,11 @@ export const bn: LocaleTable = {
   'library.chapters': { one: '{count}টি অধ্যায়', other: '{count}টি অধ্যায়' },
   'library.pictures': { one: '{count}টি ছবি', other: '{count}টি ছবি' },
   'formation.training.empty': 'একাডেমি এখনও {language} ভাষায় নেই।',
+  'session.story.list': 'একটি গল্প বেছে নিন',
+  'session.story.previous': 'আগের গল্প',
+  'session.story.next': 'পরের গল্প',
+  'session.talk.frame': 'দৃশ্য {number} নিয়ে কথা বলুন',
+  'session.pictures.download': 'গল্পের ছবি ডাউনলোড করুন',
+  'session.pictures.notFound': 'গল্পের ছবিতে এই দৃশ্যের কোনো ছবি নেই।',
+  'session.read.play': 'গল্পটি চালান',
 };

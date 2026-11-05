@@ -496,7 +496,6 @@ export const sw: LocaleTable = {
   'library.download': 'Pakua {resource}',
   'library.onPhone': 'Kwenye simu hii',
   'search.fullText.inSettings': 'Iwashe katika Mipangilio, na faharasa inabaki kwenye simu hii.',
-  'study.frame.picture': 'Mchoro wa picha ya {number}',
   'transfer.app.ready': 'Programu imefika kwenye simu hii ({size}) na iko tayari kusakinishwa.',
   'transfer.network': 'Kwanza unganisha simu zote mbili kwenye Wi-Fi au hotspot moja.',
   'transfer.localNetwork.prompt':
@@ -558,4 +557,11 @@ export const sw: LocaleTable = {
   'library.chapters': { one: 'Sura {count}', other: 'Sura {count}' },
   'library.pictures': { one: 'Picha {count}', other: 'Picha {count}' },
   'formation.training.empty': 'Akademia bado haipo kwa {language}.',
+  'session.story.list': 'Chagua hadithi',
+  'session.story.previous': 'Hadithi iliyotangulia',
+  'session.story.next': 'Hadithi inayofuata',
+  'session.talk.frame': 'Zungumzeni kuhusu picha ya {number}',
+  'session.pictures.download': 'Pakua picha za hadithi',
+  'session.pictures.notFound': 'Picha hii haina mchoro kwenye picha za hadithi.',
+  'session.read.play': 'Cheza hadithi',
 };

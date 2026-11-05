@@ -41,7 +41,7 @@ export default scenario(
     assert.deepEqual(
       saved.map((item) => item.href),
       [
-        '/study/story/2',
+        '/formation/story/2',
         '/study/article/ta/translate/figs-idiom',
         '/study/article/tw/bible/kt/god',
         '/study?reference=RUT%201%3A1',

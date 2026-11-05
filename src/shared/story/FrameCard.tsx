@@ -1,24 +1,39 @@
+import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { GlassSurface } from '@shared/glass';
-import { useTheme } from '@shared/theme';
+import { contentText, useTheme, type Direction } from '@shared/theme';
 import { ThemedText } from '@shared/ui';
-import type { Frame, FormationWords } from '../../service';
 import { PictureWell } from './PictureWell';
 
 export type FrameCardProps = {
-  words: FormationWords;
   title: string;
-  frames: readonly Frame[];
+  position: string;
+  text: string;
+  language: string;
+  direction: Direction;
+  pictureLabel: string;
+  picture: string | undefined;
+  count: number;
   index: number;
-  pictureOf: (frame: Frame) => string | undefined;
+  inWell?: ReactNode;
+  children?: ReactNode;
 };
 
-export function FrameCard({ words, title, frames, index, pictureOf }: FrameCardProps) {
+export function FrameCard({
+  title,
+  position,
+  text,
+  language,
+  direction,
+  pictureLabel,
+  picture,
+  count,
+  index,
+  inWell,
+  children,
+}: FrameCardProps) {
   const theme = useTheme();
-  const frame = frames[index];
-  const number = frame?.number ?? index + 1;
-  const position = words.t('session.frame', { number: index + 1, total: frames.length });
-  const picture = frame === undefined ? undefined : pictureOf(frame);
+  const textStyle = contentText(theme, theme.text.body, { language, sample: text, direction });
   return (
     <GlassSurface
       level={2}
@@ -26,11 +41,8 @@ export function FrameCard({ words, title, frames, index, pictureOf }: FrameCardP
       shadow="card"
       style={{ padding: theme.space.sp5, gap: theme.space.sp4 }}
     >
-      <PictureWell
-        tall
-        label={words.t('session.frame.picture', { number })}
-        {...(picture === undefined ? {} : { uri: picture })}
-      >
+      <PictureWell tall label={pictureLabel} {...(picture === undefined ? {} : { uri: picture })}>
+        {inWell}
         <ThemedText variant="overline" tone="onImage">
           {position}
         </ThemedText>
@@ -39,23 +51,19 @@ export function FrameCard({ words, title, frames, index, pictureOf }: FrameCardP
         </ThemedText>
       </PictureWell>
       <View accessibilityLiveRegion="polite" style={{ paddingHorizontal: theme.space.sp4 }}>
-        <ThemedText variant="body" tone="title">
-          {frame?.text ?? ''}
+        <ThemedText variant="body" tone="title" selectable style={textStyle}>
+          {text}
         </ThemedText>
       </View>
-      {frame !== undefined && frame.image === undefined ? (
-        <ThemedText variant="caption" tone="dim" style={{ paddingHorizontal: theme.space.sp4 }}>
-          {words.t('session.picturesMissing')}
-        </ThemedText>
-      ) : null}
+      {children}
       <View
         accessibilityElementsHidden
         importantForAccessibility="no-hide-descendants"
         style={[styles.dots, { gap: theme.space.sp2, paddingVertical: theme.space.sp3 }]}
       >
-        {frames.map((item, dot) => (
+        {Array.from({ length: count }, (_, dot) => (
           <View
-            key={item.number}
+            key={dot}
             style={{
               width: dot === index ? theme.space.sp9 : theme.space.sp3,
               height: theme.space.sp2,

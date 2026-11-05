@@ -539,7 +539,6 @@ export const ru: LocaleTable = {
   'library.download': 'Скачать: {resource}',
   'library.onPhone': 'На этом телефоне',
   'search.fullText.inSettings': 'Включите это в настройках, а указатель останется на этом телефоне.',
-  'study.frame.picture': 'Иллюстрация к кадру {number}',
   'transfer.app.ready': 'Приложение пришло на этот телефон ({size}) и готово к установке.',
   'transfer.network': 'Сначала подключите оба телефона к одной сети Wi-Fi или точке доступа.',
   'transfer.localNetwork.prompt':
@@ -644,4 +643,11 @@ export const ru: LocaleTable = {
     other: '{count} изображения',
   },
   'formation.training.empty': 'Академия пока недоступна на языке {language}.',
+  'session.story.list': 'Выберите историю',
+  'session.story.previous': 'Предыдущая история',
+  'session.story.next': 'Следующая история',
+  'session.talk.frame': 'Обсудим кадр {number}',
+  'session.pictures.download': 'Скачать иллюстрации к историям',
+  'session.pictures.notFound': 'Для этого кадра нет иллюстрации.',
+  'session.read.play': 'Слушать историю',
 };

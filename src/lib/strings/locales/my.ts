@@ -477,7 +477,6 @@ export const my: LocaleTable = {
   'library.download': '{resource} ကို ဒေါင်းလုဒ်လုပ်ရန်',
   'library.onPhone': 'ဤဖုန်းပေါ်တွင်',
   'search.fullText.inSettings': 'ဆက်တင်များတွင် ဖွင့်ပါ၊ အညွှန်းသည် ဤဖုန်းပေါ်တွင်သာ ရှိနေပါသည်။',
-  'study.frame.picture': 'ပုံ {number} ၏ ရုပ်ပုံ',
   'transfer.app.ready': 'အက်ပ်သည် ဤဖုန်းသို့ ရောက်ရှိပြီး ({size}) ထည့်သွင်းရန် အသင့်ဖြစ်ပါသည်။',
   'transfer.network': 'ဖုန်းနှစ်လုံးလုံးကို Wi-Fi သို့မဟုတ် hotspot တစ်ခုတည်းသို့ အရင်ချိတ်ဆက်ပါ။',
   'transfer.localNetwork.prompt':
@@ -539,4 +538,11 @@ export const my: LocaleTable = {
   'library.chapters': { other: 'အခန်း {count} ခန်း' },
   'library.pictures': { other: 'ပုံ {count} ပုံ' },
   'formation.training.empty': 'အကယ်ဒမီသည် {language} ဖြင့် မရနိုင်သေးပါ။',
+  'session.story.list': 'ဇာတ်လမ်းတစ်ပုဒ် ရွေးရန်',
+  'session.story.previous': 'ယခင်ဇာတ်လမ်း',
+  'session.story.next': 'နောက်ဇာတ်လမ်း',
+  'session.talk.frame': 'ပုံ {number} အကြောင်း ဆွေးနွေးကြစို့',
+  'session.pictures.download': 'ဇာတ်လမ်း ပုံများ ဒေါင်းလုဒ်လုပ်ရန်',
+  'session.pictures.notFound': 'ဇာတ်လမ်း ပုံများတွင် ဤပုံအတွက် ပုံမရှိပါ။',
+  'session.read.play': 'ဇာတ်လမ်းကို ဖွင့်ရန်',
 };

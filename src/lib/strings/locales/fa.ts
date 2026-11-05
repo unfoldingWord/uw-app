@@ -487,7 +487,6 @@ export const fa: LocaleTable = {
   'library.download': 'بارگیری {resource}',
   'library.onPhone': 'روی این گوشی',
   'search.fullText.inSettings': 'آن را در تنظیمات روشن کنید و نمایه روی این گوشی می‌ماند.',
-  'study.frame.picture': 'تصویر صحنهٔ {number}',
   'transfer.app.ready': 'برنامه به این گوشی رسید ({size}) و آمادهٔ نصب است.',
   'transfer.network': 'اول هر دو گوشی را به یک وای‌فای یا هات‌اسپات وصل کنید.',
   'transfer.localNetwork.prompt':
@@ -548,4 +547,11 @@ export const fa: LocaleTable = {
   'library.chapters': { one: '{count} فصل', other: '{count} فصل' },
   'library.pictures': { one: '{count} تصویر', other: '{count} تصویر' },
   'formation.training.empty': 'آکادمی هنوز به زبان {language} نیست.',
+  'session.story.list': 'یک داستان انتخاب کنید',
+  'session.story.previous': 'داستان قبلی',
+  'session.story.next': 'داستان بعدی',
+  'session.talk.frame': 'دربارهٔ صحنهٔ {number} گفت‌وگو کنید',
+  'session.pictures.download': 'بارگیری تصاویر داستان‌ها',
+  'session.pictures.notFound': 'این صحنه در تصاویر داستان‌ها تصویری ندارد.',
+  'session.read.play': 'پخش داستان',
 };
