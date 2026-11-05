@@ -274,4 +274,36 @@ describe('corpus over the release shapes observed from go-rc2sb v0.5.0 (CI run 3
       .find((burrito) => burrito.provenance.resource === 'qad_obs-twl');
     expect(twl?.provenance.licence).toBe('Copyright © 2021 by unfoldingWord, CC BY-SA 4.0');
   });
+
+  it('anchors a story hit at the frame the index matched when the query drops the diacritics of the text', async () => {
+    const phone = await device();
+    const accented = [
+      '# 1. La Création',
+      '',
+      '![OBS Image](https://cdn.door43.org/obs/jpg/360px/obs-en-01-01.jpg)',
+      '',
+      'Au commencement, Dieu fit toutes choses.',
+      '',
+      '![OBS Image](https://cdn.door43.org/obs/jpg/360px/obs-en-01-02.jpg)',
+      '',
+      'Dieu créa la lumière et les ténèbres.',
+      '',
+      '_Une histoire biblique tirée de : Genèse 1-2_',
+      '',
+    ].join('\n');
+    await importShape(phone, {
+      resource: 'qad_obs',
+      flavorType: 'gloss',
+      flavor: 'textStories',
+      abbreviation: 'OBS',
+      name: 'Fixture Open Bible Stories',
+      ingredients: [{ ...text('content/01.md', accented, mimeTypes.markdown), scope: { GEN: ['1-2'] } }],
+    });
+    await phone.kernel.corpus.reindex(language);
+    for (const query of ['tenebres', 'TÉNÈBRES', 'lumiere']) {
+      expect((await phone.kernel.corpus.fullText(query, language)).map((hit) => hit.target)).toEqual([
+        { kind: 'story', story: 1, frame: 2 },
+      ]);
+    }
+  });
 });

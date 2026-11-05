@@ -74,6 +74,7 @@ export const ru: LocaleTable = {
   'home.formation.action': 'Продолжить с группой {group}',
   'home.formation.empty': 'Создайте группу в разделе Формирование, чтобы проходить истории вместе.',
   'home.download.progress': 'Загрузка: {language}',
+  'home.download.pictures': 'Загрузка иллюстраций к историям',
   'home.download.percent': '{percent} %',
   'home.download.none': 'На этом телефоне пока нет ничего на языке {language}.',
   'home.download.missing': 'Некоторых ресурсов на языке {language} пока нет на этом телефоне.',
@@ -548,7 +549,7 @@ export const ru: LocaleTable = {
   'study.noLanguage.action': 'Выбрать язык',
   'library.download': 'Скачать: {resource}',
   'library.onPhone': 'На этом телефоне',
-  'study.frame.picture': 'Иллюстрация к кадру {number}',
+
   'transfer.app.ready': 'Приложение пришло на этот телефон ({size}) и готово к установке.',
   'transfer.network': 'Сначала подключите оба телефона к одной сети Wi-Fi или точке доступа.',
   'transfer.localNetwork.prompt':
@@ -581,6 +582,7 @@ export const ru: LocaleTable = {
     'Ничто не покидает этот телефон, если вы сами не решили это отправить, а приложение хранит только анонимные подсчёты использования, перечисленные на экране конфиденциальности.',
   'home.download.waiting': 'Подключитесь к интернету, затем нажмите, чтобы загрузить.',
   'languages.row': '{english} · {resources} · около {size}',
+  'languages.row.pictures': '{english} · {resources} · около {size} вместе с иллюстрациями к историям',
   'languages.offline': 'Вы не в сети, поэтому новые языки нельзя загрузить, пока вы не подключитесь снова.',
   'transfer.note':
     'Работает между любыми двумя телефонами с приложением в обе стороны, и с каждым элементом идут лицензия и указание авторства.',
@@ -653,6 +655,15 @@ export const ru: LocaleTable = {
     other: '{count} изображения',
   },
   'formation.training.empty': 'Академия пока недоступна на языке {language}.',
+  'session.story.list': 'Выберите историю',
+  'session.story.notFound': 'В языке {language} нет истории {number}.',
+  'session.story.previous': 'Предыдущая история',
+  'session.story.next': 'Следующая история',
+  'session.talk.frame': 'Обсудим кадр {number}',
+  'session.pictures.download': 'Скачать иллюстрации к историям',
+  'session.pictures.notFound': 'Для этого кадра нет иллюстрации.',
+  'session.read.play': 'Слушать историю',
+
   'formation.training.missing': 'Это руководство не найдено.',
   'formation.training.open': 'Перейти к разделу «Обучение»',
 };

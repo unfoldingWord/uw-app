@@ -7,13 +7,15 @@ import { valueOf } from '../written';
 
 export default scenario(
   'ST-10',
-  'any passage, article or story can be bookmarked in Study, appears on Home, and replays from the journal',
+  'any passage, article or story can be bookmarked where it is read, appears on Home, and replays from the journal',
   async (world) => {
     const phone = world.device('phone');
     await phone.start();
     const services = servicesOf(phone);
     await services.onboarding.refresh();
-    assert.ok((await (await services.onboarding.choose('qaa')).done).ok);
+    const chosen = await services.onboarding.choose('qaa');
+    assert.ok((await chosen.done).ok);
+    await chosen.pictures;
 
     const opened = await services.study.passage('RUT 1:1');
     assert.equal(opened.state, 'passage');
@@ -32,10 +34,11 @@ export default scenario(
     const article = await services.study.article('tw/bible/kt/love');
     assert.equal(article.state, 'article');
     await services.study.save({ target: 'article', article: 'tw/bible/kt/love', language: 'qaa' });
-    const story = await services.study.story(3);
-    assert.equal(story.state, 'story');
-    await services.study.save({ target: 'story', story: 3, language: 'qaa' });
+    const story = await services.formation.read(3);
+    assert.equal(story?.number, 3);
+    await services.formation.save(3);
     assert.equal(services.study.saved({ target: 'story', story: 3, language: 'qaa' }) !== undefined, true);
+    assert.equal(services.formation.saved(3)?.target, 'story', 'the story reader shows the same bookmark');
 
     assert.deepEqual(
       services.home.saved().map((item) => item.kind),

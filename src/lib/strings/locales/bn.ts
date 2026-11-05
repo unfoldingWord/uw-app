@@ -74,6 +74,7 @@ export const bn: LocaleTable = {
   'home.formation.action': '{group} দলের সাথে চালিয়ে যান',
   'home.formation.empty': 'একসাথে গল্পগুলোর মধ্য দিয়ে যেতে শিষ্যত্বে একটি দল তৈরি করুন।',
   'home.download.progress': '{language} ডাউনলোড হচ্ছে',
+  'home.download.pictures': 'গল্পের ছবি ডাউনলোড হচ্ছে',
   'home.download.percent': '{percent}%',
   'home.download.none': 'এই ফোনে এখনও {language} ভাষার কিছু নেই।',
   'home.download.missing': '{language} ভাষার কিছু উপকরণ এখনও এই ফোনে নেই।',
@@ -490,7 +491,7 @@ export const bn: LocaleTable = {
   'study.noLanguage.action': 'একটি ভাষা বেছে নিন',
   'library.download': '{resource} ডাউনলোড করুন',
   'library.onPhone': 'এই ফোনে',
-  'study.frame.picture': 'দৃশ্য {number}-এর ছবি',
+
   'transfer.app.ready': 'অ্যাপটি এই ফোনে এসেছে ({size}) এবং ইনস্টলের জন্য প্রস্তুত।',
   'transfer.network': 'আগে দুটি ফোনই একই ওয়াই-ফাই বা হটস্পটে যুক্ত করুন।',
   'transfer.localNetwork.prompt':
@@ -522,6 +523,7 @@ export const bn: LocaleTable = {
     'আপনি যা পাঠাতে চাননি তা এই ফোন থেকে বের হয় না, আর অ্যাপটি কেবল ব্যবহারের নামবিহীন গণনা রাখে, যা গোপনীয়তা পর্দায় তালিকাভুক্ত।',
   'home.download.waiting': 'ইন্টারনেটে সংযোগ করুন, তারপর ডাউনলোড করতে ট্যাপ করুন।',
   'languages.row': '{english} · {resources} · প্রায় {size}',
+  'languages.row.pictures': '{english} · {resources} · গল্পের ছবিসহ প্রায় {size}',
   'languages.offline': 'আপনি অফলাইনে আছেন, তাই পুনরায় সংযোগ না হওয়া পর্যন্ত নতুন ভাষা ডাউনলোড করা যাবে না।',
   'transfer.note':
     'অ্যাপ থাকা যেকোনো দুটি ফোনের মধ্যে দুই দিকেই কাজ করে, প্রতিটি উপকরণে লাইসেন্স ও স্বীকৃতি সহ।',
@@ -552,6 +554,15 @@ export const bn: LocaleTable = {
   'library.chapters': { one: '{count}টি অধ্যায়', other: '{count}টি অধ্যায়' },
   'library.pictures': { one: '{count}টি ছবি', other: '{count}টি ছবি' },
   'formation.training.empty': 'একাডেমি এখনও {language} ভাষায় নেই।',
+  'session.story.list': 'একটি গল্প বেছে নিন',
+  'session.story.notFound': '{language}-এ {number} নম্বর কোনো গল্প নেই।',
+  'session.story.previous': 'আগের গল্প',
+  'session.story.next': 'পরের গল্প',
+  'session.talk.frame': 'দৃশ্য {number} নিয়ে কথা বলুন',
+  'session.pictures.download': 'গল্পের ছবি ডাউনলোড করুন',
+  'session.pictures.notFound': 'গল্পের ছবিতে এই দৃশ্যের কোনো ছবি নেই।',
+  'session.read.play': 'গল্পটি চালান',
+
   'formation.training.missing': 'এই নির্দেশিকাটি খুঁজে পাওয়া যাচ্ছে না।',
   'formation.training.open': 'প্রশিক্ষণে যান',
 };

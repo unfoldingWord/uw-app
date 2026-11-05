@@ -76,6 +76,7 @@ export const fr: LocaleTable = {
   'home.formation.action': 'Continuer avec {group}',
   'home.formation.empty': 'Créez un groupe dans Formation pour parcourir les histoires ensemble.',
   'home.download.progress': 'Téléchargement de {language}',
+  'home.download.pictures': 'Téléchargement des images des histoires',
   'home.download.percent': '{percent} %',
   'home.download.none': 'Rien en {language} n’est encore sur ce téléphone.',
   'home.download.missing': 'Certaines ressources en {language} ne sont pas encore sur ce téléphone.',
@@ -533,7 +534,7 @@ export const fr: LocaleTable = {
   'study.noLanguage.action': 'Choisir une langue',
   'library.download': 'Télécharger {resource}',
   'library.onPhone': 'Sur ce téléphone',
-  'study.frame.picture': 'Illustration de l’image {number}',
+
   'transfer.app.ready':
     'L’application est arrivée sur ce téléphone ({size}) et elle est prête à être installée.',
   'transfer.network': 'Connectez d’abord les deux téléphones au même Wi-Fi ou partage de connexion.',
@@ -568,6 +569,7 @@ export const fr: LocaleTable = {
     'Rien ne quitte ce téléphone sans que vous ayez choisi de l’envoyer, et l’application ne garde que des comptes anonymes de son utilisation, listés sur l’écran de confidentialité.',
   'home.download.waiting': 'Connectez-vous à internet, puis touchez pour télécharger.',
   'languages.row': '{english} · {resources} · environ {size}',
+  'languages.row.pictures': '{english} · {resources} · environ {size} avec les images des histoires',
   'languages.offline':
     'Vous êtes hors ligne, donc aucune nouvelle langue ne peut être téléchargée avant la reconnexion.',
   'transfer.note':
@@ -619,6 +621,15 @@ export const fr: LocaleTable = {
   'library.chapters': { one: '{count} chapitre', many: '{count} de chapitres', other: '{count} chapitres' },
   'library.pictures': { one: '{count} image', many: '{count} d’images', other: '{count} images' },
   'formation.training.empty': 'L’Académie n’est pas encore disponible en {language}.',
+  'session.story.list': 'Choisir une histoire',
+  'session.story.notFound': 'Il n’y a pas d’histoire {number} en {language}.',
+  'session.story.previous': 'Histoire précédente',
+  'session.story.next': 'Histoire suivante',
+  'session.talk.frame': 'Parlons de l’image {number}',
+  'session.pictures.download': 'Télécharger les images des histoires',
+  'session.pictures.notFound': 'Cette image n’a pas d’illustration dans les images des histoires.',
+  'session.read.play': 'Écouter l’histoire',
+
   'formation.training.missing': 'Ce manuel est introuvable.',
   'formation.training.open': 'Aller à Formation pratique',
 };

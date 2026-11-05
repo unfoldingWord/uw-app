@@ -76,6 +76,7 @@ export const nl: LocaleTable = {
   'home.formation.action': 'Verder met {group}',
   'home.formation.empty': 'Maak een groep aan in Vorming om samen door de verhalen te gaan.',
   'home.download.progress': '{language} wordt gedownload',
+  'home.download.pictures': 'De afbeeldingen bij de verhalen worden gedownload',
   'home.download.percent': '{percent}%',
   'home.download.none': 'Er staat nog niets in {language} op deze telefoon.',
   'home.download.missing': 'Sommige hulpmiddelen in {language} staan nog niet op deze telefoon.',
@@ -510,7 +511,7 @@ export const nl: LocaleTable = {
   'study.noLanguage.action': 'Kies een taal',
   'library.download': '{resource} downloaden',
   'library.onPhone': 'Op deze telefoon',
-  'study.frame.picture': 'Afbeelding bij beeld {number}',
+
   'transfer.app.ready': 'De app staat nu op deze telefoon ({size}) en is klaar om te installeren.',
   'transfer.network': 'Zet beide telefoons eerst op hetzelfde wifi-netwerk of dezelfde hotspot.',
   'transfer.localNetwork.prompt':
@@ -542,6 +543,7 @@ export const nl: LocaleTable = {
     'Niets verlaat deze telefoon zonder dat u ervoor kiest het te versturen, en de app bewaart alleen anonieme tellingen van het gebruik, vermeld op het privacyscherm.',
   'home.download.waiting': 'Maak verbinding met internet en tik dan om te downloaden.',
   'languages.row': '{english} · {resources} · ongeveer {size}',
+  'languages.row.pictures': '{english} · {resources} · ongeveer {size} met de afbeeldingen bij de verhalen',
   'languages.offline':
     'U bent offline, dus nieuwe talen kunnen pas worden gedownload als u weer verbinding hebt.',
   'transfer.note':
@@ -574,6 +576,15 @@ export const nl: LocaleTable = {
   'library.chapters': { one: '{count} hoofdstuk', other: '{count} hoofdstukken' },
   'library.pictures': { one: '{count} afbeelding', other: '{count} afbeeldingen' },
   'formation.training.empty': 'De Academie is nog niet beschikbaar in het {language}.',
+  'session.story.list': 'Kies een verhaal',
+  'session.story.notFound': 'Er is geen verhaal {number} in het {language}.',
+  'session.story.previous': 'Vorig verhaal',
+  'session.story.next': 'Volgend verhaal',
+  'session.talk.frame': 'Praat over beeld {number}',
+  'session.pictures.download': 'Afbeeldingen bij de verhalen downloaden',
+  'session.pictures.notFound': 'Dit beeld heeft geen afbeelding bij de verhalen.',
+  'session.read.play': 'Het verhaal afspelen',
+
   'formation.training.missing': 'Deze handleiding is niet te vinden.',
   'formation.training.open': 'Naar Training',
 };

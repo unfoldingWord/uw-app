@@ -76,6 +76,7 @@ export const my: LocaleTable = {
   'home.formation.action': '{group} နှင့် ဆက်လုပ်ရန်',
   'home.formation.empty': 'ဇာတ်လမ်းများကို အတူတကွ လေ့လာရန် ပျိုးထောင်ခြင်းတွင် အဖွဲ့တစ်ဖွဲ့ ဖွဲ့ပါ။',
   'home.download.progress': '{language} ကို ဒေါင်းလုဒ်လုပ်နေသည်',
+  'home.download.pictures': 'ဇာတ်လမ်း ပုံများကို ဒေါင်းလုဒ်လုပ်နေသည်',
   'home.download.percent': '{percent}%',
   'home.download.none': 'ဤဖုန်းပေါ်တွင် {language} ဖြင့် ဘာမျှ မရှိသေးပါ။',
   'home.download.missing': '{language} အရင်းအမြစ် အချို့ ဤဖုန်းပေါ်တွင် မရှိသေးပါ။',
@@ -486,7 +487,7 @@ export const my: LocaleTable = {
   'study.noLanguage.action': 'ဘာသာစကား ရွေးရန်',
   'library.download': '{resource} ကို ဒေါင်းလုဒ်လုပ်ရန်',
   'library.onPhone': 'ဤဖုန်းပေါ်တွင်',
-  'study.frame.picture': 'ပုံ {number} ၏ ရုပ်ပုံ',
+
   'transfer.app.ready': 'အက်ပ်သည် ဤဖုန်းသို့ ရောက်ရှိပြီး ({size}) ထည့်သွင်းရန် အသင့်ဖြစ်ပါသည်။',
   'transfer.network': 'ဖုန်းနှစ်လုံးလုံးကို Wi-Fi သို့မဟုတ် hotspot တစ်ခုတည်းသို့ အရင်ချိတ်ဆက်ပါ။',
   'transfer.localNetwork.prompt':
@@ -518,6 +519,7 @@ export const my: LocaleTable = {
     'သင်ပို့ရန် မရွေးချယ်ထားသည့် မည်သည့်အရာမျှ ဤဖုန်းမှ ထွက်မသွားပါ၊ အက်ပ်သည် အသုံးပြုမှုကို အမည်မဖော်သော အရေအတွက်များအဖြစ်သာ သိမ်းထားပြီး ကိုယ်ရေးလုံခြုံမှု မျက်နှာပြင်တွင် ဖော်ပြထားပါသည်။',
   'home.download.waiting': 'အင်တာနက် ချိတ်ဆက်ပြီးနောက် ဒေါင်းလုဒ်လုပ်ရန် နှိပ်ပါ။',
   'languages.row': '{english} · {resources} · {size} ခန့်',
+  'languages.row.pictures': '{english} · {resources} · ဇာတ်လမ်း ပုံများ အပါအဝင် {size} ခန့်',
   'languages.offline':
     'သင် အော့ဖ်လိုင်း ဖြစ်နေသဖြင့် ပြန်ချိတ်ဆက်သည်အထိ ဘာသာစကားအသစ်များကို ဒေါင်းလုဒ် မလုပ်နိုင်ပါ။',
   'transfer.note':
@@ -548,6 +550,15 @@ export const my: LocaleTable = {
   'library.chapters': { other: 'အခန်း {count} ခန်း' },
   'library.pictures': { other: 'ပုံ {count} ပုံ' },
   'formation.training.empty': 'အကယ်ဒမီသည် {language} ဖြင့် မရနိုင်သေးပါ။',
+  'session.story.list': 'ဇာတ်လမ်းတစ်ပုဒ် ရွေးရန်',
+  'session.story.notFound': '{language} တွင် ဇာတ်လမ်း {number} မရှိပါ။',
+  'session.story.previous': 'ယခင်ဇာတ်လမ်း',
+  'session.story.next': 'နောက်ဇာတ်လမ်း',
+  'session.talk.frame': 'ပုံ {number} အကြောင်း ဆွေးနွေးကြစို့',
+  'session.pictures.download': 'ဇာတ်လမ်း ပုံများ ဒေါင်းလုဒ်လုပ်ရန်',
+  'session.pictures.notFound': 'ဇာတ်လမ်း ပုံများတွင် ဤပုံအတွက် ပုံမရှိပါ။',
+  'session.read.play': 'ဇာတ်လမ်းကို ဖွင့်ရန်',
+
   'formation.training.missing': 'ဤလက်စွဲကို ရှာမတွေ့ပါ။',
   'formation.training.open': 'သင်တန်းသို့ သွားပါ',
 };

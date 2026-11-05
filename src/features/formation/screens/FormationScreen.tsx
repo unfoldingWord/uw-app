@@ -13,7 +13,7 @@ import {
   type Progress as GroupProgress,
   type TrackSummary,
 } from '../service';
-import { PictureWell } from './parts/PictureWell';
+import { PictureWell } from '@shared/story';
 import { Progress } from './parts/Progress';
 import { useLoad } from './parts/useLoad';
 import { groupLine, sessionHref } from './parts/wording';

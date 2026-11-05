@@ -74,6 +74,7 @@ export const hi: LocaleTable = {
   'home.formation.action': '{group} के साथ जारी रखें',
   'home.formation.empty': 'कहानियों से साथ मिलकर गुज़रने के लिए शिष्यता में एक समूह बनाएँ।',
   'home.download.progress': '{language} डाउनलोड हो रही है',
+  'home.download.pictures': 'कहानी के चित्र डाउनलोड हो रहे हैं',
   'home.download.percent': '{percent}%',
   'home.download.none': 'इस फ़ोन पर अभी {language} में कुछ नहीं है।',
   'home.download.missing': '{language} के कुछ संसाधन अभी इस फ़ोन पर नहीं हैं।',
@@ -496,7 +497,7 @@ export const hi: LocaleTable = {
   'study.noLanguage.action': 'एक भाषा चुनें',
   'library.download': '{resource} डाउनलोड करें',
   'library.onPhone': 'इस फ़ोन पर',
-  'study.frame.picture': 'दृश्य {number} का चित्र',
+
   'transfer.app.ready': 'ऐप इस फ़ोन पर आ गया है ({size}) और इंस्टॉल के लिए तैयार है।',
   'transfer.network': 'पहले दोनों फ़ोन एक ही वाई-फ़ाई या हॉटस्पॉट से जोड़ें।',
   'transfer.localNetwork.prompt':
@@ -528,6 +529,7 @@ export const hi: LocaleTable = {
     'जो आपने भेजना नहीं चुना वह इस फ़ोन से बाहर नहीं जाता, और ऐप केवल उपयोग की गुमनाम गिनतियाँ रखता है, जो गोपनीयता स्क्रीन पर सूचीबद्ध हैं।',
   'home.download.waiting': 'इंटरनेट से जुड़ें, फिर डाउनलोड करने के लिए टैप करें।',
   'languages.row': '{english} · {resources} · लगभग {size}',
+  'languages.row.pictures': '{english} · {resources} · कहानी के चित्रों सहित लगभग {size}',
   'languages.offline': 'आप ऑफ़लाइन हैं, इसलिए फिर से जुड़ने तक नई भाषाएँ डाउनलोड नहीं की जा सकतीं।',
   'transfer.note':
     'ऐप वाले किन्हीं दो फ़ोनों के बीच दोनों दिशाओं में काम करता है, हर मद पर लाइसेंस और श्रेय के साथ।',
@@ -558,6 +560,15 @@ export const hi: LocaleTable = {
   'library.chapters': { one: '{count} अध्याय', other: '{count} अध्याय' },
   'library.pictures': { one: '{count} चित्र', other: '{count} चित्र' },
   'formation.training.empty': 'अकादमी अभी {language} में नहीं है।',
+  'session.story.list': 'एक कहानी चुनें',
+  'session.story.notFound': '{language} में कहानी {number} नहीं है।',
+  'session.story.previous': 'पिछली कहानी',
+  'session.story.next': 'अगली कहानी',
+  'session.talk.frame': 'दृश्य {number} पर बात करें',
+  'session.pictures.download': 'कहानी के चित्र डाउनलोड करें',
+  'session.pictures.notFound': 'कहानी के चित्रों में इस दृश्य का कोई चित्र नहीं है।',
+  'session.read.play': 'कहानी चलाएँ',
+
   'formation.training.missing': 'यह पुस्तिका नहीं मिल रही है।',
   'formation.training.open': 'प्रशिक्षण पर जाएँ',
 };

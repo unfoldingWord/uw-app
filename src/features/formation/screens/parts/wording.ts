@@ -12,6 +12,16 @@ export function sessionHref(track: Track, session: number): Href {
   return `/formation/session/${track}/${session}`;
 }
 
+export function storyHref(story: number, frame?: number): Href {
+  return frame === undefined
+    ? `/formation/story/${String(story)}`
+    : { pathname: '/formation/story/[number]', params: { number: String(story), frame: String(frame) } };
+}
+
+export function passageHref(reference: string): Href {
+  return { pathname: '/study', params: { reference } };
+}
+
 export function storyShareHref(story: number): Href {
   return { pathname: '/share', params: { kind: 'story', number: String(story) } };
 }

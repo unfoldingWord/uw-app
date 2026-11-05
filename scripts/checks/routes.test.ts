@@ -49,7 +49,7 @@ describe('routeMatches and missingRouteFindings', () => {
   const routes = routesOf([
     'app/(tabs)/index.tsx',
     'app/(tabs)/study.tsx',
-    'app/study/story/[number].tsx',
+    'app/formation/story/[number].tsx',
     'app/study/article/[...id].tsx',
     'app/formation/session/[track]/[number].tsx',
   ]);
@@ -58,12 +58,12 @@ describe('routeMatches and missingRouteFindings', () => {
     const [home, study, story, article, session] = routes;
     expect(home !== undefined && routeMatches('/', home)).toBe(true);
     expect(study !== undefined && routeMatches('/study?bookmark=1', study)).toBe(true);
-    expect(story !== undefined && routeMatches(`/study/story/${dynamicPart}`, story)).toBe(true);
+    expect(story !== undefined && routeMatches(`/formation/story/${dynamicPart}`, story)).toBe(true);
     expect(article !== undefined && routeMatches('/study/article/tw/bible/kt/god', article)).toBe(true);
     expect(
       session !== undefined && routeMatches(`/formation/session/${dynamicPart}/${dynamicPart}`, session),
     ).toBe(true);
-    expect(story !== undefined && routeMatches('/study/story', story)).toBe(false);
+    expect(story !== undefined && routeMatches('/formation/story', story)).toBe(false);
   });
 
   it('names a navigation target no route serves', () => {

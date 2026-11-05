@@ -1,7 +1,7 @@
 import type { CatalogLanguage, RefreshOutcome } from '@lib/catalog/types';
-import { languagePackId, type PackId } from '@lib/domain/pack';
+import { imagePackId, languagePackId, type PackId } from '@lib/domain/pack';
 import type { Kernel } from '@lib/kernel';
-import type { InstallOutcome } from '@lib/packs/types';
+import { picturesFollow, type InstallOutcome } from '@lib/packs/types';
 import { onboardingWords, type OnboardingWords } from './strings';
 
 export type OnboardingCopy = {
@@ -22,6 +22,7 @@ export type Chosen = {
   readonly language: string;
   readonly pack: PackId;
   readonly done: Promise<InstallOutcome>;
+  readonly pictures: Promise<InstallOutcome | undefined>;
 };
 
 export type OnboardingService = {
@@ -36,23 +37,29 @@ export type OnboardingService = {
 
 const englishLanguage = 'en';
 
-async function startLanguagePack(
-  kernel: Kernel,
-  language: string,
-): Promise<{ done: Promise<InstallOutcome> }> {
+type Started = { done: Promise<InstallOutcome>; pictures: Promise<InstallOutcome | undefined> };
+
+const noPictures: Promise<InstallOutcome | undefined> = Promise.resolve(undefined);
+
+async function startLanguagePack(kernel: Kernel, language: string): Promise<Started> {
   const pack = languagePackId(language);
   if (kernel.catalog.releases(language).length === 0) {
     const refreshed = await kernel.catalog.refresh();
     if (!refreshed.ok && kernel.catalog.releases(language).length === 0) {
-      return { done: Promise.resolve({ ok: false, install: undefined, pack, code: refreshed.code }) };
+      return {
+        done: Promise.resolve({ ok: false, install: undefined, pack, code: refreshed.code }),
+        pictures: noPictures,
+      };
     }
   }
   const status = await kernel.packs.status(language);
   const installed = kernel.packs.installed().find((item) => item.pack === pack);
   if (status.complete && installed !== undefined) {
-    return { done: Promise.resolve({ ok: true, install: undefined, pack: installed }) };
+    return { done: Promise.resolve({ ok: true, install: undefined, pack: installed }), pictures: noPictures };
   }
-  return { done: kernel.packs.installFromCatalog(pack) };
+  const withPictures = picturesFollow(kernel.catalog.all(), kernel.packs.installed(), language);
+  const done = kernel.packs.installFromCatalog(pack);
+  return { done, pictures: withPictures ? kernel.packs.installFromCatalog(imagePackId) : noPictures };
 }
 
 export function createOnboardingService(kernel: Kernel): OnboardingService {
@@ -63,8 +70,8 @@ export function createOnboardingService(kernel: Kernel): OnboardingService {
       await kernel.preferences.set('home.name', options.name);
     }
     await kernel.preferences.set('study.language', language);
-    const { done } = await startLanguagePack(kernel, language);
-    return { language, pack: languagePackId(language), done };
+    const { done, pictures } = await startLanguagePack(kernel, language);
+    return { language, pack: languagePackId(language), done, pictures };
   };
 
   return {

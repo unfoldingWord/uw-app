@@ -3,6 +3,38 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-11-05 One story reader (#96, #88, #89, #97), sim, checks and web shots only
+
+Node v22. Nothing ran on a phone, an emulator or a simulator: no Android SDK, Xcode or KVM in the sandbox. The
+reader's audio, the picture download over a real connection and the `Image` scaling of 360px pictures are unverified
+on a device.
+
+- **Red first:** `FO-2.move-between-stories` and `ST-8.search-opens-the-story-reader` failed before the service
+  existed (`formation.storyList is not a function`; the full-text hit carried no frame). `links.test.ts` failed
+  on the new frame expectation. `sim/corpus.test.ts` failed on the kept intro question (`q000`). The
+  non-English picture test and `sim/formation-service.test.ts` were written beside the code and passed on first run;
+  they were not observed red.
+- **Found on the way:** the DCS-shaped fixture's `front` story question row has an empty question and the guide in
+  its response; intro rows with no question stay dropped.
+- **Verify:** `npm run verify` green with `TMPDIR` set to a private folder: 842 tests, 9 checks, 65 of 65
+  scenarios, trace 51 Must requirements with 0 unproven, 21 fixture burritos, both bundles. With the shared `/tmp`
+  the bundle step failed on another worktree's cached `app/study/story` route (Metro's cache is shared between
+  worktrees on this machine), not on this branch.
+- **Web shots:** `npm run shots -- --only formation-story,formation-session,formation-session-end` in light, dark,
+  reduced blur, RTL, Urdu, Hindi and large text: 18 screenshots, 0 targets under 44 px, 0 text escaping its parent,
+  after moving the story step to a text button only where a neighbouring story exists. The missing-picture notice
+  in the picture well was not in any shot (the shot device has the pictures) and has not been seen rendered.
+- **Review follow-up:** `corpus.storyOpened` (red first in `sim/corpus.test.ts`), `formation.absence` for a story
+  number the language lacks (red first in `sim/formation-service.test.ts`), and anchoring folded like the index
+  (red first in `sim/corpus-dcs.test.ts`: `tenebres` matched `ténèbres` but carried no frame). `npm run verify`
+  green: 845 tests, 9 checks, 65 of 65 scenarios, trace 0 unproven, both bundles. The story-not-found state was not
+  rendered in a shot in any mode.
+- **Image Pack with the first language (owner decision, #97):** `LA-3.first-language-brings-the-pictures` failed
+  first on the Languages size line, then passed. `LA-1`, `ON-3`, `SE-1` and `ST-10` were updated for the pictures
+  that now follow the first language. `npm run verify` green: 848 tests, 9 checks, 66 of 66 scenarios, trace 0
+  unproven, both bundles. Not verified: the 31 MB figure against the CDN (unreachable from the sandbox), the longer
+  Languages row and the pictures progress on Home in any shot, and the download on a phone.
+
 ## 2026-11-05 Training table of contents and virtualised lists (#85, #87), sim, checks and web shots only
 
 Node v22.22.2. Nothing ran on a phone, an emulator or a simulator in this entry, so scrolling speed on a low-end

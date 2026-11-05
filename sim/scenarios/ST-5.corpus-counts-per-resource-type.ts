@@ -31,12 +31,12 @@ export default scenario(
       academy: count(3),
       stories: count(3),
       storyNotes: count(5),
-      storyQuestions: count(4),
+      storyQuestions: count(5),
       storyWordLinks: count(2),
       movements: count(3),
       audio: count(1),
     });
-    assert.deepEqual(corpus.summary('qab'), { stories: count(3), storyQuestions: count(4) });
+    assert.deepEqual(corpus.summary('qab'), { stories: count(3), storyQuestions: count(5) });
     assert.deepEqual(corpus.languages(), ['qaa', 'qab']);
 
     const snapshot = device.kernel.snapshot().modules.corpus;

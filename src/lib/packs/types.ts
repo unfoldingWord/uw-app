@@ -75,5 +75,5 @@ export type PackStorage = {
 export type Storage = { packs: readonly PackStorage[]; used: number; freeSpace: number };
 
 export type { CatalogInstallOptions } from './packs';
-export { optionalReleases } from './plan';
+export { optionalReleases, picturesFollow } from './plan';
 export { fromPeer } from './source';

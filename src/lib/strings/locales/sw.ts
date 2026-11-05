@@ -76,6 +76,7 @@ export const sw: LocaleTable = {
   'home.formation.action': 'Endelea na {group}',
   'home.formation.empty': 'Unda kikundi katika Malezi ili mpitie hadithi pamoja.',
   'home.download.progress': 'Inapakua {language}',
+  'home.download.pictures': 'Inapakua picha za hadithi',
   'home.download.percent': '{percent}%',
   'home.download.none': 'Bado hakuna chochote cha {language} kwenye simu hii.',
   'home.download.missing': 'Baadhi ya nyenzo za {language} bado haziko kwenye simu hii.',
@@ -505,7 +506,7 @@ export const sw: LocaleTable = {
   'study.noLanguage.action': 'Chagua lugha',
   'library.download': 'Pakua {resource}',
   'library.onPhone': 'Kwenye simu hii',
-  'study.frame.picture': 'Mchoro wa picha ya {number}',
+
   'transfer.app.ready': 'Programu imefika kwenye simu hii ({size}) na iko tayari kusakinishwa.',
   'transfer.network': 'Kwanza unganisha simu zote mbili kwenye Wi-Fi au hotspot moja.',
   'transfer.localNetwork.prompt':
@@ -537,6 +538,7 @@ export const sw: LocaleTable = {
     'Hakuna kinachotoka kwenye simu hii bila wewe kuchagua kukituma, na programu huweka tu hesabu zisizo na majina za jinsi inavyotumika, zilizoorodheshwa kwenye skrini ya faragha.',
   'home.download.waiting': 'Unganisha na intaneti, kisha gusa ili kupakua.',
   'languages.row': '{english} · {resources} · takriban {size}',
+  'languages.row.pictures': '{english} · {resources} · takriban {size} pamoja na picha za hadithi',
   'languages.offline': 'Uko nje ya mtandao, kwa hivyo lugha mpya haziwezi kupakuliwa hadi uunganishe tena.',
   'transfer.note':
     'Inafanya kazi kati ya simu zozote mbili zenye programu kwa pande zote mbili, na leseni na utambuzi kwenye kila kipengee.',
@@ -567,6 +569,15 @@ export const sw: LocaleTable = {
   'library.chapters': { one: 'Sura {count}', other: 'Sura {count}' },
   'library.pictures': { one: 'Picha {count}', other: 'Picha {count}' },
   'formation.training.empty': 'Akademia bado haipo kwa {language}.',
+  'session.story.list': 'Chagua hadithi',
+  'session.story.notFound': 'Hakuna hadithi ya {number} katika {language}.',
+  'session.story.previous': 'Hadithi iliyotangulia',
+  'session.story.next': 'Hadithi inayofuata',
+  'session.talk.frame': 'Zungumzeni kuhusu picha ya {number}',
+  'session.pictures.download': 'Pakua picha za hadithi',
+  'session.pictures.notFound': 'Picha hii haina mchoro kwenye picha za hadithi.',
+  'session.read.play': 'Cheza hadithi',
+
   'formation.training.missing': 'Mwongozo huu haupatikani.',
   'formation.training.open': 'Nenda kwenye Mafunzo',
 };

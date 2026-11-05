@@ -74,6 +74,7 @@ export const ar: LocaleTable = {
   'home.formation.action': 'المتابعة مع {group}',
   'home.formation.empty': 'أنشئ مجموعة في التكوين لتسيروا معًا في القصص.',
   'home.download.progress': 'جارٍ تنزيل {language}',
+  'home.download.pictures': 'جارٍ تنزيل صور القصص',
   'home.download.percent': '{percent}٪',
   'home.download.none': 'لا يوجد شيء بلغة {language} على هذا الهاتف بعد.',
   'home.download.missing': 'بعض موارد {language} ليست على هذا الهاتف بعد.',
@@ -558,7 +559,7 @@ export const ar: LocaleTable = {
   'study.noLanguage.action': 'اختر لغة',
   'library.download': 'تنزيل {resource}',
   'library.onPhone': 'على هذا الهاتف',
-  'study.frame.picture': 'صورة المشهد {number}',
+
   'transfer.app.ready': 'وصل التطبيق إلى هذا الهاتف ({size}) وهو جاهز للتثبيت.',
   'transfer.network': 'صِل الهاتفين أولًا بشبكة Wi-Fi نفسها أو نقطة الاتصال نفسها.',
   'transfer.localNetwork.prompt':
@@ -590,6 +591,7 @@ export const ar: LocaleTable = {
     'لا يغادر هذا الهاتف شيء لم تختر أن ترسله، ولا يحتفظ التطبيق إلا بأعداد مجهولة لكيفية استخدامه، مذكورة في شاشة الخصوصية.',
   'home.download.waiting': 'اتصل بالإنترنت ثم انقر للتنزيل.',
   'languages.row': '{english} · {resources} · نحو {size}',
+  'languages.row.pictures': '{english} · {resources} · نحو {size} مع صور القصص',
   'languages.offline': 'أنت دون اتصال، لذا لا يمكن تنزيل لغات جديدة حتى تعود للاتصال.',
   'transfer.note': 'يعمل بين أي هاتفين عليهما التطبيق في الاتجاهين، مع الرخصة ونسبة العمل في كل عنصر.',
   'transfer.app.ios': 'لا يُسمح لهذا الهاتف بإرسال التطبيق نفسه، لكن يمكن إرسال الموارد.',
@@ -679,6 +681,15 @@ export const ar: LocaleTable = {
     other: '{count} صورة',
   },
   'formation.training.empty': 'الأكاديمية ليست متاحة بلغة {language} بعد.',
+  'session.story.list': 'اختر قصة',
+  'session.story.notFound': 'لا توجد قصة رقم {number} في {language}.',
+  'session.story.previous': 'القصة السابقة',
+  'session.story.next': 'القصة التالية',
+  'session.talk.frame': 'لنتحدث عن المشهد {number}',
+  'session.pictures.download': 'نزّل صور القصص',
+  'session.pictures.notFound': 'لا توجد صورة لهذا المشهد في صور القصص.',
+  'session.read.play': 'شغِّل القصة',
+
   'formation.training.missing': 'لا يمكن العثور على هذا الدليل.',
   'formation.training.open': 'انتقل إلى التدريب',
 };

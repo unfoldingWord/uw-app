@@ -30,6 +30,12 @@ import type {
   StoryWordLink,
 } from './types';
 
+const firstStory = 1;
+
+function introOf(reference: HelpsReference, story: number): boolean {
+  return reference.kind === 'intro' && (reference.chapter ?? firstStory) === story;
+}
+
 function frameOf(reference: HelpsReference, story: number): number | undefined {
   if (reference.kind === 'intro') {
     return undefined;
@@ -119,16 +125,17 @@ async function storyHelps(library: Library, language: string, story: number) {
   for (const entry of library.of(language, ['storyQuestions'])) {
     for (const row of await storyQuestionRows(library, entry)) {
       const frame = frameOf(row.reference, story);
-      if (frame !== undefined) {
-        questions.push({
-          id: row.id,
-          study: isStudyResource(entry.provenance.resource, entry.language),
-          frame,
-          question: row.question,
-          response: row.response,
-          provenance: entry.provenance,
-        });
+      if (frame === undefined && (!introOf(row.reference, story) || row.question.trim() === '')) {
+        continue;
       }
+      const question = {
+        id: row.id,
+        study: isStudyResource(entry.provenance.resource, entry.language),
+        question: row.question,
+        response: row.response,
+        provenance: entry.provenance,
+      };
+      questions.push(frame === undefined ? question : { ...question, frame });
     }
   }
   for (const entry of library.of(language, ['storyWordLinks'])) {

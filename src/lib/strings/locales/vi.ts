@@ -74,6 +74,7 @@ export const vi: LocaleTable = {
   'home.formation.action': 'Tiếp tục với {group}',
   'home.formation.empty': 'Tạo một nhóm trong Đào tạo để cùng nhau đi qua các câu chuyện.',
   'home.download.progress': 'Đang tải {language}',
+  'home.download.pictures': 'Đang tải hình ảnh câu chuyện',
   'home.download.percent': '{percent}%',
   'home.download.none': 'Chưa có nội dung {language} nào trên điện thoại này.',
   'home.download.missing': 'Một số tài nguyên {language} chưa có trên điện thoại này.',
@@ -473,7 +474,7 @@ export const vi: LocaleTable = {
   'study.noLanguage.action': 'Chọn ngôn ngữ',
   'library.download': 'Tải {resource}',
   'library.onPhone': 'Trên điện thoại này',
-  'study.frame.picture': 'Hình cho khung {number}',
+
   'transfer.app.ready': 'Ứng dụng đã đến điện thoại này ({size}) và sẵn sàng để cài đặt.',
   'transfer.network': 'Trước tiên hãy kết nối cả hai điện thoại vào cùng một Wi-Fi hoặc điểm phát sóng.',
   'transfer.localNetwork.prompt':
@@ -505,6 +506,7 @@ export const vi: LocaleTable = {
     'Không có gì rời khỏi điện thoại này mà bạn không chọn gửi, và ứng dụng chỉ giữ các số đếm ẩn danh về cách sử dụng, được liệt kê trên màn hình quyền riêng tư.',
   'home.download.waiting': 'Kết nối internet, rồi chạm để tải xuống.',
   'languages.row': '{english} · {resources} · khoảng {size}',
+  'languages.row.pictures': '{english} · {resources} · khoảng {size} kèm hình ảnh câu chuyện',
   'languages.offline': 'Bạn đang ngoại tuyến, nên không thể tải ngôn ngữ mới cho đến khi kết nối lại.',
   'transfer.note':
     'Hoạt động giữa bất kỳ hai điện thoại nào có ứng dụng theo cả hai chiều, với giấy phép và ghi công trên mọi mục.',
@@ -532,6 +534,15 @@ export const vi: LocaleTable = {
   'library.chapters': { other: '{count} chương' },
   'library.pictures': { other: '{count} hình ảnh' },
   'formation.training.empty': 'Học viện chưa có bằng {language}.',
+  'session.story.list': 'Chọn một câu chuyện',
+  'session.story.notFound': 'Không có câu chuyện {number} bằng {language}.',
+  'session.story.previous': 'Câu chuyện trước',
+  'session.story.next': 'Câu chuyện sau',
+  'session.talk.frame': 'Cùng trò chuyện về khung {number}',
+  'session.pictures.download': 'Tải hình ảnh câu chuyện',
+  'session.pictures.notFound': 'Khung này không có hình trong hình ảnh câu chuyện.',
+  'session.read.play': 'Phát câu chuyện',
+
   'formation.training.missing': 'Không tìm thấy sổ tay này.',
   'formation.training.open': 'Đến Huấn luyện',
 };

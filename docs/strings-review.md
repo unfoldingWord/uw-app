@@ -178,7 +178,6 @@ Dates are formatted by the screen layer with the platform's date formatting, and
 
 ## Added with the transfer, share and diagnostics screens (U1)
 
-- `study.frame.picture`: the accessible name of a story picture in the Study reader. Each locale copies its own `session.frame.picture`, so the two readers name a picture the same way; review them together.
 - `transfer.app.ready`: shown on the receiving phone when the app itself arrived, with its size. Drafted by an AI agent in fifteen locales. It must not promise that the phone installs the app on its own: handing the file to the system installer is not built yet.
 
 ## Added with the release wiring (T13)

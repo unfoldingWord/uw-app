@@ -74,6 +74,7 @@ export const ptBR: LocaleTable = {
   'home.formation.action': 'Continuar com {group}',
   'home.formation.empty': 'Crie um grupo em Formação para percorrer as histórias juntos.',
   'home.download.progress': 'Baixando {language}',
+  'home.download.pictures': 'Baixando as imagens das histórias',
   'home.download.percent': '{percent}%',
   'home.download.none': 'Ainda não há nada em {language} neste celular.',
   'home.download.missing': 'Alguns recursos em {language} ainda não estão neste celular.',
@@ -513,7 +514,7 @@ export const ptBR: LocaleTable = {
   'study.noLanguage.action': 'Escolher um idioma',
   'library.download': 'Baixar {resource}',
   'library.onPhone': 'Neste celular',
-  'study.frame.picture': 'Imagem do quadro {number}',
+
   'transfer.app.ready': 'O aplicativo chegou a este celular ({size}) e está pronto para instalar.',
   'transfer.network': 'Primeiro conecte os dois celulares ao mesmo Wi-Fi ou roteador do celular.',
   'transfer.localNetwork.prompt':
@@ -545,6 +546,7 @@ export const ptBR: LocaleTable = {
     'Nada sai deste telefone sem que você escolha enviar, e o aplicativo guarda apenas contagens anônimas de uso, listadas na tela de privacidade.',
   'home.download.waiting': 'Conecte-se à internet e depois toque para baixar.',
   'languages.row': '{english} · {resources} · cerca de {size}',
+  'languages.row.pictures': '{english} · {resources} · cerca de {size} com as imagens das histórias',
   'languages.offline': 'Você está off-line, então novos idiomas não podem ser baixados até reconectar.',
   'transfer.note':
     'Funciona entre quaisquer dois telefones com o aplicativo nas duas direções, com licença e atribuição em cada item.',
@@ -593,6 +595,15 @@ export const ptBR: LocaleTable = {
   'library.chapters': { one: '{count} capítulo', many: '{count} de capítulos', other: '{count} capítulos' },
   'library.pictures': { one: '{count} imagem', many: '{count} de imagens', other: '{count} imagens' },
   'formation.training.empty': 'A Academia ainda não está em {language}.',
+  'session.story.list': 'Escolha uma história',
+  'session.story.notFound': 'Não há uma história {number} em {language}.',
+  'session.story.previous': 'História anterior',
+  'session.story.next': 'Próxima história',
+  'session.talk.frame': 'Vamos conversar sobre o quadro {number}',
+  'session.pictures.download': 'Baixar as imagens das histórias',
+  'session.pictures.notFound': 'Este quadro não tem imagem nas imagens das histórias.',
+  'session.read.play': 'Ouvir a história',
+
   'formation.training.missing': 'Este manual não foi encontrado.',
   'formation.training.open': 'Ir para Treinamento',
 };

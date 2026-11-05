@@ -8,6 +8,7 @@ export const languages = {
   'languages.search': 'Search languages',
   'languages.resources': { one: '{count} resource', other: '{count} resources' },
   'languages.row': '{english} · {resources} · about {size}',
+  'languages.row.pictures': '{english} · {resources} · about {size} with story pictures',
   'languages.select': 'Read in {language}',
   'languages.selected': 'Selected',
   'languages.noMatch': 'No language matches {query}.',

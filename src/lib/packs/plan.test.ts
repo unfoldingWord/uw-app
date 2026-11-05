@@ -2,8 +2,62 @@ import { describe, expect, it } from 'vitest';
 import type { CatalogRelease } from '../catalog/types';
 import { packIdOf, packKindOf, type ResourceRow } from '../domain/pack';
 import { archiveUrlOf } from '../domain/release';
-import { defaultReleases, missingReleases, optionalReleases } from './plan';
+import { defaultReleases, missingReleases, optionalReleases, picturesFollow } from './plan';
 import type { InstalledPack } from './types';
+
+describe('the pictures that follow the first language (LA-3, #97)', () => {
+  const images: CatalogRelease = {
+    ...release('unfoldingWord', 'en_obs', 'images', 'en'),
+    kind: 'image',
+    pack: 'image:obs',
+  };
+  const catalog = [
+    images,
+    release('unfoldingWord', 'fr_obs', 'stories', 'fr'),
+    release('unfoldingWord', 'fr_ult', 'text', 'fr'),
+    release('unfoldingWord', 'qaz_ult', 'text', 'qaz'),
+  ];
+  const holding = (
+    pack: InstalledPack['pack'],
+    kind: InstalledPack['kind'],
+    row: ResourceRow,
+  ): InstalledPack => ({
+    pack,
+    kind,
+    language: kind === 'language' ? 'fr' : undefined,
+    source: 'catalog',
+    bytes: 1,
+    burritos: [
+      {
+        root: `packs/${pack}`,
+        row,
+        bytes: 1,
+        source: 'catalog',
+        provenance: {
+          publisher: 'unfoldingWord',
+          resource: 'fr_obs',
+          language: 'fr',
+          tag: 'v1',
+          commit: 'c0ffee',
+          licence: 'CC BY-SA 4.0',
+          title: 'fr_obs',
+        },
+      },
+    ],
+  });
+
+  it('follow a first language that reads stories, when the catalog offers them', () => {
+    expect(picturesFollow(catalog, [], 'fr')).toBe(true);
+    expect(picturesFollow(catalog.slice(1), [], 'fr')).toBe(false);
+    expect(picturesFollow(catalog, [], 'qaz')).toBe(false);
+  });
+
+  it('never follow once stories or pictures are on the phone', () => {
+    expect(picturesFollow(catalog, [holding('language:fr', 'language', 'stories')], 'fr')).toBe(false);
+    expect(picturesFollow(catalog, [holding('image:obs', 'image', 'images')], 'fr')).toBe(false);
+    expect(picturesFollow(catalog, [holding('language:fr', 'language', 'text')], 'fr')).toBe(true);
+  });
+});
 
 function release(publisher: string, resource: string, row: ResourceRow, language: string): CatalogRelease {
   const kind = packKindOf(row, language);

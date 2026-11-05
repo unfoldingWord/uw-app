@@ -76,6 +76,7 @@ export const fa: LocaleTable = {
   'home.formation.action': 'ادامه با {group}',
   'home.formation.empty': 'در شاگردسازی گروهی بسازید تا با هم داستان‌ها را پیش بروید.',
   'home.download.progress': 'در حال بارگیری {language}',
+  'home.download.pictures': 'در حال بارگیری تصاویر داستان‌ها',
   'home.download.percent': '{percent}٪',
   'home.download.none': 'هنوز چیزی به زبان {language} روی این گوشی نیست.',
   'home.download.missing': 'برخی منابع {language} هنوز روی این گوشی نیستند.',
@@ -496,7 +497,7 @@ export const fa: LocaleTable = {
   'study.noLanguage.action': 'انتخاب زبان',
   'library.download': 'بارگیری {resource}',
   'library.onPhone': 'روی این گوشی',
-  'study.frame.picture': 'تصویر صحنهٔ {number}',
+
   'transfer.app.ready': 'برنامه به این گوشی رسید ({size}) و آمادهٔ نصب است.',
   'transfer.network': 'اول هر دو گوشی را به یک وای‌فای یا هات‌اسپات وصل کنید.',
   'transfer.localNetwork.prompt':
@@ -528,6 +529,7 @@ export const fa: LocaleTable = {
     'چیزی که خودتان برای ارسال انتخاب نکرده‌اید از این گوشی خارج نمی‌شود و برنامه فقط شمارش‌های بی‌نام از نحوهٔ استفاده را نگه می‌دارد که در صفحهٔ حریم خصوصی فهرست شده‌اند.',
   'home.download.waiting': 'به اینترنت وصل شوید و سپس برای دانلود ضربه بزنید.',
   'languages.row': '{english} · {resources} · حدود {size}',
+  'languages.row.pictures': '{english} · {resources} · حدود {size} همراه با تصاویر داستان‌ها',
   'languages.offline': 'آفلاین هستید، پس تا دوباره وصل نشوید نمی‌توان زبان جدیدی دانلود کرد.',
   'transfer.note': 'بین هر دو گوشی که برنامه را دارند در هر دو جهت کار می‌کند، با مجوز و انتساب روی هر مورد.',
   'transfer.app.ios': 'این گوشی اجازه ندارد خود برنامه را بفرستد، اما منابع همچنان فرستاده می‌شوند.',
@@ -557,6 +559,15 @@ export const fa: LocaleTable = {
   'library.chapters': { one: '{count} فصل', other: '{count} فصل' },
   'library.pictures': { one: '{count} تصویر', other: '{count} تصویر' },
   'formation.training.empty': 'آکادمی هنوز به زبان {language} نیست.',
+  'session.story.list': 'یک داستان انتخاب کنید',
+  'session.story.notFound': 'داستان شماره {number} در {language} وجود ندارد.',
+  'session.story.previous': 'داستان قبلی',
+  'session.story.next': 'داستان بعدی',
+  'session.talk.frame': 'دربارهٔ صحنهٔ {number} گفت‌وگو کنید',
+  'session.pictures.download': 'بارگیری تصاویر داستان‌ها',
+  'session.pictures.notFound': 'این صحنه در تصاویر داستان‌ها تصویری ندارد.',
+  'session.read.play': 'پخش داستان',
+
   'formation.training.missing': 'این راهنما پیدا نمی‌شود.',
   'formation.training.open': 'رفتن به آموزش',
 };

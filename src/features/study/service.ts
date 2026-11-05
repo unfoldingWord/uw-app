@@ -2,14 +2,12 @@ import type { Bookmark, BookmarkTarget } from '@lib/bookmarks/types';
 import type {
   Article,
   AudioClip,
-  Frame,
   FullTextHit,
   IndexState,
   LinkTarget,
   Passage,
   Reading,
   SearchResults,
-  Story,
   TextChoice,
 } from '@lib/corpus/types';
 import { bookByCode, type Testament } from '@lib/domain/books';
@@ -129,11 +127,6 @@ export type ArticleView =
   | { readonly state: 'missing'; readonly id: string }
   | { readonly state: 'no-language' };
 
-export type StoryView =
-  | { readonly state: 'story'; readonly story: Story; readonly saved: Bookmark | undefined }
-  | { readonly state: 'missing'; readonly number: number }
-  | { readonly state: 'no-language' };
-
 export type LibraryView = {
   readonly language: string | undefined;
   readonly overline: string;
@@ -165,7 +158,6 @@ export type StudyService = {
   library(): Promise<LibraryView>;
   download(pack: PackId, options?: CatalogInstallOptions): Promise<InstallOutcome>;
   article(id: string): Promise<ArticleView>;
-  story(number: number): Promise<StoryView>;
   books(language?: string): Promise<readonly BookEntry[]>;
   originalOf(book: string): OriginalChoice | undefined;
   original(reference: string): Promise<Passage | undefined>;
@@ -179,7 +171,6 @@ export type StudyService = {
   saved(target: BookmarkTarget): Bookmark | undefined;
   save(target: BookmarkTarget): Promise<Written<Bookmark> | undefined>;
   unsave(id: string): Promise<Written<true> | undefined>;
-  picture(frame: Frame): string | undefined;
   listen(clip: Pick<AudioClip, 'path'>): ClipControls;
   audioTime(status: PlayerStatus): string;
   onPacksChange(listener: () => void): () => void;
@@ -449,16 +440,6 @@ export function createStudyService(kernel: Kernel): StudyService {
             saved: bookmarks.find({ target: 'article', article: id, language }),
           };
     },
-    async story(number) {
-      const language = preferences.contentLanguage();
-      if (language === undefined) {
-        return { state: 'no-language' };
-      }
-      const story = await corpus.story(number, language);
-      return story === undefined
-        ? { state: 'missing', number }
-        : { state: 'story', story, saved: bookmarks.find({ target: 'story', story: number, language }) };
-    },
     async books(of) {
       const language = of ?? preferences.contentLanguage();
       if (language === undefined) {
@@ -551,7 +532,6 @@ export function createStudyService(kernel: Kernel): StudyService {
     saved: (target) => bookmarks.find(target),
     save: (target) => bookmarks.add(target),
     unsave: (id) => bookmarks.remove(id),
-    picture: (frame) => (frame.image === undefined ? undefined : kernel.media.uriOf(frame.image.path)),
     listen: (clip) => clipControls(kernel.player, { kind: 'file', path: clip.path }),
     onPacksChange: (listener) => kernel.packs.onChange(listener),
     audioTime: (status) =>

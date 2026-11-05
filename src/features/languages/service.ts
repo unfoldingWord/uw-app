@@ -1,14 +1,22 @@
-import type { CatalogLanguage, CatalogRelease, RefreshOutcome, ScriptDirection } from '@lib/catalog/types';
+import {
+  imagePackApproximateBytes,
+  type CatalogLanguage,
+  type CatalogRelease,
+  type RefreshOutcome,
+  type ScriptDirection,
+} from '@lib/catalog/types';
 import type { FailureCode } from '@lib/domain/failures';
 import { imagePackId, languagePackId, originalPackId, type PackId } from '@lib/domain/pack';
 import { resourceKey } from '@lib/domain/release';
 import type { Kernel } from '@lib/kernel';
 import {
   optionalReleases,
+  picturesFollow,
   type InstallOutcome,
   type PackUpdate,
   type RemoveOutcome,
   type Replacement,
+  type InstalledPack,
   type Storage,
 } from '@lib/packs/types';
 import { languagesWords, type LanguagesWords } from './strings';
@@ -104,7 +112,29 @@ function knownBytes(releases: readonly CatalogRelease[], pack: PackId): number |
   return measured.get(releases);
 }
 
-type ListMoment = { readonly installing: ReadonlySet<string>; readonly selected: string | undefined };
+type ListMoment = {
+  readonly installing: ReadonlySet<string>;
+  readonly selected: string | undefined;
+  readonly installed: readonly InstalledPack[];
+};
+
+function sizeLine(
+  kernel: Kernel,
+  words: LanguagesWords,
+  item: CatalogLanguage,
+  moment: ListMoment,
+  resources: string,
+): string {
+  const bytes = knownBytes(kernel.catalog.releases(item.language), languagePackId(item.language));
+  if (bytes === undefined) {
+    return words.t('common.joined', { first: item.englishName, second: resources });
+  }
+  if (!item.installed && picturesFollow(kernel.catalog.all(), moment.installed, item.language)) {
+    const size = words.size(bytes + imagePackApproximateBytes);
+    return words.t('languages.row.pictures', { english: item.englishName, resources, size });
+  }
+  return words.t('languages.row', { english: item.englishName, resources, size: words.size(bytes) });
+}
 
 function rowOf(
   kernel: Kernel,
@@ -113,7 +143,6 @@ function rowOf(
   moment: ListMoment,
 ): LanguageRow {
   const pack = languagePackId(item.language);
-  const bytes = knownBytes(kernel.catalog.releases(item.language), pack);
   const resources = words.plural('languages.resources', item.resources);
   return {
     language: item.language,
@@ -121,10 +150,7 @@ function rowOf(
     englishName: item.englishName,
     direction: item.direction,
     resources: item.resources,
-    detail:
-      bytes === undefined
-        ? words.t('common.joined', { first: item.englishName, second: resources })
-        : words.t('languages.row', { english: item.englishName, resources, size: words.size(bytes) }),
+    detail: sizeLine(kernel, words, item, moment, resources),
     offline: item.installed,
     badge: item.installed ? words.t('common.offline') : undefined,
     selected: moment.selected === item.language,
@@ -204,6 +230,7 @@ export function createLanguagesService(kernel: Kernel): LanguagesService {
       const moment: ListMoment = {
         installing: new Set(kernel.packs.installing().map((progress) => progress.pack)),
         selected: kernel.preferences.contentLanguage(),
+        installed: kernel.packs.installed(),
       };
       return found.map((item) => rowOf(kernel, current, item, moment));
     },
@@ -224,7 +251,14 @@ export function createLanguagesService(kernel: Kernel): LanguagesService {
     },
     current: () => kernel.preferences.contentLanguage(),
     select: (language) => kernel.preferences.set('study.language', language),
-    download: (language) => kernel.packs.installFromCatalog(languagePackId(language)),
+    download(language) {
+      const withPictures = picturesFollow(kernel.catalog.all(), kernel.packs.installed(), language);
+      const done = kernel.packs.installFromCatalog(languagePackId(language));
+      if (withPictures) {
+        void kernel.packs.installFromCatalog(imagePackId);
+      }
+      return done;
+    },
     async missing() {
       const language = kernel.preferences.contentLanguage();
       if (language === undefined) {

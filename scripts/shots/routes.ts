@@ -100,7 +100,7 @@ export const shots: readonly Shot[] = [
   { name: 'study-library', path: '/study/library' },
   { name: 'study-search', path: '/study/search' },
   { name: 'study-article', path: '/study/article/tw/bible/kt/god' },
-  { name: 'study-story', path: '/study/story/1' },
+  { name: 'formation-story', path: '/formation/story/1' },
   { name: 'formation', path: '/formation' },
   { name: 'formation-groups', path: '/formation/groups' },
   { name: 'formation-training', path: '/formation/training' },
