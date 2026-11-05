@@ -116,6 +116,11 @@ release gate is `releaseGate` in `src/lib/strings/locales.ts` (`reviewed`).
   `failure.pack.replace-unconfirmed` says nothing was installed. "Catalog" must be the same word the
   `failure.catalog.*` keys use (fa فهرست منابع, zh-Hans 资源目录). Check the question reads as a calm choice,
   not a warning.
+- **Drafted with the helps sheet (issues #90 and #91, 2026-11-05).** `study.helps.showInVerse` marks a note's
+  words in the verse above; `study.helps.notFound` says, quietly, that a note's quote could not be placed in
+  this text; `study.helps.expand` and `study.helps.collapse` are the screen reader hints on the sheet's handle.
+  "Verse" must be the word `study.nav.verse` uses, and "helps" the word the helps tabs share. Check that
+  `study.helps.notFound` reads as a fact about this text, not an error.
 - **Redrafted with the glossary (issue #34, 2026-09-30).** Nine values changed in English and every locale at
   once so they use the words `CONTEXT.md` keeps: `failure.http.timeout`, `failure.http.status` and
   `failure.catalog.invalid-response` name the catalog, not the library (Library is a screen);

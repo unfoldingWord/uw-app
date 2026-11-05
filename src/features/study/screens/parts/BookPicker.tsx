@@ -13,7 +13,7 @@ export type BookPickerProps = {
   books: readonly BookEntry[];
   current: { book: string; chapter: number } | undefined;
   onClose: () => void;
-  onChoose: (book: string, chapter: number) => void;
+  onChoose: (book: string, chapter: number) => void | Promise<void>;
 };
 
 export function BookPicker({ words, open, books, current, onClose, onChoose }: BookPickerProps) {
@@ -80,10 +80,10 @@ export function BookPicker({ words, open, books, current, onClose, onChoose }: B
                       onPress={() => {
                         const [only] = entry.chapters;
                         if (entry.chapters.length === 1 && only !== undefined) {
-                          onChoose(entry.code, only);
-                          return;
+                          return onChoose(entry.code, only);
                         }
                         setBook(entry.code);
+                        return undefined;
                       }}
                     >
                       {entry.name}

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { Animated, Easing, type EasingFunction } from 'react-native';
 import type { CubicBezier, Keyframe } from '@shared/theme';
-import { restingValues, segments, track, type KeyframeProperty } from './keyframeTimeline';
+import { restingValues, segments, track, waveDelays, type KeyframeProperty } from './keyframeTimeline';
 
 export function bezier(curve: CubicBezier): EasingFunction {
   return Easing.bezier(curve[0], curve[1], curve[2], curve[3]);
@@ -54,5 +54,64 @@ export function useKeyframeLoop(
       },
     }),
     [frames, phase, running],
+  );
+}
+
+export type KeyframeWave = {
+  value: (index: number, property: KeyframeProperty) => Animated.AnimatedInterpolation<number> | number;
+};
+
+export function useKeyframeWave(
+  frames: readonly Keyframe[],
+  totalMs: number,
+  easing: CubicBezier,
+  running: boolean,
+  count: number,
+): KeyframeWave {
+  const phases = useMemo(() => Array.from({ length: count }, () => new Animated.Value(0)), [count]);
+  const curve = useMemo(() => bezier(easing), [easing]);
+
+  useEffect(() => {
+    if (!running) {
+      phases.forEach((phase) => phase.setValue(0));
+      return undefined;
+    }
+    const delays = waveDelays(phases.length, totalMs);
+    const wave = Animated.parallel(
+      phases.map((phase, index) =>
+        Animated.sequence([
+          Animated.delay(delays[index] ?? 0),
+          Animated.loop(
+            Animated.sequence([
+              Animated.timing(phase, { toValue: 0, duration: 0, useNativeDriver: true }),
+              ...segments(frames, totalMs).map((segment) =>
+                Animated.timing(phase, {
+                  toValue: segment.toOffset,
+                  duration: segment.durationMs,
+                  easing: curve,
+                  useNativeDriver: true,
+                }),
+              ),
+            ]),
+          ),
+        ]),
+      ),
+    );
+    wave.start();
+    return () => wave.stop();
+  }, [curve, frames, phases, running, totalMs]);
+
+  return useMemo(
+    () => ({
+      value: (index: number, property: KeyframeProperty) => {
+        const phase = phases[index];
+        const { inputRange, outputRange } = track(frames, property);
+        if (!running || phase === undefined || inputRange.length < 2) {
+          return restingValues[property];
+        }
+        return phase.interpolate({ inputRange, outputRange });
+      },
+    }),
+    [frames, phases, running],
   );
 }
