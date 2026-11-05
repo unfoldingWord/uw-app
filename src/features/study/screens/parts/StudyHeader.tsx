@@ -15,9 +15,19 @@ export type StudyHeaderProps = {
   next: ChapterPlace | undefined;
   onGo: (place: ChapterPlace) => void;
   onChoose: () => void;
+  busy?: boolean;
 };
 
-export function StudyHeader({ words, language, place, previous, next, onGo, onChoose }: StudyHeaderProps) {
+export function StudyHeader({
+  words,
+  language,
+  place,
+  previous,
+  next,
+  onGo,
+  onChoose,
+  busy = false,
+}: StudyHeaderProps) {
   const theme = useTheme();
   const router = useRouter();
   const size = theme.space.sp14;
@@ -82,6 +92,7 @@ export function StudyHeader({ words, language, place, previous, next, onGo, onCh
             variant="quiet"
             accessibilityLabel={place}
             accessibilityHint={words.t('study.nav.choose')}
+            busy={busy}
             onPress={onChoose}
             style={[styles.fill, target]}
           >

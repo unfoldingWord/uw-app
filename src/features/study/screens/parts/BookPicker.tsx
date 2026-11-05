@@ -1,11 +1,35 @@
 import { useEffect, useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Modal, Pressable, SectionList, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GlassButton, GlassIconButton, GlassSurface, Icon } from '@shared/glass';
 import { useTheme } from '@shared/theme';
+import { Gap } from '@shared/ui';
 import type { BookEntry } from '../../service';
 import type { StudyWords } from '../../strings';
 import { Say } from './Say';
+
+const bookColumns = 2;
+
+const chapterColumns = 5;
+
+type Pick = {
+  readonly key: string;
+  readonly label: string;
+  readonly name?: string;
+  readonly chosen: boolean;
+  readonly choose: () => void | Promise<void>;
+};
+
+type PickRow = { readonly key: string; readonly columns: number; readonly picks: readonly Pick[] };
+
+type PickSection = { readonly key: string; readonly title: string; readonly data: readonly PickRow[] };
+
+function rowsOf(picks: readonly Pick[], columns: number): PickRow[] {
+  return Array.from({ length: Math.ceil(picks.length / columns) }, (_, index) => {
+    const row = picks.slice(index * columns, (index + 1) * columns);
+    return { key: row.map((pick) => pick.key).join(' '), columns, picks: row };
+  });
+}
 
 export type BookPickerProps = {
   words: StudyWords;
@@ -13,7 +37,7 @@ export type BookPickerProps = {
   books: readonly BookEntry[];
   current: { book: string; chapter: number } | undefined;
   onClose: () => void;
-  onChoose: (book: string, chapter: number) => void;
+  onChoose: (book: string, chapter: number) => void | Promise<void>;
 };
 
 export function BookPicker({ words, open, books, current, onClose, onChoose }: BookPickerProps) {
@@ -26,13 +50,49 @@ export function BookPicker({ words, open, books, current, onClose, onChoose }: B
     }
   }, [open, current?.book]);
   const chosen = books.find((entry) => entry.code === book);
-  const sections = (['old', 'new'] as const)
-    .map((testament) => ({
-      testament,
-      title: words.t(testament === 'old' ? 'study.nav.oldTestament' : 'study.nav.newTestament'),
-      books: books.filter((entry) => entry.testament === testament),
-    }))
-    .filter((section) => section.books.length > 0);
+  const chooseBook = (entry: BookEntry): void | Promise<void> => {
+    const [only] = entry.chapters;
+    if (entry.chapters.length === 1 && only !== undefined) {
+      return onChoose(entry.code, only);
+    }
+    setBook(entry.code);
+    return undefined;
+  };
+  const testaments = (['old', 'new'] as const).map((testament): PickSection => ({
+    key: testament,
+    title: words.t(testament === 'old' ? 'study.nav.oldTestament' : 'study.nav.newTestament'),
+    data: rowsOf(
+      books
+        .filter((entry) => entry.testament === testament)
+        .map((entry) => ({
+          key: entry.code,
+          label: entry.name,
+          chosen: entry.code === book,
+          choose: () => chooseBook(entry),
+        })),
+      bookColumns,
+    ),
+  }));
+  const chapters: PickSection[] =
+    chosen === undefined || chosen.chapters.length < 2
+      ? []
+      : [
+          {
+            key: 'chapters',
+            title: chosen.name,
+            data: rowsOf(
+              chosen.chapters.map((chapter) => ({
+                key: String(chapter),
+                label: String(chapter),
+                name: words.t('study.nav.chapter', { chapter: String(chapter) }),
+                chosen: current?.book === chosen.code && current.chapter === chapter,
+                choose: () => onChoose(chosen.code, chapter),
+              })),
+              chapterColumns,
+            ),
+          },
+        ];
+  const sections = [...testaments, ...chapters].filter((section) => section.data.length > 0);
   return (
     <Modal visible={open} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.scrim}>
@@ -65,57 +125,38 @@ export function BookPicker({ words, open, books, current, onClose, onChoose }: B
               <Icon name="chevronDown" />
             </GlassIconButton>
           </View>
-          <ScrollView contentContainerStyle={{ gap: theme.space.sp6 }}>
-            {sections.map((section) => (
-              <View key={section.testament} style={{ gap: theme.space.sp4 }}>
-                <Say role="overline" tone="dim">
-                  {section.title}
-                </Say>
-                <View style={[styles.wrap, { gap: theme.space.sp3 }]}>
-                  {section.books.map((entry) => (
+          <SectionList
+            sections={sections}
+            keyExtractor={(row) => row.key}
+            stickySectionHeadersEnabled={false}
+            ItemSeparatorComponent={() => <Gap size={theme.space.sp3} />}
+            SectionSeparatorComponent={() => <Gap size={theme.space.sp4} />}
+            renderSectionHeader={({ section }) => (
+              <Say role="overline" tone="dim" style={{ paddingTop: theme.space.sp4 }}>
+                {section.title}
+              </Say>
+            )}
+            renderItem={({ item: row }) => (
+              <View style={[styles.row, { gap: theme.space.sp3 }]}>
+                {row.picks.map((pick) => (
+                  <View key={pick.key} style={styles.fill}>
                     <GlassButton
-                      key={entry.code}
-                      variant={entry.code === book ? 'dark' : 'glass'}
+                      variant={pick.chosen ? 'dark' : 'glass'}
                       size="sm"
-                      onPress={() => {
-                        const [only] = entry.chapters;
-                        if (entry.chapters.length === 1 && only !== undefined) {
-                          onChoose(entry.code, only);
-                          return;
-                        }
-                        setBook(entry.code);
-                      }}
+                      full
+                      {...(pick.name === undefined ? {} : { accessibilityLabel: pick.name })}
+                      onPress={pick.choose}
                     >
-                      {entry.name}
+                      {pick.label}
                     </GlassButton>
-                  ))}
-                </View>
-              </View>
-            ))}
-            {chosen === undefined || chosen.chapters.length < 2 ? null : (
-              <View style={{ gap: theme.space.sp4 }}>
-                <Say role="overline" tone="dim">
-                  {chosen.name}
-                </Say>
-                <View style={[styles.wrap, { gap: theme.space.sp3 }]}>
-                  {chosen.chapters.map((chapter) => {
-                    const here = current?.book === chosen.code && current.chapter === chapter;
-                    return (
-                      <GlassButton
-                        key={String(chapter)}
-                        variant={here ? 'dark' : 'glass'}
-                        size="sm"
-                        accessibilityLabel={words.t('study.nav.chapter', { chapter: String(chapter) })}
-                        onPress={() => onChoose(chosen.code, chapter)}
-                      >
-                        {String(chapter)}
-                      </GlassButton>
-                    );
-                  })}
-                </View>
+                  </View>
+                ))}
+                {Array.from({ length: row.columns - row.picks.length }, (_, index) => (
+                  <View key={`empty-${index}`} style={styles.fill} />
+                ))}
               </View>
             )}
-          </ScrollView>
+          />
         </GlassSurface>
       </View>
     </Modal>
@@ -127,5 +168,4 @@ const styles = StyleSheet.create({
   fill: { flex: 1 },
   sheet: { maxHeight: '80%' },
   row: { flexDirection: 'row', alignItems: 'center' },
-  wrap: { flexDirection: 'row', flexWrap: 'wrap' },
 });

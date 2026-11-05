@@ -38,3 +38,7 @@ export function track(frames: readonly Keyframe[], property: KeyframeProperty, s
     outputRange: unique.map((frame) => (frame.values[property] ?? restingValues[property]) * scale),
   };
 }
+
+export function waveDelays(count: number, totalMs: number): number[] {
+  return Array.from({ length: count }, (_, index) => (index * totalMs) / count);
+}

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { PressHandler } from '@shared/glass/usePress';
 import { Header } from './Header';
-import { ScreenScaffold } from './ScreenScaffold';
+import { ScreenScaffold, type ScreenListFrame } from './ScreenScaffold';
 
 export type ScreenProps = {
   title: string;
@@ -14,6 +14,7 @@ export type ScreenProps = {
   centred?: boolean;
   dense?: boolean;
   brand?: boolean;
+  list?: (frame: ScreenListFrame) => ReactNode;
   children?: ReactNode;
 };
 
@@ -28,6 +29,7 @@ export function Screen({
   centred = false,
   dense = false,
   brand = false,
+  list,
   children,
 }: ScreenProps) {
   return (
@@ -35,6 +37,7 @@ export function Screen({
       dense={dense}
       clearance={tabBar ? 'tabs' : 'none'}
       dock={footer}
+      list={list}
       header={
         <Header
           title={title}

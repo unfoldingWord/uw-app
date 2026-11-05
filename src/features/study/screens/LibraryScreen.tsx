@@ -1,16 +1,17 @@
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ScrollView } from 'react-native';
+import { FlatList } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GlassIconButton, Icon } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
-import { Loading } from '@shared/ui';
+import { Gap, Loading } from '@shared/ui';
 import { createStudyService, type LibraryCard } from '../service';
 import { failureText } from './parts/failure';
 import { ScreenFrame, TopBar } from './parts/Frame';
 import { LibraryCardView } from './parts/LibraryCardView';
 import { studyRoutes } from './parts/routes';
+import { ReloadVeil } from './parts/ReloadVeil';
 import { Say } from './parts/Say';
 import { StatePanel } from './parts/StatePanel';
 import { useLoaded } from './parts/useLoaded';
@@ -23,7 +24,7 @@ export default function LibraryScreen() {
   const words = service.words();
   const [failures, setFailures] = useState<Readonly<Record<string, string>>>({});
   const load = useCallback(() => service.library(), [service]);
-  const { value, reload } = useLoaded(load, service.onPacksChange);
+  const { value, loading, reload } = useLoaded(load, service.onPacksChange);
 
   const download = async (card: LibraryCard) => {
     if (card.pack === undefined) {
@@ -69,34 +70,36 @@ export default function LibraryScreen() {
           }}
         />
       ) : (
-        <ScrollView
+        <FlatList
+          data={value.cards}
+          keyExtractor={(card) => card.type}
           contentContainerStyle={{
-            gap: theme.space.gapStack,
             paddingHorizontal: theme.space.gutterScreen,
             paddingTop: theme.space.sp8,
             paddingBottom: insets.bottom + theme.space.sp12,
           }}
-        >
-          {value.cards.length === 0 ? (
+          ItemSeparatorComponent={() => <Gap size={theme.space.gapStack} />}
+          renderItem={({ item: card }) => (
+            <LibraryCardView words={words} card={card} failure={failures[card.type]} onDownload={download} />
+          )}
+          extraData={failures}
+          ListEmptyComponent={
             <Say role="body" tone="body">
               {words.t('state.nothingPublished', { language: service.languageName() ?? value.language })}
             </Say>
-          ) : (
-            value.cards.map((card) => (
-              <LibraryCardView
-                key={card.type}
-                words={words}
-                card={card}
-                failure={failures[card.type]}
-                onDownload={download}
-              />
-            ))
-          )}
-          <Say role="caption" tone="faint" style={{ paddingHorizontal: theme.space.sp2 }}>
-            {value.footer}
-          </Say>
-        </ScrollView>
+          }
+          ListFooterComponent={
+            <Say
+              role="caption"
+              tone="faint"
+              style={{ paddingHorizontal: theme.space.sp2, paddingTop: theme.space.gapStack }}
+            >
+              {value.footer}
+            </Say>
+          }
+        />
       )}
+      <ReloadVeil loading={loading && value !== undefined} label={words.t('common.busy')} />
     </ScreenFrame>
   );
 }

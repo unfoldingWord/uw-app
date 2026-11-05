@@ -132,6 +132,10 @@ export const ptBR: LocaleTable = {
   'study.helps.noWordLinks': 'Não há links de palavras para este versículo.',
   'study.helps.noQuestions': 'Não há perguntas para este versículo.',
   'study.helps.notDownloaded': 'As ajudas para esta passagem ainda não estão neste celular.',
+  'study.helps.showInVerse': 'Mostrar no versículo',
+  'study.helps.notFound': 'Estas palavras não estão marcadas neste texto.',
+  'study.helps.expand': 'Mostrar mais das ajudas',
+  'study.helps.collapse': 'Mostrar menos das ajudas',
   'study.audio.play': 'Reproduzir áudio',
   'study.audio.pause': 'Pausar áudio',
   'study.audio.label': '{reference} · áudio',
@@ -206,6 +210,8 @@ export const ptBR: LocaleTable = {
   'search.fullText.detail': 'Cria um índice neste celular, de cerca de {size} para {language}.',
   'search.fullText.building': 'Criando o índice',
   'search.fullText.on': 'A busca dentro de todos os textos baixados está ativada.',
+  'search.fullText.failed': 'Não foi possível criar o índice.',
+  'search.searching': 'Buscando',
   'formation.title': 'Formação',
   'formation.overline': '{language} · {coverage}',
   'formation.coverage.movements': 'cinco movimentos disponíveis',
@@ -431,6 +437,10 @@ export const ptBR: LocaleTable = {
   'settings.firstName.about': 'Usado só no cumprimento, só neste celular.',
   'settings.fullText': 'Buscar dentro de todos os textos',
   'settings.fullText.about': 'Cria neste celular um índice de cerca de {size} por idioma.',
+  'settings.fullText.waiting': 'Aguardando para começar',
+  'settings.fullText.building': 'Criando o índice',
+  'settings.fullText.ready': 'Pronto para buscar',
+  'settings.fullText.failed': 'Não foi possível criar o índice.',
   'settings.storage': 'Armazenamento',
   'settings.storage.about': 'Veja e remova pacotes de idioma, {size} em uso.',
   'settings.licence': 'Licença e atribuição',
@@ -504,7 +514,7 @@ export const ptBR: LocaleTable = {
   'study.noLanguage.action': 'Escolher um idioma',
   'library.download': 'Baixar {resource}',
   'library.onPhone': 'Neste celular',
-  'search.fullText.inSettings': 'Ative nas Configurações, e o índice fica neste celular.',
+
   'transfer.app.ready': 'O aplicativo chegou a este celular ({size}) e está pronto para instalar.',
   'transfer.network': 'Primeiro conecte os dois celulares ao mesmo Wi-Fi ou roteador do celular.',
   'transfer.localNetwork.prompt':
@@ -593,4 +603,7 @@ export const ptBR: LocaleTable = {
   'session.pictures.download': 'Baixar as imagens das histórias',
   'session.pictures.notFound': 'Este quadro não tem imagem nas imagens das histórias.',
   'session.read.play': 'Ouvir a história',
+
+  'formation.training.missing': 'Este manual não foi encontrado.',
+  'formation.training.open': 'Ir para Treinamento',
 };

@@ -2,8 +2,8 @@ import { useMemo, type ReactNode } from 'react';
 import { Animated, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { useTheme } from '@shared/theme';
-import { dotRingPoints } from './geometry';
-import { useKeyframeLoop } from './motion';
+import { dotRingBands } from './geometry';
+import { useKeyframeWave } from './motion';
 import { referenceValues } from './referenceValues';
 
 export type DotRingProps = {
@@ -24,39 +24,47 @@ export function DotRing({
   style,
 }: DotRingProps) {
   const theme = useTheme();
-  const points = useMemo(() => dotRingPoints(size, rings, dots), [size, rings, dots]);
-  const breathe = useKeyframeLoop(
+  const bands = useMemo(() => dotRingBands(size, rings, dots), [size, rings, dots]);
+  const wave = useKeyframeWave(
     theme.motion.keyframes.breathe,
     referenceValues.dotRing.breatheMs,
     theme.motion.easing.easeLiquid,
     !theme.reducedMotion,
+    bands.length,
   );
   const fill = color ?? theme.color.dotRingStroke;
 
   return (
     <View style={[{ width: size, height: size }, style]}>
-      <Animated.View
+      <View
         pointerEvents="none"
         accessibilityElementsHidden
         importantForAccessibility="no-hide-descendants"
-        style={[
-          StyleSheet.absoluteFill,
-          { opacity: breathe.value('opacity'), transform: [{ scale: breathe.value('scale') }] },
-        ]}
+        style={StyleSheet.absoluteFill}
       >
-        <Svg width={size} height={size}>
-          {points.map((point, index) => (
-            <Circle
-              key={index}
-              cx={point.x}
-              cy={point.y}
-              r={referenceValues.dotRing.dotRadius}
-              fill={fill}
-              opacity={point.opacity}
-            />
-          ))}
-        </Svg>
-      </Animated.View>
+        {bands.map((band, ring) => (
+          <Animated.View
+            key={ring}
+            style={[
+              StyleSheet.absoluteFill,
+              { opacity: wave.value(ring, 'opacity'), transform: [{ scale: wave.value(ring, 'scale') }] },
+            ]}
+          >
+            <Svg width={size} height={size}>
+              {band.map((point, index) => (
+                <Circle
+                  key={index}
+                  cx={point.x}
+                  cy={point.y}
+                  r={referenceValues.dotRing.dotRadius}
+                  fill={fill}
+                  opacity={point.opacity}
+                />
+              ))}
+            </Svg>
+          </Animated.View>
+        ))}
+      </View>
       <View style={[StyleSheet.absoluteFill, styles.centre]}>{children}</View>
     </View>
   );

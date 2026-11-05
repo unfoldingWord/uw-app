@@ -132,6 +132,10 @@ export const sw: LocaleTable = {
   'study.helps.noWordLinks': 'Hakuna viungo vya maneno kwa mstari huu.',
   'study.helps.noQuestions': 'Hakuna maswali kwa mstari huu.',
   'study.helps.notDownloaded': 'Misaada ya kifungu hiki bado haiko kwenye simu hii.',
+  'study.helps.showInVerse': 'Onyesha kwenye mstari',
+  'study.helps.notFound': 'Maneno haya hayajawekwa alama katika maandishi haya.',
+  'study.helps.expand': 'Onyesha misaada zaidi',
+  'study.helps.collapse': 'Onyesha misaada kidogo',
   'study.audio.play': 'Cheza sauti',
   'study.audio.pause': 'Sitisha sauti',
   'study.audio.label': '{reference} · sauti',
@@ -206,6 +210,8 @@ export const sw: LocaleTable = {
   'search.fullText.detail': 'Inaunda faharasa kwenye simu hii, takriban {size} kwa {language}.',
   'search.fullText.building': 'Inaunda faharasa',
   'search.fullText.on': 'Kutafuta ndani ya maandiko yote yaliyopakuliwa kumewashwa.',
+  'search.fullText.failed': 'Faharasa haikuweza kuundwa.',
+  'search.searching': 'Inatafuta',
   'formation.title': 'Malezi',
   'formation.overline': '{language} · {coverage}',
   'formation.coverage.movements': 'hatua tano zinapatikana',
@@ -423,6 +429,10 @@ export const sw: LocaleTable = {
   'settings.firstName.about': 'Linatumika kwenye salamu tu, kwenye simu hii tu.',
   'settings.fullText': 'Tafuta ndani ya maandiko yote',
   'settings.fullText.about': 'Inaunda faharasa kwenye simu hii ya takriban {size} kwa kila lugha.',
+  'settings.fullText.waiting': 'Inasubiri kuanza',
+  'settings.fullText.building': 'Inaunda faharasa',
+  'settings.fullText.ready': 'Tayari kutafutwa',
+  'settings.fullText.failed': 'Faharasa haikuweza kuundwa.',
   'settings.storage': 'Hifadhi',
   'settings.storage.about': 'Tazama na uondoe vifurushi vya lugha, {size} zimetumika.',
   'settings.licence': 'Leseni na utambulisho',
@@ -496,7 +506,7 @@ export const sw: LocaleTable = {
   'study.noLanguage.action': 'Chagua lugha',
   'library.download': 'Pakua {resource}',
   'library.onPhone': 'Kwenye simu hii',
-  'search.fullText.inSettings': 'Iwashe katika Mipangilio, na faharasa inabaki kwenye simu hii.',
+
   'transfer.app.ready': 'Programu imefika kwenye simu hii ({size}) na iko tayari kusakinishwa.',
   'transfer.network': 'Kwanza unganisha simu zote mbili kwenye Wi-Fi au hotspot moja.',
   'transfer.localNetwork.prompt':
@@ -567,4 +577,7 @@ export const sw: LocaleTable = {
   'session.pictures.download': 'Pakua picha za hadithi',
   'session.pictures.notFound': 'Picha hii haina mchoro kwenye picha za hadithi.',
   'session.read.play': 'Cheza hadithi',
+
+  'formation.training.missing': 'Mwongozo huu haupatikani.',
+  'formation.training.open': 'Nenda kwenye Mafunzo',
 };

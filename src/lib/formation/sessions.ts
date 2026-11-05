@@ -1,5 +1,12 @@
 import type { CorpusView } from '../corpus/view';
-import type { MovementSection, MovementSectionId, Movements, Story } from '../corpus/types';
+import type {
+  AcademySection,
+  ManualEntry,
+  MovementSection,
+  MovementSectionId,
+  Movements,
+  Story,
+} from '../corpus/types';
 import { sessionMovements } from '../domain/events';
 import { languagePackId } from '../domain/pack';
 import { questionsOf } from './questions';
@@ -14,7 +21,9 @@ import type {
   SessionOptions,
   Track,
   TrackSummary,
+  TrainingLesson,
   TrainingOutline,
+  TrainingSection,
   TrainingSession,
   TrainingUnit,
 } from './types';
@@ -159,21 +168,76 @@ function manualOf(id: string): string {
   return id.split('/')[1] ?? '';
 }
 
+type LessonTaker = (id: string) => readonly TrainingLesson[];
+
+function lessonTaker(lessons: readonly TrainingLesson[]): LessonTaker {
+  const waiting = new Map(lessons.map((lesson) => [lesson.id, lesson]));
+  return (id) => {
+    const lesson = waiting.get(id);
+    waiting.delete(id);
+    return lesson === undefined ? [] : [lesson];
+  };
+}
+
+function sectionsOf(
+  title: string | undefined,
+  lead: readonly TrainingLesson[],
+  nodes: readonly AcademySection[],
+  take: LessonTaker,
+): TrainingSection[] {
+  const found: TrainingSection[] = [];
+  let run = [...lead];
+  const close = () => {
+    if (run.length > 0) {
+      found.push(title === undefined ? { lessons: run } : { title, lessons: run });
+      run = [];
+    }
+  };
+  for (const node of nodes) {
+    const own = node.article === undefined ? [] : take(node.article);
+    if (node.sections.length === 0) {
+      run.push(...own);
+      continue;
+    }
+    close();
+    found.push(...sectionsOf(node.title === '' ? title : node.title, own, node.sections, take));
+  }
+  close();
+  return found;
+}
+
+function unitSections(
+  lessons: readonly TrainingLesson[],
+  manual: ManualEntry | undefined,
+): TrainingSection[] {
+  const take = lessonTaker(lessons);
+  const listed = sectionsOf(undefined, [], manual?.sections ?? [], take);
+  const placed = new Set(listed.flatMap((section) => section.lessons.map((lesson) => lesson.id)));
+  const rest = lessons.filter((lesson) => !placed.has(lesson.id));
+  if (rest.length === 0) {
+    return listed;
+  }
+  const last = listed.at(-1);
+  return last !== undefined && last.title === undefined
+    ? [...listed.slice(0, -1), { lessons: [...last.lessons, ...rest] }]
+    : [...listed, { lessons: rest }];
+}
+
 export async function trainingOutlineOf(view: CorpusView, language: string): Promise<TrainingOutline> {
   const contents = await view.contents(language);
-  const units = new Map<string, TrainingUnit>();
+  const grouped = new Map<string, TrainingLesson[]>();
   contents.academy.forEach((entry, index) => {
     const manual = manualOf(entry.id);
-    const lesson = { number: index + 1, title: entry.title, id: entry.id };
-    const unit = units.get(manual);
-    if (unit !== undefined) {
-      units.set(manual, { ...unit, lessons: [...unit.lessons, lesson] });
-      return;
-    }
-    const title = contents.manuals.find((item) => item.manual === manual)?.title ?? manual;
-    units.set(manual, { manual, title, lessons: [lesson] });
+    grouped.set(manual, [
+      ...(grouped.get(manual) ?? []),
+      { number: index + 1, title: entry.title, id: entry.id },
+    ]);
   });
-  return { lessons: contents.academy.length, units: [...units.values()] };
+  const units = [...grouped].map(([manual, lessons]): TrainingUnit => {
+    const entry = contents.manuals.find((item) => item.manual === manual);
+    return { manual, title: entry?.title ?? manual, lessons, sections: unitSections(lessons, entry) };
+  });
+  return { lessons: contents.academy.length, units };
 }
 
 export async function trackSummaries(view: CorpusView, language: string): Promise<TrackSummary[]> {

@@ -36,6 +36,7 @@ export type {
   TrainingLesson,
   TrainingOutline,
   TrainingSession,
+  TrainingUnit,
 } from '@lib/formation/types';
 export type { FormationWords } from './strings';
 export type { ClipControls, PlayerStatus } from '@lib/player/types';

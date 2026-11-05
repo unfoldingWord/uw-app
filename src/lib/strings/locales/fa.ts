@@ -132,6 +132,10 @@ export const fa: LocaleTable = {
   'study.helps.noWordLinks': 'برای این آیه پیوند واژه‌ای نیست.',
   'study.helps.noQuestions': 'برای این آیه پرسشی نیست.',
   'study.helps.notDownloaded': 'راهنماهای این بخش هنوز روی این گوشی نیستند.',
+  'study.helps.showInVerse': 'در آیه نشان بده',
+  'study.helps.notFound': 'این واژه‌ها در این متن مشخص نشده‌اند.',
+  'study.helps.expand': 'بیشتر از راهنماها را نشان بده',
+  'study.helps.collapse': 'کمتر از راهنماها را نشان بده',
   'study.audio.play': 'پخش صدا',
   'study.audio.pause': 'مکث صدا',
   'study.audio.label': '{reference} · صدا',
@@ -202,6 +206,8 @@ export const fa: LocaleTable = {
   'search.fullText.detail': 'روی این گوشی نمایه می‌سازد، حدود {size} برای {language}.',
   'search.fullText.building': 'در حال ساختن نمایه',
   'search.fullText.on': 'جست‌وجو درون همهٔ متن‌های بارگیری‌شده روشن است.',
+  'search.fullText.failed': 'نمایه ساخته نشد.',
+  'search.searching': 'در حال جستجو',
   'formation.title': 'شاگردسازی',
   'formation.overline': '{language} · {coverage}',
   'formation.coverage.movements': 'هر پنج مرحله موجود است',
@@ -419,6 +425,10 @@ export const fa: LocaleTable = {
   'settings.firstName.about': 'فقط در سلام و فقط روی این گوشی به کار می‌رود.',
   'settings.fullText': 'جست‌وجو درون همهٔ متن‌ها',
   'settings.fullText.about': 'روی این گوشی نمایه‌ای حدود {size} برای هر زبان می‌سازد.',
+  'settings.fullText.waiting': 'در انتظار شروع',
+  'settings.fullText.building': 'در حال ساختن نمایه',
+  'settings.fullText.ready': 'آماده جستجو',
+  'settings.fullText.failed': 'نمایه ساخته نشد.',
   'settings.storage': 'حافظه',
   'settings.storage.about': 'بسته‌های زبان را ببینید و حذف کنید، {size} استفاده شده.',
   'settings.licence': 'مجوز و انتساب',
@@ -487,7 +497,7 @@ export const fa: LocaleTable = {
   'study.noLanguage.action': 'انتخاب زبان',
   'library.download': 'بارگیری {resource}',
   'library.onPhone': 'روی این گوشی',
-  'search.fullText.inSettings': 'آن را در تنظیمات روشن کنید و نمایه روی این گوشی می‌ماند.',
+
   'transfer.app.ready': 'برنامه به این گوشی رسید ({size}) و آمادهٔ نصب است.',
   'transfer.network': 'اول هر دو گوشی را به یک وای‌فای یا هات‌اسپات وصل کنید.',
   'transfer.localNetwork.prompt':
@@ -557,4 +567,7 @@ export const fa: LocaleTable = {
   'session.pictures.download': 'بارگیری تصاویر داستان‌ها',
   'session.pictures.notFound': 'این صحنه در تصاویر داستان‌ها تصویری ندارد.',
   'session.read.play': 'پخش داستان',
+
+  'formation.training.missing': 'این راهنما پیدا نمی‌شود.',
+  'formation.training.open': 'رفتن به آموزش',
 };

@@ -127,6 +127,10 @@ export const my: LocaleTable = {
   'study.helps.noWordLinks': 'ဤအခန်းငယ်အတွက် စကားလုံး လင့်ခ် မရှိပါ။',
   'study.helps.noQuestions': 'ဤအခန်းငယ်အတွက် မေးခွန်း မရှိပါ။',
   'study.helps.notDownloaded': 'ဤကျမ်းပိုဒ်အတွက် အကူအညီများ ဤဖုန်းပေါ်တွင် မရှိသေးပါ။',
+  'study.helps.showInVerse': 'အခန်းငယ်တွင် ပြပါ',
+  'study.helps.notFound': 'ဤစကားလုံးများကို ဤစာသားတွင် မှတ်သားထားခြင်း မရှိပါ။',
+  'study.helps.expand': 'အကူအညီများ ပိုပြပါ',
+  'study.helps.collapse': 'အကူအညီများ လျှော့ပြပါ',
   'study.audio.play': 'အသံ ဖွင့်ရန်',
   'study.audio.pause': 'အသံ ခဏရပ်ရန်',
   'study.audio.label': '{reference} · အသံ',
@@ -200,6 +204,8 @@ export const my: LocaleTable = {
   'search.fullText.detail': 'ဤဖုန်းပေါ်တွင် အညွှန်း တည်ဆောက်ပါသည်၊ {language} အတွက် {size} ခန့်။',
   'search.fullText.building': 'အညွှန်း တည်ဆောက်နေသည်',
   'search.fullText.on': 'ဒေါင်းလုဒ်လုပ်ထားသော စာသားအားလုံးထဲတွင် ရှာခြင်း ဖွင့်ထားပါသည်။',
+  'search.fullText.failed': 'အညွှန်းကို တည်ဆောက်၍ မရပါ။',
+  'search.searching': 'ရှာဖွေနေသည်',
   'formation.title': 'ပျိုးထောင်ခြင်း',
   'formation.overline': '{language} · {coverage}',
   'formation.coverage.movements': 'အဆင့်ငါးဆင့် ရနိုင်သည်',
@@ -404,6 +410,10 @@ export const my: LocaleTable = {
   'settings.firstName.about': 'နှုတ်ဆက်ရာတွင်သာ၊ ဤဖုန်းပေါ်တွင်သာ သုံးပါသည်။',
   'settings.fullText': 'စာသားအားလုံးထဲတွင် ရှာရန်',
   'settings.fullText.about': 'ဤဖုန်းပေါ်တွင် ဘာသာစကားတစ်ခုလျှင် {size} ခန့် အညွှန်း တည်ဆောက်ပါသည်။',
+  'settings.fullText.waiting': 'စတင်ရန် စောင့်နေသည်',
+  'settings.fullText.building': 'အညွှန်း တည်ဆောက်နေသည်',
+  'settings.fullText.ready': 'ရှာဖွေရန် အသင့်ဖြစ်ပြီ',
+  'settings.fullText.failed': 'အညွှန်းကို တည်ဆောက်၍ မရပါ။',
   'settings.storage': 'သိုလှောင်မှု',
   'settings.storage.about': 'ဘာသာစကား ပက်ကေ့ချ်များကို ကြည့်ပြီး ဖယ်ရှားပါ ({size} သုံးထားသည်)။',
   'settings.licence': 'လိုင်စင်နှင့် ပိုင်ရှင်အမည်',
@@ -477,7 +487,7 @@ export const my: LocaleTable = {
   'study.noLanguage.action': 'ဘာသာစကား ရွေးရန်',
   'library.download': '{resource} ကို ဒေါင်းလုဒ်လုပ်ရန်',
   'library.onPhone': 'ဤဖုန်းပေါ်တွင်',
-  'search.fullText.inSettings': 'ဆက်တင်များတွင် ဖွင့်ပါ၊ အညွှန်းသည် ဤဖုန်းပေါ်တွင်သာ ရှိနေပါသည်။',
+
   'transfer.app.ready': 'အက်ပ်သည် ဤဖုန်းသို့ ရောက်ရှိပြီး ({size}) ထည့်သွင်းရန် အသင့်ဖြစ်ပါသည်။',
   'transfer.network': 'ဖုန်းနှစ်လုံးလုံးကို Wi-Fi သို့မဟုတ် hotspot တစ်ခုတည်းသို့ အရင်ချိတ်ဆက်ပါ။',
   'transfer.localNetwork.prompt':
@@ -548,4 +558,7 @@ export const my: LocaleTable = {
   'session.pictures.download': 'ဇာတ်လမ်း ပုံများ ဒေါင်းလုဒ်လုပ်ရန်',
   'session.pictures.notFound': 'ဇာတ်လမ်း ပုံများတွင် ဤပုံအတွက် ပုံမရှိပါ။',
   'session.read.play': 'ဇာတ်လမ်းကို ဖွင့်ရန်',
+
+  'formation.training.missing': 'ဤလက်စွဲကို ရှာမတွေ့ပါ။',
+  'formation.training.open': 'သင်တန်းသို့ သွားပါ',
 };

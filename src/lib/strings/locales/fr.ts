@@ -134,6 +134,10 @@ export const fr: LocaleTable = {
   'study.helps.noWordLinks': 'Pas de liens de mots pour ce verset.',
   'study.helps.noQuestions': 'Pas de questions pour ce verset.',
   'study.helps.notDownloaded': 'Les aides pour ce passage ne sont pas encore sur ce téléphone.',
+  'study.helps.showInVerse': 'Montrer dans le verset',
+  'study.helps.notFound': 'Ces mots ne sont pas repérés dans ce texte.',
+  'study.helps.expand': 'Afficher plus d’aides',
+  'study.helps.collapse': 'Afficher moins d’aides',
   'study.audio.play': 'Lire l’audio',
   'study.audio.pause': 'Mettre l’audio en pause',
   'study.audio.label': '{reference} · audio',
@@ -209,6 +213,8 @@ export const fr: LocaleTable = {
   'search.fullText.detail': 'Crée un index sur ce téléphone, environ {size} pour {language}.',
   'search.fullText.building': 'Création de l’index',
   'search.fullText.on': 'La recherche dans tous les textes téléchargés est activée.',
+  'search.fullText.failed': 'L’index n’a pas pu être créé.',
+  'search.searching': 'Recherche en cours',
   'formation.title': 'Formation',
   'formation.overline': '{language} · {coverage}',
   'formation.coverage.movements': 'cinq mouvements disponibles',
@@ -447,6 +453,10 @@ export const fr: LocaleTable = {
   'settings.firstName.about': 'Utilisé seulement dans la salutation, seulement sur ce téléphone.',
   'settings.fullText': 'Rechercher dans tous les textes',
   'settings.fullText.about': 'Crée sur ce téléphone un index d’environ {size} par langue.',
+  'settings.fullText.waiting': 'En attente',
+  'settings.fullText.building': 'Création de l’index',
+  'settings.fullText.ready': 'Prêt pour la recherche',
+  'settings.fullText.failed': 'L’index n’a pas pu être créé.',
   'settings.storage': 'Stockage',
   'settings.storage.about': 'Voir et retirer des packs de langue, {size} utilisés.',
   'settings.licence': 'Licence et attribution',
@@ -524,7 +534,7 @@ export const fr: LocaleTable = {
   'study.noLanguage.action': 'Choisir une langue',
   'library.download': 'Télécharger {resource}',
   'library.onPhone': 'Sur ce téléphone',
-  'search.fullText.inSettings': 'Activez-la dans Réglages, et l’index reste sur ce téléphone.',
+
   'transfer.app.ready':
     'L’application est arrivée sur ce téléphone ({size}) et elle est prête à être installée.',
   'transfer.network': 'Connectez d’abord les deux téléphones au même Wi-Fi ou partage de connexion.',
@@ -619,4 +629,7 @@ export const fr: LocaleTable = {
   'session.pictures.download': 'Télécharger les images des histoires',
   'session.pictures.notFound': 'Cette image n’a pas d’illustration dans les images des histoires.',
   'session.read.play': 'Écouter l’histoire',
+
+  'formation.training.missing': 'Ce manuel est introuvable.',
+  'formation.training.open': 'Aller à Formation pratique',
 };

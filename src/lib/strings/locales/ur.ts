@@ -130,6 +130,10 @@ export const ur: LocaleTable = {
   'study.helps.noWordLinks': 'اس آیت کے لیے الفاظ کا کوئی ربط نہیں ہے۔',
   'study.helps.noQuestions': 'اس آیت کے لیے کوئی سوال نہیں ہے۔',
   'study.helps.notDownloaded': 'اس حصے کی مددگار معلومات ابھی اس فون پر نہیں ہیں۔',
+  'study.helps.showInVerse': 'آیت میں دکھائیں',
+  'study.helps.notFound': 'یہ الفاظ اس متن میں نشان زد نہیں ہیں۔',
+  'study.helps.expand': 'مددگار معلومات زیادہ دکھائیں',
+  'study.helps.collapse': 'مددگار معلومات کم دکھائیں',
   'study.audio.play': 'آڈیو چلائیں',
   'study.audio.pause': 'آڈیو روکیں',
   'study.audio.label': '{reference} · آڈیو',
@@ -203,6 +207,8 @@ export const ur: LocaleTable = {
   'search.fullText.detail': 'اس فون پر ایک فہرست بناتا ہے، {language} کے لیے تقریباً {size}۔',
   'search.fullText.building': 'فہرست بن رہی ہے',
   'search.fullText.on': 'ڈاؤن لوڈ کیے گئے ہر متن کے اندر تلاش آن ہے۔',
+  'search.fullText.failed': 'فہرست نہیں بن سکی۔',
+  'search.searching': 'تلاش جاری ہے',
   'formation.title': 'شاگردی',
   'formation.overline': '{language} · {coverage}',
   'formation.coverage.movements': 'پانچوں مراحل دستیاب',
@@ -419,6 +425,10 @@ export const ur: LocaleTable = {
   'settings.firstName.about': 'صرف سلام میں، صرف اس فون پر استعمال ہوتا ہے۔',
   'settings.fullText': 'ہر متن کے اندر تلاش کریں',
   'settings.fullText.about': 'اس فون پر ہر زبان کے لیے تقریباً {size} کی ایک فہرست بناتا ہے۔',
+  'settings.fullText.waiting': 'شروع ہونے کا انتظار',
+  'settings.fullText.building': 'فہرست بن رہی ہے',
+  'settings.fullText.ready': 'تلاش کے لیے تیار',
+  'settings.fullText.failed': 'فہرست نہیں بن سکی۔',
   'settings.storage': 'اسٹوریج',
   'settings.storage.about': 'زبان کے پیک دیکھیں اور ہٹائیں، {size} استعمال میں۔',
   'settings.licence': 'لائسنس اور انتساب',
@@ -485,7 +495,7 @@ export const ur: LocaleTable = {
   'study.noLanguage.action': 'زبان منتخب کریں',
   'library.download': '{resource} ڈاؤن لوڈ کریں',
   'library.onPhone': 'اس فون پر',
-  'search.fullText.inSettings': 'اسے ترتیبات میں آن کریں، اور فہرست اسی فون پر رہتی ہے۔',
+
   'transfer.app.ready': 'ایپ اس فون پر آ گئی ہے ({size}) اور انسٹال کے لیے تیار ہے۔',
   'transfer.network': 'پہلے دونوں فون ایک ہی وائی فائی یا ہاٹ اسپاٹ سے جوڑیں۔',
   'transfer.localNetwork.prompt':
@@ -556,4 +566,7 @@ export const ur: LocaleTable = {
   'session.pictures.download': 'کہانی کی تصاویر ڈاؤن لوڈ کریں',
   'session.pictures.notFound': 'کہانی کی تصاویر میں اس منظر کی کوئی تصویر نہیں۔',
   'session.read.play': 'کہانی چلائیں',
+
+  'formation.training.missing': 'یہ رہنما کتاب نہیں مل سکی۔',
+  'formation.training.open': 'تربیت پر جائیں',
 };

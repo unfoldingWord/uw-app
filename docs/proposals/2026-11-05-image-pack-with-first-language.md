@@ -1,7 +1,7 @@
 # Install the Image Pack with the first language
 
 Status: approved by the requirements owner on 2026-11-05 ("Go with your suggestions"). Issue #97, change 1. Recorded
-as PRD decision 98.
+as PRD decision 103.
 
 ## Problem
 
@@ -38,7 +38,7 @@ still written by the app and still removable.
 
 ## Rules affected
 
-- PRD LA-3 and the decision log (decision 98). ADR 0006 is not changed: the pack stays optional and separate.
+- PRD LA-3 and the decision log (decision 103). ADR 0006 is not changed: the pack stays optional and separate.
 - No architecture rule. The install already exists (`packs.installFromCatalog(imagePackId)`); the decision is a pure
   planning function beside the other pack plans, called by the onboarding and languages services.
 - The 31 MB figure is an estimate (`imagePackApproximateBytes` in `src/lib/catalog/built.ts`): the catalog has no

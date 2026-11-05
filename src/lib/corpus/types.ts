@@ -1,3 +1,4 @@
+import type { FailureCode } from '../domain/failures';
 import type { PackId, ResourceRow } from '../domain/pack';
 import type { Provenance } from '../domain/provenance';
 
@@ -262,13 +263,30 @@ export type IndexCost = { readonly entries: number; readonly bytes: number };
 
 export type IndexStatus = { readonly built: boolean; readonly entries: number; readonly bytes: number };
 
+export type IndexState =
+  | { readonly state: 'off' }
+  | { readonly state: 'waiting' }
+  | { readonly state: 'building'; readonly percent: number }
+  | { readonly state: 'built' }
+  | { readonly state: 'failed'; readonly code: FailureCode };
+
 export type BookContents = { readonly code: string; readonly chapters: readonly number[] };
 
 export type TextContents = Sourced & { readonly reading: Reading; readonly books: readonly BookContents[] };
 
 export type ArticleEntry = { readonly id: string; readonly title: string };
 
-export type ManualEntry = { readonly manual: string; readonly title: string };
+export type AcademySection = {
+  readonly title: string;
+  readonly article?: string;
+  readonly sections: readonly AcademySection[];
+};
+
+export type ManualEntry = {
+  readonly manual: string;
+  readonly title: string;
+  readonly sections: readonly AcademySection[];
+};
 
 export type Contents = {
   readonly language: string;

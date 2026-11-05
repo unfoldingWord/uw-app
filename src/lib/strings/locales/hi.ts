@@ -130,6 +130,10 @@ export const hi: LocaleTable = {
   'study.helps.noWordLinks': 'इस पद के लिए कोई शब्द लिंक नहीं है।',
   'study.helps.noQuestions': 'इस पद के लिए कोई प्रश्न नहीं है।',
   'study.helps.notDownloaded': 'इस खंड की सहायता सामग्री अभी इस फ़ोन पर नहीं है।',
+  'study.helps.showInVerse': 'पद में दिखाएँ',
+  'study.helps.notFound': 'ये शब्द इस पाठ में चिह्नित नहीं हैं।',
+  'study.helps.expand': 'सहायता सामग्री अधिक दिखाएँ',
+  'study.helps.collapse': 'सहायता सामग्री कम दिखाएँ',
   'study.audio.play': 'ऑडियो चलाएँ',
   'study.audio.pause': 'ऑडियो रोकें',
   'study.audio.label': '{reference} · ऑडियो',
@@ -203,6 +207,8 @@ export const hi: LocaleTable = {
   'search.fullText.detail': 'इस फ़ोन पर एक अनुक्रमणिका बनाता है, {language} के लिए लगभग {size}।',
   'search.fullText.building': 'अनुक्रमणिका बन रही है',
   'search.fullText.on': 'डाउनलोड किए गए हर पाठ के भीतर खोज चालू है।',
+  'search.fullText.failed': 'अनुक्रमणिका नहीं बन सकी।',
+  'search.searching': 'खोजा जा रहा है',
   'formation.title': 'शिष्यता',
   'formation.overline': '{language} · {coverage}',
   'formation.coverage.movements': 'पाँचों चरण उपलब्ध',
@@ -420,6 +426,10 @@ export const hi: LocaleTable = {
   'settings.firstName.about': 'केवल अभिवादन में, केवल इस फ़ोन पर उपयोग होता है।',
   'settings.fullText': 'हर पाठ के भीतर खोजें',
   'settings.fullText.about': 'इस फ़ोन पर हर भाषा के लिए लगभग {size} की एक अनुक्रमणिका बनाता है।',
+  'settings.fullText.waiting': 'शुरू होने की प्रतीक्षा में',
+  'settings.fullText.building': 'अनुक्रमणिका बन रही है',
+  'settings.fullText.ready': 'खोज के लिए तैयार',
+  'settings.fullText.failed': 'अनुक्रमणिका नहीं बन सकी।',
   'settings.storage': 'स्टोरेज',
   'settings.storage.about': 'भाषा पैक देखें और हटाएँ, {size} उपयोग में।',
   'settings.licence': 'लाइसेंस और श्रेय',
@@ -487,7 +497,7 @@ export const hi: LocaleTable = {
   'study.noLanguage.action': 'एक भाषा चुनें',
   'library.download': '{resource} डाउनलोड करें',
   'library.onPhone': 'इस फ़ोन पर',
-  'search.fullText.inSettings': 'इसे सेटिंग्स में चालू करें, और अनुक्रमणिका इसी फ़ोन पर रहती है।',
+
   'transfer.app.ready': 'ऐप इस फ़ोन पर आ गया है ({size}) और इंस्टॉल के लिए तैयार है।',
   'transfer.network': 'पहले दोनों फ़ोन एक ही वाई-फ़ाई या हॉटस्पॉट से जोड़ें।',
   'transfer.localNetwork.prompt':
@@ -558,4 +568,7 @@ export const hi: LocaleTable = {
   'session.pictures.download': 'कहानी के चित्र डाउनलोड करें',
   'session.pictures.notFound': 'कहानी के चित्रों में इस दृश्य का कोई चित्र नहीं है।',
   'session.read.play': 'कहानी चलाएँ',
+
+  'formation.training.missing': 'यह पुस्तिका नहीं मिल रही है।',
+  'formation.training.open': 'प्रशिक्षण पर जाएँ',
 };

@@ -12,6 +12,7 @@ import { Attribution } from './parts/Attribution';
 import { Blocks } from './parts/Blocks';
 import { ScreenFrame, TopBar } from './parts/Frame';
 import { articleHref, studyRoutes, useOpenTarget } from './parts/routes';
+import { ReloadVeil } from './parts/ReloadVeil';
 import { Say } from './parts/Say';
 import { StatePanel } from './parts/StatePanel';
 import { useLoaded } from './parts/useLoaded';
@@ -31,7 +32,7 @@ export default function ArticleScreen() {
   const id = articleId(params.id);
   const words = service.words();
   const load = useCallback(() => service.article(id), [service, id]);
-  const { value, reload } = useLoaded(load);
+  const { value, loading, reload } = useLoaded(load);
   const language = service.language() ?? '';
   const [failure, setFailure] = useState<FailureCode | undefined>(undefined);
 
@@ -146,6 +147,7 @@ export default function ArticleScreen() {
         </GlassSurface>
         <Attribution words={words} provenance={article.provenance} />
       </ScrollView>
+      <ReloadVeil loading={loading} label={words.t('common.busy')} />
     </ScreenFrame>
   );
 }
