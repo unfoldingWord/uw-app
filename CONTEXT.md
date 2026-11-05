@@ -78,6 +78,10 @@ _Avoid_: page, entry, topic
 One of the fifty Open Bible Stories. Made of **Frames**, each an image and a paragraph.
 _Avoid_: chapter (for stories), slide
 
+**Story reader**:
+The one screen every story opens in, at a frame. In **reading mode** it shows the frames, pictures, audio and bookmark and holds no group's position; in **group mode** it is a Foundations session, adding the study questions of the frame in view, the movements and the group's notes. Moving to another story in group mode asks before it moves the group's position.
+_Avoid_: story screen, session screen (both are the one reader), player
+
 **Reference**:
 A book, chapter and verse or verse range, in one versification.
 _Avoid_: location, address
