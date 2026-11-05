@@ -2,6 +2,7 @@ import { bookByCode } from '../domain/books';
 import { compareText } from '../order';
 import type { Library } from './library';
 import { readingOfKind } from './readings';
+import { academyPrefix } from './links';
 import { academyManuals, academyOrder, audioClips, movementStories, stories } from './loaders';
 import type { Contents } from './types';
 
@@ -61,7 +62,16 @@ async function buildContents(library: Library, language: string): Promise<Conten
   const manuals =
     academy === undefined
       ? []
-      : (await academyManuals(library, academy)).map(({ manual, title }) => ({ manual, title }));
+      : (await academyManuals(library, academy)).map(({ manual, title, sections }) => ({
+          manual,
+          title,
+          sections,
+        }));
+  const manualRank = (id: string) => {
+    const rank = manuals.findIndex((item) => id.startsWith(`${academyPrefix}/${item.manual.toLowerCase()}/`));
+    return rank === -1 ? manuals.length : rank;
+  };
+  const unplaced = Number.MAX_SAFE_INTEGER;
   const [storyEntry] = library.of(language, ['stories']);
   const storyList = storyEntry === undefined ? [] : [...(await stories(library, storyEntry)).values()];
   const [movementEntry] = library.of(language, ['movements']);
@@ -76,7 +86,10 @@ async function buildContents(library: Library, language: string): Promise<Conten
     texts,
     words: articleEntries('word').sort((left, right) => compareText(left.id, right.id)),
     academy: articleEntries('academy').sort(
-      (left, right) => (position.get(left.id) ?? -1) - (position.get(right.id) ?? -1),
+      (left, right) =>
+        manualRank(left.id) - manualRank(right.id) ||
+        (position.get(left.id) ?? unplaced) - (position.get(right.id) ?? unplaced) ||
+        compareText(left.id, right.id),
     ),
     manuals,
     stories: storyList.map((story) => ({ number: story.number, title: story.title })),
