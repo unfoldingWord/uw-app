@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { createTheme } from '@shared/theme/createTheme';
-import { dotRingPoints, filamentPath } from './geometry';
-import { segments, track } from './keyframeTimeline';
+import { dotRingBands, filamentPath } from './geometry';
+import { segments, track, waveDelays } from './keyframeTimeline';
 import { shadowCss, splitShadows } from './shadows';
 
 const theme = createTheme({ scheme: 'light', reducedBlur: false });
 
-describe('dotRingPoints', () => {
+describe('dotRingBands', () => {
   it('places denser, fainter bands outward the way the reference ring does', () => {
-    const points = dotRingPoints(170, 7, 30);
+    const points = dotRingBands(170, 7, 30).flat();
     expect(points).toHaveLength([12, 15, 18, 21, 24, 27, 30].reduce((sum, count) => sum + count, 0));
     const first = points[0];
     const last = points[points.length - 1];
@@ -35,6 +35,14 @@ describe('keyframe timeline', () => {
       { toOffset: 0.5, durationMs: 3000 },
       { toOffset: 1, durationMs: 3000 },
     ]);
+  });
+
+  it('starts each ring of a wave one equal share of the loop after the ring inside it', () => {
+    expect(waveDelays(4, 4500)).toEqual([0, 1125, 2250, 3375]);
+    expect(waveDelays(1, 4500)).toEqual([0]);
+    const bands = dotRingBands(170, 7, 30);
+    expect(bands.map((band) => band.length)).toEqual([12, 15, 18, 21, 24, 27, 30]);
+    expect(bands.every((band) => band.every((point) => point.opacity === band[0]?.opacity))).toBe(true);
   });
 
   it('fills a property the frame leaves out with its resting value', () => {
