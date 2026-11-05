@@ -3,6 +3,32 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-11-05 Full-text index state, Search toggle and keyboard-aware scaffold (#98, #95, #99 and #85 Search parts)
+
+Node v22.23.4. Nothing ran on a phone, an emulator or a simulator in this entry. The keyboard handling, the Search
+list and the Settings and Search index rows were not rendered: `npm run shots` failed in this sandbox before
+rendering (the web export resolved routes from another worktree through the shared Metro cache), so light, dark,
+reduced-blur, RTL and the largest text size were not checked on these screens.
+
+- **Red first:** the five new ST-9 scenarios failed before the change: `ST-9.a` `corpus.indexState is not a
+  function`; `ST-9.b` the language list was strings, not states; `ST-9.c` `the later language is wanted too`;
+  `ST-9.d` `settings.onFullText is not a function`; `ST-9.e` `study.fullTextIndex is not a function`.
+  `src/shared/ui/keyboardInset.test.ts` failed with `Cannot find module './keyboardInset'`.
+- **Green:** all six ST-9 scenarios pass, and the six keyboard inset tests (FO-6) pass.
+- **Verify:** `npm run verify` green: 92 test files, 847 tests, 9 checks, 68 of 68 scenarios, 21 fixture burritos
+  (live contract skipped, offline), both bundles.
+- **Not verified:** that `keyboardWillChangeFrame` and `keyboardDidShow` report the keyboard top this hook expects
+  on Android edge to edge and on iOS; that the notes field and the line being typed stay above the keyboard; that
+  the dock and the floating footer hide while typing; the `SectionList` scroll on a low-end phone. Each needs a
+  device run.
+- **Review follow-up:** a wanted index left unbuilt is queued again on start, so after a restart it reads
+  `waiting`, then `built` or `failed` with Try again (`ST-9.f`, red first: `a wanted index is never off after a
+  restart`); turning indexes on settles every language and records a write that fails as that language's failure
+  (corpus test red first: the promise rejected); the keyboard reveal clamps to the scrollable range and reads the
+  offset from a throttled `onScroll` (four new pure tests, not run on a device); `search.fullText.inSettings`
+  removed after a grep found no reference. `npm run verify` green: 92 test files, 853 tests, 9 checks, 69 of 69
+  scenarios, 21 fixture burritos, both bundles.
+
 ## 2026-11-05 Study helps sheet, note focus and chapter-change progress (#90, #91, part of #99), Node only
 
 Node v22.22.2. Nothing ran on a phone, an emulator, a simulator or the web harness in this entry. The sheet's

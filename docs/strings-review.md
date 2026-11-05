@@ -86,9 +86,9 @@ release gate is `releaseGate` in `src/lib/strings/locales.ts` (`reviewed`).
 - **Drafted with the Transfer, Share and diagnostics services.** `transfer.code`, `transfer.code.hint` and
   `transfer.nothing`. The code is the six digits both phones show while they pair (four until v1.1.0, issue #64); the word for it should be
   the one people use for a short number read aloud, not a password or a PIN.
-- **Drafted in T11.** Seven keys were added with the Study screens and drafted in every locale at once:
+- **Drafted in T11.** Six keys still in use were added with the Study screens and drafted in every locale at once:
   `study.helps.showResponse`, `study.helps.hideResponse`, `study.noLanguage`, `study.noLanguage.action`,
-  `library.download`, `library.onPhone` and `search.fullText.inSettings`. `library.download` interpolates a
+  `library.download` and `library.onPhone`. `library.download` interpolates a
   resource title such as "Greek New Testament"; check the verb agrees with it where the language inflects.
 - **Drafted on 2026-09-30 (issue #4).** `privacy.backup` says a backup of the phone may include notes and group
   names until a later update confirms they are kept out. It is temporary: the change that records the iPhone run
@@ -260,7 +260,7 @@ sentence segmenter in every locale and fails above one; `onboarding.tagline` and
 because PRD ON-1 fixes their wording. In `my` the little section sign (၊) is read as a comma, not a full stop.
 
 - **Home, Study, Formation.** `state.offline`, `onboarding.name.hint`, `home.download.detail`, `home.new.detail`,
-  `invitation.body`, `study.audio.offline`, `library.footer`, `search.fullText.inSettings`,
+  `invitation.body`, `study.audio.offline`, `library.footer`,
   `formation.group.deleteConfirm`, `formation.training.about`, `session.picturesMissing`.
   `study.audio.offline` also stopped saying audio streams when online: v1.0.0 plays only a downloaded Audio
   Pack (ST-4), so it now says only to download it once to listen offline.

@@ -1,3 +1,4 @@
+import type { FailureCode } from '../domain/failures';
 import type { PackId, ResourceRow } from '../domain/pack';
 import type { Provenance } from '../domain/provenance';
 
@@ -261,6 +262,13 @@ export type FullTextHit = Sourced & { readonly target: LinkTarget; readonly snip
 export type IndexCost = { readonly entries: number; readonly bytes: number };
 
 export type IndexStatus = { readonly built: boolean; readonly entries: number; readonly bytes: number };
+
+export type IndexState =
+  | { readonly state: 'off' }
+  | { readonly state: 'waiting' }
+  | { readonly state: 'building'; readonly percent: number }
+  | { readonly state: 'built' }
+  | { readonly state: 'failed'; readonly code: FailureCode };
 
 export type BookContents = { readonly code: string; readonly chapters: readonly number[] };
 

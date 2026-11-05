@@ -463,6 +463,27 @@ describe('corpus packs and replay', () => {
     expect(await second.kernel.redo(started)).toBe('redone');
     expect(second.kernel.corpus.index('qaa')).toEqual(device.kernel.corpus.index('qaa'));
   });
+
+  it('settles every language when turning indexes on, and a language whose wish cannot be written reads failed', async () => {
+    const device = await phone([qaa, languagePackId('qab')]);
+    device.adapters.db.failWrites(/\bcorpus_index_wanted\b/);
+    await expect(device.kernel.corpus.setIndexesWanted(true, 'qab')).resolves.toBeUndefined();
+    device.adapters.db.failWrites(false);
+    expect(device.kernel.corpus.indexState('qaa')).toEqual({ state: 'failed', code: 'db.io' });
+    expect(device.kernel.corpus.indexState('qab')).toEqual({ state: 'failed', code: 'db.io' });
+    expect(
+      device.kernel.journal
+        .read()
+        .filter((entry) => entry.type === 'Failure')
+        .map((entry) => entry.payload),
+    ).toEqual([
+      { code: 'db.io', context: { language: 'qab' } },
+      { code: 'db.io', context: { language: 'qaa' } },
+    ]);
+
+    await device.kernel.corpus.reindex('qaa');
+    expect(device.kernel.corpus.indexState('qaa')).toEqual({ state: 'built' });
+  });
 });
 
 async function notesReleases(device: SimDevice): Promise<string[]> {
