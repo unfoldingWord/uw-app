@@ -3,6 +3,17 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-11-05 Decision proposals for #92, #93, #94 and #100, docs only
+
+Node v22.22.2. Four proposals under `docs/proposals/2026-11-05-*.md`, each awaiting the requirements owner; no
+code, no PRD decision-log row (no decision is taken yet). Every file and line they cite was read on `main` at
+d53a075.
+
+- **Verify:** `npm run verify` green: 836 tests, 9 checks, 63 of 63 scenarios, 21 fixture burritos, both
+  bundles. The live contract was skipped, offline.
+- **Not verified:** nothing in the proposals ran on a phone. The APK figures in the performance proposal come
+  from issue #100 (measured from `unfoldingWord-v0.0.2-native-unzip.1.apk`), not from a run in this entry.
+
 ## 2026-10-20 P2 native unzip, sim and checks only
 
 Node v22.22.2. Nothing ran on a phone, an emulator or a simulator in this entry, and the Kotlin and Swift in
