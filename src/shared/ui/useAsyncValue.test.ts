@@ -50,4 +50,15 @@ describe('an async value settles without losing what it knew', () => {
     expect(failed.value).toBe(8);
     expect(isLoading(failed)).toBe(false);
   });
+
+  it('stays quiet through a polled re-read, keeping the known value, and shows the next explicit read', () => {
+    const known = settleAsync(requestAsync<number>(unsettled, 1), 1, { ok: true, value: 7 });
+    const polled = requestAsync(known, 2, 'quiet');
+    expect(polled.value).toBe(7);
+    expect(isLoading(polled)).toBe(false);
+    const settled = settleAsync(polled, 2, { ok: true, value: 8 });
+    expect(settled.value).toBe(8);
+    expect(isLoading(settled)).toBe(false);
+    expect(isLoading(requestAsync(settled, 3))).toBe(true);
+  });
 });

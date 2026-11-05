@@ -69,4 +69,36 @@ describe('a loaded value shows progress on every reload and keeps what it knew',
     await run;
     expect(loader.state()).toEqual({ value: 4, loading: false });
   });
+
+  it('re-reads quietly when asked, keeping the known value and never showing progress', async () => {
+    const seen: LoaderState<number>[] = [];
+    const loader = createLoader<number>((state) => seen.push(state));
+    await loader.reload(() => Promise.resolve(1));
+    const focus = deferred<number>();
+    const run = loader.reload(() => focus.promise, 'quiet');
+    expect(loader.state()).toEqual({ value: 1, loading: false });
+    focus.resolve(2);
+    await run;
+    expect(seen).toEqual([
+      { value: undefined, loading: true },
+      { value: 1, loading: false },
+      { value: 2, loading: false },
+    ]);
+  });
+
+  it('keeps showing a shown reload that a quiet re-read supersedes until the quiet one settles', async () => {
+    const loader = createLoader<number>(() => undefined);
+    await loader.reload(() => Promise.resolve(1));
+    const shown = deferred<number>();
+    const quiet = deferred<number>();
+    const shownRun = loader.reload(() => shown.promise);
+    const quietRun = loader.reload(() => quiet.promise, 'quiet');
+    expect(loader.state()).toEqual({ value: 1, loading: true });
+    shown.resolve(2);
+    await shownRun;
+    expect(loader.state()).toEqual({ value: 1, loading: true });
+    quiet.resolve(3);
+    await quietRun;
+    expect(loader.state()).toEqual({ value: 3, loading: false });
+  });
 });

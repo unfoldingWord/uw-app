@@ -1,7 +1,9 @@
 export type LoaderState<T> = { readonly value: T | undefined; readonly loading: boolean };
 
+export type ReadKind = 'shown' | 'quiet';
+
 export type Loader<T> = {
-  readonly reload: (load: () => Promise<T>) => Promise<void>;
+  readonly reload: (load: () => Promise<T>, kind?: ReadKind) => Promise<void>;
   readonly cancel: () => void;
   readonly state: () => LoaderState<T>;
 };
@@ -17,10 +19,10 @@ export function createLoader<T>(publish: (state: LoaderState<T>) => void): Loade
     publish(next);
   };
   return {
-    reload: async (load) => {
+    reload: async (load, kind = 'shown') => {
       generation += 1;
       const mine = generation;
-      update({ value: current.value, loading: true });
+      update({ value: current.value, loading: kind === 'shown' || current.loading });
       try {
         const next = await load();
         if (mine === generation) {

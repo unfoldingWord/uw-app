@@ -17,11 +17,11 @@ export function useLoaded<T>(
   const reload = useCallback(() => loader.reload(load), [loader, load]);
   useFocusEffect(
     useCallback(() => {
-      void reload();
+      void loader.reload(load, 'quiet');
       return () => {
         loader.cancel();
       };
-    }, [loader, reload]),
+    }, [loader, load]),
   );
   useEffect(
     () =>

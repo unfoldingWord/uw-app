@@ -18,9 +18,13 @@ design changes, listed under "Design changes needed" and not implemented.
 - **`useAsyncValue`** returns `loading` beside `value`, `failure` and `reload`. `AsyncState` gains `requested`;
   `requestAsync(state, request)` records each read as it starts and `isLoading(state)` is true while the newest
   request is newer than the newest settled one. The known value stays in place while loading and after a failed
-  re-read (AGENTS.md section 10). Callers that ignore `loading` keep compiling.
+  re-read (AGENTS.md section 10). Callers that ignore `loading` keep compiling. A re-read scheduled by `pollMs` is
+  a quiet read (`requestAsync(state, request, 'quiet')`) and does not set `loading`; only the first read, a change
+  of keys and an explicit `reload` do.
 - **`useLoaded`** (Study feature, not a shared root) returns `loading` too, through a pure `createLoader` in
-  `src/features/study/screens/parts/loader.ts` tested at its interface.
+  `src/features/study/screens/parts/loader.ts` tested at its interface. The re-read when a screen regains focus is
+  quiet (`loader.reload(load, 'quiet')`), as it was before this change, so returning to Library or an article shows
+  no veil and announces nothing; only a reload from `onPacksChange` or an explicit `reload` shows progress.
 - **Screens:** Home shows `Loading` while its first reads run, Share shows `Loading` in place of the blank sheet,
   and Library and Article lay a `ReloadVeil` (the same `Loading`, pointer events off) over the kept content while a
   reload runs. `BookPicker.onChoose` and `ResultRow.onPress` are typed `() => void | Promise<void>`, and
@@ -59,3 +63,6 @@ design changes, listed under "Design changes needed" and not implemented.
   wave (or replace it), and may add a lit colour token, which the code would then read.
 - The timing rule from #99: acknowledge within a frame, show progress past about 150 ms, show words past about
   2 s. These need motion tokens before code can delay the veil or add words.
+- How a reload over kept content shows progress: a veil over the content (today, `ReloadVeil`: no scrim, pointer
+  events off, the ring drawn over readable text that stays usable), a scrim that dims it, or an inline indicator.
+  Claude Design should specify which.

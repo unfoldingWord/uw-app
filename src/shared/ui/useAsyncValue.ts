@@ -27,8 +27,14 @@ export const unsettled: AsyncState<never> = Object.freeze({
   settled: 0,
 });
 
-export function requestAsync<T>(state: AsyncState<T>, request: number): AsyncState<T> {
-  return request <= state.requested ? state : { ...state, requested: request };
+export type ReadKind = 'shown' | 'quiet';
+
+export function requestAsync<T>(
+  state: AsyncState<T>,
+  request: number,
+  kind: ReadKind = 'shown',
+): AsyncState<T> {
+  return kind === 'quiet' || request <= state.requested ? state : { ...state, requested: request };
 }
 
 export function isLoading(state: AsyncState<unknown>): boolean {
@@ -67,14 +73,21 @@ export function useAsyncValue<T>(
   const poll = useRef(options.pollMs);
   poll.current = options.pollMs;
 
+  const nextKind = useRef<ReadKind>('shown');
+
   const reload = useCallback(() => setTick((count) => count + 1), []);
+  const pollAgain = useCallback(() => {
+    nextKind.current = 'quiet';
+    setTick((count) => count + 1);
+  }, []);
 
   useEffect(() => {
     let active = true;
     let timer: ReturnType<typeof setTimeout> | undefined;
     issued.current += 1;
     const request = issued.current;
-    current.current = requestAsync(current.current, request);
+    current.current = requestAsync(current.current, request, nextKind.current);
+    nextKind.current = 'shown';
     setState(current.current);
     const settle = (outcome: AsyncOutcome<T>): boolean => {
       if (!active) {
@@ -95,7 +108,7 @@ export function useAsyncValue<T>(
         }
         const wait = poll.current?.(next);
         if (wait !== undefined) {
-          timer = setTimeout(reload, wait);
+          timer = setTimeout(pollAgain, wait);
         }
       },
       (error: unknown) => {
@@ -108,7 +121,7 @@ export function useAsyncValue<T>(
         clearTimeout(timer);
       }
     };
-  }, [tick, reload, ...keys]);
+  }, [tick, pollAgain, ...keys]);
 
   return { value: state.value, failure: state.failure, loading: isLoading(state), reload };
 }

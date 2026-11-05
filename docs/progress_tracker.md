@@ -18,6 +18,9 @@ the six gaps in #99.
 - **Not verified:** the `DotRing` wave on the native driver (seven `Animated.View` layers, delayed loops), the
   `ReloadVeil` over Library and Article, the Home and Share loaders, and the `ResultRow` busy pulse. All need a
   phone and the three visual modes.
+- **Review follow-up:** polled re-reads in `useAsyncValue` and focus re-reads in `useLoaded` are now quiet (no
+  `loading`, no veil, no announcement); the new cases in both test files failed first (`expected true to be false`,
+  `loading: true` where `false` was expected) and pass after. `docs/exceptions.md` records the `DotRing` drift.
 
 ## 2026-10-20 P2 native unzip, sim and checks only
 
