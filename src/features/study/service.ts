@@ -4,6 +4,7 @@ import type {
   AudioClip,
   Frame,
   FullTextHit,
+  IndexState,
   LinkTarget,
   Passage,
   Reading,
@@ -27,6 +28,7 @@ export type {
   AudioClip,
   Block,
   FullTextHit,
+  IndexState,
   Inline,
   Introduction,
   LinkTarget,
@@ -143,6 +145,12 @@ export type SearchView =
   | { readonly state: 'no-language' }
   | { readonly state: 'results'; readonly results: SearchResults; readonly fullText: boolean };
 
+export type FullTextIndexView = {
+  readonly state: IndexState;
+  readonly wanted: boolean;
+  readonly detail: string;
+};
+
 export type StudyService = {
   words(): StudyWords;
   language(): string | undefined;
@@ -163,6 +171,11 @@ export type StudyService = {
   original(reference: string): Promise<Passage | undefined>;
   search(query: string): Promise<SearchView>;
   fullText(query: string): Promise<readonly FullTextHit[]>;
+  indexState(): IndexState | undefined;
+  fullTextIndex(): Promise<FullTextIndexView | undefined>;
+  setFullText(on: boolean): Promise<void>;
+  retryFullText(): Promise<void>;
+  onFullText(listener: () => void): () => void;
   saved(target: BookmarkTarget): Bookmark | undefined;
   save(target: BookmarkTarget): Promise<Written<Bookmark> | undefined>;
   unsave(id: string): Promise<Written<true> | undefined>;
@@ -502,6 +515,39 @@ export function createStudyService(kernel: Kernel): StudyService {
       const language = preferences.contentLanguage();
       return language === undefined || !corpus.index(language).built ? [] : corpus.fullText(query, language);
     },
+    indexState: () => {
+      const language = preferences.contentLanguage();
+      return language === undefined ? undefined : corpus.indexState(language);
+    },
+    async fullTextIndex() {
+      const language = preferences.contentLanguage();
+      if (language === undefined) {
+        return undefined;
+      }
+      const current = words();
+      const cost = await corpus.indexCost(language);
+      return {
+        state: corpus.indexState(language),
+        wanted: corpus.indexWanted(language),
+        detail: current.t('search.fullText.detail', {
+          size: current.size(cost.bytes),
+          language: autonymOf(kernel, language),
+        }),
+      };
+    },
+    setFullText: (on) => corpus.setIndexesWanted(on, preferences.contentLanguage()),
+    async retryFullText() {
+      const language = preferences.contentLanguage();
+      if (language !== undefined) {
+        await corpus.reindex(language);
+      }
+    },
+    onFullText: (listener) =>
+      corpus.onIndex((language) => {
+        if (language === preferences.contentLanguage()) {
+          listener();
+        }
+      }),
     saved: (target) => bookmarks.find(target),
     save: (target) => bookmarks.add(target),
     unsave: (id) => bookmarks.remove(id),

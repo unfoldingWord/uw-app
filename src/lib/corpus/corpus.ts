@@ -25,6 +25,7 @@ import type {
   CorpusSummary,
   FullTextHit,
   IndexCost,
+  IndexState,
   IndexStatus,
   KindSummary,
   LinkTarget,
@@ -52,6 +53,9 @@ export type CorpusApi = {
   search(query: string, language: string): Promise<SearchResults>;
   index(language: string): IndexStatus;
   indexWanted(language: string): boolean;
+  indexState(language: string): IndexState;
+  onIndex(listener: (language: string) => void): () => void;
+  setIndexesWanted(on: boolean, first: string | undefined): Promise<void>;
   indexCost(language: string): Promise<IndexCost>;
   reindex(language: string): Promise<IndexStatus>;
   dropIndex(language: string): Promise<void>;
@@ -349,6 +353,25 @@ export const corpusModule = defineModule<CorpusApi>({
         }),
       index: (language) => library.index(language),
       indexWanted: (language) => indexing.wanted(language),
+      indexState: (language) => indexing.state(language),
+      onIndex: (listener) => indexing.onChange(listener),
+      async setIndexesWanted(on, first) {
+        const languages = contentLanguages(library);
+        const ordered = (
+          on
+            ? languages.filter(
+                (language) => indexing.state(language).state !== 'built' || !indexing.wanted(language),
+              )
+            : [...new Set([...languages, ...indexing.wantedLanguages()])]
+        ).sort((left, right) => Number(right === first) - Number(left === first));
+        if (on) {
+          await Promise.all(ordered.map((language) => indexing.reindex(language)));
+          return;
+        }
+        for (const language of ordered) {
+          await indexing.drop(language);
+        }
+      },
       indexCost: async (language) => estimateIndex(library, language),
       reindex: (language) => indexing.reindex(language),
       dropIndex: (language) => indexing.drop(language),

@@ -254,6 +254,7 @@ export async function buildIndex(
   db: Db,
   language: string,
   previous: IndexRow | undefined,
+  progress: (entries: number) => void = () => undefined,
 ): Promise<IndexRow> {
   const generation = (previous?.generation ?? 0) + 1;
   const entries = collect(library, language);
@@ -275,12 +276,14 @@ export async function buildIndex(
   });
   let count = first.length;
   await insertBatch(db, table, language, generation, first);
+  progress(count);
   let batch: IndexEntry[] = [];
   while (next.done !== true) {
     batch.push(next.value);
     count += 1;
     if (batch.length === batchRows) {
       await insertBatch(db, table, language, generation, batch);
+      progress(count);
       batch = [];
     }
     next = await entries.next();

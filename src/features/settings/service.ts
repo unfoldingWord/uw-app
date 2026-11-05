@@ -1,4 +1,4 @@
-import type { IndexCost } from '@lib/corpus/types';
+import type { IndexCost, IndexState } from '@lib/corpus/types';
 import type { PackKind } from '@lib/domain/pack';
 import type { Kernel } from '@lib/kernel';
 import type { RemoveOutcome } from '@lib/packs/types';
@@ -30,10 +30,16 @@ export type LocaleChoice = {
   readonly selected: boolean;
 };
 
+export type FullTextLanguage = {
+  readonly language: string;
+  readonly name: string;
+  readonly state: IndexState;
+};
+
 export type FullTextState = {
   readonly on: boolean;
   readonly built: boolean;
-  readonly languages: readonly string[];
+  readonly languages: readonly FullTextLanguage[];
   readonly cost: IndexCost;
   readonly about: string;
 };
@@ -101,6 +107,8 @@ export type SettingsService = {
   setName(name: string): Promise<boolean>;
   fullText(): Promise<FullTextState>;
   setFullText(on: boolean): Promise<FullTextState>;
+  retryFullText(language: string): Promise<FullTextState>;
+  onFullText(listener: () => void): () => void;
   storage(): Promise<StorageView>;
   remove(pack: string): Promise<RemoveOutcome>;
   privacy(): PrivacyView;
@@ -165,7 +173,11 @@ export function createSettingsService(kernel: Kernel): SettingsService {
     return {
       on: languages.length > 0 && languages.every((language) => kernel.corpus.indexWanted(language)),
       built: languages.length > 0 && languages.every((language) => kernel.corpus.index(language).built),
-      languages,
+      languages: languages.map((language) => ({
+        language,
+        name: autonymOf(kernel, language),
+        state: kernel.corpus.indexState(language),
+      })),
       cost,
       about: words().t('settings.fullText.about', { size: words().size(largest) }),
     };
@@ -249,15 +261,14 @@ export function createSettingsService(kernel: Kernel): SettingsService {
     setName: (name) => preferences.set('home.name', name),
     fullText,
     async setFullText(on) {
-      for (const language of kernel.corpus.languages()) {
-        if (on) {
-          await kernel.corpus.reindex(language);
-        } else {
-          await kernel.corpus.dropIndex(language);
-        }
-      }
+      await kernel.corpus.setIndexesWanted(on, preferences.contentLanguage());
       return fullText();
     },
+    async retryFullText(language) {
+      await kernel.corpus.reindex(language);
+      return fullText();
+    },
+    onFullText: (listener) => kernel.corpus.onIndex(() => listener()),
     storage,
     remove: (pack) => kernel.packs.remove(pack),
     privacy: () => {

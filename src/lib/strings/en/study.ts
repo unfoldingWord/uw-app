@@ -114,6 +114,8 @@ export const study = {
   'search.fullText.detail': 'Builds an index on this phone, about {size} for {language}.',
   'search.fullText.building': 'Building the index',
   'search.fullText.on': 'Search inside every downloaded text is on.',
+  'search.fullText.failed': 'The index could not be built.',
+  'search.searching': 'Searching',
   'study.helps.showResponse': 'Show the answer',
   'study.helps.hideResponse': 'Hide the answer',
   'study.noLanguage': 'Choose a language to start reading.',
