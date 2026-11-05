@@ -3,6 +3,26 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-11-05 Study reading: chapter arrows, verse kept across readings, helps reopen (#83, #101, #82), sim, checks and web shots only
+
+Node v22. Nothing ran on a phone, an emulator or a simulator. The scroll on a chapter change, the centred verse
+after a reading switch (first, middle and last verse) and the reopened helps sheet are unverified on a device;
+the web shots load each route once and never switch a reading or press an arrow.
+
+- **Red first:** `ST-2.chapter-arrows-open-at-verse-one` failed with `landing` undefined for `RUT 1`, then passed
+  once a chapter request lands on its first verse. Nine new cases in `passage.test.ts` (`scrollMove`,
+  `scrollPlan`, `indexNear`, `middleOf`) failed before the functions existed; `opening.test.ts` failed on the
+  missing module. The case for a landing moved by the last-read verse was written after that fix and passed on
+  first run.
+- **Verify:** `npm run verify` green with a private `TMPDIR`: 908 tests in 98 files, 73 of 73 scenarios, trace 51
+  Must requirements with 0 unproven, 21 fixture burritos, both bundles.
+- **Web shots:** `npm run shots -- --only study,study-passage,study-chapter` in all seven modes: 21 shots, 0
+  targets under 44 px, 0 text escaping its parent. `study-passage` rendered blank in every mode with
+  `sendAccessibilityEvent is not a function`: `GlassSheet` (from #104) calls it when the sheet opens, and
+  react-native-web has no such function. This is in `src/shared/glass`, not changed here.
+- **Copy verses (#84):** not built. `expo-clipboard` is not installed in the shared `node_modules`, and this round
+  installs nothing; `docs/proposals/2026-11-05-copy-verses.md` records the plan.
+
 ## 2026-11-05 One story reader (#96, #88, #89, #97), sim, checks and web shots only
 
 Node v22. Nothing ran on a phone, an emulator or a simulator: no Android SDK, Xcode or KVM in the sandbox. The

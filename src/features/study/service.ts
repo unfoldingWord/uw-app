@@ -184,9 +184,13 @@ function chapterAround(reference: Reference): Reference {
   return { book: reference.book, start: { chapter: reference.start.chapter } };
 }
 
-function landingOf(reference: Reference): VersePlace | undefined {
+function landingOf(reference: Reference, found: Passage): VersePlace | undefined {
   const { chapter, verse } = reference.start;
-  return verse === undefined ? undefined : { chapter, verse };
+  if (verse !== undefined) {
+    return { chapter, verse };
+  }
+  const first = found.text.verses.find((item) => item.chapter === chapter);
+  return first === undefined ? undefined : { chapter: first.chapter, verse: first.verse };
 }
 
 export function createStudyService(kernel: Kernel): StudyService {
@@ -326,7 +330,7 @@ export function createStudyService(kernel: Kernel): StudyService {
         label: corpus.referenceName(reference, language),
         language,
         passage: found,
-        landing: landingOf(parsed.reference),
+        landing: landingOf(parsed.reference, found),
         original: originalPassage,
         reading: shown,
         choices: choicesOf(found, original, shown),

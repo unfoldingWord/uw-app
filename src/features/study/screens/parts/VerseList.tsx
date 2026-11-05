@@ -1,8 +1,17 @@
-import { memo, useEffect, useMemo, useRef, type ReactElement } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, type TextStyle } from 'react-native';
+import { memo, useLayoutEffect, useMemo, useRef, type ReactElement } from 'react';
+import { FlatList, Pressable, StyleSheet, Text, type TextStyle, type ViewToken } from 'react-native';
 import { contentText, type Direction, useTheme } from '@shared/theme';
 import type { Passage, Verse } from '../../service';
-import { keyOf, sameVerse, type VerseKey } from './passage';
+import {
+  keyOf,
+  middleOf,
+  sameVerse,
+  scrollMove,
+  scrollPlan,
+  type ListPlace,
+  type ScrollPlan,
+  type VerseKey,
+} from './passage';
 import { Say } from './Say';
 
 export type VerseListProps = {
@@ -111,6 +120,7 @@ export function VerseList({
   const theme = useTheme();
   const list = useRef<FlatList<Verse>>(null);
   const retries = useRef(0);
+  const viewPosition = useRef(0.2);
   const direction: Direction = passage.text.direction;
   const verses = passage.text.verses;
   const titles = useMemo(
@@ -134,13 +144,36 @@ export function VerseList({
     );
   }, [theme, language, verses, direction]);
   const selectedIndex = verses.findIndex((verse) => sameVerse(selected, keyOf(verse)));
-  const scrollIndex = verses.findIndex((verse) => sameVerse(selected ?? landing, keyOf(verse)));
-  useEffect(() => {
-    retries.current = 0;
-    if (scrollIndex > 0) {
-      list.current?.scrollToIndex({ index: scrollIndex, animated: false, viewPosition: 0.2 });
+  const placed = useRef<ListPlace | undefined>(undefined);
+  const inView = useRef<VerseKey | undefined>(undefined);
+  const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken<Verse>[] }) => {
+    inView.current = middleOf(viewableItems.map((token) => keyOf(token.item)));
+  }).current;
+  const scrollTo = (plan: ScrollPlan) => {
+    switch (plan.kind) {
+      case 'top':
+        list.current?.scrollToOffset({ offset: 0, animated: false });
+        return;
+      case 'end':
+        list.current?.scrollToEnd({ animated: false });
+        return;
+      case 'index':
+        list.current?.scrollToIndex({ index: plan.index, animated: false, viewPosition: plan.viewPosition });
+        return;
     }
-  }, [passage.reference, scrollIndex]);
+  };
+  const reading = passage.text.reading;
+  useLayoutEffect(() => {
+    const now: ListPlace = { chapter: passage.reference, reading, landing, selected };
+    const move = scrollMove(placed.current, now, inView.current);
+    placed.current = now;
+    const plan = move === undefined ? undefined : scrollPlan(move, verses);
+    if (plan !== undefined) {
+      retries.current = 0;
+      viewPosition.current = plan.kind === 'index' ? plan.viewPosition : viewPosition.current;
+      scrollTo(plan);
+    }
+  });
   return (
     <FlatList
       ref={list}
@@ -168,10 +201,12 @@ export function VerseList({
         requestAnimationFrame(() => {
           retries.current += 1;
           if (index < verses.length && retries.current <= maximumScrollRetries) {
-            list.current?.scrollToIndex({ index, animated: false, viewPosition: 0.2 });
+            list.current?.scrollToIndex({ index, animated: false, viewPosition: viewPosition.current });
           }
         });
       }}
+      onViewableItemsChanged={onViewableItemsChanged}
+      viewabilityConfig={viewability}
       initialNumToRender={20}
       windowSize={11}
       ListFooterComponent={footer}
@@ -188,6 +223,8 @@ export function VerseList({
 const emptySet: ReadonlySet<number> = new Set();
 
 const maximumScrollRetries = 3;
+
+const viewability = { itemVisiblePercentThreshold: 50 };
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'flex-start' },

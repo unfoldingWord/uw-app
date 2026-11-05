@@ -1,6 +1,7 @@
 import { useRouter, type Href } from 'expo-router';
 import { useCallback } from 'react';
 import type { LinkTarget } from '../../service';
+import { nextOpening } from './opening';
 
 export const studyRoutes = {
   study: '/study',
@@ -23,7 +24,7 @@ function storyHref(story: number, frame: number | undefined): Href {
 }
 
 export function passageHref(reference: string): Href {
-  return { pathname: studyRoutes.study, params: { reference } };
+  return { pathname: studyRoutes.study, params: { reference, opening: nextOpening() } };
 }
 
 export function shareHref(kind: 'passage' | 'article' | 'story', reference: string, language: string): Href {

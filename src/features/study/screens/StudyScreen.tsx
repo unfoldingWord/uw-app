@@ -28,6 +28,7 @@ import {
   type ChapterPlace,
   type VerseKey,
 } from './parts/passage';
+import { requestKey } from './parts/opening';
 import { shareHref, studyRoutes, useOpenTarget } from './parts/routes';
 import { StatePanel } from './parts/StatePanel';
 import { StudyHeader } from './parts/StudyHeader';
@@ -67,8 +68,9 @@ export default function StudyScreen() {
   const tabBarClearance = useTabBarClearance();
   const router = useRouter();
   const openTarget = useOpenTarget();
-  const params = useLocalSearchParams<{ reference?: string }>();
+  const params = useLocalSearchParams<{ reference?: string; opening?: string }>();
   const requested = asText(params.reference);
+  const opening = requestKey(requested, asText(params.opening));
   const [chosen, setChosen] = useState<string | undefined>(undefined);
   const [selected, setSelected] = useState<VerseKey | undefined>(() => requestedVerse(requested));
   const [original, setOriginal] = useState(false);
@@ -80,9 +82,9 @@ export default function StudyScreen() {
   const [audioFailure, setAudioFailure] = useState<string | undefined>(undefined);
   const [saveFailure, setSaveFailure] = useState<string | undefined>(undefined);
   const [room, setRoom] = useState(0);
-  const [seen, setSeen] = useState(requested);
-  if (seen !== requested) {
-    setSeen(requested);
+  const [seen, setSeen] = useState(opening);
+  if (seen !== opening) {
+    setSeen(opening);
     setChosen(undefined);
     setSelected(requestedVerse(requested));
     setFocused(undefined);

@@ -126,3 +126,80 @@ export function neighbours(
     next: index >= 0 && index < places.length - 1 ? places[index + 1] : undefined,
   };
 }
+
+export type ListPlace = {
+  readonly chapter: string;
+  readonly reading: string;
+  readonly landing: VerseKey | undefined;
+  readonly selected: VerseKey | undefined;
+};
+
+export type ScrollMove = { readonly verse: VerseKey; readonly position: 'near-top' | 'centre' };
+
+export type ScrollPlan =
+  | { readonly kind: 'top' }
+  | { readonly kind: 'end' }
+  | { readonly kind: 'index'; readonly index: number; readonly viewPosition: number };
+
+const viewPositions = { 'near-top': 0.2, centre: 0.5 } as const;
+
+export function scrollMove(
+  before: ListPlace | undefined,
+  now: ListPlace,
+  inView: VerseKey | undefined,
+): ScrollMove | undefined {
+  if (before === undefined || before.chapter !== now.chapter) {
+    const verse = now.selected ?? now.landing;
+    return verse === undefined ? undefined : { verse, position: 'near-top' };
+  }
+  if (before.reading !== now.reading) {
+    const verse = before.selected ?? now.selected ?? inView;
+    return verse === undefined ? undefined : { verse, position: 'centre' };
+  }
+  if (now.selected !== undefined && !sameVerse(before.selected, now.selected)) {
+    return { verse: now.selected, position: 'near-top' };
+  }
+  return undefined;
+}
+
+function pointOf(chapter: number, verse: number): number {
+  return chapter * 1000 + verse;
+}
+
+export function indexNear(verses: readonly Verse[], wanted: VerseKey): number {
+  const covering = verses.findIndex(
+    (verse) =>
+      verse.chapter === wanted.chapter &&
+      verse.verse <= wanted.verse &&
+      wanted.verse <= (verse.through ?? verse.verse),
+  );
+  if (covering >= 0) {
+    return covering;
+  }
+  const target = pointOf(wanted.chapter, wanted.verse);
+  return verses.reduce(
+    (best, verse, index) => {
+      const distance = Math.abs(pointOf(verse.chapter, verse.verse) - target);
+      return best.index < 0 || distance < best.distance ? { index, distance } : best;
+    },
+    { index: -1, distance: 0 },
+  ).index;
+}
+
+export function scrollPlan(move: ScrollMove, verses: readonly Verse[]): ScrollPlan | undefined {
+  const index = indexNear(verses, move.verse);
+  if (index < 0) {
+    return undefined;
+  }
+  if (index === 0) {
+    return { kind: 'top' };
+  }
+  if (move.position === 'centre' && index === verses.length - 1) {
+    return { kind: 'end' };
+  }
+  return { kind: 'index', index, viewPosition: viewPositions[move.position] };
+}
+
+export function middleOf(keys: readonly VerseKey[]): VerseKey | undefined {
+  return keys[Math.floor(keys.length / 2)];
+}
