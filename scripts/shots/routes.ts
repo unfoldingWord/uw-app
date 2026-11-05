@@ -122,6 +122,7 @@ export const shots: readonly Shot[] = [
   { name: 'study-search-reference', path: '/study/search', type: 'Ruth 1:16', modes: leftToRight },
   { name: 'study-audio', path: '/study?reference=RUT%201:16', press: 'Play audio', modes: leftToRight },
   { name: 'study-word-links', path: '/study?reference=RUT%201:16', press: 'Word links', modes: leftToRight },
+  { name: 'study-copy', path: '/study?reference=RUT%201:16', press: 'Copy Ruth 1:16', modes: leftToRight },
   { name: 'languages', path: '/languages' },
   { name: 'settings', path: '/settings' },
   { name: 'about', path: '/about' },

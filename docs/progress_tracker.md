@@ -3,6 +3,26 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-11-05 Copy verses (#84) and the sheet on web, sim, checks and web shots only
+
+Node v22. Nothing ran on a phone, an emulator or a simulator. The `expo-clipboard` adapter has never written to a
+real clipboard, and the long press that extends a selection to a range has never been pressed on a touch screen;
+the web shots press the Copy button once and never long-press a verse.
+
+- **Red first:** `SH-4.copy-verses-with-reference`, copied into a clean checkout of `9e2646d`, failed with
+  `study.copyReference is not a function`, then passed here. The port contract case for the clipboard fails, as
+  intended, against a memory adapter wrapped to refuse multi-line text (`contract.test.ts`). The cases in
+  `copy.test.ts`, `passage.test.ts` (`inSpan`), `usfm.test.ts` (the short book name) and the memory adapter test
+  were written with the code and were not observed red on their own.
+- **Dependency:** `expo-clipboard` ~57.0.2 (MIT). Its Android manifest, and the one in its prebuilt `.aar`, adds a
+  non-exported file provider and no `uses-permission`; the `permissions` check passes.
+- **Verify:** `npm run verify` green with a private `TMPDIR`: 919 tests in 99 files, 9 of 9 checks, 74 of 74
+  scenarios, trace 51 Must requirements with 0 unproven, 21 fixture burritos, both bundles with no `sim/` module.
+- **Web shots:** `npm run shots -- --only study-passage,study-copy --modes light,dark,reduced-blur` (with
+  `TMPDIR=/tmp/claude-0`): 6 shots, no page error, 0 targets under 44 px, 0 text escaping its parent. The sheet
+  now opens on web (the blank `study-passage` above came from `sendAccessibilityEvent`); after Copy it shows
+  "Copied Ruth 1:16." and the reference-format chips. Not checked: rtl, ur, hi and large-text for these two shots.
+
 ## 2026-11-05 Study reading: chapter arrows, verse kept across readings, helps reopen (#83, #101, #82), sim, checks and web shots only
 
 Node v22. Nothing ran on a phone, an emulator or a simulator. The scroll on a chapter change, the centred verse
