@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuroraField, StatusBar } from '@shared/glass';
 import { referenceValues } from '@shared/glass/referenceValues';
@@ -9,6 +9,16 @@ import { useTabBarGrowth } from './tabBarHeight';
 
 export type ScreenClearance = 'tabs' | 'footer' | 'none';
 
+export type ScreenListFrame = {
+  readonly props: {
+    readonly style: ViewStyle;
+    readonly contentContainerStyle: ViewStyle;
+    readonly keyboardShouldPersistTaps: 'handled';
+    readonly showsVerticalScrollIndicator: false;
+  };
+  readonly gap: number;
+};
+
 export type ScreenScaffoldProps = {
   header?: ReactNode;
   footer?: ReactNode;
@@ -16,6 +26,7 @@ export type ScreenScaffoldProps = {
   scroll?: boolean;
   dense?: boolean;
   clearance?: ScreenClearance;
+  list?: (frame: ScreenListFrame) => ReactNode;
   children?: ReactNode;
 };
 
@@ -32,6 +43,7 @@ export function ScreenScaffold({
   scroll = true,
   dense = false,
   clearance = 'none',
+  list,
   children,
 }: ScreenScaffoldProps) {
   const theme = useTheme();
@@ -53,7 +65,17 @@ export function ScreenScaffold({
     <AuroraField intensity={dense ? referenceValues.auroraField.denseIntensity : undefined}>
       <StatusBar />
       {header}
-      {scroll ? (
+      {list !== undefined ? (
+        list({
+          props: {
+            style: styles.fill,
+            contentContainerStyle: { ...content, gap: 0 },
+            keyboardShouldPersistTaps: 'handled',
+            showsVerticalScrollIndicator: false,
+          },
+          gap: content.gap,
+        })
+      ) : scroll ? (
         <ScrollView
           style={styles.fill}
           contentContainerStyle={content}

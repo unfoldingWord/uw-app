@@ -103,6 +103,8 @@ export const shots: readonly Shot[] = [
   { name: 'study-story', path: '/study/story/1' },
   { name: 'formation', path: '/formation' },
   { name: 'formation-groups', path: '/formation/groups' },
+  { name: 'formation-training', path: '/formation/training' },
+  { name: 'formation-manual', path: '/formation/manual/translate' },
   { name: 'formation-session', path: '/formation/session/foundations/1' },
   {
     name: 'formation-session-end',
