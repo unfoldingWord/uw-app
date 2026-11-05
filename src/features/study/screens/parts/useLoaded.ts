@@ -1,8 +1,10 @@
 import { useFocusEffect } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { createLoader, type LoaderState } from './loader';
 
 export type Loaded<T> = {
   readonly value: T | undefined;
+  readonly loading: boolean;
   readonly reload: () => Promise<void>;
 };
 
@@ -10,23 +12,16 @@ export function useLoaded<T>(
   load: () => Promise<T>,
   subscribe?: (listener: () => void) => () => void,
 ): Loaded<T> {
-  const [value, setValue] = useState<T | undefined>(undefined);
-  const generation = useRef(0);
-  const reload = useCallback(async () => {
-    generation.current += 1;
-    const mine = generation.current;
-    const next = await load();
-    if (mine === generation.current) {
-      setValue(next);
-    }
-  }, [load]);
+  const [state, setState] = useState<LoaderState<T>>({ value: undefined, loading: false });
+  const [loader] = useState(() => createLoader<T>(setState));
+  const reload = useCallback(() => loader.reload(load), [loader, load]);
   useFocusEffect(
     useCallback(() => {
       void reload();
       return () => {
-        generation.current += 1;
+        loader.cancel();
       };
-    }, [reload]),
+    }, [loader, reload]),
   );
   useEffect(
     () =>
@@ -35,5 +30,5 @@ export function useLoaded<T>(
       }),
     [subscribe, reload],
   );
-  return { value, reload };
+  return { value: state.value, loading: state.loading, reload };
 }

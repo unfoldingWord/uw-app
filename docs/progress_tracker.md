@@ -3,6 +3,22 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-11-05 Loading feedback (#99, #86), tests and checks only
+
+Node v22. Nothing ran on a phone, an emulator or a simulator, and no screen was rendered: light, dark,
+reduced-blur and Reduce Motion modes are not checked, and the sim has no slowed-adapter run (`PERF_LATENCY_MS`) of
+the six gaps in #99.
+
+- **Red first:** `src/shared/ui/useAsyncValue.test.ts` (loading from each request until it or a newer one settles,
+  known value kept), `src/features/study/screens/parts/loader.test.ts` (loading on reload, off on settle, failure
+  and cancel; stale value kept) and the wave case in `src/shared/glass/geometry.test.ts` failed (`isLoading is not
+  a function`, `Cannot find module './loader'`, `waveDelays is not a function`) before the code, and pass after.
+- **Verify:** `npm run verify` green: 842 tests, 9 checks, 63 of 63 scenarios, 21 fixture burritos, both bundles.
+  The live contract was skipped offline.
+- **Not verified:** the `DotRing` wave on the native driver (seven `Animated.View` layers, delayed loops), the
+  `ReloadVeil` over Library and Article, the Home and Share loaders, and the `ResultRow` busy pulse. All need a
+  phone and the three visual modes.
+
 ## 2026-10-20 P2 native unzip, sim and checks only
 
 Node v22.22.2. Nothing ran on a phone, an emulator or a simulator in this entry, and the Kotlin and Swift in
