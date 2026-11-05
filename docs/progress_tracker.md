@@ -18,6 +18,10 @@ Android and iOS are all unverified.
   placed each quote; this supports the issue's inference that #91 is in the screen, not in `attachQuote`.
 - **Verify:** `npm run verify` green: 848 tests, 9 checks, 63 of 63 scenarios, 21 fixture burritos, both
   bundles; the live contract was skipped offline.
+- **Review follow-up:** a request that names a verse selects it again, so the sheet opens at peek on a verse
+  reached from a search hit, a note link or a Home bookmark; `requestedVerse` in `parts/passage.test.ts` failed
+  first (3 failed) and then passed. The expanded detent hiding the verse list is recorded as a design question in
+  the proposal. Not run on a device.
 
 ## 2026-10-20 P2 native unzip, sim and checks only
 

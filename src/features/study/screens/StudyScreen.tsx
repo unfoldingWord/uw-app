@@ -23,6 +23,7 @@ import {
   highlightedIn,
   keyOf,
   neighbours,
+  requestedVerse,
   sameVerse,
   type ChapterPlace,
   type VerseKey,
@@ -69,7 +70,7 @@ export default function StudyScreen() {
   const params = useLocalSearchParams<{ reference?: string }>();
   const requested = asText(params.reference);
   const [chosen, setChosen] = useState<string | undefined>(undefined);
-  const [selected, setSelected] = useState<VerseKey | undefined>(undefined);
+  const [selected, setSelected] = useState<VerseKey | undefined>(() => requestedVerse(requested));
   const [original, setOriginal] = useState(false);
   const [readingChanges, setReadingChanges] = useState(0);
   const [picking, setPicking] = useState(false);
@@ -83,7 +84,8 @@ export default function StudyScreen() {
   if (seen !== requested) {
     setSeen(requested);
     setChosen(undefined);
-    setSelected(undefined);
+    setSelected(requestedVerse(requested));
+    setFocused(undefined);
   }
   const words = service.words();
 

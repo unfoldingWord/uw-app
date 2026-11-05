@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Provenance } from '@lib/domain/provenance';
 import type { Note, WordLink, WordSpan } from '../../service';
-import { focusedSpans, helpKey, placementOf, type VerseHelps } from './passage';
+import { focusedSpans, helpKey, placementOf, requestedVerse, type VerseHelps } from './passage';
 
 function provenance(resource: string): Provenance {
   return {
@@ -83,5 +83,21 @@ describe('ST-2 a tapped help highlights its own words (issue #91)', () => {
     expect(placementOf(note('a5', 'en_tn', 'λόγος', [{ chapter: 1, verse: 17, tokens: [0] }]), at)).toBe(
       'not-found',
     );
+  });
+});
+
+describe('ST-2 a verse opened from a link is selected, so its helps open', () => {
+  it('selects the verse a request names', () => {
+    expect(requestedVerse('RUT 1:16')).toEqual({ chapter: 1, verse: 16 });
+  });
+
+  it('selects the first verse of a requested range', () => {
+    expect(requestedVerse('RUT 1:16-17')).toEqual({ chapter: 1, verse: 16 });
+  });
+
+  it('selects nothing for a chapter, no request or an unreadable one', () => {
+    expect(requestedVerse('RUT 1')).toBeUndefined();
+    expect(requestedVerse(undefined)).toBeUndefined();
+    expect(requestedVerse('not a reference')).toBeUndefined();
   });
 });

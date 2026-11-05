@@ -28,8 +28,9 @@ surface, and the only slide-up is the book picker's `Modal`. A sheet is a shared
 - **`src/shared/glass/sheet.ts`**: the pure geometry (`sheetHeights`, `detentHeight`, `dragHeight`,
   `settleDetent`), tested in Node.
 - **Study**: no verse selected, no sheet, and the text fills the screen; tapping a verse opens the sheet at peek
-  with that verse's helps; tapping another updates it in place; dismissing clears the selection. The landing
-  verse is still scrolled to, but no longer selected for the panel.
+  with that verse's helps; tapping another updates it in place; dismissing clears the selection. A request that
+  names a verse (a search hit, a note link, a Home bookmark) selects it, so the sheet opens at peek on that verse;
+  a request for a chapter opens with nothing selected.
 
 ## Alternatives
 
@@ -49,3 +50,7 @@ surface, and the only slide-up is the book picker's `Modal`. A sheet is a shared
   audio bar, the grabber is `--sp-13` by `--sp-2` in `--text-faint`, the drag starts after `--sp-3`, and a
   release is projected over `--dur-fast`. Claude Design should specify the sheet (heights, grabber, motion) and
   the code will follow it.
+- Section 7, an open design question: because expanded is all the room, the verse list above has no height at
+  the expanded detent, so the selected verse and the words "Show in the verse" highlights are visible only at
+  peek. Claude Design should decide whether expanded leaves the selected verse visible, for example by stopping
+  one verse row short of the room.

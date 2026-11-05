@@ -98,6 +98,18 @@ export function chapterOf(reference: string): { book: string; chapter: number } 
   return parsed.ok ? { book: parsed.reference.book, chapter: parsed.reference.start.chapter } : undefined;
 }
 
+export function requestedVerse(reference: string | undefined): VerseKey | undefined {
+  if (reference === undefined) {
+    return undefined;
+  }
+  const parsed = parseReference(reference);
+  if (!parsed.ok) {
+    return undefined;
+  }
+  const { chapter, verse } = parsed.reference.start;
+  return verse === undefined ? undefined : { chapter, verse };
+}
+
 export type ChapterPlace = { readonly book: string; readonly chapter: number };
 
 export function neighbours(
