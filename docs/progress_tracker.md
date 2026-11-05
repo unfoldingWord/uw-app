@@ -23,6 +23,39 @@ Android and iOS are all unverified.
   first (3 failed) and then passed. The expanded detent hiding the verse list is recorded as a design question in
   the proposal. Not run on a device.
 
+## 2026-11-05 Loading feedback (#99, #86), tests and checks only
+
+Node v22. Nothing ran on a phone, an emulator or a simulator, and no screen was rendered: light, dark,
+reduced-blur and Reduce Motion modes are not checked, and the sim has no slowed-adapter run (`PERF_LATENCY_MS`) of
+the six gaps in #99.
+
+- **Red first:** `src/shared/ui/useAsyncValue.test.ts` (loading from each request until it or a newer one settles,
+  known value kept), `src/features/study/screens/parts/loader.test.ts` (loading on reload, off on settle, failure
+  and cancel; stale value kept) and the wave case in `src/shared/glass/geometry.test.ts` failed (`isLoading is not
+  a function`, `Cannot find module './loader'`, `waveDelays is not a function`) before the code, and pass after.
+- **Verify:** `npm run verify` green: 842 tests, 9 checks, 63 of 63 scenarios, 21 fixture burritos, both bundles.
+  The live contract was skipped offline.
+- **Not verified:** the `DotRing` wave on the native driver (seven `Animated.View` layers, delayed loops), the
+  `ReloadVeil` over Library and Article, the Home and Share loaders, and the `ResultRow` busy pulse. All need a
+  phone and the three visual modes.
+- **Review follow-up:** polled re-reads in `useAsyncValue` and focus re-reads in `useLoaded` are now quiet (no
+  `loading`, no veil, no announcement); the new cases in both test files failed first (`expected true to be false`,
+  `loading: true` where `false` was expected) and pass after. `docs/exceptions.md` records the `DotRing` drift.
+
+## 2026-11-05 Decision proposals for #92, #93, #94 and #100, docs only
+
+Node v22.22.2. Four proposals under `docs/proposals/2026-11-05-*.md`, each awaiting the requirements owner; no
+code, no PRD decision-log row (no decision is taken yet). Every file and line they cite was read on `main` at
+d53a075.
+
+- **Verify:** `npm run verify` green: 836 tests, 9 checks, 63 of 63 scenarios, 21 fixture burritos, both
+  bundles. The live contract was skipped, offline.
+- **Not verified:** nothing in the proposals ran on a phone. The APK figures in the performance proposal come
+  from issue #100 (measured from `unfoldingWord-v0.0.2-native-unzip.1.apk`), not from a run in this entry.
+- **Decisions, follow-up:** the owner approved the recommended option of every question on 2026-11-05 ("Go with
+  your suggestions above"). Decision-log rows 98 to 103 and ADR 0014 record them, with rows 102 and 103 for the
+  Training renumbering (#105) and the Image Pack with the first language (#107). No code changed.
+
 ## 2026-10-20 P2 native unzip, sim and checks only
 
 Node v22.22.2. Nothing ran on a phone, an emulator or a simulator in this entry, and the Kotlin and Swift in

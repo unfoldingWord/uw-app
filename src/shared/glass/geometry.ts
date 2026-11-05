@@ -2,11 +2,12 @@ import { referenceValues } from './referenceValues';
 
 export type RingPoint = { x: number; y: number; opacity: number };
 
-export function dotRingPoints(size: number, rings: number, dots: number): RingPoint[] {
+export function dotRingBands(size: number, rings: number, dots: number): RingPoint[][] {
   const { innerBand, innerDensity, bandTwist, fade } = referenceValues.dotRing;
-  const points: RingPoint[] = [];
+  const bands: RingPoint[][] = [];
   const steps = Math.max(1, rings - 1);
   for (let ring = 0; ring < rings; ring += 1) {
+    const points: RingPoint[] = [];
     const reach = (size / 2) * (innerBand + (1 - innerBand) * (ring / steps));
     const count = Math.round(dots * (innerDensity + (1 - innerDensity) * (ring / steps)));
     for (let dot = 0; dot < count; dot += 1) {
@@ -17,8 +18,9 @@ export function dotRingPoints(size: number, rings: number, dots: number): RingPo
         opacity: fade + (1 - fade) * (1 - ring / rings),
       });
     }
+    bands.push(points);
   }
-  return points;
+  return bands;
 }
 
 export function filamentPath(height: number, width: number, branch: boolean): string {

@@ -1,14 +1,19 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, View } from 'react-native';
 import { Icon, type IconName } from '@shared/glass';
+import { useKeyframeLoop } from '@shared/glass/motion';
+import { createPressGate } from '@shared/glass/pressGate';
+import { referenceValues } from '@shared/glass/referenceValues';
 import { useTheme } from '@shared/theme';
 import { Say } from './Say';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export type ResultRowProps = {
   icon: IconName;
   title: string;
   detail: string;
-  onPress: () => void;
+  onPress: () => void | Promise<void>;
   quiet?: boolean;
 };
 
@@ -16,12 +21,24 @@ export function ResultRow({ icon, title, detail, onPress, quiet = false }: Resul
   const theme = useTheme();
   const [focused, setFocused] = useState(false);
   const [pressed, setPressed] = useState(false);
+  const [pending, setPending] = useState(false);
+  const [gate] = useState(() => createPressGate(setPending));
+  const pulse = useKeyframeLoop(
+    theme.motion.keyframes.breathe,
+    referenceValues.dotRing.breatheMs,
+    theme.motion.easing.easeLiquid,
+    pending && !theme.reducedMotion,
+  );
   return (
-    <Pressable
+    <AnimatedPressable
       accessibilityRole="button"
       accessibilityLabel={title}
       accessibilityHint={detail}
-      onPress={onPress}
+      accessibilityState={{ busy: pending, disabled: pending }}
+      disabled={pending}
+      onPress={() => {
+        gate.press(onPress);
+      }}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
       onPressIn={() => setPressed(true)}
@@ -38,6 +55,7 @@ export function ResultRow({ icon, title, detail, onPress, quiet = false }: Resul
           borderColor: (quiet ? theme.border.borderGlass : theme.border.borderGlassSoft).color,
           boxShadow: focused ? theme.shadow.glowFocus.css : undefined,
           transform: [{ scale: pressed ? theme.motion.pressScale : 1 }],
+          opacity: pulse.value('opacity'),
         },
       ]}
     >
@@ -67,7 +85,7 @@ export function ResultRow({ icon, title, detail, onPress, quiet = false }: Resul
         </Say>
       </View>
       {quiet ? <Icon name="chevronRight" /> : null}
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 
