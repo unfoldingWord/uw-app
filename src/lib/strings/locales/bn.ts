@@ -565,4 +565,10 @@ export const bn: LocaleTable = {
 
   'formation.training.missing': 'এই নির্দেশিকাটি খুঁজে পাওয়া যাচ্ছে না।',
   'formation.training.open': 'প্রশিক্ষণে যান',
+  'languages.downloaded.title': 'এই ফোনে',
+  'languages.downloaded.show': 'এই ফোনে থাকা {language} ভাষার রিসোর্সগুলো দেখুন',
+  'languages.resource.published': 'প্রকাশক {publisher}',
+  'languages.resource.version': 'সংস্করণ {version}',
+  'languages.resource.source': 'অনলাইনে উৎস দেখুন',
+  'languages.resource.missing': 'এই রিসোর্সটি আর এই ফোনে নেই।',
 };

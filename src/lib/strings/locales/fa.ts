@@ -570,4 +570,10 @@ export const fa: LocaleTable = {
 
   'formation.training.missing': 'این راهنما پیدا نمی‌شود.',
   'formation.training.open': 'رفتن به آموزش',
+  'languages.downloaded.title': 'روی این گوشی',
+  'languages.downloaded.show': 'دیدن منابع {language} روی این گوشی',
+  'languages.resource.published': 'منتشرشده توسط {publisher}',
+  'languages.resource.version': 'نسخه {version}',
+  'languages.resource.source': 'دیدن منبع به‌صورت آنلاین',
+  'languages.resource.missing': 'این منبع دیگر روی این گوشی نیست.',
 };

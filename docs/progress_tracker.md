@@ -3,6 +3,23 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-11-05 Downloaded languages and their resources (#79, #80), sim, checks and web shots only
+
+Node v22. Nothing ran on a phone, an emulator or a simulator. Pushing the new `/downloaded/...` routes from the
+Languages modal, opening the DCS release page in the system browser, and VoiceOver or TalkBack on the short list's
+row and its resources button are unverified on a device.
+
+- **Red first:** `LA-5.downloaded-languages-switch-in-one-tap` and `LA-6.downloaded-resources-name-version-source`
+  failed before the service had `downloaded`, `resources` and `resource` (`languages.downloaded is not a
+  function`), then passed. The licence expectation was corrected once to the statement the fixture carries.
+- **Verify:** `npm run verify` green with a private `TMPDIR`: 896 tests in 97 files, 9 checks, 74 of 74 scenarios,
+  trace 51 Must requirements with 0 unproven, 21 fixture burritos, both bundles.
+- **Web shots:** `npm run shots -- --only languages,languages-downloaded,languages-resource` in light, dark,
+  reduced blur, RTL, Urdu, Hindi and large text: 21 screenshots, 0 targets under 44 px, 0 text escaping its parent.
+  The shot device has one language, so the short list was seen with one row only; two rows and the switch were
+  proven in the scenario, not in a shot. `TMPDIR` under the scratchpad made Chromium's socket path too long, so the
+  shots ran with `TMPDIR=/tmp/claude-0` against the export the first run built.
+
 ## 2026-11-05 One story reader (#96, #88, #89, #97), sim, checks and web shots only
 
 Node v22. Nothing ran on a phone, an emulator or a simulator: no Android SDK, Xcode or KVM in the sandbox. The

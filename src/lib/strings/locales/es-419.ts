@@ -613,4 +613,10 @@ export const es419: LocaleTable = {
 
   'formation.training.missing': 'No se encuentra este manual.',
   'formation.training.open': 'Ir a Capacitación',
+  'languages.downloaded.title': 'En este teléfono',
+  'languages.downloaded.show': 'Ver los recursos en {language} que hay en este teléfono',
+  'languages.resource.published': 'Publicado por {publisher}',
+  'languages.resource.version': 'Versión {version}',
+  'languages.resource.source': 'Ver la fuente en línea',
+  'languages.resource.missing': 'Este recurso ya no está en este teléfono.',
 };

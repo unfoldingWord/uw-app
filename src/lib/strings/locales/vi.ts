@@ -545,4 +545,10 @@ export const vi: LocaleTable = {
 
   'formation.training.missing': 'Không tìm thấy sổ tay này.',
   'formation.training.open': 'Đến Huấn luyện',
+  'languages.downloaded.title': 'Trên điện thoại này',
+  'languages.downloaded.show': 'Xem tài nguyên {language} trên điện thoại này',
+  'languages.resource.published': 'Xuất bản bởi {publisher}',
+  'languages.resource.version': 'Phiên bản {version}',
+  'languages.resource.source': 'Xem nguồn trực tuyến',
+  'languages.resource.missing': 'Tài nguyên này không còn trên điện thoại này.',
 };

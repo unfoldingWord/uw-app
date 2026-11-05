@@ -580,4 +580,10 @@ export const sw: LocaleTable = {
 
   'formation.training.missing': 'Mwongozo huu haupatikani.',
   'formation.training.open': 'Nenda kwenye Mafunzo',
+  'languages.downloaded.title': 'Kwenye simu hii',
+  'languages.downloaded.show': 'Ona rasilimali za {language} kwenye simu hii',
+  'languages.resource.published': 'Imechapishwa na {publisher}',
+  'languages.resource.version': 'Toleo {version}',
+  'languages.resource.source': 'Ona chanzo mtandaoni',
+  'languages.resource.missing': 'Rasilimali hii haipo tena kwenye simu hii.',
 };

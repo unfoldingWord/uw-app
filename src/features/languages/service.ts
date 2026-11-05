@@ -7,6 +7,7 @@ import {
 } from '@lib/catalog/types';
 import type { FailureCode } from '@lib/domain/failures';
 import { imagePackId, languagePackId, originalPackId, type PackId } from '@lib/domain/pack';
+import { sourceUrlOf } from '@lib/domain/provenance';
 import { resourceKey } from '@lib/domain/release';
 import type { Kernel } from '@lib/kernel';
 import {
@@ -16,6 +17,7 @@ import {
   type PackUpdate,
   type RemoveOutcome,
   type Replacement,
+  type InstalledBurrito,
   type InstalledPack,
   type Storage,
 } from '@lib/packs/types';
@@ -33,6 +35,27 @@ export type LanguageRow = {
   readonly selected: boolean;
   readonly installing: boolean;
   readonly pack: PackId;
+};
+
+export type DownloadedLanguage = {
+  readonly language: string;
+  readonly autonym: string;
+  readonly englishName: string;
+  readonly resources: string;
+  readonly show: string;
+  readonly selected: boolean;
+};
+
+export type DownloadedResource = {
+  readonly publisher: string;
+  readonly resource: string;
+  readonly title: string;
+  readonly detail: string;
+  readonly version: string;
+  readonly published: string;
+  readonly licence: string;
+  readonly origin: string;
+  readonly source: string;
 };
 
 export type OptionalDownload = {
@@ -67,6 +90,9 @@ export type LanguagesService = {
   emptyCause(online: boolean | undefined): EmptyCause | undefined;
   overline(): string;
   current(): string | undefined;
+  downloaded(): readonly DownloadedLanguage[];
+  resources(language: string): readonly DownloadedResource[];
+  resource(language: string, publisher: string, resource: string): DownloadedResource | undefined;
   select(language: string): Promise<boolean>;
   download(language: string): Promise<InstallOutcome>;
   missing(): Promise<readonly MissingResource[]>;
@@ -157,6 +183,63 @@ function rowOf(
     installing: moment.installing.has(pack),
     pack,
   };
+}
+
+const readingKinds: ReadonlySet<InstalledPack['kind']> = new Set(['language', 'audio']);
+
+function burritosOf(installed: readonly InstalledPack[], language: string): readonly InstalledBurrito[] {
+  const seen = new Set<string>();
+  return installed
+    .filter((pack) => pack.language === language && readingKinds.has(pack.kind))
+    .flatMap((pack) => pack.burritos)
+    .filter((burrito) => {
+      const key = `${burrito.provenance.publisher}/${burrito.provenance.resource}`;
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
+}
+
+function resourceOf(words: LanguagesWords, burrito: InstalledBurrito): DownloadedResource {
+  const { publisher, resource, title, tag, licence } = burrito.provenance;
+  return {
+    publisher,
+    resource,
+    title,
+    detail: words.t('languages.release', { publisher, version: tag }),
+    version: words.t('languages.resource.version', { version: tag }),
+    published: words.t('languages.resource.published', { publisher }),
+    licence,
+    origin: words.t(`common.source.${burrito.source}`),
+    source: sourceUrlOf(burrito.provenance),
+  };
+}
+
+function downloadedOf(kernel: Kernel, words: LanguagesWords): readonly DownloadedLanguage[] {
+  const installed = kernel.packs.installed();
+  const selected = kernel.preferences.contentLanguage();
+  const listed = kernel.catalog.languages();
+  const present = installed.flatMap((pack) =>
+    pack.kind === 'language' && pack.language !== undefined ? [pack.language] : [],
+  );
+  const ordered = [
+    ...listed.map((item) => item.language).filter((language) => present.includes(language)),
+    ...present.filter((language) => !listed.some((item) => item.language === language)).sort(),
+  ];
+  return ordered.map((language) => {
+    const named = listed.find((item) => item.language === language);
+    const autonym = named?.autonym ?? language;
+    return {
+      language,
+      autonym,
+      englishName: named?.englishName ?? language,
+      resources: words.plural('languages.resources', burritosOf(installed, language).length),
+      show: words.t('languages.downloaded.show', { language: autonym }),
+      selected: selected === language,
+    };
+  });
 }
 
 function questionOf(words: LanguagesWords, replaces: readonly Replacement[]): ReplaceQuestion | undefined {
@@ -250,6 +333,17 @@ export function createLanguagesService(kernel: Kernel): LanguagesService {
         : current.plural('languages.overline', kernel.catalog.languages().length, { language: autonym });
     },
     current: () => kernel.preferences.contentLanguage(),
+    downloaded: () => downloadedOf(kernel, words()),
+    resources(language) {
+      const current = words();
+      return burritosOf(kernel.packs.installed(), language).map((burrito) => resourceOf(current, burrito));
+    },
+    resource(language, publisher, resource) {
+      const found = burritosOf(kernel.packs.installed(), language).find(
+        (burrito) => burrito.provenance.publisher === publisher && burrito.provenance.resource === resource,
+      );
+      return found === undefined ? undefined : resourceOf(words(), found);
+    },
     select: (language) => kernel.preferences.set('study.language', language),
     download(language) {
       const withPictures = picturesFollow(kernel.catalog.all(), kernel.packs.installed(), language);

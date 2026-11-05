@@ -569,4 +569,10 @@ export const ur: LocaleTable = {
 
   'formation.training.missing': 'یہ رہنما کتاب نہیں مل سکی۔',
   'formation.training.open': 'تربیت پر جائیں',
+  'languages.downloaded.title': 'اس فون پر',
+  'languages.downloaded.show': 'اس فون پر {language} کے وسائل دیکھیں',
+  'languages.resource.published': 'ناشر {publisher}',
+  'languages.resource.version': 'ورژن {version}',
+  'languages.resource.source': 'ماخذ آن لائن دیکھیں',
+  'languages.resource.missing': 'یہ وسیلہ اب اس فون پر نہیں ہے۔',
 };

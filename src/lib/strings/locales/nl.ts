@@ -587,4 +587,10 @@ export const nl: LocaleTable = {
 
   'formation.training.missing': 'Deze handleiding is niet te vinden.',
   'formation.training.open': 'Naar Training',
+  'languages.downloaded.title': 'Op deze telefoon',
+  'languages.downloaded.show': 'Bekijk de bronnen in het {language} op deze telefoon',
+  'languages.resource.published': 'Uitgegeven door {publisher}',
+  'languages.resource.version': 'Versie {version}',
+  'languages.resource.source': 'Bekijk de bron online',
+  'languages.resource.missing': 'Deze bron staat niet meer op deze telefoon.',
 };
