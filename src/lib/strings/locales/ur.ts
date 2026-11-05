@@ -490,7 +490,6 @@ export const ur: LocaleTable = {
   'study.noLanguage.action': 'زبان منتخب کریں',
   'library.download': '{resource} ڈاؤن لوڈ کریں',
   'library.onPhone': 'اس فون پر',
-  'search.fullText.inSettings': 'اسے ترتیبات میں آن کریں، اور فہرست اسی فون پر رہتی ہے۔',
   'study.frame.picture': 'منظر {number} کی تصویر',
   'transfer.app.ready': 'ایپ اس فون پر آ گئی ہے ({size}) اور انسٹال کے لیے تیار ہے۔',
   'transfer.network': 'پہلے دونوں فون ایک ہی وائی فائی یا ہاٹ اسپاٹ سے جوڑیں۔',

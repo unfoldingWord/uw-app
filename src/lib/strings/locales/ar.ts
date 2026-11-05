@@ -554,7 +554,6 @@ export const ar: LocaleTable = {
   'study.noLanguage.action': 'اختر لغة',
   'library.download': 'تنزيل {resource}',
   'library.onPhone': 'على هذا الهاتف',
-  'search.fullText.inSettings': 'فعِّله من الإعدادات، ويبقى الفهرس على هذا الهاتف.',
   'study.frame.picture': 'صورة المشهد {number}',
   'transfer.app.ready': 'وصل التطبيق إلى هذا الهاتف ({size}) وهو جاهز للتثبيت.',
   'transfer.network': 'صِل الهاتفين أولًا بشبكة Wi-Fi نفسها أو نقطة الاتصال نفسها.',

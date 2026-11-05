@@ -477,7 +477,6 @@ export const id: LocaleTable = {
   'study.noLanguage.action': 'Pilih bahasa',
   'library.download': 'Unduh {resource}',
   'library.onPhone': 'Di ponsel ini',
-  'search.fullText.inSettings': 'Aktifkan di Pengaturan, dan indeksnya tetap di ponsel ini.',
   'study.frame.picture': 'Gambar untuk bingkai {number}',
   'transfer.app.ready': 'Aplikasi sudah sampai di ponsel ini ({size}) dan siap dipasang.',
   'transfer.network': 'Hubungkan kedua ponsel ke Wi-Fi atau hotspot yang sama terlebih dahulu.',

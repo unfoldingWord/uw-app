@@ -21,6 +21,13 @@ reduced-blur, RTL and the largest text size were not checked on these screens.
   on Android edge to edge and on iOS; that the notes field and the line being typed stay above the keyboard; that
   the dock and the floating footer hide while typing; the `SectionList` scroll on a low-end phone. Each needs a
   device run.
+- **Review follow-up:** a wanted index left unbuilt is queued again on start, so after a restart it reads
+  `waiting`, then `built` or `failed` with Try again (`ST-9.f`, red first: `a wanted index is never off after a
+  restart`); turning indexes on settles every language and records a write that fails as that language's failure
+  (corpus test red first: the promise rejected); the keyboard reveal clamps to the scrollable range and reads the
+  offset from a throttled `onScroll` (four new pure tests, not run on a device); `search.fullText.inSettings`
+  removed after a grep found no reference. `npm run verify` green: 92 test files, 853 tests, 9 checks, 69 of 69
+  scenarios, 21 fixture burritos, both bundles.
 
 ## 2026-10-20 P2 native unzip, sim and checks only
 

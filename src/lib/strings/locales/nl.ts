@@ -506,7 +506,6 @@ export const nl: LocaleTable = {
   'study.noLanguage.action': 'Kies een taal',
   'library.download': '{resource} downloaden',
   'library.onPhone': 'Op deze telefoon',
-  'search.fullText.inSettings': 'Zet het aan in Instellingen, en de index blijft op deze telefoon.',
   'study.frame.picture': 'Afbeelding bij beeld {number}',
   'transfer.app.ready': 'De app staat nu op deze telefoon ({size}) en is klaar om te installeren.',
   'transfer.network': 'Zet beide telefoons eerst op hetzelfde wifi-netwerk of dezelfde hotspot.',

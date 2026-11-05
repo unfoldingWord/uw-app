@@ -9,7 +9,7 @@ import {
   type ScrollView,
   type View,
 } from 'react-native';
-import { keyboardOverlap, revealDistance } from './keyboardInset';
+import { keyboardOverlap, revealDistance, revealOffset } from './keyboardInset';
 
 type FrameSpan = { readonly top: number; readonly bottom: number };
 
@@ -18,8 +18,12 @@ export type KeyboardInset = {
   readonly scroll: RefObject<ScrollView | null>;
   readonly overlap: number;
   readonly onLayout: () => void;
-  readonly onScrollEnd: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  readonly onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  readonly onContentSizeChange: (width: number, height: number) => void;
+  readonly scrollEventThrottle: number;
 };
+
+const scrollSampleMs = 32;
 
 const showEvent = Platform.OS === 'ios' ? 'keyboardWillChangeFrame' : 'keyboardDidShow';
 const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
@@ -43,6 +47,7 @@ export function useKeyboardInset(gap: number): KeyboardInset {
   const frame = useRef<View | null>(null);
   const scroll = useRef<ScrollView | null>(null);
   const offset = useRef(0);
+  const [content, setContent] = useState(0);
   const keyboardTop = useKeyboardTop();
   const [span, setSpan] = useState<FrameSpan | undefined>(undefined);
 
@@ -68,16 +73,35 @@ export function useKeyboardInset(gap: number): KeyboardInset {
       TextInput.State.currentlyFocusedInput();
     focused?.measureInWindow((_x, y, _width, height) => {
       const distance = revealDistance({ top: y, bottom: y + height }, keyboardTop, gap, span.top);
-      if (distance > 0) {
-        offset.current += distance;
-        scroll.current?.scrollTo({ y: offset.current, animated: true });
+      if (distance <= 0) {
+        return;
+      }
+      const target = revealOffset(
+        { offset: offset.current, content, viewport: span.bottom - span.top },
+        distance,
+      );
+      if (target !== offset.current) {
+        offset.current = target;
+        scroll.current?.scrollTo({ y: target, animated: true });
       }
     });
-  }, [overlap, keyboardTop, gap, span]);
+  }, [overlap, keyboardTop, gap, span, content]);
 
-  const onScrollEnd = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+  const onScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
     offset.current = event.nativeEvent.contentOffset.y;
   }, []);
 
-  return { frame, scroll, overlap, onLayout, onScrollEnd };
+  const onContentSizeChange = useCallback((_width: number, height: number) => {
+    setContent((known) => (known === height ? known : height));
+  }, []);
+
+  return {
+    frame,
+    scroll,
+    overlap,
+    onLayout,
+    onScroll,
+    onContentSizeChange,
+    scrollEventThrottle: scrollSampleMs,
+  };
 }

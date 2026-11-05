@@ -11,3 +11,10 @@ export function revealDistance(field: FieldSpan, keyboardTop: number, gap: numbe
   const covered = field.bottom - (keyboardTop - gap);
   return Math.max(0, Math.min(covered, field.top - frameTop));
 }
+
+export type ScrollRange = { readonly offset: number; readonly content: number; readonly viewport: number };
+
+export function revealOffset(range: ScrollRange, distance: number): number {
+  const furthest = Math.max(0, range.content - range.viewport);
+  return Math.min(furthest, Math.max(0, range.offset + distance));
+}

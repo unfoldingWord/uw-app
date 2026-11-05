@@ -365,7 +365,7 @@ export const corpusModule = defineModule<CorpusApi>({
             : [...new Set([...languages, ...indexing.wantedLanguages()])]
         ).sort((left, right) => Number(right === first) - Number(left === first));
         if (on) {
-          await Promise.all(ordered.map((language) => indexing.reindex(language)));
+          await Promise.allSettled(ordered.map((language) => indexing.reindex(language)));
           return;
         }
         for (const language of ordered) {
@@ -394,6 +394,7 @@ export const corpusModule = defineModule<CorpusApi>({
         library.put(entries, await loadTitles(db));
         await indexing.start();
         await reconcile();
+        indexing.resumeUnbuilt();
       },
       observe(entry) {
         if (entry.type === 'PackInstalled') {

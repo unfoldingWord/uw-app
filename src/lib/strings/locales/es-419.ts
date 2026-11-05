@@ -513,7 +513,6 @@ export const es419: LocaleTable = {
   'study.noLanguage.action': 'Elegir un idioma',
   'library.download': 'Descargar {resource}',
   'library.onPhone': 'En este teléfono',
-  'search.fullText.inSettings': 'Actívalo en Ajustes, y el índice se queda en este teléfono.',
   'study.frame.picture': 'Imagen del cuadro {number}',
   'transfer.app.ready': 'La aplicación llegó a este teléfono ({size}) y está lista para instalar.',
   'transfer.network': 'Primero conecta los dos teléfonos a la misma red Wi-Fi o zona de conexión.',

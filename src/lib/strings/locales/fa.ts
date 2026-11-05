@@ -492,7 +492,6 @@ export const fa: LocaleTable = {
   'study.noLanguage.action': 'انتخاب زبان',
   'library.download': 'بارگیری {resource}',
   'library.onPhone': 'روی این گوشی',
-  'search.fullText.inSettings': 'آن را در تنظیمات روشن کنید و نمایه روی این گوشی می‌ماند.',
   'study.frame.picture': 'تصویر صحنهٔ {number}',
   'transfer.app.ready': 'برنامه به این گوشی رسید ({size}) و آمادهٔ نصب است.',
   'transfer.network': 'اول هر دو گوشی را به یک وای‌فای یا هات‌اسپات وصل کنید.',

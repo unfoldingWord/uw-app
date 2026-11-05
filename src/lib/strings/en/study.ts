@@ -122,6 +122,5 @@ export const study = {
   'study.noLanguage.action': 'Choose a language',
   'library.download': 'Download {resource}',
   'library.onPhone': 'On this phone',
-  'search.fullText.inSettings': 'Turn it on in Settings, and the index stays on this phone.',
   'study.frame.picture': 'Picture for frame {number}',
 } as const;

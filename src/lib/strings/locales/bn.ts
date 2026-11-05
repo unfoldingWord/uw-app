@@ -486,7 +486,6 @@ export const bn: LocaleTable = {
   'study.noLanguage.action': 'একটি ভাষা বেছে নিন',
   'library.download': '{resource} ডাউনলোড করুন',
   'library.onPhone': 'এই ফোনে',
-  'search.fullText.inSettings': 'সেটিংসে এটি চালু করুন, আর সূচিটি এই ফোনেই থাকে।',
   'study.frame.picture': 'দৃশ্য {number}-এর ছবি',
   'transfer.app.ready': 'অ্যাপটি এই ফোনে এসেছে ({size}) এবং ইনস্টলের জন্য প্রস্তুত।',
   'transfer.network': 'আগে দুটি ফোনই একই ওয়াই-ফাই বা হটস্পটে যুক্ত করুন।',

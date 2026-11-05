@@ -9,6 +9,7 @@ import type { IndexState, IndexStatus } from './types';
 
 export type Indexing = {
   start(): Promise<void>;
+  resumeUnbuilt(): void;
   wanted(language: string): boolean;
   wantedLanguages(): readonly string[];
   state(language: string): IndexState;
@@ -110,6 +111,23 @@ export function createIndexing({ library, db, emit }: IndexingContext): Indexing
         wanted.add(language);
       }
     },
+    resumeUnbuilt() {
+      const unbuilt = [...wanted]
+        .filter((language) => !library.index(language).built && hasIndexedText(library, language))
+        .sort();
+      for (const language of unbuilt) {
+        waiting.add(language);
+        changed(language);
+      }
+      chain = chain
+        .then(async () => {
+          for (const language of unbuilt) {
+            waiting.delete(language);
+            await build(language);
+          }
+        })
+        .catch(() => undefined);
+    },
     wanted: (language) => wanted.has(language) || waiting.has(language),
     wantedLanguages: () => [...wanted].sort(),
     state(language) {
@@ -140,7 +158,10 @@ export function createIndexing({ library, db, emit }: IndexingContext): Indexing
           await started;
           await db.transaction((transaction) => setWanted(transaction, language, true));
         } catch (error) {
+          const code = failureCodeOf(error);
           waiting.delete(language);
+          failures.set(language, code);
+          await emit({ type: 'Failure', payload: { code, context: { language } } });
           changed(language);
           throw error;
         }

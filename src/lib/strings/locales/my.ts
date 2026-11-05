@@ -482,7 +482,6 @@ export const my: LocaleTable = {
   'study.noLanguage.action': 'ဘာသာစကား ရွေးရန်',
   'library.download': '{resource} ကို ဒေါင်းလုဒ်လုပ်ရန်',
   'library.onPhone': 'ဤဖုန်းပေါ်တွင်',
-  'search.fullText.inSettings': 'ဆက်တင်များတွင် ဖွင့်ပါ၊ အညွှန်းသည် ဤဖုန်းပေါ်တွင်သာ ရှိနေပါသည်။',
   'study.frame.picture': 'ပုံ {number} ၏ ရုပ်ပုံ',
   'transfer.app.ready': 'အက်ပ်သည် ဤဖုန်းသို့ ရောက်ရှိပြီး ({size}) ထည့်သွင်းရန် အသင့်ဖြစ်ပါသည်။',
   'transfer.network': 'ဖုန်းနှစ်လုံးလုံးကို Wi-Fi သို့မဟုတ် hotspot တစ်ခုတည်းသို့ အရင်ချိတ်ဆက်ပါ။',

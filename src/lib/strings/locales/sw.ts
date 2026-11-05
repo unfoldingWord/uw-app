@@ -501,7 +501,6 @@ export const sw: LocaleTable = {
   'study.noLanguage.action': 'Chagua lugha',
   'library.download': 'Pakua {resource}',
   'library.onPhone': 'Kwenye simu hii',
-  'search.fullText.inSettings': 'Iwashe katika Mipangilio, na faharasa inabaki kwenye simu hii.',
   'study.frame.picture': 'Mchoro wa picha ya {number}',
   'transfer.app.ready': 'Programu imefika kwenye simu hii ({size}) na iko tayari kusakinishwa.',
   'transfer.network': 'Kwanza unganisha simu zote mbili kwenye Wi-Fi au hotspot moja.',

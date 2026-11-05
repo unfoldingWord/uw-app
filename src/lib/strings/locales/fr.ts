@@ -529,7 +529,6 @@ export const fr: LocaleTable = {
   'study.noLanguage.action': 'Choisir une langue',
   'library.download': 'Télécharger {resource}',
   'library.onPhone': 'Sur ce téléphone',
-  'search.fullText.inSettings': 'Activez-la dans Réglages, et l’index reste sur ce téléphone.',
   'study.frame.picture': 'Illustration de l’image {number}',
   'transfer.app.ready':
     'L’application est arrivée sur ce téléphone ({size}) et elle est prête à être installée.',

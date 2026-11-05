@@ -68,8 +68,9 @@ export function ScreenScaffold({
             contentContainerStyle={content}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
-            onScrollEndDrag={keyboard.onScrollEnd}
-            onMomentumScrollEnd={keyboard.onScrollEnd}
+            onScroll={keyboard.onScroll}
+            scrollEventThrottle={keyboard.scrollEventThrottle}
+            onContentSizeChange={keyboard.onContentSizeChange}
           >
             {children}
           </ScrollView>

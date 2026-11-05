@@ -492,7 +492,6 @@ export const hi: LocaleTable = {
   'study.noLanguage.action': 'एक भाषा चुनें',
   'library.download': '{resource} डाउनलोड करें',
   'library.onPhone': 'इस फ़ोन पर',
-  'search.fullText.inSettings': 'इसे सेटिंग्स में चालू करें, और अनुक्रमणिका इसी फ़ोन पर रहती है।',
   'study.frame.picture': 'दृश्य {number} का चित्र',
   'transfer.app.ready': 'ऐप इस फ़ोन पर आ गया है ({size}) और इंस्टॉल के लिए तैयार है।',
   'transfer.network': 'पहले दोनों फ़ोन एक ही वाई-फ़ाई या हॉटस्पॉट से जोड़ें।',

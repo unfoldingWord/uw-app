@@ -509,7 +509,6 @@ export const ptBR: LocaleTable = {
   'study.noLanguage.action': 'Escolher um idioma',
   'library.download': 'Baixar {resource}',
   'library.onPhone': 'Neste celular',
-  'search.fullText.inSettings': 'Ative nas Configurações, e o índice fica neste celular.',
   'study.frame.picture': 'Imagem do quadro {number}',
   'transfer.app.ready': 'O aplicativo chegou a este celular ({size}) e está pronto para instalar.',
   'transfer.network': 'Primeiro conecte os dois celulares ao mesmo Wi-Fi ou roteador do celular.',
