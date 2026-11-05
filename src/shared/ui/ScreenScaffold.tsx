@@ -6,6 +6,7 @@ import { referenceValues } from '@shared/glass/referenceValues';
 import { useTheme } from '@shared/theme';
 import { prototypeValues } from './prototypeValues';
 import { useTabBarGrowth } from './tabBarHeight';
+import { useKeyboardInset, type KeyboardInset } from './useKeyboardInset';
 
 export type ScreenClearance = 'tabs' | 'footer' | 'none';
 
@@ -15,6 +16,9 @@ export type ScreenListFrame = {
     readonly contentContainerStyle: ViewStyle;
     readonly keyboardShouldPersistTaps: 'handled';
     readonly showsVerticalScrollIndicator: false;
+    readonly onScroll: KeyboardInset['onScroll'];
+    readonly scrollEventThrottle: number;
+    readonly onContentSizeChange: KeyboardInset['onContentSizeChange'];
   };
   readonly gap: number;
 };
@@ -49,6 +53,8 @@ export function ScreenScaffold({
   const theme = useTheme();
   const bottom = useBottomInset();
   const growth = useTabBarGrowth(theme);
+  const keyboard = useKeyboardInset(theme.space.sp8);
+  const typing = keyboard.overlap > 0;
   const reserved =
     clearance === 'tabs'
       ? prototypeValues.tabBar.clearance + growth
@@ -58,39 +64,52 @@ export function ScreenScaffold({
   const content = {
     flexGrow: 1,
     paddingHorizontal: theme.space.gutterScreen,
-    paddingBottom: dock === undefined ? bottom + reserved : theme.space.sp8,
+    paddingBottom: typing
+      ? keyboard.overlap + theme.space.sp8
+      : dock === undefined
+        ? bottom + reserved
+        : theme.space.sp8,
     gap: theme.space.gapStack,
   };
   return (
     <AuroraField intensity={dense ? referenceValues.auroraField.denseIntensity : undefined}>
       <StatusBar />
       {header}
-      {list !== undefined ? (
-        list({
-          props: {
-            style: styles.fill,
-            contentContainerStyle: { ...content, gap: 0 },
-            keyboardShouldPersistTaps: 'handled',
-            showsVerticalScrollIndicator: false,
-          },
-          gap: content.gap,
-        })
-      ) : scroll ? (
-        <ScrollView
-          style={styles.fill}
-          contentContainerStyle={content}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          {children}
-        </ScrollView>
-      ) : (
-        <View style={[styles.fill, content]}>{children}</View>
-      )}
-      {dock === undefined ? null : (
+      <View ref={keyboard.frame} style={styles.fill} onLayout={keyboard.onLayout}>
+        {list !== undefined ? (
+          list({
+            props: {
+              style: styles.fill,
+              contentContainerStyle: { ...content, gap: 0 },
+              keyboardShouldPersistTaps: 'handled',
+              showsVerticalScrollIndicator: false,
+              onScroll: keyboard.onScroll,
+              scrollEventThrottle: keyboard.scrollEventThrottle,
+              onContentSizeChange: keyboard.onContentSizeChange,
+            },
+            gap: content.gap,
+          })
+        ) : scroll ? (
+          <ScrollView
+            ref={keyboard.scroll}
+            style={styles.fill}
+            contentContainerStyle={content}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            onScroll={keyboard.onScroll}
+            scrollEventThrottle={keyboard.scrollEventThrottle}
+            onContentSizeChange={keyboard.onContentSizeChange}
+          >
+            {children}
+          </ScrollView>
+        ) : (
+          <View style={[styles.fill, content]}>{children}</View>
+        )}
+      </View>
+      {dock === undefined || typing ? null : (
         <View style={{ paddingHorizontal: theme.space.sp5, paddingBottom: bottom }}>{dock}</View>
       )}
-      {footer === undefined ? null : (
+      {footer === undefined || typing ? null : (
         <View
           style={[styles.footer, { start: theme.space.gutterScreen, end: theme.space.gutterScreen, bottom }]}
         >

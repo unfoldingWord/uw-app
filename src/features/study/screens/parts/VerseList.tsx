@@ -9,6 +9,7 @@ export type VerseListProps = {
   passage: Passage;
   language: string;
   selected: VerseKey | undefined;
+  landing?: VerseKey;
   highlighted: ReadonlySet<number>;
   verseLabel: (verse: Verse) => string;
   onSelect: (verse: VerseKey) => void;
@@ -101,6 +102,7 @@ export function VerseList({
   passage,
   language,
   selected,
+  landing,
   highlighted,
   verseLabel,
   onSelect,
@@ -132,12 +134,13 @@ export function VerseList({
     );
   }, [theme, language, verses, direction]);
   const selectedIndex = verses.findIndex((verse) => sameVerse(selected, keyOf(verse)));
+  const scrollIndex = verses.findIndex((verse) => sameVerse(selected ?? landing, keyOf(verse)));
   useEffect(() => {
     retries.current = 0;
-    if (selectedIndex > 0) {
-      list.current?.scrollToIndex({ index: selectedIndex, animated: false, viewPosition: 0.2 });
+    if (scrollIndex > 0) {
+      list.current?.scrollToIndex({ index: scrollIndex, animated: false, viewPosition: 0.2 });
     }
-  }, [passage.reference, selectedIndex]);
+  }, [passage.reference, scrollIndex]);
   return (
     <FlatList
       ref={list}

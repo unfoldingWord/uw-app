@@ -27,6 +27,85 @@ Android phone (#85 definition of done) is not measured, and the native blur is n
   passes after; a route naming no manual now says the manual cannot be found with a Go to Training button, seen in
   the `formation-manual-missing` web shot in light, dark and reduced-blur.
 
+## 2026-11-05 Full-text index state, Search toggle and keyboard-aware scaffold (#98, #95, #99 and #85 Search parts)
+
+Node v22.23.4. Nothing ran on a phone, an emulator or a simulator in this entry. The keyboard handling, the Search
+list and the Settings and Search index rows were not rendered: `npm run shots` failed in this sandbox before
+rendering (the web export resolved routes from another worktree through the shared Metro cache), so light, dark,
+reduced-blur, RTL and the largest text size were not checked on these screens.
+
+- **Red first:** the five new ST-9 scenarios failed before the change: `ST-9.a` `corpus.indexState is not a
+  function`; `ST-9.b` the language list was strings, not states; `ST-9.c` `the later language is wanted too`;
+  `ST-9.d` `settings.onFullText is not a function`; `ST-9.e` `study.fullTextIndex is not a function`.
+  `src/shared/ui/keyboardInset.test.ts` failed with `Cannot find module './keyboardInset'`.
+- **Green:** all six ST-9 scenarios pass, and the six keyboard inset tests (FO-6) pass.
+- **Verify:** `npm run verify` green: 92 test files, 847 tests, 9 checks, 68 of 68 scenarios, 21 fixture burritos
+  (live contract skipped, offline), both bundles.
+- **Not verified:** that `keyboardWillChangeFrame` and `keyboardDidShow` report the keyboard top this hook expects
+  on Android edge to edge and on iOS; that the notes field and the line being typed stay above the keyboard; that
+  the dock and the floating footer hide while typing; the `SectionList` scroll on a low-end phone. Each needs a
+  device run.
+- **Review follow-up:** a wanted index left unbuilt is queued again on start, so after a restart it reads
+  `waiting`, then `built` or `failed` with Try again (`ST-9.f`, red first: `a wanted index is never off after a
+  restart`); turning indexes on settles every language and records a write that fails as that language's failure
+  (corpus test red first: the promise rejected); the keyboard reveal clamps to the scrollable range and reads the
+  offset from a throttled `onScroll` (four new pure tests, not run on a device); `search.fullText.inSettings`
+  removed after a grep found no reference. `npm run verify` green: 92 test files, 853 tests, 9 checks, 69 of 69
+  scenarios, 21 fixture burritos, both bundles.
+
+## 2026-11-05 Study helps sheet, note focus and chapter-change progress (#90, #91, part of #99), Node only
+
+Node v22.22.2. Nothing ran on a phone, an emulator, a simulator or the web harness in this entry. The sheet's
+drag, its focus move, TalkBack and VoiceOver, Android Back, the largest text size, right to left, Reduce Motion,
+light, dark and reduced-blur, and whether a tap on a note's "Show in the verse" now reaches its handler on
+Android and iOS are all unverified.
+
+- **Red first:** `src/features/study/screens/parts/passage.test.ts` (help keys qualified by resource, no
+  first-note fallback, the not-found placement) and `src/shared/glass/sheet.test.ts` (peek, drag, settle) failed
+  before the code existed: 5 failed, and the sheet suite could not import.
+- **Corpus:** the three-note verse in `src/lib/corpus/alignment.test.ts` and the extended ST-2 scenario (m003 on
+  the second "and", m004, and m005 that the text does not hold) passed on their first run. The corpus already
+  placed each quote; this supports the issue's inference that #91 is in the screen, not in `attachQuote`.
+- **Verify:** `npm run verify` green: 848 tests, 9 checks, 63 of 63 scenarios, 21 fixture burritos, both
+  bundles; the live contract was skipped offline.
+- **Review follow-up:** a request that names a verse selects it again, so the sheet opens at peek on a verse
+  reached from a search hit, a note link or a Home bookmark; `requestedVerse` in `parts/passage.test.ts` failed
+  first (3 failed) and then passed. The expanded detent hiding the verse list is recorded as a design question in
+  the proposal. Not run on a device.
+
+## 2026-11-05 Loading feedback (#99, #86), tests and checks only
+
+Node v22. Nothing ran on a phone, an emulator or a simulator, and no screen was rendered: light, dark,
+reduced-blur and Reduce Motion modes are not checked, and the sim has no slowed-adapter run (`PERF_LATENCY_MS`) of
+the six gaps in #99.
+
+- **Red first:** `src/shared/ui/useAsyncValue.test.ts` (loading from each request until it or a newer one settles,
+  known value kept), `src/features/study/screens/parts/loader.test.ts` (loading on reload, off on settle, failure
+  and cancel; stale value kept) and the wave case in `src/shared/glass/geometry.test.ts` failed (`isLoading is not
+  a function`, `Cannot find module './loader'`, `waveDelays is not a function`) before the code, and pass after.
+- **Verify:** `npm run verify` green: 842 tests, 9 checks, 63 of 63 scenarios, 21 fixture burritos, both bundles.
+  The live contract was skipped offline.
+- **Not verified:** the `DotRing` wave on the native driver (seven `Animated.View` layers, delayed loops), the
+  `ReloadVeil` over Library and Article, the Home and Share loaders, and the `ResultRow` busy pulse. All need a
+  phone and the three visual modes.
+- **Review follow-up:** polled re-reads in `useAsyncValue` and focus re-reads in `useLoaded` are now quiet (no
+  `loading`, no veil, no announcement); the new cases in both test files failed first (`expected true to be false`,
+  `loading: true` where `false` was expected) and pass after. `docs/exceptions.md` records the `DotRing` drift.
+
+## 2026-11-05 Decision proposals for #92, #93, #94 and #100, docs only
+
+Node v22.22.2. Four proposals under `docs/proposals/2026-11-05-*.md`, each awaiting the requirements owner; no
+code, no PRD decision-log row (no decision is taken yet). Every file and line they cite was read on `main` at
+d53a075.
+
+- **Verify:** `npm run verify` green: 836 tests, 9 checks, 63 of 63 scenarios, 21 fixture burritos, both
+  bundles. The live contract was skipped, offline.
+- **Not verified:** nothing in the proposals ran on a phone. The APK figures in the performance proposal come
+  from issue #100 (measured from `unfoldingWord-v0.0.2-native-unzip.1.apk`), not from a run in this entry.
+- **Decisions, follow-up:** the owner approved the recommended option of every question on 2026-11-05 ("Go with
+  your suggestions above"). Decision-log rows 98 to 103 and ADR 0014 record them, with rows 102 and 103 for the
+  Training renumbering (#105) and the Image Pack with the first language (#107). No code changed.
+
 ## 2026-10-20 P2 native unzip, sim and checks only
 
 Node v22.22.2. Nothing ran on a phone, an emulator or a simulator in this entry, and the Kotlin and Swift in

@@ -8,6 +8,7 @@ import { useTheme } from '@shared/theme';
 import {
   Header,
   IconAction,
+  Loading,
   Notice,
   prototypeValues,
   ScreenScaffold,
@@ -58,6 +59,9 @@ export default function HomeScreen() {
     [changes, focus, download.value?.state, checked.value],
   );
   const openLanguages = () => router.push('/languages');
+  const firstRead = [download, formation, updates].some(
+    (read) => read.value === undefined && read.failure === undefined,
+  );
 
   return (
     <ScreenScaffold
@@ -110,6 +114,7 @@ export default function HomeScreen() {
           {greeting.text}
         </ThemedText>
       </View>
+      {firstRead ? <Loading label={words.t('common.busy')} /> : null}
       {failed(download.failure)}
       {download.value === undefined ? null : (
         <DownloadCard

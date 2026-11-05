@@ -38,6 +38,8 @@ export type { ToggleProps } from './Toggle';
 export { Toggle } from './Toggle';
 export type { TextFamily, TextTone, ThemedTextProps } from './ThemedText';
 export { useAsyncValue, useChanges } from './useAsyncValue';
+export { useKeyboardInset } from './useKeyboardInset';
+export type { KeyboardInset } from './useKeyboardInset';
 export type { AsyncValue, AsyncValueOptions } from './useAsyncValue';
 export { BootFailure } from './BootFailure';
 export type { BootFailureProps } from './BootFailure';

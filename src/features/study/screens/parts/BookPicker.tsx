@@ -17,7 +17,7 @@ type Pick = {
   readonly label: string;
   readonly name?: string;
   readonly chosen: boolean;
-  readonly choose: () => void;
+  readonly choose: () => void | Promise<void>;
 };
 
 type PickRow = { readonly key: string; readonly columns: number; readonly picks: readonly Pick[] };
@@ -37,7 +37,7 @@ export type BookPickerProps = {
   books: readonly BookEntry[];
   current: { book: string; chapter: number } | undefined;
   onClose: () => void;
-  onChoose: (book: string, chapter: number) => void;
+  onChoose: (book: string, chapter: number) => void | Promise<void>;
 };
 
 export function BookPicker({ words, open, books, current, onClose, onChoose }: BookPickerProps) {
@@ -50,13 +50,13 @@ export function BookPicker({ words, open, books, current, onClose, onChoose }: B
     }
   }, [open, current?.book]);
   const chosen = books.find((entry) => entry.code === book);
-  const chooseBook = (entry: BookEntry) => {
+  const chooseBook = (entry: BookEntry): void | Promise<void> => {
     const [only] = entry.chapters;
     if (entry.chapters.length === 1 && only !== undefined) {
-      onChoose(entry.code, only);
-      return;
+      return onChoose(entry.code, only);
     }
     setBook(entry.code);
+    return undefined;
   };
   const testaments = (['old', 'new'] as const).map((testament): PickSection => ({
     key: testament,

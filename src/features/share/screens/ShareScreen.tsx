@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import { GlassButton } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
-import { Header, Notice, ScreenScaffold, Sheet, ThemedText, useAsyncValue } from '@shared/ui';
+import { Header, Loading, Notice, ScreenScaffold, Sheet, ThemedText, useAsyncValue } from '@shared/ui';
 import { createShareService, type ShareDone, type ShareTarget } from '../service';
 
 type Params = { kind?: string; ref?: string; number?: string; text?: string };
@@ -93,8 +93,9 @@ export default function ShareScreen() {
   return (
     <ScreenScaffold header={header} scroll={false}>
       <View style={{ flexGrow: 1 }} />
-      {menu.value === undefined && target !== undefined && menu.failure === undefined ? null : ready ===
-        undefined ? (
+      {menu.value === undefined && target !== undefined && menu.failure === undefined ? (
+        <Loading label={words.t('common.busy')} />
+      ) : ready === undefined ? (
         <Sheet>
           <Notice text={words.t(`failure.${menu.failure ?? 'files.not-found'}`)} />
           <GlassButton variant="glass" full onPress={close}>

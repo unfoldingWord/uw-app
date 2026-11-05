@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { failureCodeOf, type FailureCode } from '@lib/domain/failures';
 import { GlassButton, GlassInput, Icon } from '@shared/glass';
@@ -16,6 +16,7 @@ import {
   type ThemeChoice,
 } from '../service';
 import { Choice } from './parts/Choice';
+import { FullTextLanguages } from './parts/FullTextLanguages';
 import { StorageSection } from './parts/StorageSection';
 import { useLoad } from './parts/useLoad';
 
@@ -47,6 +48,10 @@ export default function SettingsScreen() {
   const words = service.words();
   const load = useCallback(() => overviewOf(service), [service]);
   const overview = useLoad(load);
+  const loadFullText = useCallback(() => service.fullText(), [service]);
+  const indexing = useLoad(loadFullText);
+  const reloadIndexing = indexing.reload;
+  useEffect(() => service.onFullText(() => void reloadIndexing()), [service, reloadIndexing]);
   const entries = overview.value?.entries ?? [];
   const [languagesOpen, setLanguagesOpen] = useState(false);
   const [themeChoice, setThemeChoice] = useState<ThemeChoice>(() => service.theme());
@@ -90,7 +95,7 @@ export default function SettingsScreen() {
         ? words.t('common.theme.light')
         : words.t('common.theme.dark');
 
-  const fullText = overview.value?.fullText;
+  const fullText = indexing.value ?? overview.value?.fullText;
   const appLanguage = entryOf(entries, 'appLanguage');
   const themeEntry = entryOf(entries, 'theme');
   const blur = entryOf(entries, 'reducedBlur');
@@ -255,10 +260,20 @@ export default function SettingsScreen() {
             disabled={fullText === undefined}
             onChange={async (on) => {
               await attempt('fullText', () => service.setFullText(on));
-              await overview.reload();
+              await Promise.all([overview.reload(), indexing.reload()]);
             }}
           />
         </View>
+        {fullText === undefined || !fullText.languages.some((item) => item.state.state !== 'off') ? null : (
+          <FullTextLanguages
+            languages={fullText.languages}
+            words={words}
+            onRetry={async (language) => {
+              await attempt('fullText', () => service.retryFullText(language));
+              await indexing.reload();
+            }}
+          />
+        )}
         {refusal('fullText')}
       </Card>
       <StorageSection service={service} storage={overview.value?.storage} onChanged={overview.reload} />
