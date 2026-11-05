@@ -547,4 +547,6 @@ export const ur: LocaleTable = {
   'library.chapters': { one: '{count} باب', other: '{count} ابواب' },
   'library.pictures': { one: '{count} تصویر', other: '{count} تصاویر' },
   'formation.training.empty': 'اکیڈمی ابھی {language} میں نہیں ہے۔',
+  'formation.training.missing': 'یہ رہنما کتاب نہیں مل سکی۔',
+  'formation.training.open': 'تربیت پر جائیں',
 };

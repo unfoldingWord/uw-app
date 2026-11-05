@@ -1,10 +1,11 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback } from 'react';
 import { SectionList } from 'react-native';
+import { GlassButton } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { Card, Gap, Loading, Row, Screen, SectionTitle, ThemedText } from '@shared/ui';
 import { createFormationService, type TrainingLesson } from '../service';
-import { courseOf, lessonLine, standingOf } from './parts/course';
+import { courseOf, lessonLine, manualStateOf, standingOf } from './parts/course';
 import { useLoad } from './parts/useLoad';
 import { sessionHref } from './parts/wording';
 
@@ -17,7 +18,8 @@ export default function ManualScreen() {
   const loaded = useLoad(load);
   const course = loaded.value;
   const group = course?.group;
-  const unit = course?.outline.units.find((item) => item.manual === manual);
+  const state = manualStateOf(course, manual);
+  const unit = state.kind === 'found' ? state.unit : undefined;
   const language = service.language();
   const languageName = language === undefined ? '' : service.languageName(language);
   const back = { label: words.t('common.back'), onPress: () => router.back() };
@@ -64,15 +66,31 @@ export default function ManualScreen() {
           SectionSeparatorComponent={() => <Gap size={frame.gap} />}
           stickySectionHeadersEnabled={false}
           ListEmptyComponent={
-            course === undefined && loaded.loading ? (
-              <Loading label={words.t('common.busy')} />
-            ) : course === undefined ? null : (
+            state.kind === 'loading' ? (
+              loaded.loading ? (
+                <Loading label={words.t('common.busy')} />
+              ) : null
+            ) : state.kind === 'missing' ? (
+              <Card level={1}>
+                <ThemedText variant="body" tone="title">
+                  {words.t('formation.training.missing')}
+                </ThemedText>
+                <Gap size={frame.gap} />
+                <GlassButton
+                  size="sm"
+                  accessibilityLabel={words.t('formation.training.open')}
+                  onPress={() => router.replace('/formation/training')}
+                >
+                  {words.t('formation.training.open')}
+                </GlassButton>
+              </Card>
+            ) : state.kind === 'empty' ? (
               <Card level={1}>
                 <ThemedText variant="body" tone="title">
                   {words.t('formation.training.empty', { language: languageName })}
                 </ThemedText>
               </Card>
-            )
+            ) : null
           }
           ListFooterComponent={
             loaded.failure === undefined ? null : (

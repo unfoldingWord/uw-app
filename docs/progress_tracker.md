@@ -23,6 +23,9 @@ Android phone (#85 definition of done) is not measured, and the native blur is n
   headings, so a nested contents was seen only in the test, not on screen. The web harness renders the memory
   adapters through react-native-web, not the native blur.
 - **Verify:** `npm run verify` green: 837 tests, 9 checks, 63 of 63 scenarios, 21 fixture burritos, both bundles.
+- **Review follow-up, manual not found:** `parts/course.test.ts` (FO-1) failed before `manualStateOf` existed and
+  passes after; a route naming no manual now says the manual cannot be found with a Go to Training button, seen in
+  the `formation-manual-missing` web shot in light, dark and reduced-blur.
 
 ## 2026-10-20 P2 native unzip, sim and checks only
 

@@ -549,4 +549,6 @@ export const hi: LocaleTable = {
   'library.chapters': { one: '{count} अध्याय', other: '{count} अध्याय' },
   'library.pictures': { one: '{count} चित्र', other: '{count} चित्र' },
   'formation.training.empty': 'अकादमी अभी {language} में नहीं है।',
+  'formation.training.missing': 'यह पुस्तिका नहीं मिल रही है।',
+  'formation.training.open': 'प्रशिक्षण पर जाएँ',
 };

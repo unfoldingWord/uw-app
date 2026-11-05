@@ -591,4 +591,6 @@ export const es419: LocaleTable = {
   'library.chapters': { one: '{count} capítulo', many: '{count} de capítulos', other: '{count} capítulos' },
   'library.pictures': { one: '{count} imagen', many: '{count} de imágenes', other: '{count} imágenes' },
   'formation.training.empty': 'La Academia todavía no está en {language}.',
+  'formation.training.missing': 'No se encuentra este manual.',
+  'formation.training.open': 'Ir a Capacitación',
 };

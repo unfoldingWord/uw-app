@@ -532,4 +532,6 @@ export const id: LocaleTable = {
   'library.chapters': { other: '{count} pasal' },
   'library.pictures': { other: '{count} gambar' },
   'formation.training.empty': 'Akademi belum tersedia dalam {language}.',
+  'formation.training.missing': 'Panduan ini tidak dapat ditemukan.',
+  'formation.training.open': 'Buka Pelatihan',
 };

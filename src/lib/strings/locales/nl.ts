@@ -565,4 +565,6 @@ export const nl: LocaleTable = {
   'library.chapters': { one: '{count} hoofdstuk', other: '{count} hoofdstukken' },
   'library.pictures': { one: '{count} afbeelding', other: '{count} afbeeldingen' },
   'formation.training.empty': 'De Academie is nog niet beschikbaar in het {language}.',
+  'formation.training.missing': 'Deze handleiding is niet te vinden.',
+  'formation.training.open': 'Naar Training',
 };

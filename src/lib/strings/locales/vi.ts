@@ -523,4 +523,6 @@ export const vi: LocaleTable = {
   'library.chapters': { other: '{count} chương' },
   'library.pictures': { other: '{count} hình ảnh' },
   'formation.training.empty': 'Học viện chưa có bằng {language}.',
+  'formation.training.missing': 'Không tìm thấy sổ tay này.',
+  'formation.training.open': 'Đến Huấn luyện',
 };

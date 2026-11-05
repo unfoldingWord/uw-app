@@ -548,4 +548,6 @@ export const fa: LocaleTable = {
   'library.chapters': { one: '{count} فصل', other: '{count} فصل' },
   'library.pictures': { one: '{count} تصویر', other: '{count} تصویر' },
   'formation.training.empty': 'آکادمی هنوز به زبان {language} نیست.',
+  'formation.training.missing': 'این راهنما پیدا نمی‌شود.',
+  'formation.training.open': 'رفتن به آموزش',
 };

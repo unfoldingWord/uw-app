@@ -500,4 +500,6 @@ export const zhHans: LocaleTable = {
   'library.chapters': { other: '{count} 章' },
   'library.pictures': { other: '{count} 张图片' },
   'formation.training.empty': '学院还没有{language}版本。',
+  'formation.training.missing': '找不到这本手册。',
+  'formation.training.open': '前往培训',
 };

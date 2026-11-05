@@ -584,4 +584,6 @@ export const ptBR: LocaleTable = {
   'library.chapters': { one: '{count} capítulo', many: '{count} de capítulos', other: '{count} capítulos' },
   'library.pictures': { one: '{count} imagem', many: '{count} de imagens', other: '{count} imagens' },
   'formation.training.empty': 'A Academia ainda não está em {language}.',
+  'formation.training.missing': 'Este manual não foi encontrado.',
+  'formation.training.open': 'Ir para Treinamento',
 };

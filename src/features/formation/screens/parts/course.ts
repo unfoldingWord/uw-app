@@ -1,6 +1,13 @@
 import type { Href } from 'expo-router';
 import type { IconName } from '@shared/glass';
-import type { FormationService, FormationWords, Group, TrainingLesson, TrainingOutline } from '../../service';
+import type {
+  FormationService,
+  FormationWords,
+  Group,
+  TrainingLesson,
+  TrainingOutline,
+  TrainingUnit,
+} from '../../service';
 
 export type Course = {
   readonly outline: TrainingOutline;
@@ -62,4 +69,21 @@ export function currentLesson(course: Course): TrainingLesson | undefined {
 
 export function manualHref(manual: string): Href {
   return `/formation/manual/${encodeURIComponent(manual)}`;
+}
+
+export type ManualState =
+  | { readonly kind: 'loading' }
+  | { readonly kind: 'empty' }
+  | { readonly kind: 'missing' }
+  | { readonly kind: 'found'; readonly unit: TrainingUnit };
+
+export function manualStateOf(course: Course | undefined, manual: string | undefined): ManualState {
+  if (course === undefined) {
+    return { kind: 'loading' };
+  }
+  if (course.outline.units.length === 0) {
+    return { kind: 'empty' };
+  }
+  const unit = course.outline.units.find((item) => item.manual === manual);
+  return unit === undefined ? { kind: 'missing' } : { kind: 'found', unit };
 }
