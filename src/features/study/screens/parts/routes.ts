@@ -5,6 +5,7 @@ import type { LinkTarget } from '../../service';
 export const studyRoutes = {
   study: '/study',
   library: '/study/library',
+  stories: '/formation/stories',
   search: '/study/search',
   languages: '/languages',
   settings: '/settings',

@@ -12,6 +12,8 @@ export function sessionHref(track: Track, session: number): Href {
   return `/formation/session/${track}/${session}`;
 }
 
+export const storiesHref: Href = '/formation/stories';
+
 export function storyHref(story: number, frame?: number): Href {
   return frame === undefined
     ? `/formation/story/${String(story)}`

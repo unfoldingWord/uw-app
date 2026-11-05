@@ -571,4 +571,11 @@ export const hi: LocaleTable = {
 
   'formation.training.missing': 'यह पुस्तिका नहीं मिल रही है।',
   'formation.training.open': 'प्रशिक्षण पर जाएँ',
+
+  'formation.stories': 'ओपन बाइबल कहानियाँ',
+  'formation.stories.browse': 'कहानियाँ देखें',
+  'formation.stories.noLanguage': 'कहानियाँ पढ़ने के लिए एक भाषा चुनें।',
+  'formation.stories.chooseLanguage': 'एक भाषा चुनें',
+  'home.formation.browse': 'कहानियाँ देखें',
+  'library.stories.browse': 'कहानियाँ देखें',
 };

@@ -580,4 +580,11 @@ export const sw: LocaleTable = {
 
   'formation.training.missing': 'Mwongozo huu haupatikani.',
   'formation.training.open': 'Nenda kwenye Mafunzo',
+
+  'formation.stories': 'Hadithi Huria za Biblia',
+  'formation.stories.browse': 'Vinjari hadithi',
+  'formation.stories.noLanguage': 'Chagua lugha ili usome hadithi.',
+  'formation.stories.chooseLanguage': 'Chagua lugha',
+  'home.formation.browse': 'Vinjari hadithi',
+  'library.stories.browse': 'Vinjari hadithi',
 };

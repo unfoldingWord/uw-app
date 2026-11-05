@@ -27,9 +27,10 @@ export type LibraryCardViewProps = {
   card: LibraryCard;
   failure: string | undefined;
   onDownload: (card: LibraryCard) => Promise<void>;
+  onOpen?: { label: string; onPress: () => void };
 };
 
-export function LibraryCardView({ words, card, failure, onDownload }: LibraryCardViewProps) {
+export function LibraryCardView({ words, card, failure, onDownload, onOpen }: LibraryCardViewProps) {
   const theme = useTheme();
   const others = card.publishers.slice(1);
   return (
@@ -103,6 +104,16 @@ export function LibraryCardView({ words, card, failure, onDownload }: LibraryCar
             style={{ marginTop: theme.space.sp4 }}
           >
             {words.t('library.download', { resource: card.title })}
+          </GlassButton>
+        )}
+        {card.state !== 'on-phone' || onOpen === undefined ? null : (
+          <GlassButton
+            variant="glass"
+            size="sm"
+            onPress={onOpen.onPress}
+            style={{ marginTop: theme.space.sp4 }}
+          >
+            {onOpen.label}
           </GlassButton>
         )}
         {failure === undefined ? null : (

@@ -613,4 +613,11 @@ export const es419: LocaleTable = {
 
   'formation.training.missing': 'No se encuentra este manual.',
   'formation.training.open': 'Ir a Capacitación',
+
+  'formation.stories': 'Historias Bíblicas Abiertas',
+  'formation.stories.browse': 'Explorar las historias',
+  'formation.stories.noLanguage': 'Elige un idioma para leer las historias.',
+  'formation.stories.chooseLanguage': 'Elegir un idioma',
+  'home.formation.browse': 'Explorar las historias',
+  'library.stories.browse': 'Explorar las historias',
 };

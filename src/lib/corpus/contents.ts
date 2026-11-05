@@ -4,7 +4,9 @@ import type { Library } from './library';
 import { readingOfKind } from './readings';
 import { academyPrefix } from './links';
 import { academyManuals, academyOrder, audioClips, movementStories, stories } from './loaders';
-import type { Contents } from './types';
+import { imageFor } from './reading';
+import type { Entry } from './tables';
+import type { Contents, StoryEntry } from './types';
 
 function chaptersInScope(code: string, scoped: readonly string[]): number[] {
   const listed = scoped.map(Number).filter((chapter) => Number.isInteger(chapter) && chapter > 0);
@@ -32,6 +34,16 @@ export function contentsOf(library: Library, language: string): Promise<Contents
     }
   });
   return contents;
+}
+
+async function storyEntries(library: Library, entry: Entry): Promise<StoryEntry[]> {
+  const listed: StoryEntry[] = [];
+  for (const story of (await stories(library, entry)).values()) {
+    const picture = await imageFor(library, entry, story.frames[0]?.imageName);
+    const named = { number: story.number, title: story.title };
+    listed.push(picture === undefined ? named : { ...named, picture });
+  }
+  return listed;
 }
 
 async function buildContents(library: Library, language: string): Promise<Contents> {
@@ -73,7 +85,7 @@ async function buildContents(library: Library, language: string): Promise<Conten
   };
   const unplaced = Number.MAX_SAFE_INTEGER;
   const [storyEntry] = library.of(language, ['stories']);
-  const storyList = storyEntry === undefined ? [] : [...(await stories(library, storyEntry)).values()];
+  const storyList = storyEntry === undefined ? [] : await storyEntries(library, storyEntry);
   const [movementEntry] = library.of(language, ['movements']);
   const audio = [];
   for (const entry of library.of(language, ['audio'])) {
@@ -92,7 +104,7 @@ async function buildContents(library: Library, language: string): Promise<Conten
         compareText(left.id, right.id),
     ),
     manuals,
-    stories: storyList.map((story) => ({ number: story.number, title: story.title })),
+    stories: storyList,
     movements: movementEntry === undefined ? [] : await movementStories(library, movementEntry),
     audio,
   };

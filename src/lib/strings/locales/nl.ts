@@ -587,4 +587,11 @@ export const nl: LocaleTable = {
 
   'formation.training.missing': 'Deze handleiding is niet te vinden.',
   'formation.training.open': 'Naar Training',
+
+  'formation.stories': 'Open Bijbelverhalen',
+  'formation.stories.browse': 'Verhalen bekijken',
+  'formation.stories.noLanguage': 'Kies een taal om de verhalen te lezen.',
+  'formation.stories.chooseLanguage': 'Kies een taal',
+  'home.formation.browse': 'Verhalen bekijken',
+  'library.stories.browse': 'Verhalen bekijken',
 };

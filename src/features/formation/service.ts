@@ -1,5 +1,5 @@
 import type { Bookmark } from '@lib/bookmarks/types';
-import type { Frame, Story, StoryQuestion } from '@lib/corpus/types';
+import type { Frame, Story, StoryEntry, StoryQuestion } from '@lib/corpus/types';
 import type {
   FoundationsSession,
   Group,
@@ -46,7 +46,12 @@ export type { Written } from '@lib/written';
 
 export type DownloadOutcome = { readonly ok: true } | { readonly ok: false; readonly code: FailureCode };
 
-export type StoryTitle = { readonly number: number; readonly title: string };
+export type StoryTitle = { readonly number: number; readonly title: string; readonly picture?: string };
+
+export type StoryContents =
+  | { readonly state: 'no-language' }
+  | { readonly state: 'not-downloaded'; readonly language: string }
+  | { readonly state: 'ready'; readonly language: string; readonly stories: readonly StoryTitle[] };
 
 export type StoryList = {
   readonly stories: readonly StoryTitle[];
@@ -63,8 +68,7 @@ export type Pictures = 'on-phone' | 'offered' | 'not-offered';
 
 export type StoryAbsence = 'not-downloaded' | 'not-found';
 
-function storyListOf(stories: readonly StoryTitle[], current: number): StoryList {
-  const sorted = [...stories].sort((left, right) => left.number - right.number);
+function storyListOf(sorted: readonly StoryTitle[], current: number): StoryList {
   const previous = sorted.filter((story) => story.number < current).at(-1)?.number;
   const next = sorted.find((story) => story.number > current)?.number;
   return {
@@ -89,6 +93,7 @@ export type FormationService = {
   session(track: Track, number: number): Promise<Session | undefined>;
   read(story: number): Promise<FoundationsSession | undefined>;
   absence(story: number): Promise<StoryAbsence>;
+  contents(): Promise<StoryContents>;
   storyList(current: number): Promise<StoryList>;
   talk(story: Story, frame: number): StoryTalk;
   saved(story: number): Bookmark | undefined;
@@ -123,6 +128,18 @@ export function createFormationService(kernel: Kernel): FormationService {
   const { formation, preferences, corpus, bookmarks } = kernel;
   const language = (): string | undefined => preferences.contentLanguage();
   const englishAlongside = (): boolean => preferences.get('formation.englishMovements') === 'on';
+
+  const pictureOf = (entry: StoryEntry): string | undefined =>
+    entry.picture === undefined ? undefined : kernel.media.uriOf(entry.picture.path);
+
+  const titlesIn = async (code: string): Promise<readonly StoryTitle[]> =>
+    (await corpus.contents(code)).stories
+      .map((entry) => {
+        const picture = pictureOf(entry);
+        const named = { number: entry.number, title: entry.title };
+        return picture === undefined ? named : { ...named, picture };
+      })
+      .sort((left, right) => left.number - right.number);
 
   const withLanguage = async <T>(work: (current: string) => Promise<T>): Promise<T | undefined> => {
     const current = language();
@@ -159,8 +176,17 @@ export function createFormationService(kernel: Kernel): FormationService {
         ? 'not-found'
         : 'not-downloaded';
     },
-    storyList: async (current) =>
-      storyListOf((await withLanguage((code) => corpus.contents(code)))?.stories ?? [], current),
+    async contents() {
+      const current = language();
+      if (current === undefined) {
+        return { state: 'no-language' };
+      }
+      const stories = await titlesIn(current);
+      return stories.length === 0
+        ? { state: 'not-downloaded', language: current }
+        : { state: 'ready', language: current, stories };
+    },
+    storyList: async (current) => storyListOf((await withLanguage(titlesIn)) ?? [], current),
     talk: storyTalk,
     saved(story) {
       const current = language();

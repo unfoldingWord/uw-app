@@ -545,4 +545,11 @@ export const vi: LocaleTable = {
 
   'formation.training.missing': 'Không tìm thấy sổ tay này.',
   'formation.training.open': 'Đến Huấn luyện',
+
+  'formation.stories': 'Câu Chuyện Kinh Thánh Mở',
+  'formation.stories.browse': 'Xem các câu chuyện',
+  'formation.stories.noLanguage': 'Hãy chọn một ngôn ngữ để đọc các câu chuyện.',
+  'formation.stories.chooseLanguage': 'Chọn ngôn ngữ',
+  'home.formation.browse': 'Xem các câu chuyện',
+  'library.stories.browse': 'Xem các câu chuyện',
 };

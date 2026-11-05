@@ -126,4 +126,5 @@ export const study = {
   'study.noLanguage.action': 'Choose a language',
   'library.download': 'Download {resource}',
   'library.onPhone': 'On this phone',
+  'library.stories.browse': 'Browse stories',
 } as const;

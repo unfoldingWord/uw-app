@@ -16,7 +16,7 @@ import {
 import { PictureWell } from '@shared/story';
 import { Progress } from './parts/Progress';
 import { useLoad } from './parts/useLoad';
-import { groupLine, sessionHref } from './parts/wording';
+import { groupLine, sessionHref, storiesHref } from './parts/wording';
 
 type GroupState = { readonly group: Group; readonly progress: GroupProgress | undefined };
 
@@ -147,6 +147,7 @@ export default function FormationScreen() {
             sessions={foundations.sessions}
             progress={active?.progress?.track === 'foundations' ? active.progress : undefined}
             onOpen={openFoundations}
+            onBrowse={() => router.push(storiesHref)}
           />
         </>
       )}
@@ -174,9 +175,10 @@ type FoundationsCardProps = {
   sessions: number;
   progress: GroupProgress | undefined;
   onOpen: () => void;
+  onBrowse: () => void;
 };
 
-function FoundationsCard({ words, sessions, progress, onOpen }: FoundationsCardProps) {
+function FoundationsCard({ words, sessions, progress, onOpen, onBrowse }: FoundationsCardProps) {
   const theme = useTheme();
   const title = words.t('formation.foundations.about');
   const count = words.plural('formation.foundations.count', sessions);
@@ -211,9 +213,19 @@ function FoundationsCard({ words, sessions, progress, onOpen }: FoundationsCardP
           </ThemedText>
         )}
       </View>
-      <GlassButton full variant="dark" accessibilityLabel={`${count}, ${title}`} onPress={onOpen}>
-        {words.t('common.open')}
-      </GlassButton>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.space.sp4 }}>
+        <GlassButton
+          variant="dark"
+          accessibilityLabel={`${count}, ${title}`}
+          onPress={onOpen}
+          style={{ flexGrow: 1 }}
+        >
+          {words.t('common.open')}
+        </GlassButton>
+        <GlassButton variant="glass" onPress={onBrowse} style={{ flexGrow: 1 }}>
+          {words.t('formation.stories.browse')}
+        </GlassButton>
+      </View>
     </GlassSurface>
   );
 }

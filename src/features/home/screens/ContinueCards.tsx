@@ -65,9 +65,14 @@ export function ContinueFormation({ card, onOpen }: ContinueFormationProps) {
         title={words.t('nav.formation')}
         body={words.t('home.formation.empty')}
         action={
-          <GlassButton variant="glass" size="sm" onPress={() => onOpen('/formation')}>
-            {words.t('common.open')}
-          </GlassButton>
+          <View style={[styles.actions, { gap: theme.space.sp4 }]}>
+            <GlassButton variant="glass" size="sm" onPress={() => onOpen('/formation')}>
+              {words.t('common.open')}
+            </GlassButton>
+            <GlassButton variant="glass" size="sm" onPress={() => onOpen('/formation/stories')}>
+              {words.t('home.formation.browse')}
+            </GlassButton>
+          </View>
         }
       />
     );
@@ -162,4 +167,5 @@ const styles = StyleSheet.create({
   grow: { flex: 1, minWidth: 0 },
   tile: { alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   apart: { justifyContent: 'space-between' },
+  actions: { flexDirection: 'row', flexWrap: 'wrap' },
 });
