@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
-  AccessibilityInfo,
   Animated,
   BackHandler,
   PanResponder,
@@ -12,6 +11,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { useTheme } from '@shared/theme';
+import { moveAccessibilityFocus } from './accessibilityFocus';
 import { GlassIconButton } from './GlassIconButton';
 import { GlassSurface } from './GlassSurface';
 import { Icon } from './Icon';
@@ -97,7 +97,7 @@ export function GlassSheet({
     }
     const target = handle.current;
     if (target !== null) {
-      AccessibilityInfo.sendAccessibilityEvent(target, 'focus');
+      moveAccessibilityFocus(target);
     }
     const back = BackHandler.addEventListener('hardwareBackPress', () => {
       dismiss();

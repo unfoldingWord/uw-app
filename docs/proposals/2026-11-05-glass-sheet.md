@@ -25,6 +25,10 @@ surface, and the only slide-up is the book picker's `Modal`. A sheet is a shared
     adjustable element: increment expands, decrement collapses, escape dismisses, activate toggles; focus moves
     to it when the sheet opens; Android Back dismisses it; the close button has its own required name;
   - glass: `GlassSurface` level 3, heavy blur, radius `2xl` (the readme's sheet radius).
+- **`src/shared/glass/accessibilityFocus.ts`** and **`accessibilityFocus.web.ts`** (2026-11-05, with #84): moving
+  focus to the grabber goes through `moveAccessibilityFocus`, which calls `AccessibilityInfo.sendAccessibilityEvent`
+  on iOS and Android. react-native-web has no such function, so the study passage rendered blank in the web
+  harness; the web file does nothing, and a browser keeps its own focus order.
 - **`src/shared/glass/sheet.ts`**: the pure geometry (`sheetHeights`, `detentHeight`, `dragHeight`,
   `settleDetent`), tested in Node.
 - **Study**: no verse selected, no sheet, and the text fills the screen; tapping a verse opens the sheet at peek
@@ -43,7 +47,7 @@ surface, and the only slide-up is the book picker's `Modal`. A sheet is a shared
 
 ## Rules affected
 
-- Rule 4: a new file in `src/shared/glass/` and two new exports from its index. No existing primitive changes.
+- Rule 4: new files in `src/shared/glass/` and two new exports from its index. No existing primitive changes.
 - Section 7: the design system has no sheet component and no tokens for a sheet's peek height, drag threshold or
   release projection. This uses existing values only and lists the design change needed: peek reuses the Study
   panel's existing half share (`helpsPeekShare = 0.5`), expanded is all the room between the header and the
