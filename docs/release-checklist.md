@@ -22,6 +22,13 @@ recorded run on a phone; **blocked** names the missing input and its owner.
 
 ## Also needed before submission
 
+- **English carried in the app (ON-5, ADR 0015).** Every native build runs `npm run bundled:fetch`, which needs
+  git.door43.org and cdn.door43.org from the build machine (EAS, GitHub Actions) and fails the build when the
+  lock does not verify. Before a release, refresh the lock if the weekly `bundled` job reports newer English
+  releases (`npm run bundled:lock`, then a pull request), and check a release APK's `native-code` line shows only
+  `arm64-v8a` and `armeabi-v7a` (decision 106). A phone must show English and the stories with pictures after a
+  first launch in airplane mode before this counts as proven.
+
 - **Transfers per platform pair (decided, issue #30).** PRD 14's measure is "transfers completed" only, the
   count PRD 9 already lists. The `transfersByPlatformPair` fold is removed, so no count by platform pair is kept
   on the phone or leaves in the diagnostics file; SH-1 proves iOS to Android and back from the

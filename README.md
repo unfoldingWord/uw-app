@@ -95,8 +95,9 @@ owns, permissions, provenance, routes, strings, tokens), and `npm run icons` red
 
 ## Run on a device
 
-Node 22 and npm; `npm ci` first. The app runs as a development build, not in
-Expo Go.
+Node 22 and npm; `npm ci` first, then `npm run bundled:fetch`, which downloads and
+verifies the English content the app carries (about 71 MB, ADR 0015); Metro cannot
+bundle the app without it. The app runs as a development build, not in Expo Go.
 
 - Android: Android Studio with an emulator, or a phone with USB debugging,
   then `npx expo run:android`.

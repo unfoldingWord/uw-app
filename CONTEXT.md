@@ -43,8 +43,12 @@ A Language Pack installed without one or more of its optional resources because 
 _Avoid_: broken pack, incomplete download
 
 **Source**:
-Where a pack's burritos come from: the Catalog, a Peer, or a File. Each installed burrito keeps its own, shown in Storage and on the Licence page; a peer or a file that would replace a burrito from the catalog with a different commit asks the leader first.
+Where a pack's burritos come from: the Catalog, the app itself (**Bundled**), a Peer, or a File. Each installed burrito keeps its own, shown in Storage and on the Licence page ("Came with the app" for Bundled); a peer or a file that would replace a burrito from the catalog with a different commit asks the leader first.
 _Avoid_: origin, provider
+
+**Bundled**:
+The source of the burritos the app carries inside its own binary: the English default Language Pack and the Image Pack, pinned release by release in `content/bundled.lock.json` and installed on first launch with no download and no prompt (**placing**). A carried pack the leader removed is never placed again (ADR 0015). The word names this source only; a burrito is never called a bundle.
+_Avoid_: preloaded, built-in content, seed data
 
 **Provenance**:
 The release tag, commit, publisher and licence carried on every piece of content, from download to screen to whatever leaves the device.
