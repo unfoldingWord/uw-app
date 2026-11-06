@@ -45,6 +45,7 @@ export const failureSteps = [
   'backup',
   'catalog',
   'install',
+  'bundled',
   'peer',
   'file',
   'remove',

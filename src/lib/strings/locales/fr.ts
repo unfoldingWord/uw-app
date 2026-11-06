@@ -30,6 +30,7 @@ export const fr: LocaleTable = {
   'common.bookmark.remove': 'Retirer des éléments gardés',
   'common.joined': '{first} · {second}',
   'common.source.catalog': 'Depuis le catalogue',
+  'common.source.bundled': 'Fourni avec l’application',
   'common.source.peer': 'Depuis un autre téléphone',
   'common.source.file': 'Depuis un fichier',
   'common.replace.file':

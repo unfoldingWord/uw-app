@@ -1,5 +1,6 @@
 import type { Db, DevicePlatform, Files, Http, HttpDownload, HttpRequest, Kv, Ports } from '@lib/ports';
 import { createMemoryAudio, type MemoryAudio } from '@sim/adapters/audio';
+import { createMemoryBundled } from '@sim/adapters/bundled';
 import { createMemoryClipboard } from '@sim/adapters/clipboard';
 import { createMemoryClock } from '@sim/adapters/clock';
 import { createMemoryFiles } from '@sim/adapters/files';
@@ -214,5 +215,6 @@ export function createPlatformPorts(policy: HostPolicy): Ports {
     clipboard: createMemoryClipboard(),
     locale,
     picker: createMemoryPicker(),
+    bundled: createMemoryBundled(files),
   };
 }

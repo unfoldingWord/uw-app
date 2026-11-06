@@ -191,7 +191,7 @@ describe('kernel composition', () => {
     expect(created.filter((table) => !tables.includes(table))).toEqual([]);
     expect(kernelModules.catalog.owns.tables).toEqual(['catalog_releases', 'catalog_languages']);
     expect(kernelModules.packs.owns).toEqual({
-      tables: ['packs', 'pack_burritos'],
+      tables: ['packs', 'pack_burritos', 'bundled_packs'],
       directories: ['packs'],
       keys: [],
     });

@@ -30,6 +30,7 @@ export const my: LocaleTable = {
   'common.bookmark.remove': 'သိမ်းထားသည်များမှ ဖယ်ရန်',
   'common.joined': '{first} · {second}',
   'common.source.catalog': 'ကတ်တလောက်မှ',
+  'common.source.bundled': 'အက်ပ်နှင့်အတူ ပါလာသည်',
   'common.source.peer': 'အခြားဖုန်းမှ',
   'common.source.file': 'ဖိုင်မှ',
   'common.replace.file':

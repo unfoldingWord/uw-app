@@ -2,7 +2,7 @@ export const packKinds = ['language', 'image', 'audio', 'original'] as const;
 
 export type PackKind = (typeof packKinds)[number];
 
-export const packSources = ['catalog', 'peer', 'file'] as const;
+export const packSources = ['catalog', 'bundled', 'peer', 'file'] as const;
 
 export type PackSourceKind = (typeof packSources)[number];
 

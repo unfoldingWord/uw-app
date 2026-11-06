@@ -5,6 +5,7 @@ import { createKernel, type Kernel } from '@lib/kernel';
 import type { AppPackage, Clock, DeviceLocale, DevicePlatform, Ids } from '@lib/ports';
 import type { LocaleGate } from '@lib/strings/locales';
 import { createMemoryAudio, type MemoryAudio } from './adapters/audio';
+import { createMemoryBundled, type BundledContent, type MemoryBundled } from './adapters/bundled';
 import { createMemoryClipboard, type MemoryClipboard } from './adapters/clipboard';
 import { createMemoryDb, type MemoryDb } from './adapters/db';
 import { createMemoryFiles, type MemoryFiles } from './adapters/files';
@@ -28,6 +29,7 @@ export type DeviceOptions = {
   localeGate?: LocaleGate;
   startFaults?: readonly StartFault[];
   telemetryEndpoint?: string;
+  bundled?: BundledContent;
 };
 
 export type SimAdapters = {
@@ -42,6 +44,7 @@ export type SimAdapters = {
   shareSheet: MemoryShareSheet;
   clipboard: MemoryClipboard;
   picker: MemoryPicker;
+  bundled: MemoryBundled;
   locale: MemoryLocale;
 };
 
@@ -87,6 +90,7 @@ export function createSimDevice(name: string, world: DeviceWorld, options: Devic
     shareSheet: createMemoryShareSheet(),
     clipboard: createMemoryClipboard(),
     picker: createMemoryPicker(),
+    bundled: createMemoryBundled(files, options.bundled),
     locale: createMemoryLocale(options.locale),
   };
   const boot = (faults: readonly StartFault[] = []): Kernel =>

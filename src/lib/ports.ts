@@ -1,5 +1,7 @@
 import type { FailureCode } from './domain/failures';
+import type { PackId, ResourceRow } from './domain/pack';
 import type { Provenance } from './domain/provenance';
+import type { ReleaseRef } from './domain/release';
 
 export type PortError = Error & { readonly code: FailureCode };
 
@@ -186,6 +188,22 @@ export type Clipboard = {
   copy(text: string): Promise<void>;
 };
 
+export type BundledArchive = ReleaseRef & {
+  file: string;
+  pack: PackId;
+  row: ResourceRow;
+  commit: string;
+  title: string;
+  subject: string;
+  published: string;
+  bytes: number;
+};
+
+export type Bundled = {
+  archives(): readonly BundledArchive[];
+  open(file: string): Promise<string>;
+};
+
 export type PickedFile = { uri: string };
 
 export type Picker = {
@@ -210,5 +228,6 @@ export type Ports = {
   shareSheet: ShareSheet;
   clipboard: Clipboard;
   picker: Picker;
+  bundled: Bundled;
   locale: Locale;
 };

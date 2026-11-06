@@ -14,7 +14,8 @@
       "@sim/*": ["./sim/*"],
       "@modules/*": ["./modules/*"],
       "@design-system/assets/fonts/*": ["./design-system/assets/fonts/*"],
-      "@design-system/assets/logo/*": ["./design-system/assets/logo/*"]
+      "@design-system/assets/logo/*": ["./design-system/assets/logo/*"],
+      "@content/bundled/*": ["./content/bundled/*"]
     }
   },
   "include": ["app/**/*.ts", "app/**/*.tsx", "src/**/*.ts", "src/**/*.tsx", "expo-env.d.ts"],

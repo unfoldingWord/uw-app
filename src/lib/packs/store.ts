@@ -2,7 +2,7 @@ import { packKinds, packSources, resourceRows, type PackId } from '../domain/pac
 import type { DbTransaction, DbRow } from '../ports';
 import type { InstalledBurrito, InstalledPack } from './types';
 
-export const packTables = ['packs', 'pack_burritos'] as const;
+export const packTables = ['packs', 'pack_burritos', 'bundled_packs'] as const;
 
 function textOf(row: DbRow, column: string): string {
   const value = row[column];
@@ -98,4 +98,13 @@ export async function writeInstalledPack(transaction: DbTransaction, pack: Insta
 export async function deleteInstalledPack(transaction: DbTransaction, pack: PackId): Promise<void> {
   await transaction.run('DELETE FROM pack_burritos WHERE pack = ?', [pack]);
   await transaction.run('DELETE FROM packs WHERE pack = ?', [pack]);
+}
+
+export async function readBundledPacks(db: DbTransaction): Promise<ReadonlySet<PackId>> {
+  const rows = await db.all('SELECT pack FROM bundled_packs ORDER BY pack');
+  return new Set(rows.map((row) => textOf(row, 'pack')));
+}
+
+export async function writeBundledPack(transaction: DbTransaction, pack: PackId): Promise<void> {
+  await transaction.run('INSERT OR IGNORE INTO bundled_packs (pack) VALUES (?)', [pack]);
 }

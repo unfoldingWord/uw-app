@@ -30,6 +30,7 @@ export const id: LocaleTable = {
   'common.bookmark.remove': 'Hapus dari simpanan',
   'common.joined': '{first} · {second}',
   'common.source.catalog': 'Dari katalog',
+  'common.source.bundled': 'Bawaan aplikasi',
   'common.source.peer': 'Dari ponsel lain',
   'common.source.file': 'Dari berkas',
   'common.replace.file': 'Ganti {resources} yang Anda unduh dari katalog dengan salinan di berkas ini?',

@@ -29,6 +29,7 @@ export const common = {
   'common.bookmark.remove': 'Remove from saved',
   'common.joined': '{first} · {second}',
   'common.source.catalog': 'From the catalog',
+  'common.source.bundled': 'Came with the app',
   'common.source.peer': 'From another phone',
   'common.source.file': 'From a file',
   'common.replace.file':

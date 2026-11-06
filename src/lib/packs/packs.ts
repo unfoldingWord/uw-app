@@ -14,6 +14,7 @@ import { refOf, resourceKey, type ReleaseRef } from '../domain/release';
 import { defineModule } from '../module';
 import type { PickedFile } from '../ports';
 import {
+  bundledOffer,
   catalogOffer,
   catalogReplacements,
   createInstaller,
@@ -22,8 +23,14 @@ import {
   type Resolved,
 } from './install';
 import { defaultReleases, missingReleases, optionalReleases, updatesOf } from './plan';
-import { fromCatalog, fromFile, type PackPlan, type PackSource } from './source';
-import { deleteInstalledPack, packTables, readInstalledPacks } from './store';
+import { fromBundled, fromCatalog, fromFile, type PackPlan, type PackSource } from './source';
+import {
+  deleteInstalledPack,
+  packTables,
+  readBundledPacks,
+  readInstalledPacks,
+  writeBundledPack,
+} from './store';
 import { inboxDirectory, recoverPacks } from './layout';
 import { removeIfPresent } from './tree';
 import type {
@@ -61,6 +68,8 @@ export type PacksApi = {
   confirmReplace(): Promise<InstallOutcome>;
   declineReplace(): Promise<void>;
   installFromCatalog(pack: PackId, options?: CatalogInstallOptions): Promise<InstallOutcome>;
+  bundled(): readonly PackId[];
+  placeBundled(): Promise<readonly InstallOutcome[]>;
   update(pack: PackId): Promise<InstallOutcome>;
   remove(pack: PackId): Promise<RemoveOutcome>;
   installed(): readonly InstalledPack[];
@@ -297,6 +306,66 @@ export const packsModule = defineModule<PacksApi>({
       });
     }
 
+    const bundledPacks = (): PackId[] => [
+      ...new Set(ports.bundled.archives().map((archive) => archive.pack)),
+    ];
+
+    async function markBundled(pack: PackId): Promise<void> {
+      try {
+        await ports.db.transaction((transaction) => writeBundledPack(transaction, pack));
+      } catch (error) {
+        await context.emit({
+          type: 'Failure',
+          payload: { code: failureCodeOf(error), context: { pack, step: 'bundled' } },
+        });
+      }
+    }
+
+    async function placeAll(): Promise<InstallOutcome[]> {
+      let placed: ReadonlySet<PackId>;
+      try {
+        placed = await readBundledPacks(ports.db);
+      } catch (error) {
+        await context.emit({
+          type: 'Failure',
+          payload: { code: failureCodeOf(error), context: { step: 'bundled' } },
+        });
+        return [];
+      }
+      const outcomes: InstallOutcome[] = [];
+      for (const pack of bundledPacks()) {
+        if (installed.has(pack)) {
+          if (!placed.has(pack)) {
+            await markBundled(pack);
+          }
+          continue;
+        }
+        if (placed.has(pack)) {
+          continue;
+        }
+        const archives = ports.bundled.archives().filter((archive) => archive.pack === pack);
+        const outcome = await serial(() => installNow(fromBundled(archives), { pack }));
+        if (outcome.ok) {
+          await markBundled(pack);
+        }
+        outcomes.push(outcome);
+      }
+      return outcomes;
+    }
+
+    let placing: Promise<readonly InstallOutcome[]> | undefined;
+
+    function placeBundled(): Promise<readonly InstallOutcome[]> {
+      if (placing !== undefined) {
+        return placing;
+      }
+      const started = placeAll().finally(() => {
+        placing = undefined;
+      });
+      placing = started;
+      return started;
+    }
+
     async function updates(): Promise<readonly PackUpdate[]> {
       return updatesOf(await catalogReleases(), [...installed.values()]);
     }
@@ -384,6 +453,8 @@ export const packsModule = defineModule<PacksApi>({
         confirmReplace,
         declineReplace,
         installFromCatalog,
+        bundled: bundledPacks,
+        placeBundled,
         update,
         remove,
         installed: sortedPacks,
@@ -459,13 +530,28 @@ export const packsModule = defineModule<PacksApi>({
                 resourceKey(release) === resourceKey(ref) &&
                 release.tag === ref.tag,
             ) ?? refOf(ref);
+          const carried = ports.bundled.archives();
+          const offerOf = (ref: ReleaseRef) => {
+            const archive = carried.find(
+              (item) =>
+                item.pack === event.payload.pack &&
+                resourceKey(item) === resourceKey(ref) &&
+                item.tag === ref.tag,
+            );
+            return event.payload.source === 'bundled' && archive !== undefined
+              ? bundledOffer(ports, archive)
+              : catalogOffer(ports, choiceOf(ref));
+          };
           const resolved: Resolved = {
             kind: event.payload.source,
-            offers: event.payload.releases.map((ref) => catalogOffer(ports, choiceOf(ref))),
+            offers: event.payload.releases.map(offerOf),
             announce: false,
             replayed: true,
           };
-          await serial(() => installer.prepare(resolved, { pack: event.payload.pack }));
+          const outcome = await serial(() => installer.prepare(resolved, { pack: event.payload.pack }));
+          if (outcome.ok && event.payload.source === 'bundled') {
+            await markBundled(event.payload.pack);
+          }
         },
         PackRemoved: async (event) => {
           await remove(event.payload.pack);

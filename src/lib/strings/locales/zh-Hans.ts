@@ -30,6 +30,7 @@ export const zhHans: LocaleTable = {
   'common.bookmark.remove': '从收藏中移除',
   'common.joined': '{first} · {second}',
   'common.source.catalog': '来自资源目录',
+  'common.source.bundled': '随应用提供',
   'common.source.peer': '来自另一部手机',
   'common.source.file': '来自文件',
   'common.replace.file': '要用此文件中的副本替换你从资源目录下载的 {resources} 吗？',

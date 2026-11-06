@@ -30,6 +30,7 @@ export const es419: LocaleTable = {
   'common.bookmark.remove': 'Quitar de guardados',
   'common.joined': '{first} · {second}',
   'common.source.catalog': 'Del catálogo',
+  'common.source.bundled': 'Vino con la aplicación',
   'common.source.peer': 'De otro teléfono',
   'common.source.file': 'De un archivo',
   'common.replace.file':

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Ports } from '@lib/ports';
 import { createMemoryAudio } from './audio';
+import { createMemoryBundled } from './bundled';
 import { createMemoryClipboard } from './clipboard';
 import { createMemoryClock } from './clock';
 import { portContract, runPortContract, type ContractSubject } from './contract';
@@ -18,6 +19,21 @@ const fixtureUrl = 'https://git.door43.org/unfoldingWord/qaa_ult/sb/v1.zip';
 const escapingUrl = 'https://git.door43.org/unfoldingWord/qaa_ult/sb/escape.zip';
 const contractClip = { kind: 'file', path: 'contract/clip.mp3' } as const;
 const fixtureBody = new TextEncoder().encode('a burrito archive of some length');
+const carriedBody = new TextEncoder().encode('an archive the app carries inside it');
+const carried = {
+  file: 'qaa_ult.zip',
+  pack: 'language:qaa',
+  row: 'text',
+  publisher: 'unfoldingWord',
+  resource: 'qaa_ult',
+  language: 'qaa',
+  tag: 'v1',
+  commit: 'c0ffee',
+  title: 'Fixture Literal Text',
+  subject: 'Aligned Bible',
+  published: '2026-09-01T00:00:00Z',
+  bytes: carriedBody.byteLength,
+} as const;
 
 function memorySubject(index: number): ContractSubject {
   const clock = createMemoryClock();
@@ -39,6 +55,10 @@ function memorySubject(index: number): ContractSubject {
     shareSheet: createMemoryShareSheet(),
     clipboard: createMemoryClipboard(),
     picker: createMemoryPicker(),
+    bundled: createMemoryBundled(files, {
+      archives: [carried],
+      bytes: new Map([[carried.file, carriedBody]]),
+    }),
     locale: createMemoryLocale(),
   };
   let external = 0;
@@ -62,7 +82,19 @@ describe('port contract, against the memory adapters', () => {
     expect(results.filter((result) => result.outcome === 'fail')).toEqual([]);
     expect(results).toHaveLength(portContract.length);
     expect(new Set(results.map((result) => result.port))).toEqual(
-      new Set(['files', 'db', 'kv', 'http', 'clock', 'ids', 'locale', 'audio', 'transport', 'clipboard']),
+      new Set([
+        'files',
+        'db',
+        'kv',
+        'http',
+        'clock',
+        'ids',
+        'locale',
+        'audio',
+        'transport',
+        'clipboard',
+        'bundled',
+      ]),
     );
   });
 

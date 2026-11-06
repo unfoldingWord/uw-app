@@ -30,6 +30,7 @@ export const ptBR: LocaleTable = {
   'common.bookmark.remove': 'Remover dos salvos',
   'common.joined': '{first} · {second}',
   'common.source.catalog': 'Do catálogo',
+  'common.source.bundled': 'Veio com o aplicativo',
   'common.source.peer': 'De outro celular',
   'common.source.file': 'De um arquivo',
   'common.replace.file': 'Substituir {resources}, que você baixou do catálogo, pela cópia deste arquivo?',

@@ -30,6 +30,7 @@ export const ur: LocaleTable = {
   'common.bookmark.remove': 'محفوظ شدہ سے ہٹائیں',
   'common.joined': '{first} · {second}',
   'common.source.catalog': 'کیٹلاگ سے',
+  'common.source.bundled': 'ایپ کے ساتھ آیا',
   'common.source.peer': 'دوسرے فون سے',
   'common.source.file': 'ایک فائل سے',
   'common.replace.file': 'کیا کیٹلاگ سے ڈاؤن لوڈ کیے گئے {resources} کو اس فائل کی نقل سے بدل دیں؟',

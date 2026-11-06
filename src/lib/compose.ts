@@ -152,6 +152,7 @@ function modulePorts(ports: Ports, scope: Scope, ids: Ids, send: SendPolicy): Mo
     shareSheet: ports.shareSheet,
     clipboard: ports.clipboard,
     picker: ports.picker,
+    bundled: ports.bundled,
     locale: ports.locale,
   };
 }

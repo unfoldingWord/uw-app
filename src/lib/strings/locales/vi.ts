@@ -30,6 +30,7 @@ export const vi: LocaleTable = {
   'common.bookmark.remove': 'Bỏ khỏi mục đã lưu',
   'common.joined': '{first} · {second}',
   'common.source.catalog': 'Từ danh mục',
+  'common.source.bundled': 'Có sẵn trong ứng dụng',
   'common.source.peer': 'Từ điện thoại khác',
   'common.source.file': 'Từ một tệp',
   'common.replace.file': 'Thay {resources} bạn đã tải từ danh mục bằng bản trong tệp này?',

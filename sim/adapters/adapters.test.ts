@@ -11,6 +11,7 @@ import { createMemoryLocale, defaultSimLocale } from './locale';
 import { createPlaybackClock, createPlaybackIds } from './playback';
 import { createMemoryShareSheet } from './share-sheet';
 import { createMemoryClipboard } from './clipboard';
+import { createMemoryBundled } from './bundled';
 import { createTransportBus } from './transport';
 
 async function codeOf(work: Promise<unknown>): Promise<string> {
@@ -314,6 +315,38 @@ describe('Clipboard memory adapter', () => {
     expect(clipboard.text()).toBe('Rut 1:16');
     await clipboard.copy('Rut 1:17');
     expect(clipboard.text()).toBe('Rut 1:17');
+  });
+});
+
+describe('Bundled memory adapter', () => {
+  it('hands an archive it carries to Files, refuses once when told to, and carries a replacement', async () => {
+    const files = createMemoryFiles();
+    const archive = {
+      file: 'qaa_ult.zip',
+      pack: 'language:qaa',
+      row: 'text',
+      publisher: 'unfoldingWord',
+      resource: 'qaa_ult',
+      language: 'qaa',
+      tag: 'v1',
+      commit: 'c0ffee',
+      title: 'Fixture Literal Text',
+      subject: 'Aligned Bible',
+      published: '2026-09-01T00:00:00Z',
+      bytes: 3,
+    } as const;
+    const bundled = createMemoryBundled(files, {
+      archives: [archive],
+      bytes: new Map([[archive.file, new Uint8Array([1, 2, 3])]]),
+    });
+    expect(bundled.archives()).toEqual([archive]);
+    bundled.failNext('files.io');
+    expect(await codeOf(bundled.open(archive.file))).toBe('files.io');
+    expect(await codeOf(bundled.open('missing.zip'))).toBe('files.not-found');
+    bundled.replace(archive.file, new Uint8Array([9]));
+    const uri = await bundled.open(archive.file);
+    expect(files.externalBytes(uri)).toBe(1);
+    expect(bundled.opened()).toEqual([archive.file]);
   });
 });
 

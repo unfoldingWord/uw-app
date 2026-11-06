@@ -18,7 +18,7 @@ import { archiveUrlOf, refOf, resourceKey, type ReleaseRef } from '../domain/rel
 import type { JournalEntry } from '../journal/entry';
 import type { EventDraft } from '../journal/journal';
 import type { ModulePorts } from '../module';
-import type { HttpDownloaded } from '../ports';
+import type { BundledArchive, HttpDownloaded } from '../ports';
 import { checkBurrito, type CheckedBurrito } from './burrito';
 import { buildAudioPack, buildImagePack, type BuiltDirectory, type OnItems } from './built';
 import { isWordsBurrito, measuredBytes, restoreSharedPayload, shareWordsPayload } from './shared';
@@ -79,9 +79,11 @@ const requiredLanguageRows: readonly ResourceRow[] = ['text'];
 
 const installWideFailures: readonly FailureCode[] = ['pack.no-space', 'files.no-space'];
 
+const releaseSources: readonly PackSourceKind[] = ['catalog', 'bundled'];
+
 function isRequired(offer: Offer, target: Target, resolved: Resolved): boolean {
   return (
-    resolved.kind !== 'catalog' ||
+    !releaseSources.includes(resolved.kind) ||
     target.kind !== 'language' ||
     offer.row === undefined ||
     requiredLanguageRows.includes(offer.row)
@@ -156,6 +158,39 @@ export function catalogOffer(ports: ModulePorts, choice: CatalogChoice): Offer {
   };
 }
 
+export function bundledOffer(ports: ModulePorts, archive: BundledArchive): Offer {
+  const choice: CatalogChoice = {
+    publisher: archive.publisher,
+    resource: archive.resource,
+    language: archive.language,
+    tag: archive.tag,
+    commit: archive.commit,
+    title: archive.title,
+    published: archive.published,
+    subject: archive.subject,
+    row: archive.row,
+    bytes: archive.bytes,
+  };
+  return {
+    ref: refOf(choice),
+    revision: archive.commit,
+    row: archive.row,
+    bytes: archive.bytes,
+    choice,
+    async fetch(stage, index, onBytes) {
+      const path = `${stage}/${index}.zip`;
+      try {
+        const uri = await ports.bundled.open(archive.file);
+        onBytes(await ports.files.adopt(uri, path));
+      } catch (error) {
+        await removeIfPresent(ports.files, path);
+        return { ok: false, code: failureCodeOf(error) };
+      }
+      return { ok: true, path, temporary: true };
+    },
+  };
+}
+
 export type KnownReleases = () => Promise<readonly CatalogChoice[]>;
 
 async function catalogMatch(
@@ -215,6 +250,15 @@ export async function resolveSource(
         resolved: {
           kind: 'catalog',
           offers: source.releases.map((choice) => catalogOffer(ports, choice)),
+          announce: false,
+        },
+      };
+    case 'bundled':
+      return {
+        ok: true,
+        resolved: {
+          kind: 'bundled',
+          offers: source.archives.map((archive) => bundledOffer(ports, archive)),
           announce: false,
         },
       };
@@ -290,7 +334,7 @@ export function catalogReplacements(
   installed: ReadonlyMap<PackId, InstalledPack>,
 ): CatalogReplacements | undefined {
   const source = resolved.kind;
-  if (source === 'catalog') {
+  if (source === 'catalog' || source === 'bundled') {
     return undefined;
   }
   const chosen = selected(resolved.offers, plan);
