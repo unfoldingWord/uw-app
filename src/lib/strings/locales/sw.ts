@@ -587,4 +587,11 @@ export const sw: LocaleTable = {
   'formation.stories.chooseLanguage': 'Chagua lugha',
   'home.formation.browse': 'Vinjari hadithi',
   'library.stories.browse': 'Vinjari hadithi',
+
+  'languages.downloaded.title': 'Kwenye simu hii',
+  'languages.downloaded.show': 'Ona rasilimali za {language} kwenye simu hii',
+  'languages.resource.published': 'Imechapishwa na {publisher}',
+  'languages.resource.version': 'Toleo {version}',
+  'languages.resource.source': 'Ona chanzo mtandaoni',
+  'languages.resource.missing': 'Rasilimali hii haipo tena kwenye simu hii.',
 };

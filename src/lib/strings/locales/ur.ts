@@ -576,4 +576,11 @@ export const ur: LocaleTable = {
   'formation.stories.chooseLanguage': 'زبان منتخب کریں',
   'home.formation.browse': 'کہانیاں دیکھیں',
   'library.stories.browse': 'کہانیاں دیکھیں',
+
+  'languages.downloaded.title': 'اس فون پر',
+  'languages.downloaded.show': 'اس فون پر {language} کے وسائل دیکھیں',
+  'languages.resource.published': 'ناشر {publisher}',
+  'languages.resource.version': 'ورژن {version}',
+  'languages.resource.source': 'ماخذ آن لائن دیکھیں',
+  'languages.resource.missing': 'یہ وسیلہ اب اس فون پر نہیں ہے۔',
 };

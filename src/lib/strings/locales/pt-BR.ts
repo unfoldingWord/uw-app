@@ -613,4 +613,11 @@ export const ptBR: LocaleTable = {
   'formation.stories.chooseLanguage': 'Escolher um idioma',
   'home.formation.browse': 'Explorar as histórias',
   'library.stories.browse': 'Explorar as histórias',
+
+  'languages.downloaded.title': 'Neste celular',
+  'languages.downloaded.show': 'Ver os recursos em {language} neste celular',
+  'languages.resource.published': 'Publicado por {publisher}',
+  'languages.resource.version': 'Versão {version}',
+  'languages.resource.source': 'Ver a fonte on-line',
+  'languages.resource.missing': 'Este recurso não está mais neste celular.',
 };

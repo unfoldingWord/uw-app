@@ -106,4 +106,10 @@ export const languages = {
   'languages.more.title': 'More to download',
   'languages.more.about':
     'Other publishers and extra resources for {language}, downloaded only when you choose them.',
+  'languages.downloaded.title': 'On this phone',
+  'languages.downloaded.show': 'See the resources of {language} on this phone',
+  'languages.resource.published': 'Published by {publisher}',
+  'languages.resource.version': 'Version {version}',
+  'languages.resource.source': 'See the source online',
+  'languages.resource.missing': 'This resource is no longer on this phone.',
 } as const;

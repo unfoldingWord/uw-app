@@ -594,4 +594,11 @@ export const nl: LocaleTable = {
   'formation.stories.chooseLanguage': 'Kies een taal',
   'home.formation.browse': 'Verhalen bekijken',
   'library.stories.browse': 'Verhalen bekijken',
+
+  'languages.downloaded.title': 'Op deze telefoon',
+  'languages.downloaded.show': 'Bekijk de bronnen in het {language} op deze telefoon',
+  'languages.resource.published': 'Uitgegeven door {publisher}',
+  'languages.resource.version': 'Versie {version}',
+  'languages.resource.source': 'Bekijk de bron online',
+  'languages.resource.missing': 'Deze bron staat niet meer op deze telefoon.',
 };

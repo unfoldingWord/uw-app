@@ -577,4 +577,11 @@ export const fa: LocaleTable = {
   'formation.stories.chooseLanguage': 'انتخاب زبان',
   'home.formation.browse': 'مرور داستان‌ها',
   'library.stories.browse': 'مرور داستان‌ها',
+
+  'languages.downloaded.title': 'روی این گوشی',
+  'languages.downloaded.show': 'دیدن منابع {language} روی این گوشی',
+  'languages.resource.published': 'منتشرشده توسط {publisher}',
+  'languages.resource.version': 'نسخه {version}',
+  'languages.resource.source': 'دیدن منبع به‌صورت آنلاین',
+  'languages.resource.missing': 'این منبع دیگر روی این گوشی نیست.',
 };

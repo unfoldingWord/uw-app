@@ -673,4 +673,11 @@ export const ru: LocaleTable = {
   'formation.stories.chooseLanguage': 'Выбрать язык',
   'home.formation.browse': 'Просмотреть истории',
   'library.stories.browse': 'Просмотреть истории',
+
+  'languages.downloaded.title': 'На этом телефоне',
+  'languages.downloaded.show': 'Показать ресурсы на языке {language} на этом телефоне',
+  'languages.resource.published': 'Издатель: {publisher}',
+  'languages.resource.version': 'Версия {version}',
+  'languages.resource.source': 'Открыть источник в интернете',
+  'languages.resource.missing': 'Этого ресурса больше нет на этом телефоне.',
 };

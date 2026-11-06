@@ -699,4 +699,11 @@ export const ar: LocaleTable = {
   'formation.stories.chooseLanguage': 'اختر لغة',
   'home.formation.browse': 'تصفح القصص',
   'library.stories.browse': 'تصفح القصص',
+
+  'languages.downloaded.title': 'على هذا الهاتف',
+  'languages.downloaded.show': 'اعرض موارد {language} على هذا الهاتف',
+  'languages.resource.published': 'نشره {publisher}',
+  'languages.resource.version': 'الإصدار {version}',
+  'languages.resource.source': 'اعرض المصدر على الإنترنت',
+  'languages.resource.missing': 'هذا المورد لم يعد على هذا الهاتف.',
 };

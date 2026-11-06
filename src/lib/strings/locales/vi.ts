@@ -552,4 +552,11 @@ export const vi: LocaleTable = {
   'formation.stories.chooseLanguage': 'Chọn ngôn ngữ',
   'home.formation.browse': 'Xem các câu chuyện',
   'library.stories.browse': 'Xem các câu chuyện',
+
+  'languages.downloaded.title': 'Trên điện thoại này',
+  'languages.downloaded.show': 'Xem tài nguyên {language} trên điện thoại này',
+  'languages.resource.published': 'Xuất bản bởi {publisher}',
+  'languages.resource.version': 'Phiên bản {version}',
+  'languages.resource.source': 'Xem nguồn trực tuyến',
+  'languages.resource.missing': 'Tài nguyên này không còn trên điện thoại này.',
 };
