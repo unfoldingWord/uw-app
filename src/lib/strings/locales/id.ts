@@ -565,4 +565,18 @@ export const id: LocaleTable = {
 
   'formation.training.missing': 'Panduan ini tidak dapat ditemukan.',
   'formation.training.open': 'Buka Pelatihan',
+
+  'formation.stories': 'Cerita Alkitab Terbuka',
+  'formation.stories.browse': 'Jelajahi cerita',
+  'formation.stories.noLanguage': 'Pilih bahasa untuk membaca cerita.',
+  'formation.stories.chooseLanguage': 'Pilih bahasa',
+  'home.formation.browse': 'Jelajahi cerita',
+  'library.stories.browse': 'Jelajahi cerita',
+
+  'languages.downloaded.title': 'Di ponsel ini',
+  'languages.downloaded.show': 'Lihat sumber {language} di ponsel ini',
+  'languages.resource.published': 'Diterbitkan oleh {publisher}',
+  'languages.resource.version': 'Versi {version}',
+  'languages.resource.source': 'Lihat sumbernya secara daring',
+  'languages.resource.missing': 'Sumber ini sudah tidak ada di ponsel ini.',
 };

@@ -77,7 +77,7 @@ export async function assembleArticle(
   return undefined;
 }
 
-async function imageFor(
+export async function imageFor(
   library: Library,
   storyEntry: Entry,
   name: string | undefined,

@@ -581,4 +581,18 @@ export const fa: LocaleTable = {
 
   'formation.training.missing': 'این راهنما پیدا نمی‌شود.',
   'formation.training.open': 'رفتن به آموزش',
+
+  'formation.stories': 'داستان‌های باز کتاب‌مقدس',
+  'formation.stories.browse': 'مرور داستان‌ها',
+  'formation.stories.noLanguage': 'برای خواندن داستان‌ها، یک زبان انتخاب کنید.',
+  'formation.stories.chooseLanguage': 'انتخاب زبان',
+  'home.formation.browse': 'مرور داستان‌ها',
+  'library.stories.browse': 'مرور داستان‌ها',
+
+  'languages.downloaded.title': 'روی این گوشی',
+  'languages.downloaded.show': 'دیدن منابع {language} روی این گوشی',
+  'languages.resource.published': 'منتشرشده توسط {publisher}',
+  'languages.resource.version': 'نسخه {version}',
+  'languages.resource.source': 'دیدن منبع به‌صورت آنلاین',
+  'languages.resource.missing': 'این منبع دیگر روی این گوشی نیست.',
 };

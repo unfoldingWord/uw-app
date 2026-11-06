@@ -591,4 +591,18 @@ export const sw: LocaleTable = {
 
   'formation.training.missing': 'Mwongozo huu haupatikani.',
   'formation.training.open': 'Nenda kwenye Mafunzo',
+
+  'formation.stories': 'Hadithi Huria za Biblia',
+  'formation.stories.browse': 'Vinjari hadithi',
+  'formation.stories.noLanguage': 'Chagua lugha ili usome hadithi.',
+  'formation.stories.chooseLanguage': 'Chagua lugha',
+  'home.formation.browse': 'Vinjari hadithi',
+  'library.stories.browse': 'Vinjari hadithi',
+
+  'languages.downloaded.title': 'Kwenye simu hii',
+  'languages.downloaded.show': 'Ona rasilimali za {language} kwenye simu hii',
+  'languages.resource.published': 'Imechapishwa na {publisher}',
+  'languages.resource.version': 'Toleo {version}',
+  'languages.resource.source': 'Ona chanzo mtandaoni',
+  'languages.resource.missing': 'Rasilimali hii haipo tena kwenye simu hii.',
 };

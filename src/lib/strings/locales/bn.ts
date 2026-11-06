@@ -576,4 +576,18 @@ export const bn: LocaleTable = {
 
   'formation.training.missing': 'এই নির্দেশিকাটি খুঁজে পাওয়া যাচ্ছে না।',
   'formation.training.open': 'প্রশিক্ষণে যান',
+
+  'formation.stories': 'ওপেন বাইবেল স্টোরিজ',
+  'formation.stories.browse': 'গল্পগুলো দেখুন',
+  'formation.stories.noLanguage': 'গল্পগুলো পড়তে একটি ভাষা বেছে নিন।',
+  'formation.stories.chooseLanguage': 'একটি ভাষা বেছে নিন',
+  'home.formation.browse': 'গল্পগুলো দেখুন',
+  'library.stories.browse': 'গল্পগুলো দেখুন',
+
+  'languages.downloaded.title': 'এই ফোনে',
+  'languages.downloaded.show': 'এই ফোনে থাকা {language} ভাষার রিসোর্সগুলো দেখুন',
+  'languages.resource.published': 'প্রকাশক {publisher}',
+  'languages.resource.version': 'সংস্করণ {version}',
+  'languages.resource.source': 'অনলাইনে উৎস দেখুন',
+  'languages.resource.missing': 'এই রিসোর্সটি আর এই ফোনে নেই।',
 };

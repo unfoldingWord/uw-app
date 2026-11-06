@@ -703,4 +703,18 @@ export const ar: LocaleTable = {
 
   'formation.training.missing': 'لا يمكن العثور على هذا الدليل.',
   'formation.training.open': 'انتقل إلى التدريب',
+
+  'formation.stories': 'قصص الكتاب المقدس المفتوحة',
+  'formation.stories.browse': 'تصفح القصص',
+  'formation.stories.noLanguage': 'اختر لغة لتقرأ القصص.',
+  'formation.stories.chooseLanguage': 'اختر لغة',
+  'home.formation.browse': 'تصفح القصص',
+  'library.stories.browse': 'تصفح القصص',
+
+  'languages.downloaded.title': 'على هذا الهاتف',
+  'languages.downloaded.show': 'اعرض موارد {language} على هذا الهاتف',
+  'languages.resource.published': 'نشره {publisher}',
+  'languages.resource.version': 'الإصدار {version}',
+  'languages.resource.source': 'اعرض المصدر على الإنترنت',
+  'languages.resource.missing': 'هذا المورد لم يعد على هذا الهاتف.',
 };

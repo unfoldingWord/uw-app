@@ -289,13 +289,19 @@ export type ManualEntry = {
   readonly sections: readonly AcademySection[];
 };
 
+export type StoryEntry = {
+  readonly number: number;
+  readonly title: string;
+  readonly picture?: StoryImage;
+};
+
 export type Contents = {
   readonly language: string;
   readonly texts: readonly TextContents[];
   readonly words: readonly ArticleEntry[];
   readonly academy: readonly ArticleEntry[];
   readonly manuals: readonly ManualEntry[];
-  readonly stories: readonly { readonly number: number; readonly title: string }[];
+  readonly stories: readonly StoryEntry[];
   readonly movements: readonly number[];
   readonly audio: readonly { readonly book: string; readonly chapter: number }[];
 };

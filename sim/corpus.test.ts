@@ -255,6 +255,16 @@ describe('corpus contents', () => {
     expect(contents.movements).toEqual([1, 2, 3]);
     expect(contents.audio).toEqual([]);
   });
+
+  it('names the first picture of each story when it is on the phone', async () => {
+    const device = await phone([qaa]);
+    const contents = await device.kernel.corpus.contents('qaa');
+    expect(contents.stories.map((story) => story.picture?.name)).toEqual([
+      'obs-en-01-01.jpg',
+      undefined,
+      undefined,
+    ]);
+  });
 });
 
 function academyIngredient(path: string, text: string) {

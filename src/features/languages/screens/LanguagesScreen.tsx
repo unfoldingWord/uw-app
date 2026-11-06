@@ -6,6 +6,7 @@ import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
 import { Header, IconAction, Notice, ScreenScaffold, useAsyncValue } from '@shared/ui';
 import { createLanguagesService } from '../service';
+import { DownloadedSection } from './DownloadedSection';
 import { ExtrasSection } from './ExtrasSection';
 import { ImportSection, OpenedFile, openedKey, type Asking, type RunImport } from './ImportSection';
 import { openedParam } from './intent';
@@ -133,6 +134,17 @@ export default function LanguagesScreen() {
                   onKeep={keepInstalled}
                 />
               )}
+              {query.trim() === '' ? (
+                <DownloadedSection
+                  failures={failures}
+                  onSelect={(language) =>
+                    run(language, async () => {
+                      await languages.select(language);
+                      return { ok: true };
+                    })
+                  }
+                />
+              ) : null}
               <GlassInput
                 accessibilityLabel={words.t('languages.search')}
                 placeholder={words.t('languages.search')}

@@ -43,6 +43,42 @@ the web shots load each route once and never switch a reading or press an arrow.
 - **Copy verses (#84):** not built. `expo-clipboard` is not installed in the shared `node_modules`, and this round
   installs nothing; `docs/proposals/2026-11-05-copy-verses.md` records the plan.
 
+## 2026-11-05 Stories contents (#81), sim, checks and web shots only
+
+Node v22. Nothing ran on a phone, an emulator or a simulator. The contents list's scrolling of 50 rows, the story
+pictures at thumbnail size from a real Image Pack, and the Home "Browse stories" button have not been seen on a device.
+
+- **Red first:** `FO-2.contents-of-every-story` failed before the service had it (`formation.contents is not a
+  function`). The `sim/corpus.test.ts` case for each story's first picture in `corpus.contents` failed before the
+  corpus named it.
+- **Found on the way:** the `provenance` check held every `contents.stories` entry to number and title only. It
+  now admits `picture` and checks it as a sourced value with its licence, like a frame's `image`.
+- **Verify:** `npm run verify` green with `TMPDIR` set to a private folder: 896 tests in 97 files, 9 checks,
+  73 of 73 scenarios, trace 51 Must requirements with 0 unproven, 21 fixture burritos, both bundles.
+- **Web shots:** `npm run shots -- --only formation-stories,formation,study-library,home` in light, dark, reduced
+  blur, RTL, Urdu, Hindi and large text: 28 screenshots, 0 targets under 44 px, 0 text escaping its parent. The
+  fixture pictures render as grey tiles, so real story art in a row is unseen. The Library's Open Bible Stories
+  card sits below the first screen and is not in its shot, and the Home shot device has a group, so the empty
+  formation card with "Browse stories" was not rendered. The no-language and not-downloaded states of the
+  contents screen were not in any shot.
+
+## 2026-11-05 Downloaded languages and their resources (#79, #80), sim, checks and web shots only
+
+Node v22. Nothing ran on a phone, an emulator or a simulator. Pushing the new `/downloaded/...` routes from the
+Languages modal, opening the DCS release page in the system browser, and VoiceOver or TalkBack on the short list's
+row and its resources button are unverified on a device.
+
+- **Red first:** `LA-5.downloaded-languages-switch-in-one-tap` and `LA-6.downloaded-resources-name-version-source`
+  failed before the service had `downloaded`, `resources` and `resource` (`languages.downloaded is not a
+  function`), then passed. The licence expectation was corrected once to the statement the fixture carries.
+- **Verify:** `npm run verify` green with a private `TMPDIR`: 896 tests in 97 files, 9 checks, 74 of 74 scenarios,
+  trace 51 Must requirements with 0 unproven, 21 fixture burritos, both bundles.
+- **Web shots:** `npm run shots -- --only languages,languages-downloaded,languages-resource` in light, dark,
+  reduced blur, RTL, Urdu, Hindi and large text: 21 screenshots, 0 targets under 44 px, 0 text escaping its parent.
+  The shot device has one language, so the short list was seen with one row only; two rows and the switch were
+  proven in the scenario, not in a shot. `TMPDIR` under the scratchpad made Chromium's socket path too long, so the
+  shots ran with `TMPDIR=/tmp/claude-0` against the export the first run built.
+
 ## 2026-11-05 One story reader (#96, #88, #89, #97), sim, checks and web shots only
 
 Node v22. Nothing ran on a phone, an emulator or a simulator: no Android SDK, Xcode or KVM in the sandbox. The
