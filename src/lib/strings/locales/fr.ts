@@ -632,6 +632,14 @@ export const fr: LocaleTable = {
 
   'formation.training.missing': 'Ce manuel est introuvable.',
   'formation.training.open': 'Aller à Formation pratique',
+
+  'formation.stories': 'Histoires Bibliques Libres',
+  'formation.stories.browse': 'Parcourir les histoires',
+  'formation.stories.noLanguage': 'Choisissez une langue pour lire les histoires.',
+  'formation.stories.chooseLanguage': 'Choisir une langue',
+  'home.formation.browse': 'Parcourir les histoires',
+  'library.stories.browse': 'Parcourir les histoires',
+
   'languages.downloaded.title': 'Sur ce téléphone',
   'languages.downloaded.show': 'Voir les ressources en {language} sur ce téléphone',
   'languages.resource.published': 'Publié par {publisher}',

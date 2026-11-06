@@ -666,6 +666,14 @@ export const ru: LocaleTable = {
 
   'formation.training.missing': 'Это руководство не найдено.',
   'formation.training.open': 'Перейти к разделу «Обучение»',
+
+  'formation.stories': 'Открытые библейские истории',
+  'formation.stories.browse': 'Просмотреть истории',
+  'formation.stories.noLanguage': 'Выберите язык, чтобы читать истории.',
+  'formation.stories.chooseLanguage': 'Выбрать язык',
+  'home.formation.browse': 'Просмотреть истории',
+  'library.stories.browse': 'Просмотреть истории',
+
   'languages.downloaded.title': 'На этом телефоне',
   'languages.downloaded.show': 'Показать ресурсы на языке {language} на этом телефоне',
   'languages.resource.published': 'Издатель: {publisher}',

@@ -19,6 +19,8 @@ const labelFields = {
 
 type LabelKey = keyof typeof labelFields;
 
+const sourcedLabelFields: Readonly<Partial<Record<LabelKey, readonly string[]>>> = { stories: ['picture'] };
+
 const labelKeys = Object.keys(labelFields) as LabelKey[];
 
 function notLabels({ label, key, entries }: Labels): string[] {
@@ -28,7 +30,10 @@ function notLabels({ label, key, entries }: Labels): string[] {
     if (!isObject(entry)) {
       return [`${path}: is not a label`];
     }
-    const extra = Object.keys(entry).filter((field) => !fields.includes(field));
+    const sourcedFields = sourcedLabelFields[key] ?? [];
+    const extra = Object.keys(entry).filter(
+      (field) => !fields.includes(field) && !sourcedFields.includes(field),
+    );
     const missing = fields.filter((field) => !(field in entry));
     return [
       ...extra.map(
@@ -100,6 +105,10 @@ async function render(device: SimDevice): Promise<{ rendered: Rendered[]; labels
     const contents = await corpus.contents(language);
     rendered.push({ label: `${language} contents`, value: contents.texts });
     labels.push(...labelKeys.map((key) => ({ label: `${language} contents`, key, entries: contents[key] })));
+    rendered.push({
+      label: `${language} contents.stories`,
+      value: contents.stories.map((story) => ({ image: story.picture })),
+    });
     for (const text of contents.texts) {
       for (const book of text.books) {
         for (const chapter of book.chapters) {

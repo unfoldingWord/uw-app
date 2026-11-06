@@ -27,6 +27,7 @@ export const home = {
   'home.formation.next': 'Next: {movement}',
   'home.formation.action': 'Continue with {group}',
   'home.formation.empty': 'Create a group in Formation to walk through the stories together.',
+  'home.formation.browse': 'Browse stories',
   'home.download.progress': 'Downloading {language}',
   'home.download.pictures': 'Downloading story pictures',
   'home.download.percent': '{percent}%',

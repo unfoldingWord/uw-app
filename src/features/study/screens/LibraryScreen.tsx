@@ -80,7 +80,20 @@ export default function LibraryScreen() {
           }}
           ItemSeparatorComponent={() => <Gap size={theme.space.gapStack} />}
           renderItem={({ item: card }) => (
-            <LibraryCardView words={words} card={card} failure={failures[card.type]} onDownload={download} />
+            <LibraryCardView
+              words={words}
+              card={card}
+              failure={failures[card.type]}
+              onDownload={download}
+              {...(card.type === 'stories'
+                ? {
+                    onOpen: {
+                      label: words.t('library.stories.browse'),
+                      onPress: () => router.push(studyRoutes.stories),
+                    },
+                  }
+                : {})}
+            />
           )}
           extraData={failures}
           ListEmptyComponent={
