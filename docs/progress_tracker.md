@@ -3,6 +3,28 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-11-06 English inside the app (ON-5, decisions 105 and 106), sim, checks and a live fetch only
+
+Node v22. Nothing ran on a phone, an emulator or a simulator, and no EAS or Gradle build ran. The expo-asset
+adapter has never opened a carried archive on a device, no APK was built, so its size and its `native-code` line
+(arm64-v8a and armeabi-v7a only) are unobserved, and the two device flows (`english-ready-offline.yaml`, the
+rewritten `download-language.yaml`) have never run.
+
+- **Scenarios:** `ON-5.english-ready-offline-on-first-launch`, `ON-5.removed-language-is-not-put-back`,
+  `ON-5.failed-placement-fails-loudly` and `LA-7.catalog-update-replaces-a-bundled-release` pass. They were written
+  before the code by an earlier session whose red runs were lost with its container, so their red is not recorded
+  here. The stand-in case in `scripts/bundled/bundled.test.ts` (every stand-in its own bytes, because Metro keeps
+  one asset per content hash and the first verify bundled 1 archive of 14) was observed red, then green.
+- **Lock, live:** `npm run bundled:lock` against git.door43.org rewrote `content/bundled.lock.json` and
+  `src/platform/bundled-archives.ts` byte for byte as committed: 14 archives for English, 70.9 MB, ULT, UST, tn,
+  tq, tw, twl and ta at v91, `en_obs` v9 with its five helps, and the Image Pack built from `en_obs` v9 (37.8 MB).
+- **Fetch, live:** `npm run bundled:fetch`: 14 archives fetched, verified by size, sha256 and the content contract,
+  and placed offline in the sim with story 1 showing a picture, in 29 s. The archives unpack to 278.6 MB.
+- **Bundle with the real archives:** `npm run bundle`: both exports pass and carry 14 zip assets.
+- **Verify without the archives** (as CI runs it): `npm run verify` green with a private `TMPDIR`: 936 tests in
+  100 files, 9 checks, 81 of 81 scenarios, trace 52 Must requirements with 0 unproven, 21 fixture burritos, both
+  bundles with stand-ins and 14 carried archives, none from `sim/`. `knip` passes with and without the archives.
+
 ## 2026-11-05 Copy verses (#84) and the sheet on web, sim, checks and web shots only
 
 Node v22. Nothing ran on a phone, an emulator or a simulator. The `expo-clipboard` adapter has never written to a
