@@ -632,4 +632,10 @@ export const fr: LocaleTable = {
 
   'formation.training.missing': 'Ce manuel est introuvable.',
   'formation.training.open': 'Aller à Formation pratique',
+  'languages.downloaded.title': 'Sur ce téléphone',
+  'languages.downloaded.show': 'Voir les ressources en {language} sur ce téléphone',
+  'languages.resource.published': 'Publié par {publisher}',
+  'languages.resource.version': 'Version {version}',
+  'languages.resource.source': 'Voir la source en ligne',
+  'languages.resource.missing': 'Cette ressource n’est plus sur ce téléphone.',
 };

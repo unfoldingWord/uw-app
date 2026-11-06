@@ -561,4 +561,10 @@ export const my: LocaleTable = {
 
   'formation.training.missing': 'ဤလက်စွဲကို ရှာမတွေ့ပါ။',
   'formation.training.open': 'သင်တန်းသို့ သွားပါ',
+  'languages.downloaded.title': 'ဤဖုန်းပေါ်တွင်',
+  'languages.downloaded.show': 'ဤဖုန်းပေါ်ရှိ {language} အရင်းအမြစ်များကို ကြည့်ရန်',
+  'languages.resource.published': '{publisher} ထုတ်ဝေသည်',
+  'languages.resource.version': 'ဗားရှင်း {version}',
+  'languages.resource.source': 'မူရင်းကို အွန်လိုင်းတွင် ကြည့်ရန်',
+  'languages.resource.missing': 'ဤအရင်းအမြစ်သည် ဤဖုန်းပေါ်တွင် မရှိတော့ပါ။',
 };

@@ -522,4 +522,10 @@ export const zhHans: LocaleTable = {
 
   'formation.training.missing': '找不到这本手册。',
   'formation.training.open': '前往培训',
+  'languages.downloaded.title': '在这部手机上',
+  'languages.downloaded.show': '查看这部手机上的{language}资源',
+  'languages.resource.published': '发布者：{publisher}',
+  'languages.resource.version': '版本 {version}',
+  'languages.resource.source': '在线查看来源',
+  'languages.resource.missing': '这个资源已不在这部手机上。',
 };

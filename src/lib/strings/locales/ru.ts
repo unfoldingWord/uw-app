@@ -666,4 +666,10 @@ export const ru: LocaleTable = {
 
   'formation.training.missing': 'Это руководство не найдено.',
   'formation.training.open': 'Перейти к разделу «Обучение»',
+  'languages.downloaded.title': 'На этом телефоне',
+  'languages.downloaded.show': 'Показать ресурсы на языке {language} на этом телефоне',
+  'languages.resource.published': 'Издатель: {publisher}',
+  'languages.resource.version': 'Версия {version}',
+  'languages.resource.source': 'Открыть источник в интернете',
+  'languages.resource.missing': 'Этого ресурса больше нет на этом телефоне.',
 };

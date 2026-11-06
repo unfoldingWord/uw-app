@@ -554,4 +554,10 @@ export const id: LocaleTable = {
 
   'formation.training.missing': 'Panduan ini tidak dapat ditemukan.',
   'formation.training.open': 'Buka Pelatihan',
+  'languages.downloaded.title': 'Di ponsel ini',
+  'languages.downloaded.show': 'Lihat sumber {language} di ponsel ini',
+  'languages.resource.published': 'Diterbitkan oleh {publisher}',
+  'languages.resource.version': 'Versi {version}',
+  'languages.resource.source': 'Lihat sumbernya secara daring',
+  'languages.resource.missing': 'Sumber ini sudah tidak ada di ponsel ini.',
 };
