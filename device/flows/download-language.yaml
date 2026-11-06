@@ -19,5 +19,5 @@ tags:
 - tapOn: 'Read in Kiswahili'
 - extendedWaitUntil:
     visible: '[0-9]+ resources? ready offline in Kiswahili'
-    timeout: 900000
+    timeout: 480000
 - takeScreenshot: download-2-ready

@@ -366,6 +366,21 @@ export const packsModule = defineModule<PacksApi>({
       return started;
     }
 
+    async function afterPlacing(pack: PackId, options: CatalogInstallOptions): Promise<InstallOutcome> {
+      const outcomes = await placeBundled();
+      const placed = outcomes.find((outcome) => outcome.ok && outcome.pack.pack === pack);
+      return placed ?? installFromCatalog(pack, options);
+    }
+
+    function installCarriedOrFromCatalog(
+      pack: PackId,
+      options: CatalogInstallOptions = {},
+    ): Promise<InstallOutcome> {
+      const carriedAndPlacing =
+        placing !== undefined && !installed.has(pack) && bundledPacks().includes(pack);
+      return carriedAndPlacing ? afterPlacing(pack, options) : installFromCatalog(pack, options);
+    }
+
     async function updates(): Promise<readonly PackUpdate[]> {
       return updatesOf(await catalogReleases(), [...installed.values()]);
     }
@@ -452,7 +467,7 @@ export const packsModule = defineModule<PacksApi>({
         importPicked,
         confirmReplace,
         declineReplace,
-        installFromCatalog,
+        installFromCatalog: installCarriedOrFromCatalog,
         bundled: bundledPacks,
         placeBundled,
         update,

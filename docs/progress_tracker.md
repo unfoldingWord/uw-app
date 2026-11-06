@@ -21,6 +21,15 @@ rewritten `download-language.yaml`) have never run.
 - **Fetch, live:** `npm run bundled:fetch`: 14 archives fetched, verified by size, sha256 and the content contract,
   and placed offline in the sim with story 1 showing a picture, in 29 s. The archives unpack to 278.6 MB.
 - **Bundle with the real archives:** `npm run bundle`: both exports pass and carry 14 zip assets.
+- **Device CI follow-up (run 42306401519, Android):** the optional pass failed on both attempts. Observed in the
+  logcat: the emulator's `livelock` watchdog killed `adbd` after an adb `sh` sat as a zombie for 600 s, which drops
+  the Maestro driver; `download-language` was still waiting for Kiswahili (682 s and 573 s), and the two flows after
+  it failed only because `adbd` was gone. At the search screenshot, a minute after launch, Story pictures were still
+  offered as a download, so the carried Image Pack was not yet placed. `ON-5.another-language-after-the-carried-one`
+  then reproduced in the sim, red: choosing a language while the carried pictures were being placed queued a catalog
+  build of the Image Pack ahead of them. `installFromCatalog` now joins the placement for a carried pack still
+  being placed; the scenario is green. That this is what held the emulator is inferred, not observed on a device.
+  The Kiswahili wait is 480 s, under the watchdog, so a failure leaves a screenshot and the next flows run.
 - **Verify without the archives** (as CI runs it): `npm run verify` green with a private `TMPDIR`: 936 tests in
   100 files, 9 checks, 81 of 81 scenarios, trace 52 Must requirements with 0 unproven, 21 fixture burritos, both
   bundles with stand-ins and 14 carried archives, none from `sim/`. `knip` passes with and without the archives.
