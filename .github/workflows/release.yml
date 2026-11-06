@@ -23,6 +23,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run verify
+      - name: Fetch and verify the content the app carries before spending an EAS build
+        run: npm run bundled:fetch
       - uses: expo/expo-github-action@v8
         with:
           eas-version: latest

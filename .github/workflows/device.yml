@@ -33,6 +33,13 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Restore the content the app carries
+        uses: actions/cache@v4
+        with:
+          path: content/bundled
+          key: bundled-${{ hashFiles('content/bundled.lock.json') }}
+      - name: Fetch and verify the content the app carries
+        run: npm run bundled:fetch
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -146,6 +153,13 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Restore the content the app carries
+        uses: actions/cache@v4
+        with:
+          path: content/bundled
+          key: bundled-${{ hashFiles('content/bundled.lock.json') }}
+      - name: Fetch and verify the content the app carries
+        run: npm run bundled:fetch
       - uses: actions/setup-java@v4
         with:
           distribution: temurin

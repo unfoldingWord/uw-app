@@ -26,6 +26,10 @@
       "extends": "base",
       "distribution": "internal",
       "autoIncrement": true,
+      "env": {
+        "EXPO_NO_TELEMETRY": "1",
+        "ORG_GRADLE_PROJECT_reactNativeArchitectures": "armeabi-v7a,arm64-v8a"
+      },
       "android": {
         "buildType": "apk"
       }
@@ -34,13 +38,18 @@
       "extends": "preview",
       "env": {
         "EXPO_NO_TELEMETRY": "1",
-        "UW_ANDROID_PACKAGE_INSTALLER": "1"
+        "UW_ANDROID_PACKAGE_INSTALLER": "1",
+        "ORG_GRADLE_PROJECT_reactNativeArchitectures": "armeabi-v7a,arm64-v8a"
       }
     },
     "production": {
       "extends": "base",
       "distribution": "store",
       "autoIncrement": true,
+      "env": {
+        "EXPO_NO_TELEMETRY": "1",
+        "ORG_GRADLE_PROJECT_reactNativeArchitectures": "armeabi-v7a,arm64-v8a"
+      },
       "android": {
         "buildType": "app-bundle"
       }

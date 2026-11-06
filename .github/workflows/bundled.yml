@@ -1,0 +1,45 @@
+name: bundled
+
+on:
+  schedule:
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lock:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Resolve today's English default pack and pictures
+        run: npm run bundled:lock
+      - name: Say whether the committed lock is behind the catalog
+        run: |
+          if git diff --quiet -- content/bundled.lock.json src/platform/bundled-archives.ts; then
+            echo "The committed lock matches today's catalog." >> "$GITHUB_STEP_SUMMARY"
+          else
+            {
+              echo "## Newer English releases are in the catalog"
+              echo
+              echo "Run \`npm run bundled:lock\` and open a pull request with the lock and \`src/platform/bundled-archives.ts\`, or take them from this run's artifact."
+              echo
+              echo '```diff'
+              git diff -- content/bundled.lock.json
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bundled-lock
+          path: |
+            content/bundled.lock.json
+            src/platform/bundled-archives.ts
+          retention-days: 30
