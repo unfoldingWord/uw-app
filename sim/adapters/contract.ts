@@ -449,6 +449,20 @@ const deviceCases: ContractCase[] = [
     },
   },
   {
+    port: 'clipboard',
+    name: 'takes plain, multi-line and right-to-left text',
+    async run({ ports: { clipboard } }) {
+      const texts = [
+        'Rut 1:16',
+        'Rut 1:16\nWhere you go, I will go.\nunfoldingWord Literal Text by unfoldingWord, v1, CC BY-SA 4.0.',
+        'روت ١:١٦\nحيثما ذهبتِ أذهب',
+      ];
+      for (const text of texts) {
+        same(await codeOf(clipboard.copy(text)), 'resolved', `copies ${JSON.stringify(text)}`);
+      }
+    },
+  },
+  {
     port: 'transport',
     name: 'names its platform and refuses work while unavailable',
     async run({ ports: { transport } }) {

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Ports } from '@lib/ports';
 import { createMemoryAudio } from './audio';
+import { createMemoryClipboard } from './clipboard';
 import { createMemoryClock } from './clock';
 import { portContract, runPortContract, type ContractSubject } from './contract';
 import { createMemoryDb } from './db';
@@ -36,6 +37,7 @@ function memorySubject(index: number): ContractSubject {
     transport: createTransportBus().transport({ platform: 'ios' }),
     audio,
     shareSheet: createMemoryShareSheet(),
+    clipboard: createMemoryClipboard(),
     picker: createMemoryPicker(),
     locale: createMemoryLocale(),
   };
@@ -60,7 +62,7 @@ describe('port contract, against the memory adapters', () => {
     expect(results.filter((result) => result.outcome === 'fail')).toEqual([]);
     expect(results).toHaveLength(portContract.length);
     expect(new Set(results.map((result) => result.port))).toEqual(
-      new Set(['files', 'db', 'kv', 'http', 'clock', 'ids', 'locale', 'audio', 'transport']),
+      new Set(['files', 'db', 'kv', 'http', 'clock', 'ids', 'locale', 'audio', 'transport', 'clipboard']),
     );
   });
 
@@ -76,6 +78,23 @@ describe('port contract, against the memory adapters', () => {
     });
     expect(results.filter((result) => result.outcome === 'fail').map((result) => result.name)).toEqual([
       'renames to a free name only, and never replaces what is there',
+    ]);
+  });
+
+  it('reports a clipboard that refuses text with more than one line', async () => {
+    const results = await runPortContract(async (index) => {
+      const subject = memorySubject(index);
+      const copy = subject.ports.clipboard.copy;
+      subject.ports.clipboard.copy = async (text) => {
+        if (text.includes('\n')) {
+          throw new Error('one line only');
+        }
+        await copy(text);
+      };
+      return subject;
+    });
+    expect(results.filter((result) => result.outcome === 'fail').map((result) => result.name)).toEqual([
+      'takes plain, multi-line and right-to-left text',
     ]);
   });
 });

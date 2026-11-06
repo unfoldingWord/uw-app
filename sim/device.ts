@@ -5,6 +5,7 @@ import { createKernel, type Kernel } from '@lib/kernel';
 import type { AppPackage, Clock, DeviceLocale, DevicePlatform, Ids } from '@lib/ports';
 import type { LocaleGate } from '@lib/strings/locales';
 import { createMemoryAudio, type MemoryAudio } from './adapters/audio';
+import { createMemoryClipboard, type MemoryClipboard } from './adapters/clipboard';
 import { createMemoryDb, type MemoryDb } from './adapters/db';
 import { createMemoryFiles, type MemoryFiles } from './adapters/files';
 import { createMemoryHttp, type MemoryHttp, type MemoryNetwork } from './adapters/http';
@@ -39,6 +40,7 @@ export type SimAdapters = {
   transport: MemoryTransport;
   audio: MemoryAudio;
   shareSheet: MemoryShareSheet;
+  clipboard: MemoryClipboard;
   picker: MemoryPicker;
   locale: MemoryLocale;
 };
@@ -83,6 +85,7 @@ export function createSimDevice(name: string, world: DeviceWorld, options: Devic
     ),
     audio: createMemoryAudio({ clock: world.clock }),
     shareSheet: createMemoryShareSheet(),
+    clipboard: createMemoryClipboard(),
     picker: createMemoryPicker(),
     locale: createMemoryLocale(options.locale),
   };

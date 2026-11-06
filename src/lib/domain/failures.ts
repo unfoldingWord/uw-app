@@ -33,6 +33,7 @@ export const failureCodes = [
   'transfer.cancelled',
   'audio.unavailable',
   'share.unavailable',
+  'clipboard.unavailable',
   'partners.invalid-feed',
   'unexpected',
 ] as const;
@@ -53,6 +54,7 @@ export const failureSteps = [
   'ingest',
   'transfer',
   'share',
+  'copy',
   'audio',
   'impact-stories',
   'telemetry',

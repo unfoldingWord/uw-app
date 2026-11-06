@@ -10,6 +10,7 @@ const readingFields: Partial<Record<EventType, readonly string[]>> = {
   ArticleOpened: ['article'],
   StoryOpened: ['story'],
   BookmarkAdded: ['reference', 'article', 'story'],
+  VersesCopied: ['reference'],
 };
 
 const dayMs = 24 * 60 * 60 * 1000;

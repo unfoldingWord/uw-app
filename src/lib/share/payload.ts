@@ -19,7 +19,7 @@ export type JournalReport = { journal: JournalExport; snapshot: DeviceSnapshot }
 
 type Words = Pick<StringsApi, 't'>;
 
-function attributionOf(words: Words, locale: Locale, provenance: Provenance): string {
+export function attributionOf(words: Words, locale: Locale, provenance: Provenance): string {
   return words.t('share.payload.attribution', locale, {
     resource: provenance.title,
     publisher: provenance.publisher,

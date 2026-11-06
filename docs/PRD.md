@@ -549,6 +549,7 @@ Decisions taken in the requirements interview of 2026-09-29 with Jesse Griffin. 
 | 101 | Performance comes from tuning the current codebase, measured on a low-end Android phone and an older iPhone first (#46), with only measured hot paths moved native behind ports; no native rewrite. Sideloaded APKs carry arm64-v8a and armeabi-v7a only, and Android release builds turn on R8 and resource shrinking once the device CI's release build proves them. (2026-11-05, issue #100, ADR 0014) |
 | 102 | The translationAcademy manuals are ordered Introduction, Process, Translate, Checking, which renumbers Training lessons. A Training position or a replayed `PositionChanged` from before this order resolves to a different lesson; this is accepted because no device is past 0.0.x, and no migration is written. (2026-11-05, issue #87, PR #105) |
 | 103 | The Image Pack installs with the first language pack that carries Open Bible Stories, under the same download consent, as an optional pack whose failure never sinks the language; the in-place "Download story pictures" stays for when it is missing. (2026-11-05, issue #97, PR #107, `docs/proposals/2026-11-05-image-pack-with-first-language.md`) |
+| 104 | The chapter arrows open the next or the previous chapter at its first verse, wherever the reader was in the current one, as most Bible apps do; reading backward lands at the top of the previous chapter, not its end. A request for a chapter lands on its first verse (ST-2). (2026-11-05, issue #83) |
 
 ---
 

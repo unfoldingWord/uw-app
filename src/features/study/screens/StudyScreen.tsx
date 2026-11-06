@@ -7,12 +7,13 @@ import { GlassButton, GlassSheet, sheetHeights } from '@shared/glass';
 import { useService } from '@shared/kernel';
 import { useTheme } from '@shared/theme';
 import { Notice, useTabBarClearance } from '@shared/ui';
-import { createStudyService, type Passage, type StudyView } from '../service';
+import { createStudyService, type CopyReference, type Passage, type StudyView } from '../service';
 import type { StudyWords } from '../strings';
 import { Attribution } from './parts/Attribution';
 import { AudioBar } from './parts/AudioBar';
 import { BookPicker } from './parts/BookPicker';
 import { Choices } from './parts/Choices';
+import { CopyPanel, type CopyState } from './parts/CopyPanel';
 import { failureText } from './parts/failure';
 import { ScreenFrame } from './parts/Frame';
 import { HelpsPanel, helpsHeading, helpsPeekShare, type HelpsTab } from './parts/HelpsPanel';
@@ -23,11 +24,13 @@ import {
   highlightedIn,
   keyOf,
   neighbours,
+  orderedSpan,
   requestedVerse,
   sameVerse,
   type ChapterPlace,
   type VerseKey,
 } from './parts/passage';
+import { requestKey } from './parts/opening';
 import { shareHref, studyRoutes, useOpenTarget } from './parts/routes';
 import { StatePanel } from './parts/StatePanel';
 import { StudyHeader } from './parts/StudyHeader';
@@ -45,6 +48,15 @@ function placeReference(place: ChapterPlace): string {
 function verseReference(book: string, verse: VerseKey): string {
   return formatReference({ book, start: verse });
 }
+
+function spanReference(book: string, from: VerseKey, to: VerseKey | undefined): string {
+  const span = orderedSpan(from, to);
+  return sameVerse(span.from, span.to)
+    ? verseReference(book, span.from)
+    : formatReference({ book, start: span.from, end: span.to });
+}
+
+const idle: CopyState = { state: 'idle' };
 
 function verseLabelOf(words: StudyWords) {
   return (verse: { verse: number; text: string }) =>
@@ -67,10 +79,13 @@ export default function StudyScreen() {
   const tabBarClearance = useTabBarClearance();
   const router = useRouter();
   const openTarget = useOpenTarget();
-  const params = useLocalSearchParams<{ reference?: string }>();
+  const params = useLocalSearchParams<{ reference?: string; opening?: string }>();
   const requested = asText(params.reference);
+  const opening = requestKey(requested, asText(params.opening));
   const [chosen, setChosen] = useState<string | undefined>(undefined);
   const [selected, setSelected] = useState<VerseKey | undefined>(() => requestedVerse(requested));
+  const [through, setThrough] = useState<VerseKey | undefined>(undefined);
+  const [copy, setCopy] = useState<CopyState>(idle);
   const [original, setOriginal] = useState(false);
   const [readingChanges, setReadingChanges] = useState(0);
   const [picking, setPicking] = useState(false);
@@ -80,11 +95,13 @@ export default function StudyScreen() {
   const [audioFailure, setAudioFailure] = useState<string | undefined>(undefined);
   const [saveFailure, setSaveFailure] = useState<string | undefined>(undefined);
   const [room, setRoom] = useState(0);
-  const [seen, setSeen] = useState(requested);
-  if (seen !== requested) {
-    setSeen(requested);
+  const [seen, setSeen] = useState(opening);
+  if (seen !== opening) {
+    setSeen(opening);
     setChosen(undefined);
     setSelected(requestedVerse(requested));
+    setThrough(undefined);
+    setCopy(idle);
     setFocused(undefined);
   }
   const words = service.words();
@@ -108,6 +125,14 @@ export default function StudyScreen() {
     return found === undefined ? undefined : keyOf(found);
   }, [value, selected]);
 
+  const throughVerse = useMemo(() => {
+    if (value?.view.state !== 'passage' || through === undefined) {
+      return undefined;
+    }
+    const found = value.view.view.passage.text.verses.find((verse) => sameVerse(through, keyOf(verse)));
+    return found === undefined ? undefined : keyOf(found);
+  }, [value, through]);
+
   const [helpsVerse, setHelpsVerse] = useState<VerseKey | undefined>(undefined);
   if (selectedVerse !== undefined && !sameVerse(helpsVerse, selectedVerse)) {
     setHelpsVerse(selectedVerse);
@@ -115,12 +140,16 @@ export default function StudyScreen() {
 
   const dismissHelps = useCallback(() => {
     setSelected(undefined);
+    setThrough(undefined);
+    setCopy(idle);
     setFocused(undefined);
   }, []);
 
   const go = (reference: string) => {
     setChosen(reference);
     setSelected(undefined);
+    setThrough(undefined);
+    setCopy(idle);
     setFocused(undefined);
   };
 
@@ -276,6 +305,31 @@ export default function StudyScreen() {
     reference: focusReference,
     language: passageView.language,
   });
+  const copyReference =
+    selectedVerse === undefined
+      ? passageView.reference
+      : spanReference(passage.text.book, selectedVerse, throughVerse);
+  const copySelection = async (format?: CopyReference) => {
+    if (selectedVerse === undefined) {
+      return;
+    }
+    if (format !== undefined) {
+      await service.setCopyReference(format);
+    }
+    const outcome = await service.copy(shown, { from: selectedVerse, to: throughVerse ?? selectedVerse });
+    setCopy(
+      outcome.ok
+        ? { state: 'copied', label: outcome.label }
+        : { state: 'failed', text: failureText(words, outcome.code) },
+    );
+  };
+  const choose = (verse: VerseKey) => {
+    setSelected(verse);
+    setThrough(undefined);
+    setCopy(idle);
+    setFocused(undefined);
+    void service.opened(verseReference(passage.text.book, verse));
+  };
   const highlighted =
     showingOriginal || selectedVerse === undefined
       ? new Set<number>()
@@ -323,13 +377,18 @@ export default function StudyScreen() {
             passage={shown}
             language={shown.language}
             selected={selectedVerse}
+            through={throughVerse}
             landing={passageView.landing}
             highlighted={highlighted}
             verseLabel={verseLabelOf(words)}
-            onSelect={(verse) => {
-              setSelected(verse);
-              setFocused(undefined);
-              void service.opened(verseReference(passage.text.book, verse));
+            onSelect={choose}
+            onExtend={(verse) => {
+              if (selectedVerse === undefined) {
+                choose(verse);
+                return;
+              }
+              setThrough(sameVerse(selectedVerse, verse) ? undefined : verse);
+              setCopy(idle);
             }}
             footer={<Attribution words={words} provenance={shown.text.provenance} />}
           />
@@ -372,6 +431,17 @@ export default function StudyScreen() {
                 await reload();
               }}
               onShare={() => router.push(shareHref('passage', focusReference, passageView.language))}
+              copyLabel={words.t('study.copy.label', { reference: service.referenceName(copyReference) })}
+              onCopy={() => copySelection()}
+              copyPanel={
+                <CopyPanel
+                  words={words}
+                  copy={copy}
+                  ranged={throughVerse !== undefined}
+                  formats={service.copyReferences()}
+                  onFormat={(format) => void copySelection(format)}
+                />
+              }
             />
           )}
         </GlassSheet>

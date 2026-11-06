@@ -84,6 +84,7 @@ adapter; versions live in `package.json`.
 | Transport | react-native-tcp-socket and the local module `modules/uw-radio/` (mDNS, local address, installer hand-off) | TCP on a shared local network, peers found by mDNS or a typed or scanned address (ADR 0013). Built, not yet run on a phone: the two-phone spike is the gate |
 | Audio | expo-audio | Plays a downloaded file from an Audio Pack; no streaming in v1.0.0 (ST-4) |
 | ShareSheet | expo-sharing and the RN `Share` API | Provenance attached to every payload |
+| Clipboard | expo-clipboard | Writes plain text only; copied verses carry their reference choice and attribution (SH-5) |
 | Picker | expo-document-picker | Asks the system for a burrito `.zip`; `app.config.ts` registers the document types and `app/+native-intent.ts` routes a file another app opens (ADR 0009) |
 | Locale | expo-localization | Region for the invitation comes from here, never from location |
 | Clock, Ids | `Date.now`, `crypto.randomUUID` | Injected so the sim can pin them |

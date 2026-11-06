@@ -96,6 +96,7 @@ export type PassageText = Sourced & {
   readonly reading: Reading;
   readonly book: string;
   readonly bookName: string;
+  readonly bookAbbreviation: string;
   readonly direction: Direction;
   readonly titles: readonly ChapterTitle[];
   readonly verses: readonly Verse[];

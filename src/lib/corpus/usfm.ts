@@ -3,6 +3,7 @@ import type { OriginalWord, Token, Verse } from './types';
 export type UsfmBook = {
   readonly code: string;
   readonly name: string;
+  readonly abbreviation: string;
   readonly names: readonly string[];
   readonly chapters: ReadonlyMap<number, readonly Verse[]>;
   readonly titles: ReadonlyMap<number, string>;
@@ -391,7 +392,9 @@ export function parseUsfm(source: string): UsfmBook {
   const names = [
     ...new Set(nameMarkers.flatMap((marker) => headers.get(marker) ?? []).filter((value) => value !== '')),
   ];
-  return { code, name: names[0] ?? code, names, chapters, titles };
+  const name = names[0] ?? code;
+  const short = headers.get('toc3') ?? '';
+  return { code, name, abbreviation: short === '' ? name : short, names, chapters, titles };
 }
 
 const chapterMarker = /\\c\s+(\d+)/g;
