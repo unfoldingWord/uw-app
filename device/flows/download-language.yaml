@@ -18,6 +18,13 @@ tags:
 - takeScreenshot: download-1-search
 - tapOn: 'Read in Kiswahili'
 - extendedWaitUntil:
+    visible: 'Close'
+    timeout: 15000
+- tapOn: 'Close'
+- extendedWaitUntil:
+    visible: 'Switch theme'
+    timeout: 15000
+- extendedWaitUntil:
     visible: '[0-9]+ resources? ready offline in Kiswahili'
     timeout: 480000
 - takeScreenshot: download-2-ready

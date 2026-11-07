@@ -30,6 +30,12 @@ rewritten `download-language.yaml`) have never run.
   build of the Image Pack ahead of them. `installFromCatalog` now joins the placement for a carried pack still
   being placed; the scenario is green. That this is what held the emulator is inferred, not observed on a device.
   The Kiswahili wait is 480 s, under the watchdog, so a failure leaves a screenshot and the next flows run.
+- **Device CI on 561db3b (run 42313856756, Android):** `english-ready-offline.yaml` passed (37 s) and the Arabic and
+  reduced-blur flows passed, so the watchdog no longer cuts the pass short. `download-language` failed both passes
+  after the full 480 s. Its failure screenshot shows Kiswahili installed: the row reads Offline, Story pictures read
+  Offline, and storage lists Kiswahili at 209 KB. The flow waited on the Languages screen for the Home line
+  "resources ready offline in Kiswahili", which only Home shows; choosing a language keeps Languages open, as it
+  does on `main`. The flow now closes Languages before that wait. The rerun is not yet observed.
 - **Verify without the archives** (as CI runs it): `npm run verify` green with a private `TMPDIR`: 936 tests in
   100 files, 9 checks, 81 of 81 scenarios, trace 52 Must requirements with 0 unproven, 21 fixture burritos, both
   bundles with stand-ins and 14 carried archives, none from `sim/`. `knip` passes with and without the archives.
