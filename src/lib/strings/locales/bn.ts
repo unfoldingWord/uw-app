@@ -30,6 +30,7 @@ export const bn: LocaleTable = {
   'common.bookmark.remove': 'সংরক্ষিত থেকে সরান',
   'common.joined': '{first} · {second}',
   'common.source.catalog': 'ক্যাটালগ থেকে',
+  'common.source.bundled': 'অ্যাপের সঙ্গে এসেছে',
   'common.source.peer': 'অন্য ফোন থেকে',
   'common.source.file': 'একটি ফাইল থেকে',
   'common.replace.file': 'ক্যাটালগ থেকে নামানো {resources} কি এই ফাইলের কপি দিয়ে বদলাবেন?',

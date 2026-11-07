@@ -3,6 +3,52 @@
 What actually ran, append-only, newest first. Each entry says what was run, what was observed, and what was
 not verified.
 
+## 2026-11-06 English inside the app (ON-5, decisions 105 and 106), sim, checks and a live fetch only
+
+Node v22. Nothing ran on a phone, an emulator or a simulator, and no EAS or Gradle build ran. The expo-asset
+adapter has never opened a carried archive on a device, no APK was built, so its size and its `native-code` line
+(arm64-v8a and armeabi-v7a only) are unobserved, and the two device flows (`english-ready-offline.yaml`, the
+rewritten `download-language.yaml`) have never run.
+
+- **Scenarios:** `ON-5.english-ready-offline-on-first-launch`, `ON-5.removed-language-is-not-put-back`,
+  `ON-5.failed-placement-fails-loudly` and `LA-7.catalog-update-replaces-a-bundled-release` pass. They were written
+  before the code by an earlier session whose red runs were lost with its container, so their red is not recorded
+  here. The stand-in case in `scripts/bundled/bundled.test.ts` (every stand-in its own bytes, because Metro keeps
+  one asset per content hash and the first verify bundled 1 archive of 14) was observed red, then green.
+- **Lock, live:** `npm run bundled:lock` against git.door43.org rewrote `content/bundled.lock.json` and
+  `src/platform/bundled-archives.ts` byte for byte as committed: 14 archives for English, 70.9 MB, ULT, UST, tn,
+  tq, tw, twl and ta at v91, `en_obs` v9 with its five helps, and the Image Pack built from `en_obs` v9 (37.8 MB).
+- **Fetch, live:** `npm run bundled:fetch`: 14 archives fetched, verified by size, sha256 and the content contract,
+  and placed offline in the sim with story 1 showing a picture, in 29 s. The archives unpack to 278.6 MB.
+- **Bundle with the real archives:** `npm run bundle`: both exports pass and carry 14 zip assets.
+- **Device CI follow-up (run 42306401519, Android):** the optional pass failed on both attempts. Observed in the
+  logcat: the emulator's `livelock` watchdog killed `adbd` after an adb `sh` sat as a zombie for 600 s, which drops
+  the Maestro driver; `download-language` was still waiting for Kiswahili (682 s and 573 s), and the two flows after
+  it failed only because `adbd` was gone. At the search screenshot, a minute after launch, Story pictures were still
+  offered as a download, so the carried Image Pack was not yet placed. `ON-5.another-language-after-the-carried-one`
+  then reproduced in the sim, red: choosing a language while the carried pictures were being placed queued a catalog
+  build of the Image Pack ahead of them. `installFromCatalog` now joins the placement for a carried pack still
+  being placed; the scenario is green. That this is what held the emulator is inferred, not observed on a device.
+  The Kiswahili wait is 480 s, under the watchdog, so a failure leaves a screenshot and the next flows run.
+- **Device CI on 561db3b (run 42313856756, Android):** `english-ready-offline.yaml` passed (37 s) and the Arabic and
+  reduced-blur flows passed, so the watchdog no longer cuts the pass short. `download-language` failed both passes
+  after the full 480 s. Its failure screenshot shows Kiswahili installed: the row reads Offline, Story pictures read
+  Offline, and storage lists Kiswahili at 209 KB. The flow waited on the Languages screen for the Home line
+  "resources ready offline in Kiswahili", which only Home shows; choosing a language keeps Languages open, as it
+  does on `main`. The flow now closes Languages before that wait. The rerun is not yet observed.
+- **Device CI on c978893 (run for #115, Android and iOS):** on Android every flow passed on its first pass, among
+  them `english-ready-offline` (41 s) and `download-language` (64 s). On iOS `english-ready-offline` failed once
+  and passed once, and `download-language` passed once and failed once, both on the wait for "resources ready
+  offline in English": the failure screenshots show Home reading "13 resources ready offline in en". English was
+  placed, but every language name came from the catalog, which had not loaded, so Home showed the code. The Arabic
+  flow failed both iOS passes on `"App language" is visible`, as it does on `main` (5c425e5), so it is not this
+  change's. `ON-5.english-ready-offline-on-first-launch` now asserts the Home line names English offline: observed
+  red, then green once `catalog.nameOf` falls back to the DCS names and then the built-in table. The iOS rerun is
+  not yet observed.
+- **Verify without the archives** (as CI runs it): `npm run verify` green with a private `TMPDIR`: 936 tests in
+  100 files, 9 checks, 81 of 81 scenarios, trace 52 Must requirements with 0 unproven, 21 fixture burritos, both
+  bundles with stand-ins and 14 carried archives, none from `sim/`. `knip` passes with and without the archives.
+
 ## 2026-11-05 Copy verses (#84) and the sheet on web, sim, checks and web shots only
 
 Node v22. Nothing ran on a phone, an emulator or a simulator. The `expo-clipboard` adapter has never written to a

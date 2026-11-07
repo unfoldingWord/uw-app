@@ -30,6 +30,7 @@ export const hi: LocaleTable = {
   'common.bookmark.remove': 'सहेजे गए से हटाएँ',
   'common.joined': '{first} · {second}',
   'common.source.catalog': 'कैटलॉग से',
+  'common.source.bundled': 'ऐप के साथ आया',
   'common.source.peer': 'दूसरे फ़ोन से',
   'common.source.file': 'एक फ़ाइल से',
   'common.replace.file': 'क्या कैटलॉग से डाउनलोड किए गए {resources} को इस फ़ाइल की प्रति से बदलें?',

@@ -4,6 +4,7 @@ import { backupExclusionModule } from '@modules/backup-exclusion';
 import { archiveModule } from '@modules/uw-archive';
 import { createPlatformAudio } from './audio';
 import { excludeFromBackup } from './backup';
+import { createPlatformBundled } from './bundled';
 import { createPlatformClipboard } from './clipboard';
 import { createPlatformClock } from './clock';
 import { createDatabaseDirectory, createPlatformDb } from './db';
@@ -44,6 +45,7 @@ export function createPlatformPorts(policy: HostPolicy): Ports {
     shareSheet: createPlatformShareSheet({ platform, uriOf: root.uriOf }),
     clipboard: createPlatformClipboard(),
     picker: createPlatformPicker(),
+    bundled: createPlatformBundled(),
     locale: createPlatformLocale(),
   };
 }

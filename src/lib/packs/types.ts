@@ -15,7 +15,7 @@ export type Replacement = {
   publisher: string;
   resource: string;
   title: string;
-  source: Exclude<PackSourceKind, 'catalog'>;
+  source: Exclude<PackSourceKind, 'catalog' | 'bundled'>;
   installed: { tag: string; commit: string };
   incoming: { tag: string; commit: string | undefined };
 };

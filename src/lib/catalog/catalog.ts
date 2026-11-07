@@ -6,7 +6,7 @@ import type { ModulePorts } from '../module';
 import type { HttpResponse } from '../ports';
 import { readInstalledPacks } from '../packs/store';
 import { withBuiltReleases } from './built';
-import { languagesOf, searchLanguages } from './languages';
+import { languagesOf, nameOf, searchLanguages } from './languages';
 import { compareReleases, normalizeLanguageNames, normalizePage, uniqueReleases } from './normalize';
 import {
   catalogTables,
@@ -37,6 +37,7 @@ export type RefreshOutcome =
 export type CatalogApi = {
   refresh(): Promise<RefreshOutcome>;
   languages(): readonly CatalogLanguage[];
+  nameOf(language: string): LanguageName;
   search(query: string): readonly CatalogLanguage[];
   releases(language: string): readonly CatalogRelease[];
   originals(): readonly CatalogRelease[];
@@ -192,6 +193,7 @@ export const catalogModule = defineModule<CatalogApi>({
       api: {
         refresh,
         languages,
+        nameOf: (language) => nameOf(languages(), names, language),
         search: (query) => searchLanguages(languages(), query),
         releases: (language) => current().byLanguage.get(language) ?? [],
         originals: () => releases.filter((release) => release.kind === 'original'),

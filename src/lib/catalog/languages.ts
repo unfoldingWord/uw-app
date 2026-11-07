@@ -41,6 +41,23 @@ export function languagesOf(
     );
 }
 
+export function nameOf(
+  languages: readonly CatalogLanguage[],
+  names: ReadonlyMap<string, LanguageName>,
+  language: string,
+): LanguageName {
+  const listed = languages.find((item) => item.language === language);
+  if (listed !== undefined) {
+    return { autonym: listed.autonym, englishName: listed.englishName, direction: listed.direction };
+  }
+  const named = names.get(language);
+  if (named !== undefined) {
+    return named;
+  }
+  const englishName = englishNameOf(language, language);
+  return { autonym: englishName, englishName, direction: 'ltr' };
+}
+
 function offeredResources(releases: readonly CatalogRelease[], language: string): number {
   return defaultReleases(releases, languagePackId(language)).length;
 }

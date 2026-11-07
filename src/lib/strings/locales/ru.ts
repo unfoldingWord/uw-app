@@ -30,6 +30,7 @@ export const ru: LocaleTable = {
   'common.bookmark.remove': 'Убрать из сохранённого',
   'common.joined': '{first} · {second}',
   'common.source.catalog': 'Из каталога',
+  'common.source.bundled': 'Входит в приложение',
   'common.source.peer': 'С другого телефона',
   'common.source.file': 'Из файла',
   'common.replace.file': 'Заменить {resources}, загруженный из каталога, копией из этого файла?',

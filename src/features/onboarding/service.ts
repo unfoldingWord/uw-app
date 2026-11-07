@@ -62,6 +62,26 @@ async function startLanguagePack(kernel: Kernel, language: string): Promise<Star
   return { done, pictures: withPictures ? kernel.packs.installFromCatalog(imagePackId) : noPictures };
 }
 
+function packOf(outcome: InstallOutcome): PackId | undefined {
+  return outcome.ok ? outcome.pack.pack : outcome.pack;
+}
+
+function startCarriedPack(kernel: Kernel, language: string): Started {
+  const pack = languagePackId(language);
+  const started = kernel.packs.placeBundled().then((outcomes): Started | Promise<Started> => {
+    const installed = kernel.packs.installed().find((item) => item.pack === pack);
+    if (installed === undefined) {
+      return startLanguagePack(kernel, language);
+    }
+    const placed = outcomes.find((outcome) => packOf(outcome) === pack);
+    return {
+      done: Promise.resolve(placed ?? { ok: true, install: undefined, pack: installed }),
+      pictures: Promise.resolve(outcomes.find((outcome) => packOf(outcome) === imagePackId)),
+    };
+  });
+  return { done: started.then((item) => item.done), pictures: started.then((item) => item.pictures) };
+}
+
 export function createOnboardingService(kernel: Kernel): OnboardingService {
   const words = (): OnboardingWords => onboardingWords(kernel);
 
@@ -70,7 +90,10 @@ export function createOnboardingService(kernel: Kernel): OnboardingService {
       await kernel.preferences.set('home.name', options.name);
     }
     await kernel.preferences.set('study.language', language);
-    const { done, pictures } = await startLanguagePack(kernel, language);
+    const carried = kernel.packs.bundled().includes(languagePackId(language));
+    const { done, pictures } = carried
+      ? startCarriedPack(kernel, language)
+      : await startLanguagePack(kernel, language);
     return { language, pack: languagePackId(language), done, pictures };
   };
 

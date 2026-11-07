@@ -127,6 +127,7 @@ Requirement identifiers are stable and can be referenced from issues. "Must" is 
 | ON-2 | Choosing a language starts the download of that language pack and lands on Home with progress visible. | Must |
 | ON-3 | An optional first-name field, stored only on the device, used only for the Home greeting. The app does not attempt to read a name from the device or its accounts. | Must |
 | ON-4 | No account, sign-in, email or phone number is requested at any point. | Must |
+| ON-5 | A fresh install reads English (Literal and Simplified text, notes, words, word links, questions, academy), English Open Bible Stories with their helps, and the story pictures with no connection and no download: the app carries the English Language Pack and the Image Pack inside it and installs them on first launch without asking. Continue in English asks for nothing. A leader who removes English does not get it back unasked; a newer catalog release replaces a carried one like any other (LA-7). (Decision 105, ADR 0015.) | Must |
 
 ### 7.2 Home
 
@@ -234,6 +235,7 @@ Door43 Content Service (DCS), https://git.door43.org, via its catalog API.
 - **Tag:** the `tc-ready` topic marks the latest valid releases. As of 2026-09-29 there are 322 production entries with this tag, including all of unfoldingWord's English core repositories, the original-language texts, `en_obs` and `en_obs-tf`.
 - **Publishers:** any organization whose release meets the stage and tag rule. The publishing organization is always shown. unfoldingWord resources are listed first within a language.
 - **Format consumed by the app:** Scripture Burrito, natively. The app does not parse Resource Containers.
+- **Carried in the app:** the English default Language Pack and the Image Pack ship inside the app as the same Door43 burrito archives, pinned by release, tag and sha256 in `content/bundled.lock.json` and refreshed from this catalog by `npm run bundled:lock` (ON-5, decision 105).
 
 ### 8.2 Scripture Burrito supply
 
@@ -550,6 +552,8 @@ Decisions taken in the requirements interview of 2026-09-29 with Jesse Griffin. 
 | 102 | The translationAcademy manuals are ordered Introduction, Process, Translate, Checking, which renumbers Training lessons. A Training position or a replayed `PositionChanged` from before this order resolves to a different lesson; this is accepted because no device is past 0.0.x, and no migration is written. (2026-11-05, issue #87, PR #105) |
 | 103 | The Image Pack installs with the first language pack that carries Open Bible Stories, under the same download consent, as an optional pack whose failure never sinks the language; the in-place "Download story pictures" stays for when it is missing. (2026-11-05, issue #97, PR #107, `docs/proposals/2026-11-05-image-pack-with-first-language.md`) |
 | 104 | The chapter arrows open the next or the previous chapter at its first verse, wherever the reader was in the current one, as most Bible apps do; reading backward lands at the top of the previous chapter, not its end. A request for a chapter lands on its first verse (ST-2). (2026-11-05, issue #83) |
+| 105 | The app ships with English inside it: the whole English default Language Pack (ULT, UST, notes, words, word links, questions, academy, Open Bible Stories and its helps) and the Image Pack, pinned in `content/bundled.lock.json` and installed on first launch with no connection and no prompt, as a fourth pack source, `bundled`. Jesse Griffin, 2026-11-06: "The app really needs to ship with the English content and the OBS stories built into it", and, asked how much, everything. A removed English is never put back; a catalog update replaces a carried release (LA-7). Adds ON-5. (2026-11-06, `docs/proposals/2026-11-06-english-inside-the-app.md`, ADR 0015) |
+| 106 | Decision 101's CPU cut is applied with it: the EAS `preview`, `apk` and `production` builds carry arm64-v8a and armeabi-v7a only (`ORG_GRADLE_PROJECT_reactNativeArchitectures` per profile), and the device CI's emulator build keeps `-PreactNativeArchitectures=x86_64`; nothing is set globally. Jesse Griffin, 2026-11-06, in the same decision. (`docs/proposals/2026-11-06-english-inside-the-app.md`) |
 
 ---
 

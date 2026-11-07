@@ -33,7 +33,7 @@ These are settled. Work inside them; open a proposal (section 8) to change one.
 | Shape | One pure kernel over ports, with a platform adapter and a memory adapter per port; the sim drives the kernel in Node (ADR 0001) |
 | Routing | Expo Router, file-based under `app/`; route files are one-line re-exports of a feature screen |
 | Content format | Scripture Burrito, read and written natively; Resource Containers are never parsed here (ADR 0002) |
-| Content source | Door43 Content Service catalog: production stage, `tc-ready` topic, any publisher; unfoldingWord first within a language |
+| Content source | Door43 Content Service catalog: production stage, `tc-ready` topic, any publisher; unfoldingWord first within a language. The English default pack and the Image Pack are also carried inside the app, pinned from that catalog (ADR 0015) |
 | Storage | On the device only: SQLite for structured data, the file system for packs, a key-value store for preferences (ADR 0004) |
 | Accounts, backend | None (ADR 0004) |
 | Observability | Events into a bounded journal on the device; telemetry, snapshot and replay are folds over it (ADR 0003) |
@@ -86,6 +86,7 @@ adapter; versions live in `package.json`.
 | ShareSheet | expo-sharing and the RN `Share` API | Provenance attached to every payload |
 | Clipboard | expo-clipboard | Writes plain text only; copied verses carry their reference choice and attribution (SH-5) |
 | Picker | expo-document-picker | Asks the system for a burrito `.zip`; `app.config.ts` registers the document types and `app/+native-intent.ts` routes a file another app opens (ADR 0009) |
+| Bundled | expo-asset | The archives `content/bundled.lock.json` pins, carried as Metro assets and listed in the generated `src/platform/bundled-archives.ts`; `npm run bundled:fetch` puts them in place before every native build (ADR 0015) |
 | Locale | expo-localization | Region for the invitation comes from here, never from location |
 | Clock, Ids | `Date.now`, `crypto.randomUUID` | Injected so the sim can pin them |
 | Screens and navigation | Expo Router | Tabs: Home, Study, Formation. Languages is a modal route |
@@ -315,8 +316,9 @@ without context and the result of a real trade-off, it also becomes an ADR.
   contacts or accounts access, ever. A dependency that phones home fails review.
 - The only network calls are through the Http port to allowlisted hosts, with a
   timeout, a non-2xx path and a defined offline behavior.
-- Content enters the app only as a burrito from the catalog, a peer or a file, and
-  every piece carries provenance from the moment it is parsed until it leaves.
+- Content enters the app only as a burrito from the catalog, the app's own archives
+  pinned in `content/bundled.lock.json` (ADR 0015), a peer or a file, and every piece
+  carries provenance from the moment it is parsed until it leaves.
 - Everything that happens is an event in the journal. A failure is an event with a
   code; screens show it as state in place on the control that failed, never as raw
   exception text. The journal leaves the device only through Share.

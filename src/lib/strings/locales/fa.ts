@@ -30,6 +30,7 @@ export const fa: LocaleTable = {
   'common.bookmark.remove': 'حذف از ذخیره‌شده‌ها',
   'common.joined': '{first} · {second}',
   'common.source.catalog': 'از فهرست منابع',
+  'common.source.bundled': 'همراه برنامه آمده است',
   'common.source.peer': 'از گوشی دیگر',
   'common.source.file': 'از یک فایل',
   'common.replace.file':

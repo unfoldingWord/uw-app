@@ -40,6 +40,7 @@ async function openKernel(): Promise<Kernel> {
   });
   await kernel.start();
   startFaults.clear();
+  void kernel.packs.placeBundled().catch(() => undefined);
   void kernel.telemetry.send().catch(() => undefined);
   return kernel;
 }

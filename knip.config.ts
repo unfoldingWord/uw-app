@@ -23,6 +23,7 @@ const config: KnipConfig = {
     '@babel/plugin-transform-classes',
     '@babel/plugin-transform-block-scoping',
     '@babel/plugin-transform-arrow-functions',
+    /^@content\/bundled$/,
   ],
 };
 

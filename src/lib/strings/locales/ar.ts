@@ -30,6 +30,7 @@ export const ar: LocaleTable = {
   'common.bookmark.remove': 'إزالة من المحفوظات',
   'common.joined': '{first} · {second}',
   'common.source.catalog': 'من الفهرس',
+  'common.source.bundled': 'جاء مع التطبيق',
   'common.source.peer': 'من هاتف آخر',
   'common.source.file': 'من ملف',
   'common.replace.file': 'هل تريد استبدال {resources} الذي نزّلته من الفهرس بالنسخة الموجودة في هذا الملف؟',

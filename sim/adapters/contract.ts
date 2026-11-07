@@ -463,6 +463,21 @@ const deviceCases: ContractCase[] = [
     },
   },
   {
+    port: 'bundled',
+    name: 'opens every archive the app carries to a file Files adopts at its size',
+    async run({ ports: { bundled, files }, scratch }) {
+      for (const archive of bundled.archives()) {
+        const uri = await bundled.open(archive.file);
+        await files.mkdir(`${scratch}/bundled`);
+        const path = `${scratch}/bundled/${archive.file}`;
+        same(await files.adopt(uri, path), archive.bytes, `adopts ${archive.file}`);
+        same(await files.size(path), archive.bytes, `${archive.file} on the device`);
+        await files.remove(`${scratch}/bundled`);
+      }
+      same(await codeOf(bundled.open('not-carried.zip')), 'files.not-found', 'an archive it does not carry');
+    },
+  },
+  {
     port: 'transport',
     name: 'names its platform and refuses work while unavailable',
     async run({ ports: { transport } }) {

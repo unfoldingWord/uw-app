@@ -229,12 +229,12 @@ function downloadedOf(kernel: Kernel, words: LanguagesWords): readonly Downloade
     ...present.filter((language) => !listed.some((item) => item.language === language)).sort(),
   ];
   return ordered.map((language) => {
-    const named = listed.find((item) => item.language === language);
-    const autonym = named?.autonym ?? language;
+    const named = kernel.catalog.nameOf(language);
+    const autonym = named.autonym;
     return {
       language,
       autonym,
-      englishName: named?.englishName ?? language,
+      englishName: named.englishName,
       resources: words.plural('languages.resources', burritosOf(installed, language).length),
       show: words.t('languages.downloaded.show', { language: autonym }),
       selected: selected === language,
@@ -326,8 +326,7 @@ export function createLanguagesService(kernel: Kernel): LanguagesService {
     overline() {
       const current = words();
       const language = kernel.preferences.contentLanguage();
-      const autonym =
-        kernel.catalog.languages().find((item) => item.language === language)?.autonym ?? language ?? '';
+      const autonym = language === undefined ? '' : kernel.catalog.nameOf(language).autonym;
       return language === undefined
         ? current.t('languages.overline.onboarding')
         : current.plural('languages.overline', kernel.catalog.languages().length, { language: autonym });

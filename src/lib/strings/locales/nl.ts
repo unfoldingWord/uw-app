@@ -30,6 +30,7 @@ export const nl: LocaleTable = {
   'common.bookmark.remove': 'Uit bewaard halen',
   'common.joined': '{first} · {second}',
   'common.source.catalog': 'Uit de catalogus',
+  'common.source.bundled': 'Meegeleverd met de app',
   'common.source.peer': 'Van een andere telefoon',
   'common.source.file': 'Uit een bestand',
   'common.replace.file':

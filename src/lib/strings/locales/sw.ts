@@ -30,6 +30,7 @@ export const sw: LocaleTable = {
   'common.bookmark.remove': 'Ondoa kwenye vilivyohifadhiwa',
   'common.joined': '{first} · {second}',
   'common.source.catalog': 'Kutoka katalogi',
+  'common.source.bundled': 'Imekuja na programu',
   'common.source.peer': 'Kutoka simu nyingine',
   'common.source.file': 'Kutoka faili',
   'common.replace.file':

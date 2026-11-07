@@ -142,7 +142,7 @@ function dayPartOf(hour: number): DayPart {
 }
 
 function autonymOf(kernel: Kernel, language: string): string {
-  return kernel.catalog.languages().find((item) => item.language === language)?.autonym ?? language;
+  return kernel.catalog.nameOf(language).autonym;
 }
 
 function greetingText(words: HomeWords, part: DayPart, name: string | undefined): string {

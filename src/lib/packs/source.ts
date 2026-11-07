@@ -1,6 +1,7 @@
 import type { FailureCode } from '../domain/failures';
 import type { PackId, ResourceRow } from '../domain/pack';
 import type { BuiltKind, ReleaseAsset } from '../catalog/types';
+import type { BundledArchive } from '../ports';
 import type { ReleaseRef } from '../domain/release';
 
 export type CatalogChoice = ReleaseRef & {
@@ -26,6 +27,7 @@ export type PeerDelivery = {
 
 export type PackSource =
   | { kind: 'catalog'; releases: readonly CatalogChoice[] }
+  | { kind: 'bundled'; archives: readonly BundledArchive[] }
   | { kind: 'peer'; delivery: PeerDelivery }
   | { kind: 'file'; path: string };
 
@@ -36,6 +38,10 @@ export type PackPlan = {
 
 export function fromCatalog(releases: readonly CatalogChoice[]): PackSource {
   return { kind: 'catalog', releases };
+}
+
+export function fromBundled(archives: readonly BundledArchive[]): PackSource {
+  return { kind: 'bundled', archives };
 }
 
 export function fromPeer(delivery: PeerDelivery): PackSource {
