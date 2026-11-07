@@ -222,8 +222,7 @@ export function createFormationService(kernel: Kernel): FormationService {
     next: (group) => withLanguage((current) => formation.next(group, current)),
     note: (group, track, session) => formation.note(group, track, session),
     saveNote: (group, track, session, text) => formation.saveNote(group, track, session, text),
-    languageName: (code) =>
-      kernel.catalog.languages().find((item) => item.language === code)?.autonym ?? code,
+    languageName: (code) => kernel.catalog.nameOf(code).autonym,
     async download(pack) {
       const outcome = await kernel.packs.installFromCatalog(pack, { withRows: ['formation'] });
       return outcome.ok ? { ok: true } : { ok: false, code: outcome.code };

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { englishNameOf } from './languageNames';
-import { languagesOf, searchLanguages } from './languages';
+import { languagesOf, nameOf, searchLanguages } from './languages';
 import { comparePublishers } from '../order';
 import { normalizeEntry, normalizeLanguageNames, normalizePage } from './normalize';
 import { rowOfSubject } from './subjects';
@@ -233,5 +233,20 @@ describe('English names from the DCS languages list (LA-1, #14)', () => {
       ['fa', 'Farsi', 'ltr'],
       ['qaa', 'Fixture language A', 'ltr'],
     ]);
+  });
+
+  it('names a language from the catalog, then the DCS list, then the built-in table, before any catalog (ON-5)', () => {
+    const names = new Map([
+      ['apd', { englishName: 'Sudanese Arabic', autonym: 'عربي سوداني', direction: 'rtl' as const }],
+    ]);
+    const listed = languagesOf([release('fa', 'fa_obs', 'فارسی')], new Set(), names);
+    expect(nameOf(listed, names, 'fa')).toEqual({ autonym: 'فارسی', englishName: 'Farsi', direction: 'ltr' });
+    expect(nameOf(listed, names, 'apd')).toEqual(names.get('apd'));
+    expect(nameOf([], new Map(), 'en')).toEqual({
+      autonym: 'English',
+      englishName: 'English',
+      direction: 'ltr',
+    });
+    expect(nameOf([], new Map(), 'qzz')).toEqual({ autonym: 'qzz', englishName: 'qzz', direction: 'ltr' });
   });
 });

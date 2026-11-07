@@ -36,6 +36,15 @@ rewritten `download-language.yaml`) have never run.
   Offline, and storage lists Kiswahili at 209 KB. The flow waited on the Languages screen for the Home line
   "resources ready offline in Kiswahili", which only Home shows; choosing a language keeps Languages open, as it
   does on `main`. The flow now closes Languages before that wait. The rerun is not yet observed.
+- **Device CI on c978893 (run for #115, Android and iOS):** on Android every flow passed on its first pass, among
+  them `english-ready-offline` (41 s) and `download-language` (64 s). On iOS `english-ready-offline` failed once
+  and passed once, and `download-language` passed once and failed once, both on the wait for "resources ready
+  offline in English": the failure screenshots show Home reading "13 resources ready offline in en". English was
+  placed, but every language name came from the catalog, which had not loaded, so Home showed the code. The Arabic
+  flow failed both iOS passes on `"App language" is visible`, as it does on `main` (5c425e5), so it is not this
+  change's. `ON-5.english-ready-offline-on-first-launch` now asserts the Home line names English offline: observed
+  red, then green once `catalog.nameOf` falls back to the DCS names and then the built-in table. The iOS rerun is
+  not yet observed.
 - **Verify without the archives** (as CI runs it): `npm run verify` green with a private `TMPDIR`: 936 tests in
   100 files, 9 checks, 81 of 81 scenarios, trace 52 Must requirements with 0 unproven, 21 fixture burritos, both
   bundles with stand-ins and 14 carried archives, none from `sim/`. `knip` passes with and without the archives.

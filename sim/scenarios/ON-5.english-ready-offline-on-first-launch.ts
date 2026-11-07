@@ -78,6 +78,13 @@ export default scenario(
     assert.ok(ready.ok, ready.ok ? '' : ready.code);
     assert.ok((await continued.pictures)?.ok, 'the pictures came with the app too');
     assert.deepEqual(english.adapters.http.requests(), [], 'Continue in English downloads nothing');
+    const englishCard = await fresh.home.download();
+    assert.equal(englishCard.state, 'complete');
+    assert.match(
+      englishCard.label ?? '',
+      /ready offline in English$/,
+      'Home names the carried language before the catalog has ever loaded',
+    );
     const englishStory = await english.kernel.corpus.story(1, 'en');
     assert.ok((englishStory?.frames.length ?? 0) > 0, 'English stories read offline');
     assert.ok(englishStory?.frames.some((frame) => frame.image !== undefined));

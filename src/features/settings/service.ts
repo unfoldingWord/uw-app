@@ -122,7 +122,7 @@ function autonymOf(kernel: Kernel, language: string | undefined): string {
   if (language === undefined) {
     return '';
   }
-  return kernel.catalog.languages().find((item) => item.language === language)?.autonym ?? language;
+  return kernel.catalog.nameOf(language).autonym;
 }
 
 function storageLabel(
